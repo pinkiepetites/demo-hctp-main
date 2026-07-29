@@ -6,8 +6,7 @@ import {
   MessageSquare, Copy, CopyPlus, Home, LayoutList, Mail, List,
   Users, ArrowDownToLine, ArrowUpFromLine, Archive, Clock,
   Gavel, Scale, Settings, RefreshCw, Send, GitMerge, Check, Save, Pencil, ChevronLeft,
-  AlertCircle, Bell
-} FilePlus,
+  AlertCircle, Bell, FilePlus, FileText
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 // ─── Color tokens matching the real system ───────────────────────────────────
@@ -691,13 +690,13 @@ const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: num
           <div>
             <label className="block text-[12px] font-medium text-[#333] mb-1">Nội dung yêu cầu bổ sung</label>
             <textarea rows={4} placeholder="Nhập nội dung cần bổ sung..." disabled={status !== "tao"} 
-              className={w-full px-2 py-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none } />
+              className={`w-full px-2 py-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none ${status !== "tao" ? "bg-gray-100 text-gray-500" : "bg-white"}`} />
           </div>
           <div>
             <label className="block text-[12px] font-medium text-[#333] mb-1">Lãnh đạo ký</label>
             <div className="relative">
               <select disabled={status !== "tao" && status !== "in"}
-                className={w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] }>
+                className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] ${status !== "tao" && status !== "in" ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
                 <option value="">Chọn lãnh đạo ký</option>
                 <option value="1">Lãnh đạo A</option>
                 <option value="2">Lãnh đạo B</option>
@@ -2309,7 +2308,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
       <label className="block text-[12px] font-medium text-[#333] mb-1">{label}</label>
       <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-          className={w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] }>
+          className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] ${disabled ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
           <option value="">{placeholder}</option>
           {(label === "Loại văn bản" ? LOAI_VAN_BAN_OPTIONS : NGUOI_OPTIONS).map(o => <option key={o} value={o}>{o}</option>)}
         </select>
@@ -2340,7 +2339,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
               <div className="flex-1">
                 <label className="block text-[12px] font-medium text-[#333] mb-1">Số tờ trình</label>
                 <input type="text" value={soToTrinh} onChange={e => setSoToTrinh(e.target.value)} disabled={status === "da_ky"}
-                  className={w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] } 
+                  className={`w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] ${status === "da_ky" ? "bg-gray-100 text-gray-500" : "bg-white"}`} 
                   placeholder="Nhập số tờ trình..." />
               </div>
             )}
