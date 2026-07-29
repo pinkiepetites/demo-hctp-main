@@ -6,9 +6,10 @@ import {
   MessageSquare, Copy, CopyPlus, Home, LayoutList, Mail, List,
   Users, ArrowDownToLine, ArrowUpFromLine, Archive, Clock,
   Gavel, Scale, Settings, RefreshCw, Send, GitMerge, Check, Save, Pencil, ChevronLeft,
-  AlertCircle
+  AlertCircle, Bell
+} FilePlus,
 } from "lucide-react";
-
+import Dashboard from "./Dashboard";
 // ─── Color tokens matching the real system ───────────────────────────────────
 // Primary red: #8b1a1a (dark crimson) — matches system buttons
 // Section separator: 1px solid #e0e0e0
@@ -24,6 +25,12 @@ interface CongVan {
   donVi: string;
   congVanChinh?: boolean;
 }
+
+export const notiEmitter = new EventTarget();
+export const triggerNoti = (text: string) => {
+  notiEmitter.dispatchEvent(new CustomEvent('notify', { detail: text }));
+};
+
 
 // ─── Shared primitives ───────────────────────────────────────────────────────
 const Inp = ({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
@@ -540,8 +547,8 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
       {/* Nav items */}
       <nav className="flex-1 py-2 space-y-0.5">
         {/* Trang chủ */}
-        <div className="flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors text-[13px] text-[#333]">
-          <LayoutList size={15} className="text-[#666]" />
+        <div onClick={() => onNav?.("home")} className={`flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors text-[13px] rounded-[3px] mx-1 ${activePage === "home" ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#333]"}`}>
+          <LayoutList size={15} className={activePage === "home" ? "text-[#8b1a1a]" : "text-[#666]"} />
           <span>Trang chủ</span>
         </div>
 
@@ -596,7 +603,7 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
 };
 
 // ─── Row action dropdown menu ────────────────────────────────────────────────
-const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void }) => {
+const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -616,6 +623,8 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit }: { onClose: () 
     { icon: <Copy size={13} />, label: "Thêm một đơn trùng" },
     { icon: <CopyPlus size={13} />, label: "Thêm nhiều đơn trùng" },
     { icon: <GitMerge size={13} />, label: "Ghép đơn", action: "ghep" },
+    { icon: <FileText size={13} />, label: "Tạo Yêu cầu bổ sung", action: "taoyeucau" },
+    { icon: <FilePlus size={13} />, label: "Cập nhật Bổ sung tài liệu", action: "bosung" },
     { icon: <Trash2 size={13} />, label: "Xóa", red: true },
   ];
 
@@ -625,6 +634,8 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit }: { onClose: () 
       {items.map((item, i) => (
         <button key={i} onClick={() => {
           if (item.action === "ghep") { onGhepDon?.(); }
+          if (item.action === "bosung") { onBoSung?.(); }
+          if (item.action === "taoyeucau") { onTaoYeuCau?.(); }
           if (item.action === "view") { onViewDetail?.(); }
           if (item.action === "edit") { onEdit?.(); }
           onClose();
@@ -648,6 +659,216 @@ const GHEP_CANDIDATES: GhepRow[] = [
   { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN" },
   { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam" },
 ];
+
+
+
+const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: number }) => {
+  const row = SAMPLE_ROWS.find(r => r.id === donId);
+  const [status, setStatus] = useState<"tao" | "in" | "ky" | "gui" | "da_gui">("tao");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-[4px] shadow-xl w-[700px] flex flex-col border border-[#bbb]">
+        <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+          <div className="flex items-center gap-2 text-white">
+            <FileText size={15} />
+            <span className="text-[14px] font-semibold">Tạo Yêu cầu bổ sung</span>
+          </div>
+          <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[12px] font-medium text-[#333] mb-1">Mã đơn</label>
+              <input type="text" value={row?.maDon} disabled className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 text-[#555]" />
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-[#333] mb-1">Người gửi</label>
+              <input type="text" value={row?.nguoiGui} disabled className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 text-[#555]" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-1">Nội dung yêu cầu bổ sung</label>
+            <textarea rows={4} placeholder="Nhập nội dung cần bổ sung..." disabled={status !== "tao"} 
+              className={w-full px-2 py-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none } />
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-1">Lãnh đạo ký</label>
+            <div className="relative">
+              <select disabled={status !== "tao" && status !== "in"}
+                className={w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] }>
+                <option value="">Chọn lãnh đạo ký</option>
+                <option value="1">Lãnh đạo A</option>
+                <option value="2">Lãnh đạo B</option>
+              </select>
+              <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between px-5 py-3 border-t border-[#eee] bg-[#f9f9f9] rounded-b-[4px]">
+          <div className="flex items-center gap-2">
+            {status === "tao" && (
+              <button onClick={() => setStatus("in")} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                <Save size={13} /> Tạo yêu cầu
+              </button>
+            )}
+            {status === "in" && (
+              <button onClick={() => setStatus("ky")} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#2980b9] hover:bg-[#1a6a9a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                <Printer size={13} /> In biểu mẫu
+              </button>
+            )}
+            {status === "ky" && (
+              <button onClick={() => setStatus("gui")} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                <PenLine size={13} /> Lãnh đạo ký
+              </button>
+            )}
+            {status === "gui" && (
+              <button onClick={() => { triggerNoti("Đã gửi yêu cầu bổ sung cho đương sự."); setStatus("da_gui"); }} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                <Send size={13} /> Gửi cho đương sự
+              </button>
+            )}
+            {status === "da_gui" && (
+              <div className="flex items-center gap-1.5 h-[30px] px-3 border border-[#27ae60] text-[#27ae60] rounded-[3px] text-[12px] font-bold">
+                <Check size={13} /> Đã gửi đương sự
+              </div>
+            )}
+          </div>
+          <button onClick={onClose} className="h-[30px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const PopupBoSungTaiLieu = ({ onClose, donId }: { onClose: () => void, donId: number }) => {
+  const row = SAMPLE_ROWS.find(r => r.id === donId);
+  const [isOpenHistory, setIsOpenHistory] = useState(true);
+  const [ketQua, setKetQua] = useState('chua_du');
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-[6px] shadow-xl w-[900px] max-h-[95vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-[#eee]">
+          <h2 className="text-[16px] font-bold text-[#333]">Bổ sung tài liệu</h2>
+          <button onClick={onClose} className="text-[#888] hover:text-[#333]">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[12px] font-medium text-[#333] mb-1"><span className="text-red-500">*</span> Ngày bổ sung</label>
+              <input type="date" className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-[#333] mb-1">Số hiệu</label>
+              <input type="text" placeholder="nhập dữ liệu" className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-1"><span className="text-red-500">*</span> Bổ sung cho yêu cầu nào</label>
+            <div className="relative">
+              <select className="w-full h-[32px] px-2 pr-8 text-[13px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8]">
+                <option value="">Chọn yêu cầu bổ sung</option>
+                <option value="1">Bổ sung bản án</option>
+                <option value="2">Bổ sung xác nhận</option>
+              </select>
+              <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-2"><span className="text-red-500">*</span> Kết quả</label>
+            <div className="flex items-center gap-6">
+              <label className="flex items-center gap-2 text-[13px] cursor-pointer">
+                <input type="radio" name="ketqua" checked={ketQua === 'du'} onChange={() => setKetQua('du')} className="w-3.5 h-3.5 text-[#d81b60] focus:ring-[#d81b60]" />
+                Đơn đủ điều kiện
+              </label>
+              <label className="flex items-center gap-2 text-[13px] cursor-pointer">
+                <input type="radio" name="ketqua" checked={ketQua === 'chua_du'} onChange={() => setKetQua('chua_du')} className="w-3.5 h-3.5 text-[#d81b60] focus:ring-[#d81b60]" />
+                Đơn chưa đủ điều kiện
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-2">Lý do</label>
+            <div className="flex items-center gap-5">
+              <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded-sm border-[#ccc]" /> Bản án, quyết định
+              </label>
+              <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded-sm border-[#ccc]" /> Xác nhận
+              </label>
+              <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded-sm border-[#ccc]" /> Viết lại đơn
+              </label>
+              <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded-sm border-[#ccc]" /> Lý do khác
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#333] mb-1">Ghi chú</label>
+            <textarea rows={3} placeholder="nhập dữ liệu" className="w-full px-2 py-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+          </div>
+          
+          <div className="flex justify-end gap-2 pt-2 pb-2">
+            <button onClick={onClose} className="h-[30px] px-4 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[3px] text-[12px] font-medium transition-colors">Lưu</button>
+            <button className="h-[30px] px-4 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[3px] text-[12px] font-medium transition-colors">Làm mới</button>
+            <button onClick={onClose} className="h-[30px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">Đóng</button>
+          </div>
+
+          <div className="pt-2 border-t border-[#eee]">
+            <button onClick={() => setIsOpenHistory(!isOpenHistory)} className="flex items-center gap-1 text-[13px] font-bold text-[#333] mb-2 hover:bg-[#f5f5f5] py-1 px-1 -ml-1 rounded">
+              {isOpenHistory ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              Quá trình bổ sung tài liệu
+            </button>
+            {isOpenHistory && (
+              <div className="bg-[#f9f9f9] border border-[#eee] rounded-[4px] p-2">
+                <table className="w-full text-left text-[11px] mb-6">
+                  <thead className="bg-[#f0f0f0] text-[#333] font-medium">
+                    <tr>
+                      <th className="py-2 px-2 border border-[#eee]">STT</th>
+                      <th className="py-2 px-2 border border-[#eee]">Số thụ lý</th>
+                      <th className="py-2 px-2 border border-[#eee]">Ngày thụ lý</th>
+                      <th className="py-2 px-2 border border-[#eee]">Số hiệu</th>
+                      <th className="py-2 px-2 border border-[#eee]">Ngày bổ sung</th>
+                      <th className="py-2 px-2 border border-[#eee]">Kết quả</th>
+                      <th className="py-2 px-2 border border-[#eee] text-center max-w-[50px]">Thiếu bản án</th>
+                      <th className="py-2 px-2 border border-[#eee] text-center max-w-[50px]">Thiếu xác nhận</th>
+                      <th className="py-2 px-2 border border-[#eee]">Viết lại đơn</th>
+                      <th className="py-2 px-2 border border-[#eee]">Lý do khác</th>
+                      <th className="py-2 px-2 border border-[#eee]">Chi tiết lý do khác</th>
+                      <th className="py-2 px-2 border border-[#eee]">Ghi chú</th>
+                      <th className="py-2 px-2 border border-[#eee]">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Empty state */}
+                    <tr>
+                      <td colSpan={13} className="py-8 text-center bg-white border border-[#eee]">
+                        <div className="flex flex-col items-center text-[#999]">
+                          <Archive size={24} className="mb-1 opacity-50" />
+                          <span>Trống</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const PopupGhepDon = ({
   donChinh, onClose, onNext,
@@ -897,6 +1118,7 @@ interface DanhSachDonRow {
     donViGiaiQuyet: string;
   };
   daNhan?: boolean;
+  toTrinhStatus?: "none" | "trinh_lanh_dao" | "da_ky";
   soDon?: number;
   hinhThucTiepNhan?: string;
   giaiQuyet: {
@@ -927,6 +1149,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     maDon: " Mã 7031",
     loaiHinhThuc: "Công văn kiến nghị",
     loaiHinhThucColor: "#e67e22",
+    toTrinhStatus: "trinh_lanh_dao",
     thongTinDon: {
       soBaqd: "BA_2107", ngay: "21/07/2026", toaXetXu: "TAND tỉnh Bắc Ninh",
       thuTuc: "Giám đốc thẩm",
@@ -1171,6 +1394,15 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const selectedPhanCongCount = selectedPhanCongRows.length;
 
   const handleAssignment = (type: "ngau-nhien" | "chi-dinh") => {
+    const invalidRows = selectedPhanCongRows.filter(r => r.toTrinhStatus === 'trinh_lanh_dao' || r.toTrinhStatus === 'da_ky');
+    if (invalidRows.length > 0) {
+      setAssignmentMode("none");
+      setSelectedOfficer("");
+      setAssignmentNotice("Không thể phân công: Đơn đã nằm trong tờ trình (đã trình lãnh đạo). Vui lòng tạo tờ trình thay đổi phân công.");
+      window.setTimeout(() => setAssignmentNotice(""), 4500);
+      return;
+    }
+    
     if (type === "chi-dinh") {
       if (selectedRows.length === 0) {
         setAssignmentMode("none");
@@ -1201,6 +1433,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     setAssignmentMode("ngau-nhien");
     setSelectedOfficer("");
     setAssignmentNotice("Phân công ngẫu nhiên đã được kích hoạt cho đơn đã chọn.");
+    triggerNoti("Phân công ngẫu nhiên đã được kích hoạt cho các đơn đã chọn.");
     window.setTimeout(() => setAssignmentNotice(""), 4500);
   };
   const [collapsed, setCollapsed] = useState(false);
@@ -1227,6 +1460,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [autoMergeMap, setAutoMergeMap] = useState<Record<number, string>>({});
   const [showConfirmRow, setShowConfirmRow] = useState<number | null>(null);
   const [showHuyGhep, setShowHuyGhep] = useState<number | null>(null);
+  const [showBoSungTaiLieu, setShowBoSungTaiLieu] = useState<number | null>(null);
+  const [showYeuCauBoSung, setShowYeuCauBoSung] = useState<number | null>(null);
   const [showLuuSoVanBan, setShowLuuSoVanBan] = useState(false);
   const [historyRow, setHistoryRow] = useState<DanhSachDonRow | null>(null);
   const [suaDon, setSuaDon] = useState(false);
@@ -1492,10 +1727,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   <BtnPrimary onClick={() => setShowLuuSoVanBan(true)} className="h-[30px] text-[12px] px-3 gap-1">
                     <FileText size={13} /> Lưu số văn bản và in báo cáo
                   </BtnPrimary>
-                  <BtnPrimary className="h-[30px] text-[12px] px-3 gap-1">
+                  <BtnPrimary onClick={() => triggerNoti("Đã hoàn thành phân công.")} className="h-[30px] text-[12px] px-3 gap-1">
                     ⇄ Hoàn thành
                   </BtnPrimary>
-                  <BtnPrimary className="h-[30px] text-[12px] px-3 gap-1">
+                  <BtnPrimary onClick={() => triggerNoti("Đã thu hồi phân công.")} className="h-[30px] text-[12px] px-3 gap-1">
                     ↩ Thu hồi
                   </BtnPrimary>
                 </>
@@ -1520,6 +1755,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     if (!selectedOfficer) return;
                     const assignedMaDons = selectedPhanCongRows.map(r => r.maDon).join(", ");
                     setAssignmentNotice(`Đã chỉ định ${selectedOfficer} cho ${selectedPhanCongCount} đơn: ${assignedMaDons}.`);
+                    triggerNoti(`Đã phân công ${selectedOfficer} cho ${selectedPhanCongCount} đơn.`);
                     setAssignmentMode("none");
                     setSelectedOfficer("");
                     window.setTimeout(() => setAssignmentNotice(""), 4500);
@@ -1721,6 +1957,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               onViewDetail={() => onEditRow?.(row.id)}
                               onEdit={() => onEditRow?.(row.id)}
                               onGhepDon={() => { setGhepDonChinh(row.id); setShowGhepDon(row.id); setOpenMenu(null); }}
+                              onBoSung={() => { setShowBoSungTaiLieu(row.id); setOpenMenu(null); }}
+                              onTaoYeuCau={() => { setShowYeuCauBoSung(row.id); setOpenMenu(null); }}
                             />
                           )}
                         </div>
@@ -1794,6 +2032,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       }
                       return next;
                     });
+                    const matchRow = SAMPLE_ROWS.find(r => r.maDon === ghepVoi);
+                    triggerNoti(`Đơn [${row.maDon}] của ${row.nguoiGui} đã hủy ghép với đơn [${matchRow?.maDon || ghepVoi}] của ${matchRow?.nguoiGui || "không xác định"}`);
                     setShowHuyGhep(null);
                   }}
                   className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
@@ -1804,6 +2044,16 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           </div>
         );
       })()}
+
+      {/* Popup Yêu cầu bổ sung */}
+      {showYeuCauBoSung !== null && (
+        <PopupYeuCauBoSung donId={showYeuCauBoSung} onClose={() => setShowYeuCauBoSung(null)} />
+      )}
+
+      {/* Popup Bổ sung tài liệu */}
+      {showBoSungTaiLieu !== null && (
+        <PopupBoSungTaiLieu donId={showBoSungTaiLieu} onClose={() => setShowBoSungTaiLieu(null)} />
+      )}
 
       {/* Popup Ghép đơn */}
       {showGhepDon !== null && (() => {
@@ -1843,6 +2093,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 });
                 return next;
               });
+              triggerNoti(`Đơn [${donChinhRow.maDon}] của ${donChinhRow.nguoiGui} đã được gửi yêu cầu ghép với đơn [${ghepSelected.map(d => d.maDon).join("], [")}] của ${ghepSelected.map(d => d.nguoiGui).join(", ")}`);
               setShowXacNhan(false);
               setGhepSelected([]);
             }}
@@ -1885,6 +2136,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 }
                 return next;
               });
+              triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã được ghép với đơn [${chinhRow?.maDon}] của ${chinhRow?.nguoiGui}`);
               setShowConfirmRow(null);
             }}
           />
@@ -1984,8 +2236,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
   const [loai, setLoai] = useState("");
   const [nguoiDuyet, setNguoiDuyet] = useState("");
   const [nguoiKy, setNguoiKy] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [laySo, setLaySo] = useState(false);
+  const [status, setStatus] = useState<"tao_van_ban" | "lay_so" | "trinh_duyet" | "duyet" | "trinh_ky" | "da_ky">("tao_van_ban");
   const [localRows, setLocalRows] = useState(initialRows);
 
   const [soToTrinh, setSoToTrinh] = useState("");
@@ -2053,12 +2304,12 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
     });
   };
 
-  const SelectField = ({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) => (
+  const SelectField = ({ label, value, onChange, placeholder, disabled }: { label: string; value: string; onChange: (v: string) => void; placeholder: string, disabled?: boolean }) => (
     <div className="flex-1">
       <label className="block text-[12px] font-medium text-[#333] mb-1">{label}</label>
       <div className="relative">
-        <select value={value} onChange={e => onChange(e.target.value)}
-          className="w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+        <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
+          className={w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] }>
           <option value="">{placeholder}</option>
           {(label === "Loại văn bản" ? LOAI_VAN_BAN_OPTIONS : NGUOI_OPTIONS).map(o => <option key={o} value={o}>{o}</option>)}
         </select>
@@ -2082,14 +2333,14 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
           {/* Fields row */}
           <div className="flex items-end gap-3">
-            <SelectField label="Loại văn bản" value={loai} onChange={setLoai} placeholder="Chọn loại văn bản" />
-            <SelectField label="Người duyệt" value={nguoiDuyet} onChange={setNguoiDuyet} placeholder="Chọn người duyệt" />
-            <SelectField label="Người ký" value={nguoiKy} onChange={setNguoiKy} placeholder="Chọn người ký" />
+            <SelectField label="Loại văn bản" value={loai} onChange={setLoai} placeholder="Chọn loại văn bản" disabled={status === "da_ky"} />
+            <SelectField label="Người duyệt" value={nguoiDuyet} onChange={setNguoiDuyet} placeholder="Chọn người duyệt" disabled={status === "da_ky"} />
+            <SelectField label="Người ký" value={nguoiKy} onChange={setNguoiKy} placeholder="Chọn người ký" disabled={status === "da_ky"} />
             {loai === "Tờ trình" && (
               <div className="flex-1">
                 <label className="block text-[12px] font-medium text-[#333] mb-1">Số tờ trình</label>
-                <input type="text" value={soToTrinh} onChange={e => setSoToTrinh(e.target.value)} 
-                  className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]" 
+                <input type="text" value={soToTrinh} onChange={e => setSoToTrinh(e.target.value)} disabled={status === "da_ky"}
+                  className={w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] } 
                   placeholder="Nhập số tờ trình..." />
               </div>
             )}
@@ -2107,22 +2358,35 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
                 Danh sách công văn ({localRows.length})
               </p>
               <div className="flex items-center gap-2">
-                {saved && !laySo && (
-                  <button onClick={() => setLaySo(true)}
-                    className="flex items-center gap-1.5 h-[28px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                {status === "tao_van_ban" && (
+                  <button onClick={() => setStatus("lay_so")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                    <Save size={12} /> Tạo văn bản
+                  </button>
+                )}
+                {status === "lay_so" && (
+                  <button onClick={() => setStatus("trinh_duyet")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <ArrowDownToLine size={12} /> Lấy số
                   </button>
                 )}
-                {laySo && (
-                  <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
-                    <Send size={12} /> Trình ký
+                {status === "trinh_duyet" && (
+                  <button onClick={() => setStatus("duyet")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#e67e22] hover:bg-[#d35400] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                    <Send size={12} /> Trình duyệt
                   </button>
                 )}
-                {!saved && (
-                  <button onClick={() => setSaved(true)}
-                    className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
-                    <Save size={12} /> Lưu số văn bản
+                {status === "duyet" && (
+                  <button onClick={() => setStatus("trinh_ky")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                    <Check size={12} /> Duyệt
                   </button>
+                )}
+                {status === "trinh_ky" && (
+                  <button onClick={() => setStatus("da_ky")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                    <PenLine size={12} /> Trình ký
+                  </button>
+                )}
+                {status === "da_ky" && (
+                  <div className="flex items-center gap-1.5 h-[28px] px-3 border border-[#27ae60] text-[#27ae60] rounded-[3px] text-[11px] font-bold">
+                    <Check size={12} /> Đã ký
+                  </div>
                 )}
               </div>
             </div>
@@ -2160,7 +2424,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
                               <td className="border border-[#ddd] px-3 py-2">
                                 {loai === "Tờ trình" ? (
                                   <span className="text-[#999] font-bold">—</span>
-                                ) : laySo ? (
+                                ) : status !== "tao_van_ban" && status !== "lay_so" ? (
                                   <div className="space-y-1.5">
                                     <div className="font-medium text-[#1d2e4f] text-[11px] mb-1">{getSoCongVan(row.id, i)}</div>
                                     {/* Combobox chọn công văn kèm theo (cho loại khác Tờ trình) */}
@@ -2324,7 +2588,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
         {/* Footer */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
           {/* Nút sau khi lưu */}
-          {saved ? (
+          {status !== "tao_van_ban" ? (
             <div className="flex items-center gap-2">
               <button className="flex items-center gap-1.5 h-[32px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[12px] font-medium transition-colors">
                 <ArrowDownToLine size={13} /> Lấy số
@@ -3230,9 +3494,15 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
         <div className="px-4 py-[9px] border-b border-[#ddd] flex items-center justify-between">
           <span className="text-[13px] font-semibold text-[#1d2e4f]">Danh sách thẩm phán</span>
           {tab === 0 && (
-            <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
-              <Users size={12} /> Phân công ngẫu nhiên
-            </button>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-1.5 text-[12px] text-[#333] cursor-pointer">
+                <input type="checkbox" className="w-[13px] h-[13px] rounded-sm accent-[#8b1a1a]" />
+                Tất cả (TPB3 & TPTC)
+              </label>
+              <button onClick={() => triggerNoti("Đã phân công ngẫu nhiên cho tất cả đơn đã chọn.")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                <Users size={12} /> Phân công ngẫu nhiên
+              </button>
+            </div>
           )}
         </div>
         <div className="overflow-x-auto">
@@ -3762,7 +4032,26 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [view, setView] = useState<"list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong">("list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong">("home");
+  const [notifications, setNotifications] = useState<{id: number, text: string, time: string, read: boolean}[]>([
+    { id: 1, text: "Đơn 7031 đã được phân công cho cán bộ Nguyễn Văn An", time: "08:30", read: false }
+  ]);
+  const [showNoti, setShowNoti] = useState(false);
+  const addNotification = (text: string) => {
+    setNotifications(prev => [{
+      id: Date.now(),
+      text,
+      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      read: false
+    }, ...prev]);
+  };
+
+  useEffect(() => {
+    const handler = (e: any) => addNotification(e.detail);
+    notiEmitter.addEventListener('notify', handler);
+    return () => notiEmitter.removeEventListener('notify', handler);
+  }, []);
+
   const [bieuMauRow, setBieuMauRow] = useState<typeof SAMPLE_ROWS[0] | null>(null);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [phanCongTab, setPhanCongTab] = useState<0 | 1 | 2>(0);
@@ -3888,21 +4177,49 @@ export default function App() {
                     ? `Sửa đơn ${editingRow.maDon}`
                     : "Thêm mới Đơn đề nghị GĐT/TT"}
         </span>
-        {view === "form" && (
-          <div className="ml-auto flex items-center gap-2">
-            {ocrFields.size > 0 && (
-              <button onClick={() => setOcrFields(new Set())}
-                className="flex items-center gap-1 h-[28px] px-2 rounded-[3px] border border-[#ccc] text-[#888] hover:bg-[#f5f5f5] text-[11px] transition-colors">
-                <X size={10} /> Xóa highlight
-              </button>
+        <div className="ml-auto flex items-center gap-4">
+          <div className="relative">
+            <button onClick={() => setShowNoti(!showNoti)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white relative">
+              <Bell size={16} />
+              {notifications.some(n => !n.read) && (
+                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] bg-[#e74c3c] rounded-full border border-[#1d2e4f]" />
+              )}
+            </button>
+            {showNoti && (
+              <div className="absolute right-0 top-full mt-2 w-[320px] bg-white rounded-[4px] shadow-lg border border-[#ddd] z-50 text-[#333] overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-[#f9f9f9] border-b border-[#eee]">
+                  <span className="font-semibold text-[13px]">Thông báo</span>
+                  <button onClick={() => setNotifications(p => p.map(n => ({...n, read: true})))} className="text-[11px] text-[#1a5a96] hover:underline">Đánh dấu đã đọc</button>
+                </div>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-[#888] text-[12px]">Không có thông báo nào</div>
+                  ) : notifications.map(n => (
+                    <div key={n.id} onClick={() => setNotifications(p => p.map(x => x.id === n.id ? {...x, read: true} : x))} className={`p-3 border-b border-[#f5f5f5] last:border-0 hover:bg-[#fafafa] cursor-pointer transition-colors ${!n.read ? 'bg-[#f0f7ff]' : ''}`}>
+                      <p className="text-[12px] leading-snug">{n.text}</p>
+                      <span className="text-[10px] text-[#888] mt-1 block">{n.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-            <BtnSecondary onClick={() => setShowTraLaiForm(true)} className="h-[28px] text-[12px] px-3 gap-1">
-              <RotateCcw size={13} /> Trả lại
-            </BtnSecondary>
-            <BtnSecondary onClick={() => setView("list")}>Hủy</BtnSecondary>
-            <BtnPrimary>Lưu</BtnPrimary>
           </div>
-        )}
+          {view === "form" && (
+            <div className="flex items-center gap-2 border-l border-white/20 pl-4">
+              {ocrFields.size > 0 && (
+                <button onClick={() => setOcrFields(new Set())}
+                  className="flex items-center gap-1 h-[28px] px-2 rounded-[3px] border border-white/20 text-white/80 hover:bg-white/10 text-[11px] transition-colors">
+                  <X size={10} /> Xóa highlight
+                </button>
+              )}
+              <BtnSecondary onClick={() => setShowTraLaiForm(true)} className="h-[28px] text-[12px] px-3 gap-1 bg-transparent border border-white/20 text-white hover:bg-white/10">
+                <RotateCcw size={13} /> Trả lại
+              </BtnSecondary>
+              <BtnSecondary onClick={() => setView("list")} className="bg-transparent border border-white/20 text-white hover:bg-white/10">Hủy</BtnSecondary>
+              <BtnPrimary onClick={() => { addNotification(`Đơn ${editingRow?.maDon || "7031"} đã được thêm mới bởi cán bộ Nguyễn Văn An`); setView("list"); }}>Lưu</BtnPrimary>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Body: Sidebar + content ──────────────────────────────────────── */}
@@ -3920,7 +4237,9 @@ export default function App() {
             <ChevronRight size={12} />
             <span className="text-[#1a5a96] hover:underline cursor-pointer">Quản lý đơn</span>
             <ChevronRight size={12} />
-            {view === "list"
+            {view === "home"
+              ? <span className="text-[#333]">Tổng quan</span>
+              : view === "list"
               ? <span className="text-[#333]">Danh sách đơn</span>
               : view === "prototype"
                 ? <>
@@ -3949,6 +4268,13 @@ export default function App() {
                       </>
             }
           </div>
+
+          {/* Home view */}
+          {view === "home" && (
+            <div className="flex-1 overflow-y-auto">
+              <Dashboard />
+            </div>
+          )}
 
           {/* List view */}
           {view === "list" && (
@@ -4899,7 +5225,7 @@ export default function App() {
           onChangeReason={setTraLaiReason}
           isTruongPhong={false}
           onClose={() => { setShowTraLaiForm(false); setTraLaiReason(""); }}
-          onConfirm={() => { setShowTraLaiForm(false); setTraLaiReason(""); }}
+          onConfirm={() => { addNotification("Đã trả lại đơn thành công."); setShowTraLaiForm(false); setTraLaiReason(""); }}
         />
       )}
     </div>
