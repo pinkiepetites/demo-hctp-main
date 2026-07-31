@@ -1666,7 +1666,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     triggerNoti("Phân công ngẫu nhiên đã được kích hoạt cho các đơn đã chọn.");
     window.setTimeout(() => setAssignmentNotice(""), 4500);
   };
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [showGhepDon, setShowGhepDon] = useState<number | null>(null);
   const [ghepDonChinh, setGhepDonChinh] = useState<number | null>(null);
@@ -1699,6 +1699,16 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [tachSoDon, setTachSoDon] = useState("");
   const [loaiVanBan, setLoaiVanBan] = useState("");
   const [loaiDon, setLoaiDon] = useState<"gdt" | "kn" | "tb">("gdt");
+
+  // Filter specific states for conditional rendering
+  const [fHinhThuc, setFHinhThuc] = useState("");
+  const [fNoiChuyen, setFNoiChuyen] = useState("");
+  const [fDonVi, setFDonVi] = useState("");
+  const [fTrangThai, setFTrangThai] = useState("");
+  const [fThuLy, setFThuLy] = useState("");
+  const [fLoaiAn, setFLoaiAn] = useState("");
+  const [fAnTuHinhSelect, setFAnTuHinhSelect] = useState("");
+
   const canReturn = selectedRows.length > 0;
 
   const toggleRow = (id: number) =>
@@ -1770,101 +1780,237 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           {/* ── Filter section ── */}
           <div className="border-b border-[#ddd] px-3 pt-3 pb-2">
             <div className="space-y-2">
-              {/* Row 1 — luôn hiện */}
-              <div className="grid grid-cols-6 gap-x-3">
+              {/* Row 1 — luôn hiện, tối ưu tìm kiếm chung */}
+              <div className="grid grid-cols-6 gap-x-3 gap-y-3">
+                <div className="col-span-2"><FLbl>Từ khóa tìm kiếm chung</FLbl><FInp placeholder="Nhập bất kỳ thông tin nào (người gửi, nội dung...)" /></div>
+                <div><FLbl>Số tờ trình / Văn bản</FLbl><FInp placeholder="Nhập số tờ trình/văn bản" /></div>
+                <div><FLbl>Mã đơn / Số hiệu đơn</FLbl><FInp placeholder="Nhập mã đơn" /></div>
+                <div><FLbl>Hình thức đơn</FLbl><FSel value={fHinhThuc} onChange={(e: any) => setFHinhThuc(e.target.value)}><option value="">Tất cả hình thức</option>{LOAI_CV.map(o => <option key={o}>{o}</option>)}</FSel></div>
                 <div><FLbl>Người gửi</FLbl><FInp placeholder="Nhập tên người gửi" /></div>
+              </div>
+
+              {/* Row 2 — luôn hiện */}
+              <div className="grid grid-cols-6 gap-x-3 items-end mt-3">
                 <div><FLbl>Số bản án/QĐ</FLbl><FInp placeholder="Nhập số bản án/QĐ" /></div>
-                <div><FLbl>Ngày bản án / quyết định</FLbl><FDateRange /></div>
                 <div><FLbl>Tòa ra bản án / quyết định</FLbl><FSel><option value="">Chọn tòa</option></FSel></div>
                 <div><FLbl>Ngày nhập</FLbl><FDateRange /></div>
-                <div><FLbl>Địa chỉ gửi đơn</FLbl><FSel><option value="">Chọn tỉnh/xã</option></FSel></div>
-              </div>
-
-              {/* Row 2 — luôn hiện, nút thay đổi theo trạng thái */}
-              <div className="grid grid-cols-6 gap-x-3 items-end">
-                <div><FLbl>Địa chỉ chi tiết</FLbl><FInp placeholder="Nhập địa chỉ chi tiết" /></div>
-                <div><FLbl>Trả lời đơn</FLbl><FSel><option>— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
-                <div>
-                  <FLbl>Đã giải quyết từ tòa cấp cao</FLbl>
-                  <div className="flex items-center h-[30px]">
-                    <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" />
-                  </div>
+                
+                {/* Thu gọn: 3 ô còn lại dành cho nút (luôn hiện ở filter cơ bản) */}
+                <div className="col-span-3 flex items-center justify-end gap-2">
+                  <button onClick={() => setCollapsed(false)}
+                    className="flex items-center justify-center gap-1.5 text-[12px] text-[#555] bg-[#f0f0f0] hover:bg-[#e4e4e4] px-4 h-[46px] rounded-[3px] border border-[#ddd] transition-colors whitespace-nowrap font-medium">
+                    <ChevronDown size={14} /> Bộ lọc Nâng cao
+                  </button>
+                  <button className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-6 h-[46px] gap-0.5 transition-colors">
+                    <Search size={14} />
+                    <span className="text-[11px] font-medium leading-none">Tìm kiếm</span>
+                  </button>
+                  <button className="flex items-center gap-1.5 h-[46px] px-4 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[12px] text-[#555] whitespace-nowrap transition-colors">
+                    ↺ Xóa bộ lọc
+                  </button>
                 </div>
-                {collapsed ? (
-                  /* Thu gọn: 3 ô còn lại dành cho nút */
-                  <div className="col-span-3 flex items-center justify-end gap-2">
-                    <button onClick={() => setCollapsed(false)}
-                      className="flex items-center gap-1 text-[12px] text-[#555] hover:text-[#222] whitespace-nowrap">
-                      <ChevronDown size={12} /> Nâng cao
-                    </button>
-                    <button className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-5 h-[46px] gap-0.5 transition-colors">
-                      <Search size={14} />
-                      <span className="text-[11px] font-medium leading-none">Tìm kiếm</span>
-                    </button>
-                    <button className="flex items-center gap-1.5 h-[46px] px-3 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[12px] text-[#555] whitespace-nowrap transition-colors">
-                      ↺ Xóa bộ lọc
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div><FLbl>Hình thức đơn</FLbl><FSel><option value="">Chọn hình thức đơn</option>{LOAI_CV.map(o => <option key={o}>{o}</option>)}</FSel></div>
-                    <div><FLbl>Số CCCD</FLbl><FInp placeholder="Nhập số CCCD" /></div>
-                    <div><FLbl>Mã đơn / Số hiệu đơn</FLbl><FInp placeholder="Nhập mã đơn" /></div>
-                  </>
-                )}
               </div>
 
-              {/* Rows 3-6 — chỉ hiện khi mở rộng */}
+              {/* Modal/Drawer Bộ lọc nâng cao */}
               {!collapsed && (
-                <>
-                  {/* Row 3 */}
-                  <div className="grid grid-cols-6 gap-x-3">
-                    <div><FLbl>Số thụ lý</FLbl><FInp placeholder="Nhập số thụ lý" /></div>
-                    <div><FLbl>Ngày thụ lý</FLbl><FDateRange /></div>
-                    <div><FLbl>Tên cơ quan chuyển đơn</FLbl><FInp placeholder="Nhập tên cơ quan" /></div>
-                    <div><FLbl>Người nhập hồ sơ</FLbl><FSel><option value="">Chọn người nhập</option></FSel></div>
-                    <div><FLbl>Ngày nhận đơn</FLbl><FDateRange /></div>
-                    <div><FLbl>Trả lại đơn</FLbl><FSel><option>— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
-                  </div>
-                  {/* Row 4 */}
-                  <div className="grid grid-cols-6 gap-x-3">
-                    <div><FLbl>Ngày trả lại đơn</FLbl><FDate /></div>
-                    <div><FLbl>Số CV/PC đến</FLbl><FInp placeholder="Nhập số CV/PC" /></div>
-                    <div><FLbl>Ngày CV/PC</FLbl><FDateRange /></div>
-                    <div><FLbl>Cấp thẩm phán</FLbl><FSel><option>Tất cả thẩm phán</option></FSel></div>
-                    <div><FLbl>Nơi chuyển đơn</FLbl><FSel><option value="">Chọn nơi chuyển</option><option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option><option>Trả lại đơn</option><option>Lưu theo dõi</option></FSel></div>
-                    <div><FLbl>Chuyển tới CA/TA</FLbl><FSel><option>— Tất cả —</option></FSel></div>
-                  </div>
-                  {/* Row 5 */}
-                  <div className="grid grid-cols-6 gap-x-3">
-                    <div><FLbl>Ngày chuyển</FLbl><FDateRange /></div>
-                    <div><FLbl>Loại án</FLbl><FSel><option value="">Chọn loại án</option><option>Hình sự</option><option>Dân sự</option><option>Hành chính</option><option>KDTM</option><option>HN-GĐ</option><option>Lao động</option></FSel></div>
-                    <div><FLbl>Loại thụ lý đơn</FLbl><FSel><option>— Tất cả —</option></FSel></div>
-                    <div><FLbl>Lãnh đạo chỉ đạo</FLbl><FSel><option value="">Chọn lãnh đạo</option></FSel></div>
-                    <div><FLbl>Thủ tục giải quyết</FLbl><FSel><option>— Tất cả —</option><option>Giám đốc thẩm</option><option>Tái thẩm</option><option>Giám đốc thẩm + Tái thẩm</option><option>Chưa xác định</option></FSel></div>
-                    <div><FLbl>Trại giam</FLbl><FSel><option>— Tất cả —</option></FSel></div>
-                  </div>
-                  {/* Row 6 + action buttons */}
-                  <div className="grid grid-cols-6 gap-x-3 items-end">
-                    <div><FLbl>Án tử hình</FLbl><FSel><option>— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
-                    <div><FLbl>Trạng thái chuyển đơn</FLbl><FSel><option>— Tất cả —</option></FSel></div>
-                    <div><FLbl>Phạm vi tìm kiếm</FLbl><FInp placeholder="Nhập phạm vi" /></div>
-                    <div /><div />
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => setCollapsed(true)}
-                        className="flex items-center gap-1 text-[12px] text-[#555] hover:text-[#222] whitespace-nowrap">
-                        <ChevronDown size={12} className="rotate-180" /> Thu gọn
+                <div className="fixed inset-0 z-[100] flex justify-end">
+                  {/* Backdrop */}
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setCollapsed(true)}></div>
+                  
+                  {/* Drawer Content */}
+                  <div className="relative w-[950px] bg-[#f8f9fa] h-full shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-300">
+                    
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#eee] shrink-0">
+                      <h2 className="text-[16px] font-semibold text-[#1d2e4f] flex items-center gap-2">
+                        <span className="w-1.5 h-4 bg-[#8b1a1a] rounded-sm"></span>
+                        Bộ lọc tìm kiếm nâng cao
+                      </h2>
+                      <button onClick={() => setCollapsed(true)} className="text-[#888] hover:text-[#333] transition-colors p-1 bg-[#f5f5f5] rounded-full hover:bg-[#e0e0e0]">
+                        <X size={20} />
                       </button>
-                      <button className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-5 h-[46px] gap-0.5 transition-colors">
-                        <Search size={14} />
-                        <span className="text-[11px] font-medium leading-none">Tìm kiếm</span>
+                    </div>
+
+                    {/* Body */}
+                    <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+                      
+                      {/* Nhóm 1: Thông tin chung */}
+                      <div className="bg-white p-5 rounded-[4px] shadow-sm border border-[#eee]">
+                        <h3 className="text-[13px] font-semibold text-[#1d2e4f] mb-4 border-b border-[#eee] pb-2">Thông tin chung</h3>
+                        <div className="grid grid-cols-4 gap-x-5 gap-y-4">
+                          <div><FLbl>Ngày bản án / quyết định</FLbl><FDateRange /></div>
+                          <div><FLbl>Hình thức nhận</FLbl><FSel><option value="">— Tất cả —</option><option>Bưu điện</option><option>Điện tử</option><option>Trực tiếp</option><option>Nội bộ</option></FSel></div>
+                          <div><FLbl>Loại đơn</FLbl><FSel><option value="">— Tất cả —</option><option>Đơn đề nghị GĐT-TT</option><option>Đơn khiếu nại tư pháp - tố tụng</option><option>Thông báo phát hiện vi phạm pháp luật</option></FSel></div>
+                          <div><FLbl>Ngày ghi trên đơn</FLbl><FDateRange /></div>
+                          <div><FLbl>Ngày nhận đơn</FLbl><FDateRange /></div>
+                          <div><FLbl>Người nhập hồ sơ</FLbl><FSel><option value="">Chọn người nhập</option></FSel></div>
+                        </div>
+                      </div>
+
+                      {/* Nhóm 2: Thông tin bản án/quyết định */}
+                      <div className="bg-white p-5 rounded-[4px] shadow-sm border border-[#eee]">
+                        <h3 className="text-[13px] font-semibold text-[#1d2e4f] mb-4 border-b border-[#eee] pb-2">Thông tin bản án / Quyết định</h3>
+                        <div className="grid grid-cols-4 gap-x-5 gap-y-4">
+                          <div><FLbl>Loại án</FLbl><FSel value={fLoaiAn} onChange={(e: any) => setFLoaiAn(e.target.value)}><option value="">Chọn loại án</option><option>Hình sự</option><option>Dân sự</option><option>Hành chính</option><option>KDTM</option><option>HN-GĐ</option><option>Lao động</option></FSel></div>
+                          <div><FLbl>Loại QĐ/BA</FLbl><FSel><option value="">— Tất cả —</option><option>Bản án</option><option>Quyết định</option><option>Quyết định GQKN</option><option>Quyết định đình chỉ</option></FSel></div>
+                          <div><FLbl>Cấp xét xử</FLbl><FSel><option value="">— Tất cả —</option><option>Sơ thẩm</option><option>Phúc thẩm</option><option>Giám đốc thẩm</option><option>Tái thẩm</option></FSel></div>
+                          <div><FLbl>Thủ tục giải quyết</FLbl><FSel><option>— Tất cả —</option><option>Giám đốc thẩm</option><option>Tái thẩm</option><option>Giám đốc thẩm + Tái thẩm</option><option>Chưa xác định</option></FSel></div>
+                          <div><FLbl>Án tử hình</FLbl><FSel value={fAnTuHinhSelect} onChange={(e: any) => setFAnTuHinhSelect(e.target.value)}><option value="">— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
+                          <div><FLbl>Trại giam</FLbl><FSel><option>— Tất cả —</option></FSel></div>
+                        </div>
+                      </div>
+
+                      {/* Nhóm 3: Đương sự & Kháng nghị */}
+                      <div className="bg-white p-5 rounded-[4px] shadow-sm border border-[#eee]">
+                        <h3 className="text-[13px] font-semibold text-[#1d2e4f] mb-4 border-b border-[#eee] pb-2">Đương sự & Kháng nghị</h3>
+                        <div className="grid grid-cols-4 gap-x-5 gap-y-4">
+                          <div><FLbl>Số CCCD</FLbl><FInp placeholder="Nhập số CCCD" /></div>
+                          <div><FLbl>Địa chỉ gửi đơn</FLbl><FSel><option value="">Chọn tỉnh/xã</option></FSel></div>
+                          <div className="col-span-2"><FLbl>Địa chỉ chi tiết</FLbl><FInp placeholder="Nhập địa chỉ chi tiết" /></div>
+                          <div><FLbl>Tỉnh/TP cũ</FLbl><FSel><option value="">Chọn tỉnh/TP cũ</option></FSel></div>
+                          <div><FLbl>Quận/Huyện cũ</FLbl><FSel><option value="">Chọn quận/huyện cũ</option></FSel></div>
+                          <div className="col-span-2"><FLbl>Phường/Xã cũ</FLbl><FSel><option value="">Chọn phường/xã cũ</option></FSel></div>
+                          
+                          <div><FLbl>Số QĐKN</FLbl><FInp placeholder="Nhập số QĐKN" /></div>
+                          <div><FLbl>Ngày QĐKN</FLbl><FDateRange /></div>
+                          <div className="col-span-2"><FLbl>Người kháng nghị</FLbl><FInp placeholder="Tên người kháng nghị" /></div>
+                          <div><FLbl>Ngày nhận QĐKN</FLbl><FDateRange /></div>
+                        </div>
+                      </div>
+
+                      {/* Nhóm 4: Xử lý & Phân công */}
+                      <div className="bg-white p-5 rounded-[4px] shadow-sm border border-[#eee]">
+                        <h3 className="text-[13px] font-semibold text-[#1d2e4f] mb-4 border-b border-[#eee] pb-2">Xử lý đơn & Phân công</h3>
+                        <div className="grid grid-cols-4 gap-x-5 gap-y-4">
+                          <div><FLbl>Cấp thẩm phán</FLbl><FSel><option>Tất cả thẩm phán</option></FSel></div>
+                          <div><FLbl>Lãnh đạo chỉ đạo</FLbl><FSel><option value="">Chọn lãnh đạo</option></FSel></div>
+                          <div className="col-span-2"><FLbl>Nơi chuyển đơn</FLbl><FSel value={fNoiChuyen} onChange={(e: any) => { setFNoiChuyen(e.target.value); setFDonVi(""); }}><option value="">Chọn nơi chuyển</option><option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option><option>Trả lại đơn</option><option>Lưu theo dõi</option><option>Chờ ý kiến lãnh đạo</option></FSel></div>
+                          
+                          {fNoiChuyen === "Nội bộ" && (
+                            <>
+                              <div className="col-span-2"><FLbl>Đơn vị chuyển đến</FLbl><FSel value={fDonVi} onChange={(e: any) => setFDonVi(e.target.value)}><option value="">-- Chọn đơn vị --</option><option>Vụ Pháp chế và Quản lý khoa học</option><option>Hội đồng Thẩm phán TANDTC</option><option>Vụ Giám đốc kiểm tra về hình sự</option></FSel></div>
+                              {fDonVi && (
+                                <div className="col-span-2"><FLbl>Cá nhân nhận</FLbl><FSel><option value="">-- Chọn cá nhân --</option><option>Vụ trưởng - {fDonVi}</option><option>Phó vụ trưởng - {fDonVi}</option><option>Thẩm tra viên - {fDonVi}</option></FSel></div>
+                              )}
+                            </>
+                          )}
+                          {fNoiChuyen === "Tòa khác" && (
+                            <div className="col-span-2"><FLbl>Đơn vị chuyển đến</FLbl><FSel value={fDonVi} onChange={(e: any) => setFDonVi(e.target.value)}><option value="">-- Chọn Tòa án --</option><option>TAND cấp cao tại Hà Nội</option><option>TAND cấp cao tại Đà Nẵng</option><option>TAND cấp cao tại TP. Hồ Chí Minh</option><option>TAND Thành phố Hà Nội</option></FSel></div>
+                          )}
+                          {fNoiChuyen === "Ngoài tòa án" && (
+                            <div className="col-span-2"><FLbl>Đơn vị chuyển đến</FLbl><FInp placeholder="Nhập tên cơ quan/đơn vị..." value={fDonVi} onChange={(e: any) => setFDonVi(e.target.value)} /></div>
+                          )}
+                          {fNoiChuyen === "Trả lại đơn" && (
+                            <>
+                              <div className="col-span-2"><FLbl>Lý do trả lại</FLbl><FSel><option value="">— Tất cả —</option><option>Đơn không đủ điều kiện xử lý</option><option>Không thuộc thẩm quyền giải quyết</option><option>Đã hết thời hạn giải quyết</option><option>Lý do khác</option></FSel></div>
+                              <div className="col-span-2"><FLbl>Yêu cầu trả lại</FLbl><FInp placeholder="Nhập yêu cầu" /></div>
+                            </>
+                          )}
+                          {fNoiChuyen !== "Lưu theo dõi" && fNoiChuyen !== "Chờ ý kiến lãnh đạo" && fHinhThuc !== "CV khác" && fHinhThuc !== "Đơn khác" && (
+                            <div className="col-span-2"><FLbl>Trạng thái đơn</FLbl><FSel value={fTrangThai} onChange={(e: any) => setFTrangThai(e.target.value)}><option value="">— Tất cả —</option><option>Đơn đủ điều kiện</option><option>Đơn không đủ điều kiện</option></FSel></div>
+                          )}
+
+                          {(fNoiChuyen !== "Lưu theo dõi" && fNoiChuyen !== "Chờ ý kiến lãnh đạo" && fHinhThuc !== "CV khác" && fHinhThuc !== "Đơn khác") && (
+                            <>
+                              {fTrangThai === "Đơn đủ điều kiện" && (
+                                <div className="col-span-2"><FLbl>Thụ lý đơn</FLbl><FSel value={fThuLy} onChange={(e: any) => setFThuLy(e.target.value)}><option value="">— Tất cả —</option><option>Thụ lý mới</option><option>Đã thụ lý</option><option>Không</option></FSel></div>
+                              )}
+                              {fTrangThai === "Đơn không đủ điều kiện" && (
+                                <div className="col-span-2"><FLbl>Lý do không đủ điều kiện</FLbl><FSel><option value="">— Tất cả —</option><option>Thiếu bản án quyết định</option><option>Thiếu xác nhận CCCD</option><option>Viết lại đơn</option><option>Lý do khác</option></FSel></div>
+                              )}
+                              <div className="col-span-2"><FLbl>Thẩm quyền đơn</FLbl><FSel><option value="">— Tất cả —</option><option>Thẩm phán bậc 3</option><option>Thẩm phán tối cao</option></FSel></div>
+                            </>
+                          )}
+
+                          <div><FLbl>Chuyển tới CA/TA</FLbl><FSel><option>— Tất cả —</option></FSel></div>
+                          <div><FLbl>Ngày chuyển</FLbl><FDateRange /></div>
+                          <div><FLbl>Trạng thái chuyển đơn</FLbl><FSel><option>— Tất cả —</option></FSel></div>
+                          <div><FLbl>Loại thụ lý đơn</FLbl><FSel><option>— Tất cả —</option></FSel></div>
+                          
+                          <div><FLbl>Trả lời đơn</FLbl><FSel><option>— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
+                          <div>
+                            <FLbl>Đã giải quyết từ tòa cấp cao</FLbl>
+                            <div className="flex items-center h-[30px]"><input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" /></div>
+                          </div>
+                          <div><FLbl>Số thụ lý</FLbl><FInp placeholder="Nhập số thụ lý" /></div>
+                          <div><FLbl>Ngày thụ lý</FLbl><FDateRange /></div>
+                          <div className="col-span-2"><FLbl>Tên cơ quan chuyển đơn</FLbl><FInp placeholder="Nhập tên cơ quan" /></div>
+
+                          <div><FLbl>Trả lại đơn</FLbl><FSel><option>— Tất cả —</option><option>Có</option><option>Không</option></FSel></div>
+                          <div><FLbl>Ngày trả lại đơn</FLbl><FDate /></div>
+                          <div><FLbl>Số CV/PC đến</FLbl><FInp placeholder="Nhập số CV/PC" /></div>
+                          <div><FLbl>Ngày CV/PC</FLbl><FDateRange /></div>
+                          <div className="col-span-2"><FLbl>Phạm vi tìm kiếm</FLbl><FInp placeholder="Nhập phạm vi" /></div>
+                        </div>
+                      </div>
+
+                      {/* Nhóm Các Checkbox */}
+                      <div className="bg-white p-5 rounded-[4px] shadow-sm border border-[#eee]">
+                        <h3 className="text-[13px] font-semibold text-[#1d2e4f] mb-4 border-b border-[#eee] pb-2">Các thuộc tính khác</h3>
+                        <div className="grid grid-cols-3 gap-y-3">
+                          {fHinhThuc === "CV khác" && (
+                            <>
+                              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                                <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Có bản án/QĐ liên quan
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                                <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Có công văn phúc đáp
+                              </label>
+                            </>
+                          )}
+                          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Quá thời hiệu 1 năm
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Quá thời hiệu 3 năm
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Quá thời hiệu 5 năm
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Không có nội dung GĐT, TT
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Có nội dung tố cáo
+                          </label>
+
+                          {/* Hình sự specific checkboxes */}
+                          {fLoaiAn === "Hình sự" && (
+                            <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                              <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Áp dụng biện pháp XLCH
+                            </label>
+                          )}
+                          {fLoaiAn === "Hình sự" && fAnTuHinhSelect === "Có" && (
+                            <>
+                              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                                <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Xin ân giảm án tử hình
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                                <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Kêu oan án tử hình
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] font-medium whitespace-nowrap">
+                                <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" /> Xin thi hành án sớm
+                              </label>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="p-4 bg-white border-t border-[#ddd] flex justify-end gap-3 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                      <button onClick={() => setCollapsed(true)} className="px-6 py-[9px] border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#555] hover:bg-[#f0f0f0] font-medium transition-colors">
+                        Đóng
                       </button>
-                      <button className="flex items-center gap-1.5 h-[46px] px-3 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[12px] text-[#555] whitespace-nowrap transition-colors">
+                      <button className="flex items-center gap-1.5 px-6 py-[9px] border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#555] hover:bg-[#f0f0f0] font-medium transition-colors">
                         ↺ Xóa bộ lọc
+                      </button>
+                      <button onClick={() => setCollapsed(true)} className="flex items-center gap-1.5 px-8 py-[9px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[4px] text-[13px] font-medium transition-colors">
+                        <Search size={14} /> Tìm kiếm
                       </button>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>
