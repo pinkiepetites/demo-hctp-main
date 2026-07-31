@@ -1,0 +1,2 @@
+2320:         <PopupLuuSoVanBan
+2403: const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRole = "can-bo", onCreateToTrinh }: {

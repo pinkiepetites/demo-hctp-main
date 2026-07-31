@@ -1,0 +1,9 @@
+1774:                     <div><FLbl>Nơi chuyển đơn</FLbl><FSel><option value="">Chọn nơi chuyển</option><option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option><option>Trả lại đơn</option><option>Lưu theo dõi</option></FSel></div>
+3389:     { label: "Nơi chuyển đến", value: "Nội bộ" },
+4848:                         <option>Nội bộ</option>
+5285:                         <option>Nội bộ</option>
+5286:                         <option>Tòa khác</option>
+5287:                         <option>Ngoài tòa án</option>
+5294:                     {noiChuyenDen === "Nội bộ" && (
+5332:                     {noiChuyenDen === "Tòa khác" && (
+5349:                     {noiChuyenDen === "Ngoài tòa án" && (

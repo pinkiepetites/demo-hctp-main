@@ -1,0 +1,6 @@
+16: // Sidebar: #1d2e4f (dark navy)
+512: // ─── Sidebar navigation ──────────────────────────────────────────────────────
+513: const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: string) => void }) => {
+4690:       {/* ── Body: Sidebar + content ──────────────────────────────────────── */}
+4693:         {/* Sidebar */}
+4694:         <Sidebar activePage={view} onNav={(page) => setView(page as any)} />

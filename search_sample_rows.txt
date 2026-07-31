@@ -1,0 +1,17 @@
+831:   const row = SAMPLE_ROWS.find(r => r.id === donId);
+914:   const row = SAMPLE_ROWS.find(r => r.id === donId);
+1309: const SAMPLE_ROWS: DanhSachDonRow[] = [
+1549: const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+1559:   const [rows, setRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+2166:         const row = SAMPLE_ROWS.find(r => r.id === showHuyGhep);
+2197:                       const matchId = SAMPLE_ROWS.find(r => r.maDon === ghepVoi)?.id;
+2204:                     const matchRow = SAMPLE_ROWS.find(r => r.maDon === ghepVoi);
+2229:         const row = SAMPLE_ROWS.find(r => r.id === showGhepDon);
+2243:         const row = SAMPLE_ROWS.find(r => r.id === ghepDonChinh) ?? SAMPLE_ROWS[0];
+2251:               const donChinhRow = SAMPLE_ROWS.find(r => r.id === ghepDonChinh) ?? SAMPLE_ROWS[0];
+2274:         const row = SAMPLE_ROWS.find(r => r.id === showConfirmRow);
+2277:         const chinhRow = SAMPLE_ROWS.find(r => r.maDon === pending.maDon);
+2411:   rows: typeof SAMPLE_ROWS;
+3376:   row: typeof SAMPLE_ROWS[0];
+4544:   const [bieuMauRow, setBieuMauRow] = useState<typeof SAMPLE_ROWS[0] | null>(null);
+4597:   const editingRow = SAMPLE_ROWS.find(r => r.id === editingRowId) ?? null;

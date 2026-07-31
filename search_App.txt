@@ -1,0 +1,7 @@
+12: import DocumentNumberingModal from "./components/DocumentNumberingModal";
+1556:   const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
+2319:       {showNumberingModal !== null && (
+2320:         <DocumentNumberingModal
+2324:           documentId={rows.find(r => r.id === showNumberingModal)?.maDon || showNumberingModal}
+2330:         <PopupLuuSoVanBan
+2413: const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRole = "can-bo", onCreateToTrinh }: {

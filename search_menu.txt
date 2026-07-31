@@ -1,0 +1,16 @@
+5:   Eye, Printer, Menu, PenLine, FolderOpen, LayoutTemplate,
+588:         {/* Công tác lãnh đạo */}
+590:           <GroupItem icon={<Users size={15} />} label="Công tác lãnh đạo"
+627: // ─── Row action dropdown menu ────────────────────────────────────────────────
+628: const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; }) => {
+1606:   const [openMenu, setOpenMenu] = useState<number | null>(null);
+2116:                             onClick={(e) => { e.stopPropagation(); setOpenMenu(openMenu === row.id ? null : row.id); }}
+2120:                           {openMenu === row.id && (
+2121:                             <ActionMenu
+2122:                               onClose={() => setOpenMenu(null)}
+2125:                               onGhepDon={() => { setGhepDonChinh(row.id); setShowGhepDon(row.id); setOpenMenu(null); }}
+2126:                               onBoSung={() => { setShowBoSungTaiLieu(row.id); setOpenMenu(null); }}
+2127:                               onTaoYeuCau={() => { setShowYeuCauBoSung(row.id); setOpenMenu(null); }}
+4635:             <Menu size={16} />
+4743:                               <span className="text-[#1a5a96] hover:underline cursor-pointer">Công tác lãnh đạo</span>
+5301:                             <option>Vụ Công tác phía Nam</option>

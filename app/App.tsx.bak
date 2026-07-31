@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+﻿import { useState, useRef, useEffect, useMemo } from "react";
 import {
   X, Plus, Trash2, Edit2, FileText, ChevronDown, ChevronRight,
   ChevronUp, Search, ZoomIn, ZoomOut, RotateCcw, Download, Upload,
@@ -9,8 +9,6 @@ import {
   AlertCircle, Bell, FilePlus
 } from "lucide-react";
 import Dashboard from "./Dashboard";
-import DocumentNumberingModal from "./components/DocumentNumberingModal";
-
 // ─── Color tokens matching the real system ───────────────────────────────────
 // Primary red: #8b1a1a (dark crimson) — matches system buttons
 // Section separator: 1px solid #e0e0e0
@@ -517,7 +515,6 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
   const [hinhSuOpen, setHinhSuOpen] = useState(false);
   const [thiHanhAnOpen, setThiHanhAnOpen] = useState(false);
   const [tichHopOpen, setTichHopOpen] = useState(false);
-  const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
 
   const SubItem = ({ icon, label, active, nav }: { icon: React.ReactNode; label: string; active?: boolean; nav?: string }) => (
     <div onClick={() => nav && onNav?.(nav)}
@@ -583,17 +580,6 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
               <SubItem icon={<ArrowDownToLine size={13} />} label="Đơn chuyển đến" />
               <SubItem icon={<ArrowUpFromLine size={13} />} label="Đơn chuyển đi" />
               <SubItem icon={<Archive size={13} />} label="Hồ sơ tổng hợp vụ án" />
-            </div>
-          )}
-        </div>
-
-        {/* Công tác lãnh đạo */}
-        <div>
-          <GroupItem icon={<Users size={15} />} label="Công tác lãnh đạo"
-            open={congTacLanhDaoOpen} onToggle={() => setCongTacLanhDaoOpen(!congTacLanhDaoOpen)} />
-          {congTacLanhDaoOpen && (
-            <div className="pb-1">
-              <SubItem icon={<Check size={13} />} label="Phê duyệt đề xuất" active={activePage === "phe_duyet"} nav="phe_duyet" />
             </div>
           )}
         </div>
@@ -1303,7 +1289,6 @@ interface DanhSachDonRow {
     by: string;
   };
   isPhanCong?: boolean;
-  thongTinChuyenDon?: "Nội bộ" | "Tòa khác" | "Ngoài tòa án"; // Added for Document Numbering validation
 }
 
 // ─── Sample list data ────────────────────────────────────────────────────────
@@ -1329,13 +1314,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     daNhan: true,
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
-    giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
+    giaiQuyet: { nhan: "Thụ lý mới trong thẩm phán", color: "#e67e22", stl: "54682575", coVanBan: true },
     processingHistory: [
       { date: "21/07/2026", step: "Tiếp nhận hồ sơ", actor: "HCTP - Phòng tiếp nhận", note: "Đã kiểm tra tính hợp lệ" },
       { date: "22/07/2026", step: "Chuyển Vụ Giám đốc kiểm tra và dân sự", actor: "HCTP", note: "Gửi hồ sơ kèm danh sách công văn" },
     ],
     isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "17:41:29",
   },
   {
@@ -1363,7 +1347,6 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       { date: "21/07/2026", step: "Yêu cầu bổ sung hồ sơ", actor: "HCTP", note: "Chờ cán bộ trả hồ sơ" },
       { date: "22/07/2026", step: "Trả lại đơn", actor: "HCTP", note: "Lý do: thiếu tài liệu kèm theo" },
     ],
-    thongTinChuyenDon: "Ngoài tòa án",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "17:09:13",
   },
   {
@@ -1380,15 +1363,13 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       soCV: "2107_1433", ngayCV: "21/07/2026",
       loaiCV: "Vụ việc giám sát Quốc hội",
       donViGui: "Tòa án nhân dân cấp cao tại TP. Hồ Chí Minh",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3) (1731 TT-TANDTC-VP 21/07/2026) (1732 TANDTC-TB 21/07/2026)",
+      donViGiaiQuyet: "Vụ Giám đốc kiểm tra và hình sự (Số: 1730 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
     hinhThucTiepNhan: "Trực tuyến",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#e67e22", stl: "54682575", coVanBan: true },
-    isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "21/07/2026", gioNhap: "17:03:02",
   },
   {
@@ -1405,15 +1386,13 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       soCV: "1201", ngayCV: "10/11/2024",
       loaiCV: "Đơn khiếu nại tư pháp - tố tụng",
       donViGui: "Lê Thị Mai",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc kiểm tra và hình sự (Số: 1730 - 21/07/2026)",
+      thamPhan: "Trần Văn Bình (Thẩm phán TAND bậc 2)",
+      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 890 - 15/11/2024)",
     },
     daNhan: false,
     soDon: 1,
     hinhThucTiepNhan: "Bưu điện",
-    giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
+    giaiQuyet: { nhan: "Hết thời hạn", color: "#c0392b", stl: "", coVanBan: false },
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "15/11/2024", gioNhap: "09:15:44",
   },
   {
@@ -1431,16 +1410,14 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       soCV: "", ngayCV: "12/03/2023",
       loaiCV: "Đơn đề nghị GĐT/TT",
       donViGui: "Nguyễn Thị Hoa",
-      thamPhan: "Trần Văn Bình (Thẩm phán TAND bậc 2)",
-      donViGiaiQuyet: "Vụ Giám đốc kiểm tra và hình sự (Số: 1730 - 21/07/2026)",
+      thamPhan: "",
+      donViGiaiQuyet: "",
     },
-    daNhan: true,
+    daNhan: false,
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
-    giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
-    nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "14:12:05",
+    giaiQuyet: { nhan: "Chưa đủ điều kiện", color: "#e67e22", stl: "", coVanBan: false },
+    nguoiNhap: "Trần Thị Bình", ngayNhap: "18/07/2026", gioNhap: "09:22:10",
   },
   {
     /* TH1: cùng cán bộ - đã ghép ngay với đơn 7029 */
@@ -1524,58 +1501,6 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     ngayNhap: "",
     gioNhap: "",
   },
-  {
-    /* MOCK: thẩm phán nhiều đơn - đơn 2/3 của Nguyễn Như Thắng trong cùng Vụ dân sự */
-    id: 9,
-    nguoiGui: "Hoàng Minh Tú",
-    diaChi: "Quận Đống Đa, Thành phố Hà Nội",
-    maDon: "Mã 7022",
-    loaiHinhThuc: "Đơn đề nghị",
-    loaiHinhThucColor: "#8b1a1a",
-    thongTinDon: {
-      soBaqd: "112/2026/DS-GDT", ngay: "10/07/2026", toaXetXu: "TAND tỉnh Phú Thọ",
-      thuTuc: "Giám đốc thẩm",
-      hinhThuc: "Đơn đề nghị GĐT/TT",
-      soCV: "1001", ngayCV: "10/07/2026",
-      loaiCV: "Đơn đề nghị GĐT/TT",
-      donViGui: "Hoàng Minh Tú",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
-    },
-    daNhan: true,
-    soDon: 1,
-    hinhThucTiepNhan: "Bưu điện",
-    giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682590", coVanBan: true },
-    isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
-    nguoiNhap: "Vũ Văn Yên", ngayNhap: "10/07/2026", gioNhap: "09:30:00",
-  },
-  {
-    /* MOCK: thẩm phán nhiều đơn - đơn 3/3 của Nguyễn Như Thắng trong cùng Vụ dân sự */
-    id: 10,
-    nguoiGui: "Phạm Thị Ngọc",
-    diaChi: "Huyện Gia Lâm, Thành phố Hà Nội",
-    maDon: "Mã 7021",
-    loaiHinhThuc: "Công văn kiến nghị",
-    loaiHinhThucColor: "#e67e22",
-    thongTinDon: {
-      soBaqd: "89/2025/HS-GDT", ngay: "05/06/2025", toaXetXu: "TAND cấp cao tại Hà Nội",
-      thuTuc: "Giám đốc thẩm",
-      hinhThuc: "CV Kiến nghị GĐT, TT",
-      soCV: "2255", ngayCV: "05/06/2025",
-      loaiCV: "Công văn kiến nghị",
-      donViGui: "Phạm Thị Ngọc",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
-    },
-    daNhan: true,
-    soDon: 1,
-    hinhThucTiepNhan: "Trực tiếp",
-    giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682591", coVanBan: true },
-    isPhanCong: true,
-    thongTinChuyenDon: "Nội bộ",
-    nguoiNhap: "Phùng Trâm Anh", ngayNhap: "05/06/2025", gioNhap: "14:20:00",
-  },
 ];
 
 // ─── Filter primitives (compact, 12px) ───────────────────────────────────────
@@ -1607,12 +1532,8 @@ const FDate = () => (
 );
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
-  currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao";
-  onCreateToTrinh?: (t: ToTrinh) => void;
-}) => {
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean }) => {
   const [activeTab, setActiveTab] = useState(0);
-  const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
   const [assignmentNotice, setAssignmentNotice] = useState<string>("");
   const [assignmentMode, setAssignmentMode] = useState<"none" | "ngau-nhien" | "chi-dinh">("none");
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
@@ -1832,7 +1753,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     <div><FLbl>Số CV/PC đến</FLbl><FInp placeholder="Nhập số CV/PC" /></div>
                     <div><FLbl>Ngày CV/PC</FLbl><FDateRange /></div>
                     <div><FLbl>Cấp thẩm phán</FLbl><FSel><option>Tất cả thẩm phán</option></FSel></div>
-                    <div><FLbl>Nơi chuyển đơn</FLbl><FSel><option value="">Chọn nơi chuyển</option><option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option><option>Trả lại đơn</option><option>Lưu theo dõi</option></FSel></div>
+                    <div><FLbl>Nơi chuyển đơn</FLbl><FSel><option value="">Chọn nơi chuyển</option><option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option><option>Trả lại đơn</option><option>Xếp đơn</option></FSel></div>
                     <div><FLbl>Chuyển tới CA/TA</FLbl><FSel><option>— Tất cả —</option></FSel></div>
                   </div>
                   {/* Row 5 */}
@@ -1954,7 +1875,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             <div className="flex items-center justify-end gap-2 px-3 py-2 bg-[#f5f5f5] border-t border-[#ddd]">
               {activeTab === 1 ? (
                 <>
-                  <BtnPrimary onClick={() => setShowNumberingModal(selectedRows.length ? selectedRows[0] : 1)} className="h-[30px] text-[12px] px-3 gap-1">
+                  <BtnPrimary onClick={() => setShowLuuSoVanBan(true)} className="h-[30px] text-[12px] px-3 gap-1">
                     <FileText size={13} /> Lưu số văn bản và in báo cáo
                   </BtnPrimary>
                   <BtnPrimary onClick={() => triggerNoti("Đã hoàn thành phân công.")} className="h-[30px] text-[12px] px-3 gap-1">
@@ -2373,16 +2294,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         );
       })()}
 
-      {/* Popup Lưu số văn bản (NEW) */}
-      {showNumberingModal !== null && (
-        <DocumentNumberingModal
-          isOpen={true}
-          onClose={() => setShowNumberingModal(null)}
-          currentRole={currentRole}
-          selectedRows={rows.filter(r => selectedRows.includes(r.id)).length > 0 ? rows.filter(r => selectedRows.includes(r.id)) : [rows[0]]}
-        />
-      )}
-
       {/* Popup Lưu số văn bản */}
       {showLuuSoVanBan && (
         <PopupLuuSoVanBan
@@ -2468,12 +2379,10 @@ const LOAI_VAN_BAN_OPTIONS = [
 
 const NGUOI_OPTIONS = ["Phạm Văn Nha", "Nguyễn Văn Hiền", "Trần Thị Lan", "Lê Văn Đức"];
 
-const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRole = "can-bo", onCreateToTrinh }: {
+const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau }: {
   rows: typeof SAMPLE_ROWS;
   onClose: () => void;
   onXemBieuMau: () => void;
-  currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao";
-  onCreateToTrinh?: (t: ToTrinh) => void;
 }) => {
   const [loai, setLoai] = useState("");
   const [nguoiDuyet, setNguoiDuyet] = useState("");
@@ -2621,7 +2530,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                   </button>
                 )}
                 {status === "trinh_ky" && (
-                  <button onClick={() => { setStatus("da_ky"); if (onCreateToTrinh) { onCreateToTrinh({ id: String(Math.floor(Math.random() * 1000) + 100), tenVuAn: "-", noiDung: "Tờ trình phân công", loai: "Tờ trình", nguoiDeXuat: "Phó Chánh Văn Phòng", ngayDeXuat: new Date().toLocaleString("vi-VN"), trangThai: "Chờ duyệt", yKienLanhDao: "", danhSachDon: initialRows }); } }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                  <button onClick={() => { setStatus("da_ky"); if (onCreateToTrinh) { onCreateToTrinh({ id: String(Math.floor(Math.random() * 1000) + 100), tenVuAn: "-", noiDung: "Tờ trình phân công giải quyết đơn", loai: "Tờ trình", nguoiDeXuat: "Phó Chánh Văn Phòng", ngayDeXuat: new Date().toLocaleString("vi-VN"), trangThai: "Chờ duyệt", yKienLanhDao: "", danhSachDon: initialRows }); } }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <PenLine size={12} /> Trình ký
                   </button>
                 )}
@@ -3604,8 +3513,6 @@ const THAM_PHAN_OPTIONS = [
 
 const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?: 0 | 1 | 2; onOpenThamPhanPopup?: () => void }) => {
   const [tab, setTab] = useState<0 | 1 | 2>(initialTab);
-  const [showLyDoPopup, setShowLyDoPopup] = useState<{show: boolean, thamPhan: string}>({show: false, thamPhan: ""});
-  const [lyDoChiDinh, setLyDoChiDinh] = useState("");
   const [capTP, setCapTP] = useState<"tatca" | "toicao" | "bac3">("tatca");
   const [loaiAnFilter, setLoaiAnFilter] = useState<string[]>([]);
   const [hinhThucFilter, setHinhThucFilter] = useState("");
@@ -3797,7 +3704,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
               <div className="relative w-[180px]">
                 <select 
                   value=""
-                  onChange={(e) => { if(e.target.value) setShowLyDoPopup({show: true, thamPhan: e.target.value}); e.target.value = ""; }}
+                  onChange={(e) => { handleBulkAssign(e.target.value); if(e.target.value) alert(`Đã phân công thành công cho ${e.target.value}!`); }}
                   className="w-full h-[28px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]"
                 >
                   <option value="">-- Chọn thẩm phán --</option>
@@ -4337,10 +4244,8 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
 // ─── Main App ─────────────────────────────────────────────────────────────────
 const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhList: ToTrinh[], setToTrinhList: React.Dispatch<React.SetStateAction<ToTrinh[]>>, currentRole: string }) => {
   const [activeTab, setActiveTab] = useState<"all" | "cho_duyet" | "da_duyet" | "tu_choi">("all");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showDuyetPopup, setShowDuyetPopup] = useState<ToTrinh | null>(null);
-  const [yKienInput, setYKienInput] = useState("");
-  const [nextPersonType, setNextPersonType] = useState<"duyet" | "ky">("duyet");
-  const [nextPerson, setNextPerson] = useState("");
 
   const filteredList = toTrinhList.filter(t => {
     if (activeTab === "cho_duyet" && t.trangThai !== "Chờ duyệt") return false;
@@ -4354,57 +4259,74 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
       case "Chờ duyệt": return "bg-[#e8f4ff] text-[#1a73e8] border-[#a9c9f4]";
       case "Đã duyệt": return "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]";
       case "Từ chối": return "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]";
-      case "Chờ ký": return "bg-[#fff8e1] text-[#f57f17] border-[#ffe082]";
-      case "Đã ký": return "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]";
-      case "Có hiệu lực": return "bg-[#e8f7ee] text-[#1a5a96] border-[#a9c9f4]";
       default: return "bg-gray-100 text-gray-700";
     }
-  };
-
-  const isTP = currentRole === "truong-phong";
-  const isPCVP = currentRole === "pho-vp";
-  const isLanhDao = currentRole === "lanh-dao";
-
-  // Workflow steps based on current status
-  const getWorkflowSteps = (status: string) => [
-    { label: "Tạo", done: true },
-    { label: "TP duyệt", done: ["Chờ ký", "Đã ký", "Có hiệu lực"].includes(status) },
-    { label: "PCVP duyệt", done: ["Đã ký", "Có hiệu lực"].includes(status) },
-    { label: "Ký số", done: ["Có hiệu lực"].includes(status) },
-    { label: "CA/PCA", done: false },
-  ];
-
-  const openPopup = (t: ToTrinh) => {
-    setShowDuyetPopup(t);
-    setYKienInput(t.yKienLanhDao || "");
-    setNextPersonType("duyet");
-    setNextPerson("");
   };
 
   return (
     <div className="flex-1 flex flex-col bg-white">
       <div className="px-5 py-4 border-b border-[#e0e0e0]">
         <h1 className="text-[18px] font-bold text-[#1d2e4f] mb-4">Danh sách đề xuất</h1>
+        
         <div className="flex items-center gap-6 border-b border-[#ddd]">
-          {(["all","cho_duyet","da_duyet","tu_choi"] as const).map(tab => {
-            const labels = { all: "Tất cả", cho_duyet: "Chờ duyệt", da_duyet: "Đã duyệt", tu_choi: "Từ chối" };
-            const count = tab === "all" ? toTrinhList.length : toTrinhList.filter(t => t.trangThai === labels[tab]).length;
-            return (
-              <div
-                key={tab}
-                className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 ${activeTab === tab ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {labels[tab]} ({count})
-              </div>
-            );
-          })}
+          <div className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 ${activeTab === "all" ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`} onClick={() => setActiveTab("all")}>
+            Tất cả ({toTrinhList.length})
+          </div>
+          <div className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 ${activeTab === "cho_duyet" ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`} onClick={() => setActiveTab("cho_duyet")}>
+            Chờ duyệt ({toTrinhList.filter(t => t.trangThai === "Chờ duyệt").length})
+          </div>
+          <div className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 ${activeTab === "da_duyet" ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`} onClick={() => setActiveTab("da_duyet")}>
+            Đã duyệt ({toTrinhList.filter(t => t.trangThai === "Đã duyệt").length})
+          </div>
+          <div className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 ${activeTab === "tu_choi" ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`} onClick={() => setActiveTab("tu_choi")}>
+            Từ chối ({toTrinhList.filter(t => t.trangThai === "Từ chối").length})
+          </div>
         </div>
       </div>
 
       <div className="flex-1 overflow-auto p-5">
+        {/* Filters */}
+        <div className="flex items-end justify-between mb-4">
+          <div className="flex gap-4">
+            <div>
+              <label className="block text-[11px] text-[#666] mb-1 font-medium">Người tạo đề xuất</label>
+              <select className="h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white outline-none w-[180px]">
+                <option>Chọn người tạo</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-[#666] mb-1 font-medium">Loại đề xuất</label>
+              <select className="h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white outline-none w-[180px]">
+                <option>Chọn loại</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-[#666] mb-1 font-medium">Trạng thái</label>
+              <select className="h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white outline-none w-[160px]">
+                <option>Chọn trạng thái</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-[#666] mb-1 font-medium">Ngày tạo đề xuất</label>
+              <div className="flex items-center border border-[#ccc] rounded-[3px] bg-white px-2 h-[30px] w-[200px]">
+                <input type="text" placeholder="Từ ngày" className="w-full text-[12px] outline-none" />
+                <span className="text-[#888] mx-1">-</span>
+                <input type="text" placeholder="Đến ngày" className="w-full text-[12px] outline-none" />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-1.5 h-[30px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[12px] font-medium hover:bg-[#6e1414] transition-colors">
+              <Search size={14} /> Tìm kiếm
+            </button>
+            <button className="flex items-center gap-1.5 h-[30px] px-4 border border-[#ccc] bg-white text-[#333] rounded-[3px] text-[12px] font-medium hover:bg-gray-50 transition-colors">
+              <RotateCcw size={14} /> Xóa bộ lọc
+            </button>
+          </div>
+        </div>
+
         {/* Toolbar */}
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-2">
           <div className="text-[13px] font-semibold text-[#333]">Danh sách đề xuất</div>
           <div className="flex gap-2">
             <button className="h-[28px] px-3 bg-[#8b1a1a] text-white rounded-[3px] text-[12px] font-medium hover:bg-[#6e1414] transition-colors">Phê duyệt</button>
@@ -4449,7 +4371,7 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                   </td>
                   <td className="px-3 py-2 text-[11px] text-[#666] italic">{t.yKienLanhDao}</td>
                   <td className="px-3 py-2 text-center">
-                    <button onClick={() => openPopup(t)} className="text-[#1a73e8] hover:text-[#1152a3]" title="Xem chi tiết">
+                    <button onClick={() => setShowDuyetPopup(t)} className="text-[#1a73e8] hover:text-[#1152a3]" title="Xem chi tiết">
                       <Eye size={15} />
                     </button>
                   </td>
@@ -4463,267 +4385,99 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
         </div>
       </div>
 
-      {/* === POPUP DUYỆT === */}
       {showDuyetPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-[6px] shadow-2xl w-[1100px] max-h-[92vh] flex flex-col overflow-hidden">
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
-              <div>
-                <div className="font-bold text-[15px]">Ký số văn bản — {showDuyetPopup.noiDung}</div>
-                <div className="text-[11px] text-white/60 mt-0.5">Công tác lãnh đạo / Phê duyệt đề xuất / Ý kiến lãnh đạo</div>
-              </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-[4px] shadow-xl w-[900px] max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-[10px] bg-[#1d2e4f] text-white">
+              <div className="font-semibold text-[14px]">Duyệt tờ trình đề xuất</div>
               <button onClick={() => setShowDuyetPopup(null)} className="text-white/70 hover:text-white"><X size={16} /></button>
             </div>
-
-
-            {/* Body: 2 columns */}
             <div className="flex flex-1 overflow-hidden">
-
-              {/* LEFT: Document preview */}
-              <div className="w-[55%] border-r border-[#e0e0e0] bg-[#f0f0f0] overflow-y-auto flex flex-col items-center py-6 px-4 gap-4">
-                {/* Document list sidebar within left */}
-                <div className="w-full max-w-[520px] bg-white border border-[#ccc] rounded shadow-sm">
-                  <div className="px-3 py-2 bg-[#f5f5f5] border-b border-[#ddd] text-[12px] font-semibold text-[#333]">Danh sách tài liệu</div>
-                  <div className="p-2 space-y-1">
-                    <div className="flex items-center gap-2 p-2 bg-[#e8f4ff] rounded border border-[#b3d4f5] text-[12px] font-medium text-[#1a5a96] cursor-pointer">
-                      <FileText size={14} /> Văn bản
-                    </div>
-                    <div className="pl-4 space-y-1">
-                      <div className="flex items-center gap-2 p-1.5 bg-[#fff8e1] rounded text-[11px] text-[#555] cursor-pointer hover:bg-[#fff3cd]">
-                        <FileText size={12} className="text-[#f57f17]" /> Tờ trình phân công thẩm phán
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 p-2 text-[12px] text-[#555] cursor-pointer hover:bg-[#f9f9f9] rounded">
-                      Tài liệu, hồ sơ đính kèm
-                    </div>
-                    <div className="pl-4 text-[11px] text-[#aaa] italic px-2">Không có tài liệu</div>
+              {/* Cột trái: Văn bản */}
+              <div className="w-1/2 border-r border-[#e0e0e0] p-4 bg-[#f9f9f9] overflow-y-auto flex flex-col items-center justify-center">
+                <div className="w-full max-w-[400px] h-full min-h-[500px] bg-white border border-[#ccc] shadow-sm flex flex-col relative p-8">
+                  <div className="text-center mb-8">
+                    <div className="text-[14px] font-bold">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                    <div className="text-[12px] font-bold">VĂN PHÒNG</div>
+                    <div className="w-[80px] h-px bg-black mx-auto my-2" />
                   </div>
-                </div>
-
-                {/* Document preview */}
-                <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-8 relative min-h-[500px]">
                   <div className="text-center mb-6">
-                    <div className="text-[11px] font-bold">TÒA ÁN NHÂN DÂN TỐI CAO</div>
-                    <div className="text-[10px]">VĂN PHÒNG</div>
-                    <div className="w-[60px] h-px bg-black mx-auto my-1" />
-                    <div className="text-[10px] text-[#666]">Số: ..../2026/TB-TA</div>
+                    <div className="text-[16px] font-bold mb-2">TỜ TRÌNH</div>
+                    <div className="text-[14px] font-semibold italic">V/v: {showDuyetPopup.noiDung}</div>
                   </div>
-                  <div className="flex justify-end mb-4">
-                    <div className="text-[10px] text-center">
-                      <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-                      <div className="font-medium">Độc lập - Tự do - Hạnh phúc</div>
-                      <div className="w-[80px] h-px bg-black mx-auto my-1" />
-                      <div className="italic">TP. Hà Nội, ngày..... tháng..... năm.....</div>
-                    </div>
-                  </div>
-                  <div className="text-center mb-4">
-                    <div className="text-[13px] font-bold">TỜ TRÌNH</div>
-                    <div className="text-[11px] font-semibold mt-1">{showDuyetPopup.noiDung}</div>
-                  </div>
-                  <div className="text-[11px] leading-relaxed space-y-3">
+                  <div className="text-[13px] leading-relaxed flex-1 space-y-4">
                     <p>Kính gửi: Lãnh đạo Tòa án nhân dân tối cao.</p>
                     <p>Văn phòng trình Lãnh đạo xem xét phê duyệt danh sách phân công Thẩm phán giải quyết các đơn như sau:</p>
-                    <ul className="list-disc pl-5 space-y-1">
+                    <ul className="list-disc pl-5">
                       <li>Tổng số đơn trình: {showDuyetPopup.danhSachDon?.length || 5} đơn.</li>
                       <li>Phân công cho {showDuyetPopup.danhSachDon?.length || 2} Thẩm phán.</li>
                     </ul>
-                    <div className="flex justify-end mt-8">
-                      <div className="text-center text-[10px]">
-                        <div className="font-bold">TL. CHÁNH ÁN</div>
-                        <div className="font-bold">KT. CHÁNH VĂN PHÒNG</div>
-                        <div className="font-bold">PHÓ CHÁNH VĂN PHÒNG</div>
-                        <div className="italic text-[9px] mt-1">(Ký tên, ghi rõ họ tên, đóng dấu)</div>
-                      </div>
-                    </div>
                   </div>
                   {showDuyetPopup.trangThai === "Đã duyệt" && (
-                    <div className="absolute right-8 bottom-16 text-[#a31515] border-2 border-[#a31515] px-4 py-1.5 font-bold text-[14px] transform -rotate-12 opacity-80 rounded">
+                    <div className="absolute right-10 bottom-20 text-[#a31515] border-2 border-[#a31515] px-4 py-2 font-bold text-[18px] transform -rotate-12 opacity-80">
                       ĐÃ PHÊ DUYỆT
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* RIGHT: Action panel */}
-              <div className="w-[45%] flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
-
-                  {/* Ý kiến lãnh đạo */}
-                  <div>
-                    <label className="block text-[12px] font-semibold text-[#333] mb-1">
-                      Nội dung ý kiến lãnh đạo
-                    </label>
-                    <textarea
-                      className="w-full h-[90px] p-2.5 text-[12px] border border-[#ccc] rounded-[3px] outline-none focus:border-[#1a5a96] resize-none"
-                      placeholder="Nhập ý kiến chỉ đạo, phê duyệt..."
-                      value={yKienInput}
-                      onChange={e => setYKienInput(e.target.value)}
-                      disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}
-                    />
-                  </div>
-
-                  {/* Đánh dấu & Ghi chú */}
-                  <div className="border border-[#eee] rounded-[4px] overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 bg-[#f9f9f9] border-b border-[#eee] text-[12px] font-semibold text-[#444]">
-                      Đánh dấu & Ghi chú (0)
-                    </div>
-                    <div className="p-4 text-center text-[11px] text-[#aaa] italic">Chưa có đánh dấu</div>
-                    <div className="px-3 pb-3">
-                      <button className="w-full h-[30px] border border-dashed border-[#ccc] text-[12px] text-[#888] rounded hover:bg-[#f5f5f5] transition-colors">
-                        + Thêm ghi chú mới
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Ý kiến của lãnh đạo (freetext) */}
-                  <div>
-                    <label className="block text-[12px] font-semibold text-[#333] mb-1">Ý kiến của lãnh đạo</label>
-                    <textarea
-                      className="w-full h-[70px] p-2.5 text-[12px] border border-[#ccc] rounded-[3px] outline-none focus:border-[#1a5a96] resize-none"
-                      placeholder="Nhập ý kiến lãnh đạo..."
-                      disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}
-                    />
-                  </div>
-
-                  {/* Next person selection */}
-                  {showDuyetPopup.trangThai === "Chờ duyệt" && (
-                    <div className="border border-[#e8f4ff] rounded-[4px] p-3 bg-[#f8fbff]">
-                      <div className="text-[12px] font-semibold text-[#1a5a96] mb-2">Chuyển tiếp cho</div>
-                      <div className="flex gap-4 mb-2">
-                        <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                          <input type="radio" name="popupNextType" value="duyet" checked={nextPersonType === "duyet"} onChange={() => setNextPersonType("duyet")} className="accent-[#1d2e4f]" />
-                          <span>Người duyệt</span>
-                        </label>
-                        <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                          <input type="radio" name="popupNextType" value="ky" checked={nextPersonType === "ky"} onChange={() => setNextPersonType("ky")} className="accent-[#1d2e4f]" />
-                          <span>Người ký</span>
-                        </label>
-                      </div>
-                      <select
-                        value={nextPerson}
-                        onChange={e => setNextPerson(e.target.value)}
-                        className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] outline-none bg-white"
-                      >
-                        {nextPersonType === "duyet" ? (
-                          <>
-                            <option value="">-- Chọn người duyệt --</option>
-                            <option value="Trần Văn B">Trần Văn B - Trưởng phòng</option>
-                            <option value="Lê Thị C">Lê Thị C - Phó phòng</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="">-- Chọn người ký --</option>
-                            <option value="Nguyễn Minh An">Nguyễn Minh An - Phó Chánh văn phòng</option>
-                            <option value="Hoàng Kim Long">Hoàng Kim Long - Chánh văn phòng</option>
-                            <option value="Nguyễn Hòa Bình">Nguyễn Hòa Bình - Chánh án</option>
-                            <option value="Nguyễn Trí Tuệ">Nguyễn Trí Tuệ - Phó Chánh án TT</option>
-                          </>
-                        )}
-                      </select>
-                    </div>
-                  )}
-
+              
+              {/* Cột phải: Form nhập liệu */}
+              <div className="w-1/2 p-5 overflow-y-auto bg-white flex flex-col gap-4">
+                <div>
+                  <label className="block text-[12px] font-medium text-[#333] mb-1">Số Tờ trình</label>
+                  <input type="text" value={showDuyetPopup.id} disabled className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 outline-none" />
                 </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-[#333] mb-1">Nội dung đề xuất</label>
+                  <textarea value={showDuyetPopup.noiDung} disabled className="w-full h-[60px] p-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 outline-none resize-none" />
+                </div>
+                
+                <hr className="my-2 border-[#eee]" />
 
-                {/* Action Buttons — role-based */}
-                <div className="flex items-center justify-between p-4 border-t border-[#e0e0e0] bg-[#fafafa] flex-shrink-0">
-                  <button onClick={() => setShowDuyetPopup(null)} className="h-[32px] px-4 bg-white border border-[#ccc] text-[#333] rounded-[3px] text-[12px] font-medium hover:bg-gray-50">
-                    Quay lại
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    {showDuyetPopup.trangThai === "Chờ duyệt" ? (
-                      <>
-                        {/* Từ chối — all roles */}
-                        <button
-                          onClick={() => {
-                            setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Từ chối" } : t));
-                            setShowDuyetPopup(null);
-                          }}
-                          className="h-[32px] px-4 bg-white border border-[#c0392b] text-[#c0392b] rounded-[3px] text-[12px] font-medium hover:bg-[#fdeaea] transition-colors"
-                        >
-                          Từ chối
-                        </button>
-
-                        {isTP ? (
-                          /* Trưởng phòng */
-                          <>
-                            <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] transition-colors">
-                              Đồng ý
-                            </button>
-                            <button
-                              onClick={() => {
-                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
-                                triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được Trưởng phòng phê duyệt.`);
-                                setShowDuyetPopup(null);
-                              }}
-                              className="h-[32px] px-4 bg-[#27ae60] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#219653] transition-colors"
-                            >
-                              Phê duyệt
-                            </button>
-                          </>
-                        ) : (isPCVP || isLanhDao) ? (
-                          /* PCVP / Lãnh đạo */
-                          <>
-                            <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] transition-colors">
-                              Đồng ý
-                            </button>
-                            <button className="h-[32px] px-4 bg-white border border-[#555] text-[#444] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f0f0] transition-colors">
-                              Ký logic
-                            </button>
-                            <button
-                              onClick={() => {
-                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
-                                triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được Lãnh đạo ký số.`);
-                                setShowDuyetPopup(null);
-                              }}
-                              className="h-[34px] px-5 font-bold text-white rounded-[4px] text-[12px] flex items-center gap-2 shadow-md hover:opacity-90 transition-all"
-                              style={{ background: "linear-gradient(135deg, #e91e8c 0%, #c2185b 100%)" }}
-                            >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                              Ký số
-                            </button>
-                          </>
-                        ) : (
-                          /* Cán bộ: nút trình duyệt */
-                          <button
-                            onClick={() => {
-                              setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt" } : t));
-                              triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được trình duyệt.`);
-                              setShowDuyetPopup(null);
-                            }}
-                            className="h-[32px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#6e1414] flex items-center gap-1.5 transition-colors"
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            Trình duyệt
-                          </button>
-                        )}
-                      </>
-                    ) : showDuyetPopup.trangThai === "Đã duyệt" ? (
-                      /* Đã duyệt: chỉ cho in */
-                      <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] flex items-center gap-1.5 transition-colors">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                        In văn bản
-                      </button>
-                    ) : showDuyetPopup.trangThai === "Từ chối" ? (
-                      /* Từ chối: cho sửa và gửi lại */
-                      <button
-                        onClick={() => {
-                          setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt", yKienLanhDao: "" } : t));
-                          triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được trình lại.`);
-                          setShowDuyetPopup(null);
-                        }}
-                        className="h-[32px] px-4 bg-[#f57f17] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#e65100] flex items-center gap-1.5 transition-colors"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                        Gửi lại
-                      </button>
-                    ) : null}
-                  </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-[#333] mb-1">Ý kiến bút phê của Lãnh đạo</label>
+                  <textarea 
+                    className="w-full h-[100px] p-2 text-[12px] border border-[#ccc] rounded-[3px] outline-none focus:border-[#1a73e8]" 
+                    placeholder="Nhập ý kiến chỉ đạo, phê duyệt..."
+                    defaultValue={showDuyetPopup.yKienLanhDao}
+                    id="yKienLanhDaoInput"
+                    disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-[12px] font-medium text-[#333] mb-1">Chọn người ký tiếp theo (nếu có)</label>
+                  <select className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] outline-none" disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}>
+                    <option value="">-- Chọn người ký --</option>
+                    <option>Nguyễn Hòa Bình (Chánh án)</option>
+                    <option>Nguyễn Trí Tuệ (Phó Chánh án Thường trực)</option>
+                  </select>
                 </div>
               </div>
+            </div>
+            
+            <div className="flex items-center justify-end gap-3 p-4 border-t border-[#e0e0e0] bg-[#fafafa]">
+              <button onClick={() => setShowDuyetPopup(null)} className="h-[32px] px-4 bg-white border border-[#ccc] text-[#333] rounded-[3px] text-[13px] font-medium hover:bg-gray-50 transition-colors">
+                Đóng
+              </button>
+              {showDuyetPopup.trangThai === "Chờ duyệt" && (
+                <>
+                  <button onClick={() => {
+                    setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Từ chối" } : t));
+                    setShowDuyetPopup(null);
+                  }} className="h-[32px] px-4 bg-white border border-[#8b1a1a] text-[#8b1a1a] rounded-[3px] text-[13px] font-medium hover:bg-[#fdeaea] transition-colors">
+                    Từ chối
+                  </button>
+                  <button onClick={() => {
+                    const yKien = (document.getElementById("yKienLanhDaoInput") as HTMLTextAreaElement)?.value || "Đồng ý phê duyệt.";
+                    setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKien } : t));
+                    triggerNoti(`Tờ trình ${showDuyetPopup.noiDung} đã được Lãnh đạo phê duyệt.`);
+                    setShowDuyetPopup(null);
+                  }} className="h-[32px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414] transition-colors">
+                    Duyệt & Ký
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -4732,97 +4486,10 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
   );
 };
 
-
 export default function App() {
   const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet">("home");
-  const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
-    {
-      id: "TT-2026-001",
-      tenVuAn: "Vụ án dân sự số 41/2024/DS-PT - TAND tỉnh Bắc Ninh",
-      noiDung: "Phân công Thẩm phán giải quyết đơn đề nghị giám đốc thẩm",
-      loai: "Tờ trình phân công thẩm phán",
-      nguoiDeXuat: "Vũ Văn Yên",
-      ngayDeXuat: "30/07/2026 08:15",
-      trangThai: "Chờ duyệt",
-      yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" },
-        { maDon: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", thamPhan: "Nguyễn Như Thắng" },
-      ],
-    },
-    {
-      id: "TT-2026-002",
-      tenVuAn: "Vụ án hình sự số 33/2024/HS-GDT - TAND cấp cao tại Hà Nội",
-      noiDung: "Phân công Thẩm phán giải quyết đơn kiến nghị giám đốc thẩm hình sự",
-      loai: "Tờ trình phân công thẩm phán",
-      nguoiDeXuat: "Phùng Trâm Anh",
-      ngayDeXuat: "29/07/2026 14:32",
-      trangThai: "Chờ duyệt",
-      yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7028", nguoiGui: "Lê Thị Mai", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7027", nguoiGui: "Nguyễn Thị Hoa", thamPhan: "Trần Văn Bình" },
-        { maDon: "Mã 7022", nguoiGui: "Hoàng Minh Tú", thamPhan: "Trần Văn Bình" },
-      ],
-    },
-    {
-      id: "TT-2026-003",
-      tenVuAn: "Vụ án dân sự số 112/2025/DS-GDT - TAND tỉnh Phú Thọ",
-      noiDung: "Phân công Thẩm phán - Tờ trình tháng 7/2026 (Vụ Dân sự)",
-      loai: "Tờ trình phân công thẩm phán",
-      nguoiDeXuat: "Vũ Văn Yên",
-      ngayDeXuat: "28/07/2026 09:00",
-      trangThai: "Đã duyệt",
-      yKienLanhDao: "Đồng ý phân công theo đề xuất của Văn phòng. Yêu cầu thực hiện đúng tiến độ.",
-      danhSachDon: [
-        { maDon: "Mã 7022", nguoiGui: "Hoàng Minh Tú", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7021", nguoiGui: "Phạm Thị Ngọc", thamPhan: "Nguyễn Như Thắng" },
-      ],
-    },
-    {
-      id: "TT-2026-004",
-      tenVuAn: "Vụ án kinh doanh thương mại số 89/2025/KDTM-GDT",
-      noiDung: "Phân công Thẩm phán giải quyết đơn kiến nghị (bổ sung tháng 7)",
-      loai: "Tờ trình phân công thẩm phán",
-      nguoiDeXuat: "Phùng Trâm Anh",
-      ngayDeXuat: "25/07/2026 16:45",
-      trangThai: "Từ chối",
-      yKienLanhDao: "Cần bổ sung thêm thông tin về thủ tục tố tụng. Đề nghị làm lại tờ trình.",
-      danhSachDon: [
-        { maDon: "Mã 7026", nguoiGui: "Trần Văn Bình", thamPhan: "" },
-      ],
-    },
-    {
-      id: "TT-2026-005",
-      tenVuAn: "Vụ án hành chính số 15/2026/HC-GDT - TAND tỉnh Hà Nam",
-      noiDung: "Phân công Thẩm phán xét xử giám đốc thẩm vụ hành chính",
-      loai: "Tờ trình xét xử GĐT",
-      nguoiDeXuat: "Vũ Văn Yên",
-      ngayDeXuat: "22/07/2026 10:20",
-      trangThai: "Đã duyệt",
-      yKienLanhDao: "Phê duyệt. Giao VP theo dõi, đôn đốc thực hiện.",
-      danhSachDon: [
-        { maDon: "Mã 7030", nguoiGui: "Nguyễn Văn Quyền", thamPhan: "Nguyễn Như Thắng" },
-      ],
-    },
-    {
-      id: "TT-2026-006",
-      tenVuAn: "Đơn đề nghị giám đốc thẩm số 54682577 - TAND tỉnh Bắc Ninh",
-      noiDung: "Tờ trình bổ sung danh sách thẩm phán tháng 7 (đợt 2)",
-      loai: "Tờ trình phân công thẩm phán",
-      nguoiDeXuat: "Vũ Văn Yên",
-      ngayDeXuat: "30/07/2026 17:41",
-      trangThai: "Chờ duyệt",
-      yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" },
-        { maDon: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7028", nguoiGui: "Lê Thị Mai", thamPhan: "Nguyễn Như Thắng" },
-      ],
-    },
-  ]);
-
-  const [currentRole, setCurrentRole] = useState<"can-bo" | "truong-phong" | "pho-vp" | "lanh-dao">("can-bo");
+  const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([]);
+  const [currentRole, setCurrentRole] = useState<"can-bo" | "truong-phong" | "pho-vp" | "lanh-dao">("can-bo");`n  const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([]);
   const [notifications, setNotifications] = useState<{ id: number, text: string, time: string, read: boolean }[]>([
     { id: 1, text: "Đơn 7031 đã được phân công cho cán bộ Nguyễn Văn An", time: "08:30", read: false }
   ]);
@@ -5050,7 +4717,7 @@ export default function App() {
                         <ChevronRight size={12} />
                         <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                       </>
-                                            : view === "phancong"
+                      : view === "phancong"
                         ? <span className="text-[#333]">Phân công thẩm phán</span>
                         : view === "phe_duyet"
                           ? <>
@@ -5083,8 +4750,6 @@ export default function App() {
           {view === "list" && (
             <div className="flex-1 overflow-y-auto">
               <DanhSachDon
-                currentRole={currentRole}
-                onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
                 onThemMoi={() => { 
                   setEditingRowId(null); 
                   setView("form"); 
@@ -5158,9 +4823,8 @@ export default function App() {
                           <optgroup label="— Đơn">
                             <option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option>
                             <option value="Đơn khiếu nại tư pháp - tố tụng">2. Đơn khiếu nại tư pháp - tố tụng</option>
-            <option value="Đơn khiếu nại tư pháp - hành vi">3. Đơn khiếu nại tư pháp - hành vi</option>
-                            <option value="Thông báo phát hiện vi phạm pháp luật">4. Thông báo phát hiện vi phạm pháp luật</option>
-                            <option value="Đơn khác">5. Đơn khác</option>
+                            <option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option>
+                            <option value="Đơn khác">4. Đơn khác</option>
                           </optgroup>
                           <optgroup label="— Công văn">
                             <option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option>
@@ -5587,7 +5251,7 @@ export default function App() {
                         <option>Tòa khác</option>
                         <option>Ngoài tòa án</option>
                         <option>Trả lại đơn</option>
-                        <option>Lưu theo dõi</option>
+                        <option>Xếp đơn</option>
                         <option>Chờ ý kiến lãnh đạo</option>
                       </Sel>
                     </div>
@@ -5613,10 +5277,10 @@ export default function App() {
                             <option>Vụ Tổng hợp</option>
                             <option>Vụ Hợp tác quốc tế</option>
                             <option>Vụ Công tác phía Nam</option>
-                            
+                            <option>Lưu nội bộ</option>
                           </Sel>
                         </div>
-                        {donViChuyenDen && (
+                        {donViChuyenDen && donViChuyenDen !== "Lưu nội bộ" && (
                           <div>
                             <Lbl>Chuyển đến cá nhân</Lbl>
                             <Sel value={caNhanChuyenDen} onChange={(e) => setCaNhanChuyenDen(e.target.value)}>
@@ -5676,7 +5340,7 @@ export default function App() {
                         </div>
                       </>
                     )}
-                    {noiChuyenDen !== "Lưu theo dõi" && noiChuyenDen !== "Chờ ý kiến lãnh đạo" && hinhThuc !== "CV khác" && hinhThuc !== "Đơn khác" && (
+                    {noiChuyenDen !== "Xếp đơn" && noiChuyenDen !== "Chờ ý kiến lãnh đạo" && hinhThuc !== "CV khác" && hinhThuc !== "Đơn khác" && (
                       <>
                         <div>
                           <Lbl req>Trạng thái đơn</Lbl>

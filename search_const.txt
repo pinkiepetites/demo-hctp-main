@@ -1,0 +1,37 @@
+49: const Inp = ({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
+56: const Sel = ({ className = "", children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+68: const Lbl = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
+74: const BtnPrimary = ({ children, onClick, disabled = false, type = "button", className = "" }: {
+83: const BtnSecondary = ({ children, onClick, className = "" }: { children: React.ReactNode; onClick?: () => void; className?: string }) => (
+90: const BtnAdd = ({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) => (
+98: const Section = ({
+127: const Tbl = ({ headers, children, emptyMsg }: {
+152: const Td = ({ children, center }: { children?: React.ReactNode; center?: boolean }) => (
+156: const ActionBtn = ({ icon, color = "blue", onClick, title }: {
+209: const PopupCongVan = ({ onClose, onSave }: { onClose: () => void; onSave: (cv: CongVan) => void }) => {
+376: const DonFields = () => {
+515: const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: string) => void }) => {
+630: const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onLuuSoVanBan }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onLuuSoVanBan?: () => void; }) => {
+690: const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload: () => void }) => {
+832: const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: number }) => {
+915: const PopupBoSungTaiLieu = ({ onClose, donId }: { onClose: () => void, donId: number }) => {
+1040: const PopupGhepDon = ({
+1182: const PopupXacNhanGhep = ({
+1523: const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
+1526: const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+1534: const FLbl = ({ children }: { children: React.ReactNode }) => (
+1538: const FDateRange = ({ placeholderFrom = "Từ ngày", placeholderTo = "Đến ngày" }: { placeholderFrom?: string; placeholderTo?: string }) => (
+1546: const FDate = () => (
+1551: const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+2403: const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRole = "can-bo", onCreateToTrinh }: {
+2784: const PopupTraLaiDon = ({
+2931: const ProtoRow = ({
+2957: const ProtoMergeBadge = ({ maDon }: { maDon: string }) => (
+2963: const PrototypeGhepDon = () => {
+3265: const LOAI_DON = new Set([
+3274: const WordEditor = ({ onBack }: { onBack: () => void }) => {
+3366: const DanhSachBieuMau = ({
+3537: const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?: 0 | 1 | 2; onOpenThamPhanPopup?: () => void }) => {
+3876: const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
+4161: const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
+4270: const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhList: ToTrinh[], setToTrinhList: React.Dispatch<React.SetStateAction<ToTrinh[]>>, currentRole: string }) => {

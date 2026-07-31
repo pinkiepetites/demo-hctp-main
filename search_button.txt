@@ -1,0 +1,5 @@
+647:     { icon: <Save size={13} />, label: "Lưu số văn bản và in báo cáo", action: "luuso" },
+1899:                     <FileText size={13} /> Lưu số văn bản và in báo cáo
+2318:       {/* Popup Lưu số văn bản (NEW) */}
+2328:       {/* Popup Lưu số văn bản */}
+2396: // ─── Popup Lưu số văn bản ─────────────────────────────────────────────────────
