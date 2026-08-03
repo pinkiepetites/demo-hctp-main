@@ -6,7 +6,7 @@ import {
   MessageSquare, Copy, CopyPlus, Home, LayoutList, Mail, List,
   Users, ArrowDownToLine, ArrowUpFromLine, Archive, Clock,
   Gavel, Scale, Settings, RefreshCw, Send, GitMerge, Check, Save, Pencil, ChevronLeft,
-  AlertCircle, Bell, FilePlus
+  AlertCircle, Bell, FilePlus, Inbox, ArrowLeft, History as HistoryIcon
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
@@ -4480,6 +4480,601 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
+// ─── Popup Lãnh đạo phê duyệt ý kiến ──────────────────────────────────────
+const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: () => void; initialLoaiDeXuat?: string }) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [rutGon, setRutGon] = useState(false);
+  const [docType, setDocType] = useState(initialLoaiDeXuat || "Tờ trình phân công");
+  const [toTrinhExpanded, setToTrinhExpanded] = useState(true);
+  const [d1Expanded, setD1Expanded] = useState(true);
+  const [d2Expanded, setD2Expanded] = useState(true);
+  const [d3Expanded, setD3Expanded] = useState(true);
+  const [selectedNodeId, setSelectedNodeId] = useState("to-trinh-1");
+  const isToTrinh = docType.toLowerCase().includes("tờ trình") || docType.toLowerCase().includes("to trinh");
+  
+  return (
+    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+      <div className="bg-white rounded-[8px] shadow-2xl w-[1300px] max-w-[95vw] max-h-[92vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#eee] flex-shrink-0">
+          <div className="flex flex-col">
+            <div className="text-[11px] text-[#666] flex items-center gap-1 font-medium">
+              <span>Trang chủ</span> / <span>Công tác lãnh đạo</span> / <span>Phê duyệt đề xuất</span> / <span className="font-semibold text-[#8b1a1a]">Ý kiến lãnh đạo</span>
+            </div>
+            <h2 className="text-[18px] font-bold text-[#1d2e4f] mt-1">Lãnh đạo phê duyệt ý kiến</h2>
+            <div className="text-[12px] text-[#888] font-semibold mt-0.5">VA26-001201 - Vụ giải quyết đơn 5777</div>
+          </div>
+          <button onClick={onClose} className="h-[32px] px-3 bg-white border border-[#ccc] hover:bg-gray-50 text-[12px] font-medium rounded text-[#333] flex items-center gap-1 transition-colors">
+            <ArrowLeft size={14} /> Quay lại
+          </button>
+        </div>
+        
+        {/* Body: Split Layout */}
+        <div className="flex-1 overflow-hidden flex flex-row">
+          
+          {/* LEFT: Processing Panel */}
+          <div className="w-[50%] border-r border-[#eee] overflow-y-auto p-5 bg-[#fbfbfb] flex flex-col">
+
+
+            {/* Tabs */}
+            <div className="flex items-center gap-6 border-b border-[#eee] mb-4 flex-shrink-0">
+              {["Ý kiến lãnh đạo", isToTrinh ? "Thông tin tờ trình" : "Thông tin văn bản"].map((tab, i) => (
+                <button key={tab} onClick={() => setActiveTab(i)}
+                  className={`pb-2 text-[14px] font-medium transition-colors border-b-2 -mb-[1px] ${
+                    activeTab === i ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"
+                  }`}>
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex-1 flex flex-col border border-[#eee] bg-white rounded-[4px] p-4 shadow-sm min-h-[350px]">
+              {activeTab === 0 && (
+                isToTrinh ? (
+                  // ──────────────── TỜ TRÌNH LAYOUT ────────────────
+                  <div className="flex flex-col h-full flex-1">
+                    {/* Collapsible Accordion Header */}
+                    <div className="border border-[#e2e8f0] rounded-[6px] bg-white mb-3 shadow-sm overflow-hidden flex-shrink-0">
+                      <div className="p-3 bg-white flex items-center justify-between border-b border-[#eee]">
+                        <div className="flex flex-col">
+                          <span className="text-[13px] font-bold text-[#1d2e4f] flex items-center gap-1">
+                            <ChevronDown size={14} /> Tờ trình phân công thẩm phán - Số 112/2026/TTr-TANDTC-VP
+                          </span>
+                          <span className="text-[11px] text-[#666] ml-4.5">TLM: 5467614 - Ngày TL: 18/06/2026</span>
+                        </div>
+                      </div>
+                      
+                      <div className="p-3 bg-white space-y-3">
+                        {/* Light blue proposal opinion box */}
+                        <div className="bg-[#eaf4fe] border border-[#bee2ff] rounded-[4px] p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[12px] font-bold text-[#1a5a96]">Ý kiến đề xuất | Phó chánh văn phòng - Nguyễn Mạnh Hùng</span>
+                            <button className="text-[11px] text-[#1a5a96] hover:underline font-medium flex items-center gap-0.5">
+                              <HistoryIcon size={11} /> Xem diễn biến
+                            </button>
+                          </div>
+                          <div className="text-[12px] text-[#333] font-medium">
+                            Đồng ý, trình Phó Chánh án Nguyễn Hải Trâm
+                          </div>
+                        </div>
+
+                        {/* Leadership opinion content textarea */}
+                        <div className="border border-[#e2e8f0] rounded-[4px] p-3 bg-white">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[12px] font-bold text-[#333]">Ý kiến lãnh đạo</span>
+                            <button className="text-[#888] hover:text-[#555]"><RotateCcw size={13} /></button>
+                          </div>
+                          <div className="border-t border-dashed border-[#e2e8f0] pt-2">
+                            <div className="flex items-center gap-1 mb-1">
+                              <span className="text-red-500 font-bold text-[12px]">*</span>
+                              <span className="text-[11px] font-semibold text-[#666]">Nội dung ý kiến lãnh đạo</span>
+                            </div>
+                            <textarea
+                              defaultValue="Lãnh đạo đề xuất ý kiến:"
+                              className="w-full p-2.5 text-[12px] border border-[#ccc] rounded-[4px] focus:outline-none focus:border-[#8b1a1a] min-h-[90px] resize-none"
+                            />
+                            <div className="text-right text-[10px] text-[#888] mt-1">24 / 4000</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#f0f5fa] rounded-[6px] border border-[#d6e4f0] overflow-hidden mt-auto flex-shrink-0">
+                      <div className="px-4 py-2 bg-[#e6eff8] border-b border-[#d6e4f0] text-[13px] font-bold text-[#1d2e4f]">
+                        Đề xuất trình tiếp
+                      </div>
+                      <div className="p-4 grid grid-cols-2 gap-6 bg-white">
+                        <div>
+                          <label className="block text-[12px] text-[#666] mb-1.5 font-medium">Cấp trình tiếp</label>
+                          <div className="relative">
+                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-[#ccc] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                              <option value="">Chọn cấp trình tiếp</option>
+                              <option value="1">Lãnh đạo tòa</option>
+                              <option value="2">Chánh án</option>
+                            </select>
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[12px] text-[#666] mb-1.5 font-medium">Người đề xuất trình</label>
+                          <div className="relative">
+                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-[#ccc] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                              <option value="">Chọn người đề xuất trình</option>
+                              <option value="1">Nguyễn Văn A</option>
+                              <option value="2">Trần Thị B</option>
+                            </select>
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="px-4 py-3 border-t border-[#eee] bg-white flex items-center justify-end gap-2 flex-wrap">
+                        <button className="h-[32px] px-3 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[12px] font-medium transition-colors">
+                          Chỉnh sửa Word
+                        </button>
+                        <button className="h-[32px] px-3 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[12px] font-medium transition-colors">
+                          Lưu
+                        </button>
+                        <button className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
+                          Lưu và ký
+                        </button>
+                        <button className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
+                          Lưu và ký logic
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // ──────────────── NORMAL SIGNING LAYOUT ────────────────
+                  <div className="flex flex-col h-full flex-1 justify-between">
+                    <div>
+                      <label className="block text-[13px] font-bold text-[#1d2e4f] mb-2">Ý kiến chỉ đạo / Phê duyệt</label>
+                      <textarea 
+                        placeholder="Nhập ý kiến chỉ đạo hoặc nhận xét của Lãnh đạo đối với văn bản/quyết định này..."
+                        className="w-full p-3 text-[13px] border border-[#ccc] rounded-[4px] focus:outline-none focus:border-[#8b1a1a] min-h-[140px] resize-none"
+                      />
+                    </div>
+
+                    <div className="bg-[#fcfcfc] border border-[#e2e8f0] p-4 rounded-[6px] mt-4">
+                      <div className="text-[12px] text-[#555] mb-2 font-medium">Thông tin ký số:</div>
+                      <div className="text-[13px] text-[#333]">Người ký: <span className="font-semibold">Phạm Văn Nha</span> (Phó Chánh Văn phòng)</div>
+                    </div>
+
+                    <div className="px-4 py-3 border-t border-[#eee] bg-white flex items-center justify-end gap-3 mt-6">
+                      <button className="h-[32px] px-4 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[13px] font-medium transition-colors">
+                        Chỉnh sửa Word
+                      </button>
+                      <button className="h-[32px] px-4 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[13px] font-medium transition-colors">
+                        Lưu ý kiến
+                      </button>
+                      <button className="h-[32px] px-4 bg-[#27ae60] hover:bg-[#219653] text-white rounded-[4px] text-[13px] font-medium transition-colors shadow-sm">
+                        Ký số phê duyệt
+                      </button>
+                      <button className="h-[32px] px-4 bg-[#7f8c8d] hover:bg-[#6c7a89] text-white rounded-[4px] text-[13px] font-medium transition-colors shadow-sm">
+                        Trả lại văn bản
+                      </button>
+                    </div>
+                  </div>
+                )
+              )}
+              {activeTab === 1 && (
+                <div className="flex flex-col h-full flex-1 gap-4 overflow-y-auto">
+                  <div className="border border-[#e2e8f0] rounded-[6px] p-4 bg-white shadow-sm flex flex-col flex-1">
+                    <div className="text-[12px] font-bold text-[#1d2e4f] mb-2 uppercase tracking-wider">Cấu trúc tài liệu trình ký</div>
+                    <div className="text-[11px] text-[#666] mb-3 italic">
+                      Lưu ý: Một tờ trình bao gồm nhiều danh sách đơn đề xuất. Mỗi Thẩm phán thuộc một Vụ Giám đốc kiểm tra cấu thành một danh sách riêng biệt.
+                    </div>
+                    
+                    <div className="border border-[#eee] rounded-[4px] bg-white overflow-hidden text-[12px] flex-1">
+                      
+                      {/* LEVEL 1: Tờ trình duy nhất */}
+                      <div className="flex flex-col">
+                        <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2.5 px-3 cursor-pointer ${selectedNodeId === "to-trinh-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                          onClick={() => setSelectedNodeId("to-trinh-1")}
+                        >
+                          <button onClick={(e) => { e.stopPropagation(); setToTrinhExpanded(!toTrinhExpanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                            {toTrinhExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                          </button>
+                          <FileText size={15} className="text-[#8b1a1a] mr-2 flex-shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="font-bold text-[#1d2e4f]">{docType} phân công TP - Số 112/2026/TTr-TANDTC-VP</span>
+                            <span className="text-[9px] text-[#666]">Số lượng: 3 Danh sách | 4 Đơn trình duyệt</span>
+                          </div>
+                        </div>
+
+                        {toTrinhExpanded && (
+                          <div className="flex flex-col">
+                            
+                            {/* LEVEL 2: Danh sách 1 (Thẩm phán Bùi Ngọc Lâm - Vụ GĐKT Dân sự) */}
+                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                              onClick={() => setSelectedNodeId("danh-sach-1")}
+                            >
+                              <button onClick={(e) => { e.stopPropagation(); setD1Expanded(!d1Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                                {d1Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              </button>
+                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Dân sự)</span>
+                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Bắc Ninh</span>
+                              </div>
+
+                            </div>
+
+                            {d1Expanded && (
+                              <div className="flex flex-col bg-[#fafafa]">
+                                {/* LEVEL 3: Các Đơn thuộc Danh sách 1 */}
+                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7031" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                  onClick={() => setSelectedNodeId("don-7031")}
+                                >
+                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7031) - Bùi Phương Thảo</span>
+                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001201 | Ngày nhận: 18/06/2026</span>
+                                  </div>
+
+                                </div>
+                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7034" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                  onClick={() => setSelectedNodeId("don-7034")}
+                                >
+                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7034) - Lê Văn D</span>
+                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001204 | Ngày nhận: 21/06/2026</span>
+                                  </div>
+
+                                </div>
+                              </div>
+                            )}
+
+                            {/* LEVEL 2: Danh sách 2 (Thẩm phán Bùi Ngọc Lâm - Vụ GĐKT Hình sự) */}
+                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-2" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                              onClick={() => setSelectedNodeId("danh-sach-2")}
+                            >
+                              <button onClick={(e) => { e.stopPropagation(); setD2Expanded(!d2Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                                {d2Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              </button>
+                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Hình sự)</span>
+                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Lạng Sơn</span>
+                              </div>
+
+                            </div>
+
+                            {d2Expanded && (
+                              <div className="flex flex-col bg-[#fafafa]">
+                                {/* LEVEL 3: Các Đơn thuộc Danh sách 2 */}
+                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7033" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                  onClick={() => setSelectedNodeId("don-7033")}
+                                >
+                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7033) - Trần Thị B</span>
+                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001203 | Ngày nhận: 20/06/2026</span>
+                                  </div>
+
+                                </div>
+                              </div>
+                            )}
+
+                            {/* LEVEL 2: Danh sách 3 (Thẩm phán Nguyễn Văn C - Vụ GĐKT Hành chính) */}
+                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-3" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                              onClick={() => setSelectedNodeId("danh-sach-3")}
+                            >
+                              <button onClick={(e) => { e.stopPropagation(); setD3Expanded(!d3Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                                {d3Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              </button>
+                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Nguyễn Văn C (Vụ GĐKT Hành chính)</span>
+                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Bắc Giang</span>
+                              </div>
+
+                            </div>
+
+                            {d3Expanded && (
+                              <div className="flex flex-col bg-[#fafafa]">
+                                {/* LEVEL 3: Các Đơn thuộc Danh sách 3 */}
+                                <div className={`flex items-center hover:bg-[#f5f5f5] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7032" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                  onClick={() => setSelectedNodeId("don-7032")}
+                                >
+                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7032) - Nguyễn Văn A</span>
+                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001202 | Ngày nhận: 19/06/2026</span>
+                                  </div>
+
+                                </div>
+                              </div>
+                            )}
+
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT: Document Preview Panel */}
+          <div className="w-[50%] bg-[#f0f0f0] overflow-y-auto flex flex-col items-center py-6 px-4 gap-4">
+            {/* Toolbar */}
+            <div className="w-full max-w-[520px] flex items-center justify-between bg-white border border-[#ccc] rounded px-3 py-2 shadow-sm flex-shrink-0">
+              <span className="text-[12px] font-bold text-[#1d2e4f] flex items-center gap-1.5">
+                <FileText size={14} className="text-[#1a5a96]" /> Xem trước tài liệu ({
+                  selectedNodeId.startsWith("to-trinh-") ? "Tờ trình" : selectedNodeId.startsWith("danh-sach-") ? "Danh sách phụ lục" : "Chi tiết Đơn"
+                })
+              </span>
+              <div className="flex items-center gap-2">
+                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Phóng to"><ZoomIn size={14} className="text-[#666]" /></button>
+                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Thu nhỏ"><ZoomOut size={14} className="text-[#666]" /></button>
+                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Xoay"><RotateCcw size={14} className="text-[#666]" /></button>
+                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Tải về"><Download size={14} className="text-[#666]" /></button>
+              </div>
+            </div>
+
+            {selectedNodeId.startsWith("to-trinh-") ? (
+              /* MẪU PREVIEW TỜ TRÌNH */
+              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-7 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-[#000]">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-6">
+                  <div className="text-center w-[160px]">
+                    <div className="text-[10px] font-normal uppercase">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                    <div className="text-[10px] font-bold uppercase underline decoration-solid underline-offset-4">VĂN PHÒNG</div>
+                    <div className="text-[9px] mt-2">Số: /TTr-TANDTC-VP</div>
+                  </div>
+                  <div className="text-center w-[250px]">
+                    <div className="text-[10px] font-bold uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div className="text-[10px] font-bold underline decoration-solid underline-offset-4">Độc lập - Tự do - Hạnh phúc</div>
+                    <div className="text-[9.5px] italic mt-2">Hà Nội, ngày..... tháng..... năm 2026</div>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div className="text-center my-6 space-y-1">
+                  <div className="text-[12px] font-bold uppercase">TỜ TRÌNH</div>
+                  <div className="text-[11px] font-bold max-w-[400px] mx-auto leading-normal">
+                    Về việc thụ lý đơn và phân công Thẩm phán giải quyết đơn đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm, tái thẩm
+                  </div>
+                </div>
+
+                {/* Recipient */}
+                <div className="mb-4">
+                  <span className="font-bold">Kính trình:</span> Đồng chí Chánh án Tòa án nhân dân tối cao
+                </div>
+
+                {/* Body */}
+                <div className="space-y-3 text-justify text-[10.5px]">
+                  <p>
+                    Văn phòng Tòa án nhân dân tối cao nhận và thụ lý các đơn đề nghị, kiến nghị, thông báo của công dân, tổ chức gửi Tòa án nhân dân tối cao để đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm và dự kiến phân công các Thẩm phán Tòa án nhân dân giải quyết đơn
+                  </p>
+                  <p>
+                    Sau khi xem xét các đơn đề nghị, kiến nghị theo thủ tục giám đốc thẩm, Văn phòng nhận thấy các đơn đề nghị, kiến nghị nêu trên đã đủ điều kiện thụ lý theo quy định. Căn cứ vào kết quả phân công khách quan theo tổ Thẩm phán chuyên sâu; số lượng vụ án mà các Thẩm phán đang xem xét giải quyết; các vụ án có cùng nguyên đơn, bị đơn; có cùng người khởi kiện, người bị kiện.
+                  </p>
+                  <p>
+                    Văn phòng Tòa án nhân dân tối cao báo cáo và kính đề nghị đồng chí Chánh án Tòa án nhân dân tối cao giải quyết (có danh sách kèm theo).
+                  </p>
+                  <p className="italic">Kính trình Đồng chí./.</p>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-start mt-10 pt-4 border-t border-dashed border-[#eee]">
+                  <div className="text-[9px] leading-relaxed">
+                    <span className="font-bold block">Nơi nhận:</span>
+                    - Như kính trình;<br/>
+                    - Lưu: HCTP.
+                  </div>
+                  <div className="text-center w-[200px] text-[9.5px]">
+                    <div className="font-bold">KT. CHÁNH VĂN PHÒNG</div>
+                    <div className="font-bold uppercase">PHÓ CHÁNH VĂN PHÒNG</div>
+                    <div className="h-[45px]"></div>
+                    <div className="font-bold text-[#1d2e4f] text-[11px] underline">Phạm Văn Nha</div>
+                  </div>
+                </div>
+              </div>
+            ) : selectedNodeId.startsWith("danh-sach-") ? (
+              /* MẪU DANH SÁCH */
+              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-5 relative min-h-[580px] font-sans text-[10px] text-[#000]">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="text-center">
+                    <div className="text-[8px] uppercase">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                    <div className="text-[8.5px] font-bold uppercase underline underline-offset-2">VĂN PHÒNG</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[8.5px] font-bold uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div className="text-[8px] font-bold underline underline-offset-2">Độc lập - Tự do - Hạnh phúc</div>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div className="text-center my-4 space-y-1">
+                  <div className="font-bold uppercase text-[10.5px]">
+                    Danh sách đơn vụ án {selectedNodeId === "danh-sach-1" ? "Dân sự" : selectedNodeId === "danh-sach-2" ? "Hình sự" : "Hành chính"} thụ lý
+                  </div>
+                  <div className="font-bold text-[9.5px]">
+                    và phân công Thẩm phán {selectedNodeId === "danh-sach-3" ? "Nguyễn Văn C" : "Bùi Ngọc Lâm"} theo dõi, giải quyết
+                  </div>
+                  <div className="text-[8.5px] italic text-[#444]">
+                    (Kèm theo tờ trình số 112/TTr-TANDTC-VP ngày 27/01/2026 của Văn phòng Tòa án nhân dân tối cao)
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto my-3">
+                  <table className="w-full border-collapse border border-black text-[8px] leading-tight">
+                    <thead>
+                      <tr className="bg-[#f2f2f2]">
+                        <th className="border border-black p-1 text-center w-[20px]" rowSpan={2}>STT</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Số thụ lý</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Ngày thụ lý</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Người đề nghị, kiến nghị, thông báo</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Địa chỉ</th>
+                        <th className="border border-black p-1 text-center" colSpan={3}>QĐ/BA đề nghị xem xét theo thủ tục GĐT/TT</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Số đơn</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Thẩm phán giải quyết</th>
+                        <th className="border border-black p-1 text-center" rowSpan={2}>Ghi chú</th>
+                      </tr>
+                      <tr className="bg-[#f2f2f2]">
+                        <th className="border border-black p-1 text-center">Số BA/QĐ</th>
+                        <th className="border border-black p-1 text-center">Ngày BA/QĐ</th>
+                        <th className="border border-black p-1 text-center">Tòa án Xét xử</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedNodeId === "danh-sach-1" ? (
+                        <>
+                          <tr>
+                            <td className="border border-black p-1 text-center">1</td>
+                            <td className="border border-black p-1 text-center">07</td>
+                            <td className="border border-black p-1 text-center">27/01/2026</td>
+                            <td className="border border-black p-1">
+                              Bùi Phương Thảo (Do TAND tỉnh Bắc Ninh chuyển đến theo Công văn số 11111 ngày 26/01/2026)
+                            </td>
+                            <td className="border border-black p-1">Chi tiết Người đứng đơn CTH0123, TP. Bắc Ninh, tỉnh Bắc Ninh</td>
+                            <td className="border border-black p-1 text-center">27012026_01_DS</td>
+                            <td className="border border-black p-1 text-center">27/01/2026</td>
+                            <td className="border border-black p-1">Tòa án nhân dân tỉnh Bắc Ninh</td>
+                            <td className="border border-black p-1 text-center">1</td>
+                            <td className="border border-black p-1 font-medium">Bùi Ngọc Lâm</td>
+                            <td className="border border-black p-1">Lưu ý kiểm tra kỹ tài liệu đính kèm</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-black p-1 text-center">2</td>
+                            <td className="border border-black p-1 text-center">08</td>
+                            <td className="border border-black p-1 text-center">28/01/2026</td>
+                            <td className="border border-black p-1">
+                              Lê Văn D (Tự nộp trực tiếp tại Ban tiếp công dân)
+                            </td>
+                            <td className="border border-black p-1">Số 45, Đường Lý Thái Tổ, TP. Bắc Ninh</td>
+                            <td className="border border-black p-1 text-center">28012026_02_DS</td>
+                            <td className="border border-black p-1 text-center">20/01/2026</td>
+                            <td className="border border-black p-1">Tòa án nhân dân TP. Bắc Ninh</td>
+                            <td className="border border-black p-1 text-center">1</td>
+                            <td className="border border-black p-1 font-medium">Bùi Ngọc Lâm</td>
+                            <td className="border border-black p-1">Tài liệu bổ sung đầy đủ</td>
+                          </tr>
+                        </>
+                      ) : selectedNodeId === "danh-sach-2" ? (
+                        <tr>
+                          <td className="border border-black p-1 text-center">1</td>
+                          <td className="border border-black p-1 text-center">09</td>
+                          <td className="border border-black p-1 text-center">29/01/2026</td>
+                          <td className="border border-black p-1">
+                            Trần Thị B (Chuyển đơn từ Viện kiểm sát nhân dân tối cao theo Công văn 2222)
+                          </td>
+                          <td className="border border-black p-1">Ấp Lộc Bình, huyện Lộc Bình, tỉnh Lạng Sơn</td>
+                          <td className="border border-black p-1 text-center">29012026_03_HS</td>
+                          <td className="border border-black p-1 text-center">15/01/2026</td>
+                          <td className="border border-black p-1">Tòa án nhân dân huyện Lộc Bình</td>
+                          <td className="border border-black p-1 text-center">1</td>
+                          <td className="border border-black p-1 font-medium">Bùi Ngọc Lâm</td>
+                          <td className="border border-black p-1">Đơn kèm chứng cứ ngoại phạm mới</td>
+                        </tr>
+                      ) : (
+                        <tr>
+                          <td className="border border-black p-1 text-center">1</td>
+                          <td className="border border-black p-1 text-center">10</td>
+                          <td className="border border-black p-1 text-center">30/01/2026</td>
+                          <td className="border border-black p-1">
+                            Nguyễn Văn A (Do TAND tỉnh Bắc Giang chuyển đến theo Công văn số 33333 ngày 29/01/2026)
+                          </td>
+                          <td className="border border-black p-1">Xã Dĩnh Kế, thành phố Bắc Giang, tỉnh Bắc Giang</td>
+                          <td className="border border-black p-1 text-center">30012026_04_HC</td>
+                          <td className="border border-black p-1 text-center">25/01/2026</td>
+                          <td className="border border-black p-1">Tòa án nhân dân tỉnh Bắc Giang</td>
+                          <td className="border border-black p-1 text-center">1</td>
+                          <td className="border border-black p-1 font-medium">Nguyễn Văn C</td>
+                          <td className="border border-black p-1">Khiếu nại QĐHC của UBND tỉnh</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-end mt-8">
+                  <div className="text-center w-[180px] text-[8.5px]">
+                    <div className="font-bold uppercase">CHÁNH VĂN PHÒNG</div>
+                    <div className="h-[40px]"></div>
+                    <div className="font-bold underline">Nguyễn Tường Linh</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* MẪU ĐƠN */
+              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-8 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-[#000]">
+                {/* Top note */}
+                <div className="absolute right-6 top-4 text-[9px] font-mono text-gray-500 italic">YLBS. đơn</div>
+                
+                {/* Header */}
+                <div className="flex flex-col items-end mb-6">
+                  <div className="text-center w-[260px] leading-tight">
+                    <div className="font-bold uppercase text-[9.5px]">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div className="font-bold text-[9.5px] underline decoration-solid underline-offset-4">Độc lập - Tự do - Hạnh phúc</div>
+                    <div className="italic text-[9px] mt-2">Dương Minh Châu, ngày 25 tháng 02 năm 2026</div>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div className="text-center my-6 space-y-1">
+                  <div className="text-[12px] font-bold uppercase tracking-wide">ĐƠN ĐỀ NGHỊ</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider">THEO THỦ TỤC GIÁM ĐỐC THẨM</div>
+                  <div className="text-[10px] italic">
+                    Đối với Bản án số: {
+                      selectedNodeId === "don-7031" ? "120/2026/DS-PT ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh" :
+                      selectedNodeId === "don-7032" ? "134/2026/HC-PT ngày 15-02-2026 của Tòa án nhân dân tỉnh Bắc Giang" :
+                      selectedNodeId === "don-7033" ? "88/2026/HS-PT ngày 10-01-2026 của Tòa án nhân dân tỉnh Lạng Sơn" :
+                      "412/2026/DS-PT ngày 18-02-2026 của Tòa án nhân dân tỉnh Bắc Ninh"
+                    }.
+                  </div>
+                </div>
+
+                {/* Recipient */}
+                <div className="mb-4 pl-4 space-y-1 text-[10.5px]">
+                  <div><span className="font-bold italic">Kính gửi:</span> - Chánh án Tòa án nhân dân tối cao.</div>
+                  <div className="pl-13">- Viện trưởng Viện kiểm sát nhân dân tối cao.</div>
+                </div>
+
+                {/* Body details */}
+                <div className="space-y-2.5 text-[10.5px] text-justify leading-relaxed">
+                  <p>
+                    Tôi tên: <span className="font-bold">{
+                      selectedNodeId === "don-7031" ? "Bùi Phương Thảo (ủy quyền Nguyễn Văn Lụa)" :
+                      selectedNodeId === "don-7032" ? "Nguyễn Văn A" :
+                      selectedNodeId === "don-7033" ? "Trần Thị B" : "Lê Văn D"
+                    }</span>, sinh năm 1972; địa chỉ: Ấp Phước Tân 3, xã Dương Minh Châu, tỉnh Tây Ninh.
+                  </p>
+                  <p>Số điện thoại di động: 0786.453.749</p>
+                  <p>
+                    Là người khởi kiện trong vụ án <span className="italic">“Yêu cầu tuyên bố hợp đồng chuyển nhượng quyền sử dụng đất vô hiệu”</span>.
+                  </p>
+                  <p>
+                    Nay tôi làm đơn này yêu cầu Chánh án Tòa án nhân dân tối cao; Viện trưởng Viện kiểm sát nhân dân tối cao xem xét lại Bản án sơ thẩm và bản án phúc thẩm:
+                  </p>
+                  <p>
+                    + Bản án phúc thẩm số: 120/2026/DS-PT ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh và bản án sơ thẩm số: 122/2025/DS-ST ngày 22-9-2025 của Tòa án nhân dân khu vực 11-Tây Ninh với những nội dung và nhận định như sau:
+                  </p>
+                  
+                  <div className="border-t border-[#eee] pt-2 mt-4">
+                    <span className="font-bold block mb-1">Về vấn đề trước khi tôi khởi kiện:</span>
+                    <p className="text-[10px] text-[#444] italic">
+                      Tháng 4 năm 2024, tôi có khởi kiện ông Phạm Văn Bốn và bà Nguyễn Thị Đào số tiền 700.000.000 đồng. Đến ngày 21-8-2024, Tòa án nhân dân huyện Dương Minh Châu xét xử vụ án bằng bản án dân sự sơ thẩm số: 118/2024/DS-ST buộc các bên thực thi trách nhiệm...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhList: ToTrinh[], setToTrinhList: React.Dispatch<React.SetStateAction<ToTrinh[]>>, currentRole: string }) => {
   const [activeTab, setActiveTab] = useState<"all" | "cho_duyet" | "da_duyet" | "tu_choi">("all");
@@ -4609,10 +5204,12 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
         </div>
       </div>
 
-      {/* === POPUP DUYỆT === */}
       {showDuyetPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-[6px] shadow-2xl w-[1100px] max-h-[92vh] flex flex-col overflow-hidden">
+        showDuyetPopup.loai.toLowerCase().includes("tờ trình") || showDuyetPopup.loai.toLowerCase().includes("to trinh") ? (
+          <PopupLanhDaoPheDuyetYkien onClose={() => setShowDuyetPopup(null)} initialLoaiDeXuat={showDuyetPopup.loai} />
+        ) : (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+            <div className="bg-white rounded-[6px] shadow-2xl w-[1100px] max-h-[92vh] flex flex-col overflow-hidden">
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
@@ -4733,43 +5330,6 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                     />
                   </div>
 
-                  {/* Next person selection */}
-                  {showDuyetPopup.trangThai === "Chờ duyệt" && (
-                    <div className="border border-[#e8f4ff] rounded-[4px] p-3 bg-[#f8fbff]">
-                      <div className="text-[12px] font-semibold text-[#1a5a96] mb-2">Chuyển tiếp cho</div>
-                      <div className="flex gap-4 mb-2">
-                        <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                          <input type="radio" name="popupNextType" value="duyet" checked={nextPersonType === "duyet"} onChange={() => setNextPersonType("duyet")} className="accent-[#1d2e4f]" />
-                          <span>Người duyệt</span>
-                        </label>
-                        <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                          <input type="radio" name="popupNextType" value="ky" checked={nextPersonType === "ky"} onChange={() => setNextPersonType("ky")} className="accent-[#1d2e4f]" />
-                          <span>Người ký</span>
-                        </label>
-                      </div>
-                      <select
-                        value={nextPerson}
-                        onChange={e => setNextPerson(e.target.value)}
-                        className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] outline-none bg-white"
-                      >
-                        {nextPersonType === "duyet" ? (
-                          <>
-                            <option value="">-- Chọn người duyệt --</option>
-                            <option value="Trần Văn B">Trần Văn B - Trưởng phòng</option>
-                            <option value="Lê Thị C">Lê Thị C - Phó phòng</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="">-- Chọn người ký --</option>
-                            <option value="Nguyễn Minh An">Nguyễn Minh An - Phó Chánh văn phòng</option>
-                            <option value="Hoàng Kim Long">Hoàng Kim Long - Chánh văn phòng</option>
-                            <option value="Nguyễn Hòa Bình">Nguyễn Hòa Bình - Chánh án</option>
-                            <option value="Nguyễn Trí Tuệ">Nguyễn Trí Tuệ - Phó Chánh án TT</option>
-                          </>
-                        )}
-                      </select>
-                    </div>
-                  )}
 
                 </div>
 
@@ -4873,7 +5433,8 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
             </div>
           </div>
         </div>
-      )}
+          )
+        )}
     </div>
   );
 };
@@ -4884,87 +5445,113 @@ export default function App() {
   const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
     {
       id: "TT-2026-001",
-      tenVuAn: "Vụ án dân sự số 41/2024/DS-PT - TAND tỉnh Bắc Ninh",
-      noiDung: "Phân công Thẩm phán giải quyết đơn đề nghị giám đốc thẩm",
-      loai: "Tờ trình phân công thẩm phán",
+      tenVuAn: "Đơn đề nghị số 41/2024/DS-PT - TAND tỉnh Bắc Ninh",
+      noiDung: "V/v Xác nhận đã thụ lý hồ sơ giám đốc thẩm",
+      loai: "Giấy xác nhận",
       nguoiDeXuat: "Vũ Văn Yên",
       ngayDeXuat: "30/07/2026 08:15",
       trangThai: "Chờ duyệt",
       yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" },
-        { maDon: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", thamPhan: "Nguyễn Như Thắng" },
-      ],
+      danhSachDon: [{ maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" }],
     },
     {
       id: "TT-2026-002",
-      tenVuAn: "Vụ án hình sự số 33/2024/HS-GDT - TAND cấp cao tại Hà Nội",
-      noiDung: "Phân công Thẩm phán giải quyết đơn kiến nghị giám đốc thẩm hình sự",
-      loai: "Tờ trình phân công thẩm phán",
+      tenVuAn: "Đơn chuyển giao hồ sơ của TAND tỉnh Bắc Giang",
+      noiDung: "V/v Xác nhận cơ quan chuyển đơn hợp lệ",
+      loai: "Giấy xác nhận cơ quan chuyển đơn",
       nguoiDeXuat: "Phùng Trâm Anh",
       ngayDeXuat: "29/07/2026 14:32",
       trangThai: "Chờ duyệt",
       yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7028", nguoiGui: "Lê Thị Mai", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7027", nguoiGui: "Nguyễn Thị Hoa", thamPhan: "Trần Văn Bình" },
-        { maDon: "Mã 7022", nguoiGui: "Hoàng Minh Tú", thamPhan: "Trần Văn Bình" },
-      ],
+      danhSachDon: [{ maDon: "Mã 7028", nguoiGui: "Lê Thị Mai", thamPhan: "Nguyễn Như Thắng" }],
     },
     {
       id: "TT-2026-003",
-      tenVuAn: "Vụ án dân sự số 112/2025/DS-GDT - TAND tỉnh Phú Thọ",
-      noiDung: "Phân công Thẩm phán - Tờ trình tháng 7/2026 (Vụ Dân sự)",
-      loai: "Tờ trình phân công thẩm phán",
+      tenVuAn: "Vụ án dân sự số 112/2025/DS-GDT",
+      noiDung: "V/v Chuyển hồ sơ giải quyết nội bộ vụ án dân sự",
+      loai: "Công văn chuyển nội bộ",
       nguoiDeXuat: "Vũ Văn Yên",
       ngayDeXuat: "28/07/2026 09:00",
-      trangThai: "Đã duyệt",
-      yKienLanhDao: "Đồng ý phân công theo đề xuất của Văn phòng. Yêu cầu thực hiện đúng tiến độ.",
-      danhSachDon: [
-        { maDon: "Mã 7022", nguoiGui: "Hoàng Minh Tú", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7021", nguoiGui: "Phạm Thị Ngọc", thamPhan: "Nguyễn Như Thắng" },
-      ],
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7022", nguoiGui: "Hoàng Minh Tú", thamPhan: "Nguyễn Như Thắng" }],
     },
     {
       id: "TT-2026-004",
-      tenVuAn: "Vụ án kinh doanh thương mại số 89/2025/KDTM-GDT",
-      noiDung: "Phân công Thẩm phán giải quyết đơn kiến nghị (bổ sung tháng 7)",
-      loai: "Tờ trình phân công thẩm phán",
+      tenVuAn: "Đơn tranh chấp thương mại số 89/2025/KDTM-GDT",
+      noiDung: "V/v Chuyển đơn sang Tòa án nhân dân cấp cao tại Đà Nẵng",
+      loai: "Công văn chuyển tòa khác",
       nguoiDeXuat: "Phùng Trâm Anh",
       ngayDeXuat: "25/07/2026 16:45",
-      trangThai: "Từ chối",
-      yKienLanhDao: "Cần bổ sung thêm thông tin về thủ tục tố tụng. Đề nghị làm lại tờ trình.",
-      danhSachDon: [
-        { maDon: "Mã 7026", nguoiGui: "Trần Văn Bình", thamPhan: "" },
-      ],
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7026", nguoiGui: "Trần Văn Bình", thamPhan: "" }],
     },
     {
       id: "TT-2026-005",
       tenVuAn: "Vụ án hành chính số 15/2026/HC-GDT - TAND tỉnh Hà Nam",
-      noiDung: "Phân công Thẩm phán xét xử giám đốc thẩm vụ hành chính",
-      loai: "Tờ trình xét xử GĐT",
+      noiDung: "V/v Chuyển hồ sơ ngoài ngành liên quan khiếu kiện",
+      loai: "Công văn chuyển ngoài",
       nguoiDeXuat: "Vũ Văn Yên",
       ngayDeXuat: "22/07/2026 10:20",
-      trangThai: "Đã duyệt",
-      yKienLanhDao: "Phê duyệt. Giao VP theo dõi, đôn đốc thực hiện.",
-      danhSachDon: [
-        { maDon: "Mã 7030", nguoiGui: "Nguyễn Văn Quyền", thamPhan: "Nguyễn Như Thắng" },
-      ],
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7030", nguoiGui: "Nguyễn Văn Quyền", thamPhan: "Nguyễn Như Thắng" }],
     },
     {
       id: "TT-2026-006",
-      tenVuAn: "Đơn đề nghị giám đốc thẩm số 54682577 - TAND tỉnh Bắc Ninh",
-      noiDung: "Tờ trình bổ sung danh sách thẩm phán tháng 7 (đợt 2)",
-      loai: "Tờ trình phân công thẩm phán",
+      tenVuAn: "Đơn đề nghị giám đốc thẩm số 54682577",
+      noiDung: "Quyết định trả lại đơn đề nghị giám đốc thẩm do hết thời hạn",
+      loai: "Trả lại đơn",
       nguoiDeXuat: "Vũ Văn Yên",
       ngayDeXuat: "30/07/2026 17:41",
       trangThai: "Chờ duyệt",
       yKienLanhDao: "",
-      danhSachDon: [
-        { maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" },
-        { maDon: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", thamPhan: "Nguyễn Như Thắng" },
-        { maDon: "Mã 7028", nguoiGui: "Lê Thị Mai", thamPhan: "Nguyễn Như Thắng" },
-      ],
+      danhSachDon: [{ maDon: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", thamPhan: "Nguyễn Văn Hiền" }],
+    },
+    {
+      id: "TT-2026-007",
+      tenVuAn: "Vụ án hình sự sơ thẩm quận Hoàn Kiếm",
+      noiDung: "Tờ trình phân công thẩm phán chủ trì giải quyết vụ án",
+      loai: "Tờ trình phân công",
+      nguoiDeXuat: "Phạm Minh Đức",
+      ngayDeXuat: "31/07/2026 09:30",
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7040", nguoiGui: "TAND Quận Hoàn Kiếm", thamPhan: "" }],
+    },
+    {
+      id: "TT-2026-008",
+      tenVuAn: "Yêu cầu giám định tài chính doanh nghiệp",
+      noiDung: "Tờ trình đề xuất chi phí giám định tư pháp bổ sung",
+      loai: "Tờ trình khác",
+      nguoiDeXuat: "Đỗ Thu Trang",
+      ngayDeXuat: "01/08/2026 14:15",
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7041", nguoiGui: "Ngân hàng Nhà nước", thamPhan: "" }],
+    },
+    {
+      id: "TT-2026-009",
+      tenVuAn: "Vụ án dân sự tranh chấp đất đai tại Từ Sơn",
+      noiDung: "Thông báo phân công Thẩm phán Nguyễn Như Thắng",
+      loai: "Thông báo phân công TP",
+      nguoiDeXuat: "Nguyễn Văn Hiền",
+      ngayDeXuat: "01/08/2026 16:00",
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7042", nguoiGui: "TAND TP Từ Sơn", thamPhan: "" }],
+    },
+    {
+      id: "TT-2026-010",
+      tenVuAn: "Tranh chấp ly hôn có yếu tố nước ngoài",
+      noiDung: "Yêu cầu đương sự bổ sung tài liệu hợp pháp hóa lãnh sự",
+      loai: "Yêu cầu bổ sung",
+      nguoiDeXuat: "Trần Thị Lan",
+      ngayDeXuat: "02/08/2026 10:00",
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: [{ maDon: "Mã 7043", nguoiGui: "Lê Văn Tám", thamPhan: "" }],
     },
   ]);
 
