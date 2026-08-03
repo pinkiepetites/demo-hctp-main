@@ -2,3 +2,8 @@ node_modules
 dist
 .env
 .DS_Store
+
+# BMAD — công cụ cài cục bộ, không đưa vào repo
+.claude/
+_bmad/
+_bmad-output/
