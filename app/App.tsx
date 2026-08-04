@@ -4,12 +4,15 @@ import {
   ChevronUp, Search, ZoomIn, ZoomOut, RotateCcw, Download, Upload,
   Eye, Printer, Menu, PenLine, FolderOpen, LayoutTemplate,
   MessageSquare, Copy, CopyPlus, Home, LayoutList, Mail, List,
-  Users, ArrowDownToLine, ArrowUpFromLine, Archive, Clock,
+  Users, ArrowDownToLine, Archive, Clock,
   Gavel, Scale, Settings, RefreshCw, Send, GitMerge, Check, Save, Pencil, ChevronLeft,
   AlertCircle, Bell, FilePlus, Loader2, Ban, Inbox, ArrowLeft, History as HistoryIcon
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+// Module hình sự (GĐT/TT) — nội dung không kèm sidebar, nhúng vào shell bên dưới.
+import { HinhSuContent } from "@/app/App";
+import type { View as HinhSuView } from "@/app/Sidebar";
 
 // ─── Color tokens matching the real system ───────────────────────────────────
 // Primary red: #8b1a1a (dark crimson) — matches system buttons
@@ -572,11 +575,17 @@ const DonFields = () => {
 };
 
 // ─── Sidebar navigation ──────────────────────────────────────────────────────
+// Các màn của module GĐT/TT gộp chung dưới mục "Nhận đơn và TL vụ án".
+const HS_NHAN_DON = [
+  "chua-co-vu-an", "cho-y-kien", "da-co-vu-an",
+  "ho-so-khang-nghi", "giao-tieu-ho-so", "them-ho-so",
+];
+const HS_AN_TU_HINH = ["don-an-giam", "ho-so-tu-hinh"];
+
 const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: string) => void }) => {
   const [quanLyDonOpen, setQuanLyDonOpen] = useState(true);
   const [hinhSuOpen, setHinhSuOpen] = useState(false);
-  const [thiHanhAnOpen, setThiHanhAnOpen] = useState(false);
-  const [tichHopOpen, setTichHopOpen] = useState(false);
+  const [anTuHinhOpen, setAnTuHinhOpen] = useState(false);
   const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
 
   const SubItem = ({ icon, label, active, nav }: { icon: React.ReactNode; label: string; active?: boolean; nav?: string }) => (
@@ -633,16 +642,54 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
           {quanLyDonOpen && (
             <div className="pb-1">
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
-              <SubItem icon={<FileText size={13} />} label="Vụ án TPB3 đề xuất kháng..." />
               <SubItem icon={<Users size={13} />} label="Phân công thẩm phán" active={activePage === "phancong"} nav="phancong" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Nhận đơn từ tòa khác" />
-              <SubItem icon={<FolderOpen size={13} />} label="Kháng cáo" />
-              <SubItem icon={<FileText size={13} />} label="Kháng nghị" />
-              <SubItem icon={<Clock size={13} />} label="Giải quyết KC quá hạn" />
-              <SubItem icon={<FileText size={13} />} label="Đơn khởi kiện / yêu cầu" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Đơn chuyển đến" />
-              <SubItem icon={<ArrowUpFromLine size={13} />} label="Đơn chuyển đi" />
-              <SubItem icon={<Archive size={13} />} label="Hồ sơ tổng hợp vụ án" />
+            </div>
+          )}
+        </div>
+
+        {/* Quản lý án GĐT/TT — các mục nav dùng tiền tố "hs:" */}
+        <div>
+          <GroupItem icon={<Scale size={15} />} label="Quản lý án GĐT/TT"
+            open={hinhSuOpen} onToggle={() => setHinhSuOpen(!hinhSuOpen)} />
+          {hinhSuOpen && (
+            <div className="pb-1">
+              <SubItem icon={<Inbox size={13} />} label="Nhận đơn và TL vụ án"
+                active={HS_NHAN_DON.some(v => activePage === `hs:${v}`)} nav="hs:chua-co-vu-an" />
+              <SubItem icon={<FolderOpen size={13} />} label="Quản lý vụ án"
+                active={activePage === "hs:quan-ly-vu-an"} nav="hs:quan-ly-vu-an" />
+              <SubItem icon={<Users size={13} />} label="Danh sách phân công TTV"
+                active={activePage === "hs:phan-cong-ttv"} nav="hs:phan-cong-ttv" />
+              <SubItem icon={<Users size={13} />} label="Phân công Hội đồng xét xử"
+                active={activePage === "hs:phan-cong-hdxx"} nav="hs:phan-cong-hdxx" />
+              <SubItem icon={<Gavel size={13} />} label="Quản lý vụ xét xử GĐT"
+                active={activePage === "hs:quan-ly-vu-xet-xu"} nav="hs:quan-ly-vu-xet-xu" />
+              <SubItem icon={<Mail size={13} />} label="Công văn trao đổi"
+                active={activePage === "hs:cong-van-trao-doi"} nav="hs:cong-van-trao-doi" />
+
+              {/* Quản lý án tử hình — nhóm con lồng thêm 1 cấp */}
+              <div
+                onClick={() => setAnTuHinhOpen(!anTuHinhOpen)}
+                className={`flex items-center gap-2.5 px-4 py-[7px] cursor-pointer text-[13px] transition-colors rounded-[3px] mx-1
+                ${HS_AN_TU_HINH.some(v => activePage === `hs:${v}`) ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#444] hover:bg-[#f5f5f5]"}`}>
+                <span className={HS_AN_TU_HINH.some(v => activePage === `hs:${v}`) ? "text-[#8b1a1a]" : "text-[#888]"}>
+                  <Ban size={13} />
+                </span>
+                <span className="truncate flex-1">Quản lý án tử hình</span>
+                {anTuHinhOpen ? <ChevronUp size={12} className="text-[#888]" /> : <ChevronDown size={12} className="text-[#888]" />}
+              </div>
+              {anTuHinhOpen && (
+                <div className="pl-4">
+                  <SubItem icon={<FileText size={13} />} label="Đơn ân giảm"
+                    active={activePage === "hs:don-an-giam"} nav="hs:don-an-giam" />
+                  <SubItem icon={<Archive size={13} />} label="Hồ sơ tử hình"
+                    active={activePage === "hs:ho-so-tu-hinh"} nav="hs:ho-so-tu-hinh" />
+                </div>
+              )}
+
+              <SubItem icon={<Settings size={13} />} label="Cấu hình TTV báo cáo"
+                active={activePage === "hs:cau-hinh-ttv"} nav="hs:cau-hinh-ttv" />
+              <SubItem icon={<Check size={13} />} label="Phê duyệt đề xuất GĐT/TT"
+                active={activePage === "hs:phe-duyet-de-xuat"} nav="hs:phe-duyet-de-xuat" />
             </div>
           )}
         </div>
@@ -658,29 +705,6 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
           )}
         </div>
 
-        {/* Hình sự */}
-        <div>
-          <GroupItem icon={<Scale size={15} />} label="Hình sự"
-            open={hinhSuOpen} onToggle={() => setHinhSuOpen(!hinhSuOpen)} />
-        </div>
-
-        {/* Thi hành án */}
-        <div>
-          <GroupItem icon={<Gavel size={15} />} label="Thi hành án"
-            open={thiHanhAnOpen} onToggle={() => setThiHanhAnOpen(!thiHanhAnOpen)} />
-        </div>
-
-        {/* Cấu hình chung */}
-        <div className="flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors text-[13px] text-[#333]">
-          <Settings size={15} className="text-[#666]" />
-          <span>Cấu hình chung</span>
-        </div>
-
-        {/* Tích hợp - Đồng bộ */}
-        <div>
-          <GroupItem icon={<RefreshCw size={15} />} label="Tích hợp - Đồng bộ"
-            open={tichHopOpen} onToggle={() => setTichHopOpen(!tichHopOpen)} />
-        </div>
       </nav>
     </div>
   );
@@ -6230,7 +6254,13 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
 
 
 export default function App() {
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet">("list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "hinh_su">("list");
+
+  // Module hình sự: `hinhSuNav` là lệnh điều hướng gửi vào (seq tăng mỗi click
+  // để bấm lại cùng một mục vẫn thoát được khỏi màn chi tiết), `hinhSuActive`
+  // là mục module báo ngược ra để sidebar tô sáng.
+  const [hinhSuNav, setHinhSuNav] = useState<{ view: HinhSuView; seq: number }>({ view: "chua-co-vu-an", seq: 0 });
+  const [hinhSuActive, setHinhSuActive] = useState<HinhSuView>("chua-co-vu-an");
   const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
     {
       id: "TT-2026-001",
@@ -6614,12 +6644,23 @@ export default function App() {
       <div className="flex" style={{ height: "calc(100vh - 46px)" }}>
 
         {/* Sidebar */}
-        <Sidebar activePage={view} onNav={(page) => setView(page as any)} />
+        <Sidebar
+          activePage={view === "hinh_su" ? `hs:${hinhSuActive}` : view}
+          onNav={(page) => {
+            if (page.startsWith("hs:")) {
+              setView("hinh_su");
+              setHinhSuNav((n) => ({ view: page.slice(3) as HinhSuView, seq: n.seq + 1 }));
+            } else {
+              setView(page as any);
+            }
+          }}
+        />
 
         {/* Main content area */}
         <div className="flex-1 flex flex-col overflow-hidden">
 
-          {/* Breadcrumb */}
+          {/* Breadcrumb — module hình sự tự render breadcrumb riêng của nó */}
+          {view !== "hinh_su" && (
           <div className="bg-white border-b border-[#ddd] px-4 py-[6px] flex items-center gap-1 text-[12px] text-[#666] flex-shrink-0">
             <span className="text-[#1a5a96] hover:underline cursor-pointer">Trang chủ</span>
             <ChevronRight size={12} />
@@ -6662,6 +6703,12 @@ export default function App() {
                         </>
             }
           </div>
+          )}
+
+          {/* Module Quản lý án GĐT/TT */}
+          {view === "hinh_su" && (
+            <HinhSuContent nav={hinhSuNav} onViewChange={setHinhSuActive} />
+          )}
 
           {/* Home view */}
           {view === "home" && (

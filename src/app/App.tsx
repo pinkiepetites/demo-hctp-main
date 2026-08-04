@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search, Grid3X3, Bell, Moon, RefreshCw, Eye,
   ChevronDown, ChevronUp, RotateCcw, X, Save, Printer,
@@ -3159,7 +3159,25 @@ function DonAnGiamView() {
 
 type AppView = "list" | "giao-tieu-ho-so" | "them-ho-so" | "phan-cong-ttv" | "cau-hinh-ttv" | "quan-ly-vu-an" | "chi-tiet-vu-an" | "don-an-giam" | "ho-so-tu-hinh" | "cong-van-trao-doi" | "phan-cong-hdxx" | "quan-ly-vu-xet-xu" | "phe-duyet-de-xuat";
 
-export default function App() {
+/**
+ * Toàn bộ nội dung của module hình sự, KHÔNG kèm Sidebar.
+ * Dùng được ở 2 chỗ: app độc lập (App bên dưới) và nhúng vào shell của app
+ * chính ở app/App.tsx — nơi đã có sẵn sidebar + thanh top riêng.
+ *
+ * - `nav`  : lệnh điều hướng từ sidebar bên ngoài. `seq` tăng mỗi lần click để
+ *            bấm lại cùng một mục vẫn quay được về màn danh sách của mục đó.
+ * - `showTopBar` : app chính đã có top bar riêng nên mặc định tắt.
+ * - `onViewChange`: báo ngược ra ngoài mục nào đang active để sidebar tô sáng.
+ */
+export function HinhSuContent({
+  nav,
+  showTopBar = false,
+  onViewChange,
+}: {
+  nav?: { view: View; seq: number };
+  showTopBar?: boolean;
+  onViewChange?: (v: View) => void;
+}) {
   const [appView, setAppView] = useState<AppView>("list");
   const [activeTab, setActiveTab] = useState<TabId>("chua-co-vu-an");
   const [filterExpanded, setFilterExpanded] = useState(false);
@@ -3212,12 +3230,19 @@ export default function App() {
     setAppView("chi-tiet-vu-an");
   };
 
-  return (
-    <div style={{ display: "flex", width: "100vw", height: "100vh", fontFamily: F, overflow: "hidden", background: "#f9fafb" }}>
-      <Sidebar currentView={sidebarView} onNavigate={handleSidebarNav} />
+  // Điều hướng do sidebar bên ngoài phát ra.
+  useEffect(() => {
+    if (nav) handleSidebarNav(nav.view);
+  }, [nav?.view, nav?.seq]);
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
-        <TopBar />
+  // Trả ngược mục đang active để sidebar bên ngoài tô sáng đúng.
+  useEffect(() => {
+    onViewChange?.(sidebarView);
+  }, [sidebarView]);
+
+  return (
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0, fontFamily: F, background: "#f9fafb" }}>
+        {showTopBar && <TopBar />}
 
         {appView === "phan-cong-ttv" ? (
           <PhanCongTTVView />
@@ -3267,6 +3292,20 @@ export default function App() {
           </>
         )}
       </div>
+  );
+}
+
+export default function App() {
+  const [nav, setNav] = useState<{ view: View; seq: number }>({ view: "chua-co-vu-an", seq: 0 });
+  const [activeView, setActiveView] = useState<View>("chua-co-vu-an");
+
+  return (
+    <div style={{ display: "flex", width: "100vw", height: "100vh", fontFamily: F, overflow: "hidden", background: "#f9fafb" }}>
+      <Sidebar
+        currentView={activeView}
+        onNavigate={(v) => setNav((n) => ({ view: v, seq: n.seq + 1 }))}
+      />
+      <HinhSuContent nav={nav} showTopBar onViewChange={setActiveView} />
     </div>
   );
 }
