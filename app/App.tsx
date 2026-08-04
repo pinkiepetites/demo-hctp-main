@@ -1304,14 +1304,14 @@ const PopupGhepDon = ({
         <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <GitMerge size={15} />
-            <span className="text-[14px] font-semibold">Ghép đơn từ danh sách hệ thống</span>
+            <span className="text-[14px] font-semibold">Ghép đơn</span>
           </div>
           <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
         </div>
 
         {/* Đơn chính info bar */}
         <div className="px-4 pt-3 pb-3 bg-[#f9f9f9] border-b border-[#eee]">
-          <p className="text-[12px] text-[#555] mb-2">Đơn gốc đang thao tác:</p>
+          <p className="text-[12px] text-[#555] mb-2">Đơn chính (đang chọn ghép vào)</p>
           <div className="flex items-center gap-6 text-[12px]">
             <div className="flex items-center gap-2">
               <span className="text-[#888]">Mã đơn:</span>
@@ -1340,7 +1340,7 @@ const PopupGhepDon = ({
 
         {/* Table — Danh sách đơn có thể ghép */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          <p className="text-[12px] font-semibold text-[#333] mb-2">Chọn đơn trùng để ghép:</p>
+          <p className="text-[12px] font-semibold text-[#333] mb-2">Danh sách đơn có thể ghép</p>
           {eligibleCandidates.length === 0 ? (
             <div className="text-[13px] text-[#999] italic py-4 text-center">Không có đơn đủ điều kiện ghép</div>
           ) : (
@@ -1354,9 +1354,10 @@ const PopupGhepDon = ({
                       onChange={e => setSelected(e.target.checked ? eligibleCandidates.map(r => r.id) : [])} />
                   </th>
                   <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Mã đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Người gửi</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Bản án/Quyết định</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin bản án</th>
                   <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Ngày nhập</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Người nhập</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
@@ -1370,23 +1371,42 @@ const PopupGhepDon = ({
                         onClick={e => e.stopPropagation()} />
                     </td>
                     <td className="border border-[#ddd] px-3 py-[6px] font-medium text-[#1a5a96]">{r.maDon}</td>
-                    <td className="border border-[#ddd] px-3 py-[6px]">{r.nguoiGui}</td>
                     <td className="border border-[#ddd] px-3 py-[6px]">
-                       {r.soBA ? `${r.soBA} (${r.ngayBA})` : "—"}
+                      {r.soBA && (
+                        <div className="leading-snug space-y-[1px]">
+                          <div><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{r.soBA}</span></div>
+                          <div><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{r.ngayBA}</span></div>
+                          <div><span className="text-[#888]">Tòa XX: </span><span className="text-[#555]">{r.toaBA}</span></div>
+                        </div>
+                      )}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-[6px]">{r.ngayNhap}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.nguoiNhap ?? "—"}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px]">
+                      <span className="inline-block px-2 py-[2px] rounded text-[11px] font-medium bg-[#27ae60] text-white">{r.trangThai}</span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+          {selected.length > 0 && (
+            <p className="text-[12px] text-[#1d2e4f] mt-2 font-medium">Đã chọn {selected.length} đơn để ghép.</p>
+          )}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
-          <button onClick={onClose} className="px-4 py-1.5 text-[12px] border border-[#ccc] rounded-[3px] hover:bg-gray-100">Hủy</button>
-          <button onClick={() => onNext(eligibleCandidates.filter(r => selected.includes(r.id)))} disabled={selected.length === 0}
-            className="px-4 py-1.5 text-[12px] bg-[#8b1a1a] text-white rounded-[3px] disabled:opacity-50">Tiếp tục</button>
+          <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
+          <BtnPrimary
+            disabled={selected.length === 0}
+            onClick={() => {
+              if (selected.length === 0) return;
+              onNext(eligibleCandidates.filter(r => selected.includes(r.id)));
+            }}
+          >
+            <GitMerge size={13} /> Tiếp tục
+          </BtnPrimary>
         </div>
       </div>
     </div>
@@ -1402,6 +1422,7 @@ const PopupXacNhanGhep = ({
   onClose: () => void;
   onConfirm: () => void;
 }) => {
+  // Build full list: đơn chính + các đơn ghép
   const allDons = [
     { id: -1, maDon: donChinh.maDon, nguoiGui: donChinh.nguoiGui, nguoiNhap: donChinh.nguoiNhap ?? CURRENT_USER, cuaToi: donChinh.cuaToi ?? true, soBA: donChinh.soBA, ngayBA: donChinh.ngayBA, toaBA: donChinh.toaXetXu, ngayNhap: "", trangThai: "" },
     ...donGhep.map(d => ({ ...d, nguoiNhap: d.nguoiNhap ?? "—", cuaToi: d.cuaToi ?? false })),
@@ -1410,34 +1431,63 @@ const PopupXacNhanGhep = ({
   const myDons = allDons.filter(d => d.cuaToi);
   const othersDons = allDons.filter(d => !d.cuaToi);
   const hasOthers = othersDons.length > 0;
-  const twoExactly = allDons.length === 2;
+  const twoExactly = allDons.length === 2; // 2 đơn tổng: 1 của tôi + 1 người khác
+
+  // Đơn chính mặc định: đơn đầu tiên của tôi, nếu không có → đơn đầu tiên
   const defaultChinh = myDons[0]?.id ?? allDons[0]?.id ?? -1;
   const [donChinhId, setDonChinhId] = useState<number>(defaultChinh);
+
+  // Yêu cầu bổ sung liên quan (multi-select, chỉ khi có đơn Chưa đủ điều kiện)
   const coChưaDuDK = donGhep.some(d => d.trangThai === "Chưa đủ điều kiện");
+  const YEU_CAU_BOSUNG_OPTIONS = [
+    "Yêu cầu cung cấp bản án gốc",
+    "Yêu cầu xác nhận tư cách tố tụng",
+    "Yêu cầu bổ sung tài liệu chứng minh",
+    "Yêu cầu xác nhận đương sự",
+  ];
   const [selectedYeuCau, setSelectedYeuCau] = useState<string[]>([]);
   const toggleYeuCau = (v: string) => setSelectedYeuCau(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+
+  // Kiểm tra xem đơn đang chọn làm chính có hợp lệ không
+  const selectedDon = allDons.find(d => d.id === donChinhId);
+  const chinhIsMine = selectedDon?.cuaToi ?? true;
+
+  // Nếu ghép nhiều đơn (>=3): chỉ được chọn đơn của mình
+  // Nếu đúng 2 đơn (1 của tôi + 1 người khác): cho phép chọn đơn người khác
   const canSelectOthersAsChinh = twoExactly && myDons.length === 1 && othersDons.length === 1;
 
   const isRadioDisabled = (don: typeof allDons[0]) => {
-    if (!hasOthers) return false;
-    if (canSelectOthersAsChinh) return false;
-    return !don.cuaToi;
+    if (!hasOthers) return false; // toàn bộ của mình → tự do
+    if (canSelectOthersAsChinh) return false; // 2 đơn 1-1 → tự do
+    return !don.cuaToi; // nhiều đơn có người khác → chỉ chọn đơn của mình
   };
+
+  // Xác định luồng: cần gửi yêu cầu hay ghép thẳng?
+  const needsRequest = hasOthers; // có bất kỳ đơn người khác → cần yêu cầu
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-[680px] max-h-[90vh] flex flex-col border border-[#bbb]">
+        {/* Header */}
         <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <Check size={15} />
-            <span className="text-[14px] font-semibold">Xác nhận đơn chính</span>
+            <span className="text-[14px] font-semibold">Xác nhận ghép đơn</span>
           </div>
           <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+          {/* Hướng dẫn */}
+          {hasOthers && !chinhIsMine && (
+            <div className="bg-[#fff8e1] border border-[#f0c040] rounded-[3px] px-3 py-2 text-[12px] text-[#7a5c00]">
+              Đơn chính là của người khác. Hệ thống sẽ gửi yêu cầu xác nhận đến người nhập đơn chính.
+            </div>
+          )}
+
+          {/* Danh sách tất cả đơn — chọn đơn chính qua Radio */}
           <div>
-            <p className="text-[12px] font-semibold text-[#333] mb-2">Chọn đơn làm gốc:</p>
+            <p className="text-[12px] font-semibold text-[#333] mb-2">Chọn đơn chính</p>
             <div className="space-y-2">
               {allDons.map(d => {
                 const isChinh = d.id === donChinhId;
@@ -1445,9 +1495,14 @@ const PopupXacNhanGhep = ({
                 return (
                   <div key={d.id}
                     onClick={() => !disabled && setDonChinhId(d.id)}
-                    className={`border rounded-[3px] px-3 py-2 text-[12px] flex items-center gap-3 transition-colors
+                    className={`border rounded-[3px] px-3 py-2 text-[12px] flex items-start gap-3 transition-colors
                       ${isChinh ? "border-[#1d2e4f] bg-[#f0f7ff]" : "border-[#ddd] bg-white"}
                       ${disabled ? "opacity-50" : "cursor-pointer hover:border-[#8b1a1a] hover:bg-[#fdeaea]"}`}>
+                    <input
+                      type="radio"
+                      name="don-chinh"
+                      checked={isChinh}
+                      disabled={disabled}
                       onChange={() => !disabled && setDonChinhId(d.id)}
                       onClick={e => e.stopPropagation()}
                       className="mt-[2px] w-[14px] h-[14px] accent-[#8b1a1a] flex-shrink-0"
