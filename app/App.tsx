@@ -574,8 +574,6 @@ const DonFields = () => {
 // ─── Sidebar navigation ──────────────────────────────────────────────────────
 const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: string) => void }) => {
   const [quanLyDonOpen, setQuanLyDonOpen] = useState(true);
-  const [hinhSuOpen, setHinhSuOpen] = useState(false);
-  const [thiHanhAnOpen, setThiHanhAnOpen] = useState(false);
   const [tichHopOpen, setTichHopOpen] = useState(false);
   const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
 
@@ -633,16 +631,8 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
           {quanLyDonOpen && (
             <div className="pb-1">
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
-              <SubItem icon={<FileText size={13} />} label="Vụ án TPB3 đề xuất kháng..." />
+              <SubItem icon={<Gavel size={13} />} label="Hồ sơ kháng nghị" active={activePage === "khangnghi"} nav="khangnghi" />
               <SubItem icon={<Users size={13} />} label="Phân công thẩm phán" active={activePage === "phancong"} nav="phancong" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Nhận đơn từ tòa khác" />
-              <SubItem icon={<FolderOpen size={13} />} label="Kháng cáo" />
-              <SubItem icon={<FileText size={13} />} label="Kháng nghị" />
-              <SubItem icon={<Clock size={13} />} label="Giải quyết KC quá hạn" />
-              <SubItem icon={<FileText size={13} />} label="Đơn khởi kiện / yêu cầu" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Đơn chuyển đến" />
-              <SubItem icon={<ArrowUpFromLine size={13} />} label="Đơn chuyển đi" />
-              <SubItem icon={<Archive size={13} />} label="Hồ sơ tổng hợp vụ án" />
             </div>
           )}
         </div>
@@ -656,18 +646,6 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
               <SubItem icon={<Check size={13} />} label="Phê duyệt đề xuất" active={activePage === "phe_duyet"} nav="phe_duyet" />
             </div>
           )}
-        </div>
-
-        {/* Hình sự */}
-        <div>
-          <GroupItem icon={<Scale size={15} />} label="Hình sự"
-            open={hinhSuOpen} onToggle={() => setHinhSuOpen(!hinhSuOpen)} />
-        </div>
-
-        {/* Thi hành án */}
-        <div>
-          <GroupItem icon={<Gavel size={15} />} label="Thi hành án"
-            open={thiHanhAnOpen} onToggle={() => setThiHanhAnOpen(!thiHanhAnOpen)} />
         </div>
 
         {/* Cấu hình chung */}
@@ -735,14 +713,21 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
 };
 
 // ─── Popup Ghép đơn ──────────────────────────────────────────────────────────
-interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; }
+interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; nguoiNhap?: string; cuaToi?: boolean; yeuCauBosung?: { soTB: string; ngayGui: string }[]; }
 
 const GHEP_CANDIDATES: GhepRow[] = [
-  { id: 10, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh" },
-  { id: 11, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc" },
-  { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN" },
-  { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam" },
+  { id: 10, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 11, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false,
+    yeuCauBosung: [
+      { soTB: "TB-01", ngayGui: "16/07/2026" },
+      { soTB: "TB-02", ngayGui: "18/07/2026" },
+    ],
+  },
+  { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
+  { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
 ];
+
+const VALID_GHEP_STATUSES = ["Thụ lý mới", "Đã thụ lý", "Chưa đủ điều kiện"];
 
 // ─── Popup Tải lên tài liệu / OCR ────────────────────────────────────────────
 const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload: (f: OcrFile) => void }) => {
@@ -1270,10 +1255,13 @@ const PopupBoSungTaiLieu = ({ onClose, donId }: { onClose: () => void, donId: nu
 };
 
 
+// Current logged-in user (mock)
+const CURRENT_USER = "Nguyễn Minh An";
+
 const PopupGhepDon = ({
   donChinh, onClose, onNext,
 }: {
-  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string };
+  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string; nguoiNhap?: string; cuaToi?: boolean };
   onClose: () => void;
   onNext: (selected: GhepRow[]) => void;
 }) => {
@@ -1282,31 +1270,20 @@ const PopupGhepDon = ({
     return Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year) ? new Date(0) : new Date(year, month - 1, day);
   };
 
-  const sameCaseCandidates = GHEP_CANDIDATES
-    .filter(r => donChinh.soBA && r.soBA === donChinh.soBA)
+  const eligibleCandidates = GHEP_CANDIDATES
+    .filter(r => VALID_GHEP_STATUSES.includes(r.trangThai))
     .sort((a, b) => parseDate(a.ngayNhap).getTime() - parseDate(b.ngayNhap).getTime());
 
   const [selected, setSelected] = useState<number[]>([]);
 
-  useEffect(() => {
-    if (sameCaseCandidates.length > 0) {
-      setSelected([sameCaseCandidates[0].id]);
-    }
-  }, [sameCaseCandidates]);
-
-  const sortedCandidates = [...GHEP_CANDIDATES].sort((a, b) => {
-    const aSame = donChinh.soBA && a.soBA === donChinh.soBA;
-    const bSame = donChinh.soBA && b.soBA === donChinh.soBA;
-    if (aSame !== bSame) return aSame ? -1 : 1;
-    return parseDate(a.ngayNhap).getTime() - parseDate(b.ngayNhap).getTime();
-  });
-
   const toggle = (id: number) =>
     setSelected(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
+  const allChecked = eligibleCandidates.length > 0 && selected.length === eligibleCandidates.length;
+
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[4px] shadow-2xl w-[860px] max-h-[85vh] flex flex-col border border-[#bbb]">
+      <div className="bg-white rounded-[4px] shadow-2xl w-[900px] max-h-[85vh] flex flex-col border border-[#bbb]">
         {/* Header */}
         <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
@@ -1316,10 +1293,10 @@ const PopupGhepDon = ({
           <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
         </div>
 
-        {/* Đơn chính */}
+        {/* Đơn hiện tại info bar */}
         <div className="px-4 pt-3 pb-3 bg-[#f9f9f9] border-b border-[#eee]">
-          <p className="text-[12px] text-[#555] mb-2">Đơn chính (đang chọn ghép vào)</p>
-          <div className="flex items-start gap-6 text-[12px]">
+          <p className="text-[12px] text-[#555] mb-2">Đơn hiện tại</p>
+          <div className="flex flex-wrap items-center gap-6 text-[12px]">
             <div className="flex items-center gap-2">
               <span className="text-[#888]">Mã đơn:</span>
               <span className="font-semibold text-[#1d2e4f]">{donChinh.maDon}</span>
@@ -1345,64 +1322,83 @@ const PopupGhepDon = ({
           </div>
         </div>
 
-        {/* Table */}
+        {/* Table — Danh sách đơn có thể ghép */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          <table className="w-full border-collapse text-[12px]">
-            <thead>
-              <tr className="bg-[#f5f5f5]">
-                <th className="border border-[#ddd] px-2 py-[6px] w-[36px]">
-                  <input type="checkbox"
-                    className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                    checked={selected.length === GHEP_CANDIDATES.length}
-                    onChange={e => setSelected(e.target.checked ? GHEP_CANDIDATES.map(r => r.id) : [])} />
-                </th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Mã đơn</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin bản án</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Ngày nhập</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              {GHEP_CANDIDATES.map((r, i) => (
-                <tr key={r.id} className={`cursor-pointer ${selected.includes(r.id) ? "bg-[#fdeaea]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}
-                  onClick={() => toggle(r.id)}>
-                  <td className="border border-[#ddd] px-2 py-[6px] text-center">
-                    <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                      checked={selected.includes(r.id)} onChange={() => toggle(r.id)}
-                      onClick={e => e.stopPropagation()} />
-                  </td>
-                  <td className="border border-[#ddd] px-3 py-[6px] font-medium text-[#1a5a96]">{r.maDon}</td>
-                  <td className="border border-[#ddd] px-3 py-[6px]">
-                    {r.soBA && (
-                      <div className="leading-snug space-y-[1px]">
-                        <div><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{r.soBA}</span></div>
-                        <div><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{r.ngayBA}</span></div>
-                        <div><span className="text-[#888]">Tòa XX: </span><span className="text-[#555]">{r.toaBA}</span></div>
-                      </div>
-                    )}
-                  </td>
-                  <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
-                  <td className="border border-[#ddd] px-3 py-[6px]">
-                    <span className="inline-block px-2 py-[2px] rounded text-[11px] font-medium bg-[#e67e22] text-white">{r.trangThai}</span>
-                  </td>
+          <p className="text-[12px] font-semibold text-[#333] mb-2">Danh sách đơn có thể ghép</p>
+          {eligibleCandidates.length === 0 ? (
+            <div className="text-[13px] text-[#999] italic py-4 text-center">Không có đơn có thể ghép</div>
+          ) : (
+            <table className="w-full border-collapse text-[12px]">
+              <thead>
+                <tr className="bg-[#f5f5f5]">
+                  <th className="border border-[#ddd] px-2 py-[6px] w-[36px]">
+                    <input type="checkbox"
+                      className="w-[13px] h-[13px] accent-[#8b1a1a]"
+                      checked={allChecked}
+                      onChange={e => setSelected(e.target.checked ? eligibleCandidates.map(r => r.id) : [])} />
+                  </th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Mã đơn</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin bản án</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Ngày nhập</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Người nhập</th>
+                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Trạng thái</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {eligibleCandidates.map((r, i) => (
+                  <tr key={r.id}
+                    className={`cursor-pointer ${selected.includes(r.id) ? "bg-[#eef3ff]" : i % 2 === 1 ? "bg-[#fbfbfb]" : "bg-white"}`}
+                    onClick={() => toggle(r.id)}>
+                    <td className="border border-[#ddd] px-2 py-[6px] text-center">
+                      <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
+                        checked={selected.includes(r.id)} onChange={() => toggle(r.id)}
+                        onClick={e => e.stopPropagation()} />
+                    </td>
+                    <td className="border border-[#ddd] px-3 py-[6px] align-top">
+                      <div className="font-medium text-[#1a5a96]">{r.maDon}</div>
+                      {r.cuaToi && (
+                        <div className="mt-1 inline-flex items-center rounded-[3px] bg-[#eef7ef] border border-[#c8e3c7] px-2 py-[2px] text-[11px] font-semibold text-[#23632d]">
+                          Đơn của tôi
+                        </div>
+                      )}
+                    </td>
+                    <td className="border border-[#ddd] px-3 py-[6px]">
+                      {r.soBA && (
+                        <div className="leading-snug space-y-[1px] text-[12px] text-[#333]">
+                          <div><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{r.soBA}</span></div>
+                          <div><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{r.ngayBA}</span></div>
+                          <div><span className="text-[#888]">Tòa xét xử: </span><span className="text-[#555]">{r.toaBA}</span></div>
+                        </div>
+                      )}
+                    </td>
+                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.nguoiNhap ?? "—"}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px]">
+                      <span className={`inline-block px-2 py-[2px] rounded text-[11px] font-medium
+                          ${r.trangThai === "Chưa đủ điều kiện" ? "bg-[#f9e6e2] text-[#a33a29]" : r.trangThai === "Đã thụ lý" ? "bg-[#e9eff8] text-[#2d4b74]" : "bg-[#eef5f6] text-[#285662]"}`}>
+                        {r.trangThai}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           {selected.length > 0 && (
-            <p className="text-[12px] text-[#1d2e4f] mt-2 font-medium">
-              Đã chọn {selected.length} đơn để ghép.
-            </p>
+            <p className="text-[12px] text-[#1d2e4f] mt-2 font-medium">Đã chọn {selected.length} đơn để ghép.</p>
           )}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
           <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
-          <BtnPrimary onClick={() => {
-            if (selected.length === 0) return;
-            onNext(GHEP_CANDIDATES.filter(r => selected.includes(r.id)));
-          }} className={selected.length === 0 ? "opacity-50 cursor-not-allowed" : ""}>
+          <BtnPrimary
+            disabled={selected.length === 0}
+            onClick={() => {
+              if (selected.length === 0) return;
+              onNext(eligibleCandidates.filter(r => selected.includes(r.id)));
+            }}
+          >
             <GitMerge size={13} /> Tiếp tục
           </BtnPrimary>
         </div>
@@ -1413,19 +1409,62 @@ const PopupGhepDon = ({
 
 // ─── Popup Xác nhận Ghép đơn ─────────────────────────────────────────────────
 const PopupXacNhanGhep = ({
-  donChinh, donGhep, onClose, onConfirm,
+  donChinh, donGhep, onClose, onConfirm, isRecipientConfirmation = false, onReject,
 }: {
-  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string };
+  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string; nguoiNhap?: string; cuaToi?: boolean; trangThai?: string };
   donGhep: GhepRow[];
   onClose: () => void;
   onConfirm: () => void;
+  isRecipientConfirmation?: boolean;
+  onReject?: () => void;
 }) => {
-  const [canBoB, setCanBoB] = useState(false); // TH2: cần cán bộ B xác nhận
-  const [xacNhanB, setXacNhanB] = useState(false);
+  // Build full list: đơn chính + các đơn ghép
+  const allDons = [
+    { id: -1, maDon: donChinh.maDon, nguoiGui: donChinh.nguoiGui, nguoiNhap: donChinh.nguoiNhap ?? CURRENT_USER, cuaToi: donChinh.cuaToi ?? true, soBA: donChinh.soBA, ngayBA: donChinh.ngayBA, toaBA: donChinh.toaXetXu, ngayNhap: "", trangThai: donChinh.trangThai ?? "" },
+    ...donGhep.map(d => ({ ...d, nguoiNhap: d.nguoiNhap ?? "—", cuaToi: d.cuaToi ?? false })),
+  ];
+
+  const myDons = allDons.filter(d => d.cuaToi);
+  const othersDons = allDons.filter(d => !d.cuaToi);
+  const hasOthers = othersDons.length > 0;
+  const twoExactly = allDons.length === 2; // 2 đơn tổng: 1 của tôi + 1 người khác
+
+  // Đơn chính mặc định: đơn đầu tiên của tôi, nếu không có → đơn đầu tiên
+  const defaultChinh = myDons[0]?.id ?? allDons[0]?.id ?? -1;
+  const [donChinhId, setDonChinhId] = useState<number>(defaultChinh);
+
+  // Yêu cầu bổ sung liên quan (multi-select, chỉ khi có đơn Chưa đủ điều kiện)
+  const selectedYeuCauOptions = donGhep.flatMap(d => (d.yeuCauBosung ?? []).map(item => ({
+    label: `Yêu cầu bổ sung số ${item.soTB} - đơn ${d.maDon} - ngày ${item.ngayGui}`,
+    key: `${d.maDon}-${item.soTB}-${item.ngayGui}`,
+  })));
+  const [selectedYeuCau, setSelectedYeuCau] = useState<string[]>([]);
+  const toggleYeuCau = (v: string) => setSelectedYeuCau(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+
+  const hasRequestOptions = selectedYeuCauOptions.length > 0;
+
+  // Kiểm tra xem đơn đang chọn làm chính có hợp lệ không
+  const selectedDon = allDons.find(d => d.id === donChinhId);
+  const chinhIsMine = selectedDon?.cuaToi ?? true;
+
+  // Nếu ghép nhiều đơn (>=3): chỉ được chọn đơn của mình
+  // Nếu đúng 2 đơn (1 của tôi + 1 người khác): cho phép chọn đơn người khác
+  const canSelectOthersAsChinh = twoExactly && myDons.length === 1 && othersDons.length === 1;
+
+  const isRadioDisabled = (don: typeof allDons[0]) => {
+    if (!hasOthers) return false; // toàn bộ của mình → tự do
+    if (canSelectOthersAsChinh) return false; // 2 đơn 1-1 → tự do
+    return !don.cuaToi; // nhiều đơn có người khác → chỉ chọn đơn của mình
+  };
+
+  // Xác định luồng: cần gửi yêu cầu hay ghép thẳng?
+  const needsRequest = hasOthers; // có bất kỳ đơn người khác → cần yêu cầu
+  const showSelection = !isRecipientConfirmation;
+  const showRecipientInfo = isRecipientConfirmation;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[4px] shadow-2xl w-[620px] max-h-[85vh] flex flex-col border border-[#bbb]">
+      <div className="bg-white rounded-[4px] shadow-2xl w-[680px] max-h-[90vh] flex flex-col border border-[#bbb]">
         {/* Header */}
         <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
@@ -1435,62 +1474,130 @@ const PopupXacNhanGhep = ({
           <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-          {/* Đơn chính */}
-          <div>
-            <p className="text-[12px] font-semibold text-[#333] mb-1.5">Đơn chính</p>
-            <div className="border border-[#ddd] rounded-[3px] px-3 py-2 bg-[#f0f7ff] text-[12px]">
-              <div className="flex items-center gap-3 mb-1.5">
-                <GitMerge size={13} className="text-[#1d2e4f] flex-shrink-0" />
-                <span className="font-semibold text-[#1d2e4f]">Mã đơn: {donChinh.maDon}</span>
-                <span className="text-[#555]">{donChinh.nguoiGui}</span>
-              </div>
-              {(donChinh.soBA || donChinh.ngayBA || donChinh.toaXetXu) && (
-                <div className="ml-6 flex items-center gap-4 text-[11px]">
-                  {donChinh.soBA && <span><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{donChinh.soBA}</span></span>}
-                  {donChinh.ngayBA && <span><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{donChinh.ngayBA}</span></span>}
-                  {donChinh.toaXetXu && <span><span className="text-[#888]">Tòa xét xử: </span><span className="text-[#555]">{donChinh.toaXetXu}</span></span>}
-                </div>
-              )}
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+          {/* Hướng dẫn */}
+          {hasOthers && !chinhIsMine && (
+            <div className="bg-[#fff8e1] border border-[#f0c040] rounded-[3px] px-3 py-2 text-[12px] text-[#7a5c00]">
+              Đơn chính là của người khác. Hệ thống sẽ gửi yêu cầu xác nhận đến người nhập đơn chính.
             </div>
-          </div>
+          )}
 
-          {/* Đơn được ghép vào */}
           <div>
-            <p className="text-[12px] font-semibold text-[#333] mb-1.5">Các đơn sẽ được ghép vào ({donGhep.length})</p>
-            <div className="space-y-1.5">
-              {donGhep.map(d => (
-                <div key={d.id} className="border border-[#ddd] rounded-[3px] px-3 py-2 bg-[#fafafa] text-[12px]">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-[#1a5a96]">Mã đơn: {d.maDon}</span>
-                      <span className="text-[#999]">{d.ngayNhap}</span>
+            <p className="text-[12px] font-semibold text-[#333] mb-2">
+              {showSelection ? "Chọn đơn chính" : "Thông tin yêu cầu ghép"}
+            </p>
+            <div className="space-y-2">
+              {allDons.map(d => {
+                const isChinh = d.id === donChinhId;
+                const disabled = isRadioDisabled(d);
+                return (
+                  <div key={d.id}
+                    onClick={() => showSelection && !disabled && setDonChinhId(d.id)}
+                    className={`border rounded-[3px] px-3 py-2 text-[12px] flex items-start gap-3 transition-colors
+                      ${isChinh ? "border-[#1d2e4f] bg-[#f0f7ff]" : "border-[#ddd] bg-white"}
+                      ${showSelection ? (disabled ? "opacity-50" : "cursor-pointer hover:border-[#8b1a1a] hover:bg-[#fdeaea]") : ""}`}>
+                    {showSelection && (
+                      <input
+                        type="radio"
+                        name="don-chinh"
+                        checked={isChinh}
+                        disabled={disabled}
+                        onChange={() => !disabled && setDonChinhId(d.id)}
+                        onClick={e => e.stopPropagation()}
+                        className="mt-[2px] w-[14px] h-[14px] accent-[#8b1a1a] flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="font-semibold text-[#1a5a96]">Mã đơn: {d.maDon}</span>
+                        {isChinh && (
+                          <span className="inline-flex items-center rounded-[3px] bg-[#1d2e4f] text-white text-[10px] font-semibold px-2 py-[2px]">
+                            Đơn chính
+                          </span>
+                        )}
+                        {!isChinh && !showSelection && (
+                          <span className="inline-flex items-center rounded-[3px] bg-[#f0f4f7] text-[#3d546a] text-[10px] font-semibold px-2 py-[2px]">
+                            Đơn kèm
+                          </span>
+                        )}
+                        {!isChinh && showSelection && d.cuaToi && (
+                          <span className="inline-flex items-center rounded-[3px] border border-[#cdd9d7] bg-[#f0f6f2] text-[#256029] text-[10px] font-semibold px-2 py-[2px]">
+                            Đơn của tôi
+                          </span>
+                        )}
+                        {d.trangThai && (
+                          <span className={`inline-block px-2 py-[2px] rounded text-[11px] font-medium
+                            ${d.trangThai === "Chưa đủ điều kiện" ? "bg-[#f9e6e2] text-[#a33a29]" : d.trangThai === "Đã thụ lý" ? "bg-[#e9eff8] text-[#2d4b74]" : "bg-[#eef5f6] text-[#285662]"}`}>
+                            {d.trangThai}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-[#555] flex flex-wrap gap-x-4 gap-y-[2px]">
+                        <span><span className="text-[#888]">Người gửi: </span>{d.nguoiGui}</span>
+                        {d.nguoiNhap && <span><span className="text-[#888]">Người nhập: </span>{d.nguoiNhap}</span>}
+                        {d.soBA && <span><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{d.soBA}</span></span>}
+                        {d.ngayBA && <span><span className="text-[#888]">Ngày BA: </span>{d.ngayBA}</span>}
+                        {d.toaBA && <span><span className="text-[#888]">Tòa xét xử: </span>{d.toaBA}</span>}
+                      </div>
                     </div>
-                    <span className="px-2 py-[2px] rounded text-[10px] font-medium bg-[#e67e22] text-white">{d.trangThai}</span>
                   </div>
-                  {(d.soBA || d.ngayBA || d.toaBA) && (
-                    <div className="flex items-center gap-4 text-[11px] mt-0.5">
-                      {d.soBA && <span><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{d.soBA}</span></span>}
-                      {d.ngayBA && <span><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{d.ngayBA}</span></span>}
-                      {d.toaBA && <span><span className="text-[#888]">Tòa xét xử: </span><span className="text-[#555]">{d.toaBA}</span></span>}
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
+          {/* Yêu cầu bổ sung liên quan — chỉ khi có đơn có yêu cầu bổ sung */}
+          {hasRequestOptions && (
+            <div>
+              <p className="text-[12px] font-semibold text-[#333] mb-1.5">
+                Yêu cầu bổ sung liên quan
+                <span className="ml-1 text-[11px] font-normal text-[#888]">(không bắt buộc)</span>
+              </p>
+              <div className="border border-[#ddd] rounded-[3px] p-2 space-y-1.5 bg-[#fafafa]">
+                {selectedYeuCauOptions.map(opt => (
+                  <label key={opt.key} className="flex items-center gap-2 text-[12px] text-[#333] cursor-pointer hover:text-[#8b1a1a]">
+                    <input
+                      type="checkbox"
+                      className="w-[13px] h-[13px] accent-[#8b1a1a]"
+                      checked={selectedYeuCau.includes(opt.key)}
+                      onChange={() => toggleYeuCau(opt.key)}
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
+          {/* Tóm tắt luồng */}
+          <div className="bg-[#f5f5f5] rounded-[3px] px-3 py-2 text-[11px] text-[#555] space-y-0.5">
+            {!hasOthers && <div>Tất cả đơn đều của bạn → Ghép ngay sau xác nhận.</div>}
+              {hasOthers && !chinhIsMine && (
+              <div>Người nhập đơn chính sẽ nhận yêu cầu xác nhận. Sau khi họ xác nhận, ghép đơn sẽ được thực hiện.</div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
-          <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
-          <BtnPrimary
-            onClick={onConfirm}
-            className={canBoB && !xacNhanB ? "opacity-50 cursor-not-allowed" : ""}>
-            <Check size={13} /> Xác nhận ghép đơn
-          </BtnPrimary>
+          {showRecipientInfo ? (
+            <>
+              <BtnSecondary onClick={onReject ?? onClose}>Từ chối</BtnSecondary>
+              <BtnPrimary onClick={onConfirm}>
+                <Check size={13} /> Xác nhận
+              </BtnPrimary>
+            </>
+          ) : (
+            <>
+              <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
+              <BtnPrimary onClick={onConfirm} disabled={!selectedDon}>
+                {needsRequest
+                  ? <><Send size={13} /> Gửi yêu cầu ghép</>
+                  : <><Check size={13} /> Xác nhận ghép đơn</>
+                }
+              </BtnPrimary>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -1538,6 +1645,7 @@ interface DanhSachDonRow {
     by: string;
   };
   isPhanCong?: boolean;
+  loaiPhanCong?: "chi-dinh" | "ngau-nhien"; // tách danh sách đơn theo hình thức phân công
   thongTinChuyenDon?: "Nội bộ" | "Tòa khác" | "Ngoài tòa án"; // Added for Document Numbering validation
   // ── Các trường phục vụ lọc ──
   loaiAn?: string;
@@ -1573,7 +1681,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       { date: "21/07/2026", step: "Tiếp nhận hồ sơ", actor: "HCTP - Phòng tiếp nhận", note: "Đã kiểm tra tính hợp lệ" },
       { date: "22/07/2026", step: "Chuyển Vụ Giám đốc kiểm tra và dân sự", actor: "HCTP", note: "Gửi hồ sơ kèm danh sách công văn" },
     ],
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "17:41:29",
   },
@@ -1626,7 +1734,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tuyến",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#e67e22", stl: "54682575", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "21/07/2026", gioNhap: "17:03:02",
   },
@@ -1651,7 +1759,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "15/11/2024", gioNhap: "09:15:44",
   },
@@ -1677,7 +1785,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "14:12:05",
   },
@@ -1785,7 +1893,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682590", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien", cuaToi: true,
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "10/07/2026", gioNhap: "09:30:00",
   },
@@ -1811,7 +1919,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682591", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh", cuaToi: true,
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "05/06/2025", gioNhap: "14:20:00",
   },
@@ -1868,7 +1976,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Đã thụ lý", color: "#1a5a96", stl: "54682600", coVanBan: true },
-    loaiAn: "Hình sự", cuaToi: true, isPhanCong: true,
+    loaiAn: "Hình sự", cuaToi: true, isPhanCong: true, loaiPhanCong: "chi-dinh",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "15/12/2024", gioNhap: "13:05:00",
   },
   {
@@ -2031,7 +2139,7 @@ const LOAI_VAN_BAN_FILTER = [
   "Công văn chuyển tòa khác",
   "Công văn chuyển ngoài",
   "Trả lại đơn",
-  "Tờ trình phân công",
+  "Tờ trình phân công Thẩm phán",
   "Tờ trình khác",
   "Thông báo phân công TP",
   "Yêu cầu bổ sung",
@@ -2218,10 +2326,57 @@ const FDate = () => (
   <input type="date" className="w-full h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]" />
 );
 
+// ─── Hồ sơ kháng nghị: kết quả xét xử ────────────────────────────────────────
+const KET_QUA_KHANG_NGHI = [
+  "Không chấp nhận kháng nghị",
+  "Sửa toàn bộ bản án, quyết định của Tòa án đã có hiệu lực pháp luật",
+  "Sửa một phần bản án, quyết định của Tòa án đã có hiệu lực pháp luật",
+  "Sửa phần bồi thường thiệt hại",
+  "Sửa phần hình phạt",
+  "Sửa khác",
+  "Hủy bản án, quyết định có hiệu lực pháp luật để xét xử lại theo thủ tục sơ thẩm",
+];
+
+// Băm nhỏ để random "ổn định": cùng một đơn luôn ra cùng kết quả, không nhảy
+// lung tung mỗi lần bảng render lại (lọc, chọn dòng, mở popup...).
+const hashId = (n: number) => {
+  let h = (n ^ 0x9e3779b9) >>> 0;
+  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+};
+
+// Quyết định kháng nghị GĐT/TT chỉ do Chánh án TANDTC hoặc Viện trưởng VKSNDTC
+// ra và gửi kèm hồ sơ vụ án → cột "người gửi" của màn Hồ sơ kháng nghị lấy theo
+// 2 chức danh này (kèm nơi nhận chéo giữa hai cơ quan).
+const DON_VI_KHANG_NGHI = [
+  {
+    ten: "Chánh án Tòa án nhân dân tối cao",
+    diaChi: "Số 48 Lý Thường Kiệt, Phường Hoàn Kiếm, TP. Hà Nội",
+    noiNhan: "Viện kiểm sát nhân dân tối cao",
+  },
+  {
+    ten: "Viện trưởng Viện kiểm sát nhân dân tối cao",
+    diaChi: "Số 9 Phạm Văn Bạch, Phường Yên Hòa, TP. Hà Nội",
+    noiNhan: "Tòa án nhân dân tối cao",
+  },
+];
+
+const donViKhangNghi = (id: number) => DON_VI_KHANG_NGHI[hashId(id * 104729 + 11) % DON_VI_KHANG_NGHI.length];
+
+const ketQuaKhangNghi = (id: number) => {
+  const daXetXu = hashId(id) % 3 !== 0;
+  return {
+    trangThai: daXetXu ? "Đã xét xử" : "Đang xét xử",
+    ketQua: daXetXu ? KET_QUA_KHANG_NGHI[hashId(id * 7919 + 3) % KET_QUA_KHANG_NGHI.length] : "",
+  };
+};
+
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao";
   onCreateToTrinh?: (t: ToTrinh) => void;
+  khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
@@ -2451,13 +2606,15 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       <div className="p-3 space-y-3">
 
         {/* Title */}
-        <h2 className="text-[15px] font-semibold text-[#222]">Danh sách đơn</h2>
+        <h2 className="text-[15px] font-semibold text-[#222]">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
 
         {/* Card */}
         <div className="bg-white border border-[#ddd] rounded-[3px]">
 
           {/* Tabs — về tab "Tổng số" thì ô Loại văn bản bị ẩn, nên xóa luôn giá
-              trị để không còn bộ lọc chạy ngầm mà người dùng không nhìn thấy. */}
+              trị để không còn bộ lọc chạy ngầm mà người dùng không nhìn thấy.
+              Hồ sơ kháng nghị chỉ có một danh sách duy nhất → không có tabs. */}
+          {!khangNghi && (
           <div className="flex items-end border-b border-[#ddd] px-3 pt-2 gap-0">
             {tabs.map((t, i) => (
               <button key={i} onClick={() => { setActiveTab(i); if (i === 0) setLoaiVanBan(""); }}
@@ -2471,9 +2628,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             ))}
 
           </div>
+          )}
 
           {/* "Đơn của tôi" filter notice */}
-          {activeTab === 1 && (
+          {!khangNghi && activeTab === 1 && (
             <div className="flex items-center gap-2 px-3 py-2 bg-[#eef1f5] border-b border-[#ddd] text-[12px] text-[#1d2e4f]">
               <Users size={13} className="flex-shrink-0" />
               <span>Hiển thị đơn được giao cho tất cả cán bộ thuộc tài khoản: <span className="font-semibold">Phùng Trâm Anh</span></span>
@@ -2500,9 +2658,14 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 
                 {/* Thu gọn: 3 ô còn lại dành cho nút (luôn hiện ở filter cơ bản) */}
                 <div className="col-span-3 flex items-center justify-end gap-2">
-                  <button onClick={() => setCollapsed(false)}
-                    className="flex items-center justify-center gap-1.5 text-[12px] text-[#555] bg-[#f0f0f0] hover:bg-[#e4e4e4] px-4 h-[46px] rounded-[3px] border border-[#ddd] transition-colors whitespace-nowrap font-medium">
-                    <ChevronDown size={14} /> Bộ lọc Nâng cao
+                  {/* Bấm lần nữa thì thu gọn luôn */}
+                  <button onClick={() => setCollapsed(c => !c)}
+                    className={`flex items-center justify-center gap-1.5 text-[12px] px-4 h-[46px] rounded-[3px] border transition-colors whitespace-nowrap font-medium ${
+                      collapsed
+                        ? "text-[#555] bg-[#f0f0f0] hover:bg-[#e4e4e4] border-[#ddd]"
+                        : "text-[#8b1a1a] bg-[#fdecea] hover:bg-[#fbdcd9] border-[#e57373]"}`}>
+                    <ChevronDown size={14} className={`transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                    Bộ lọc Nâng cao
                   </button>
                   <button onClick={() => setCollapsed(true)} className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-6 h-[46px] gap-0.5 transition-colors">
                     <Search size={14} />
@@ -2902,8 +3065,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[190px]">Thông tin người gửi / đơn vị gửi</th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333]">Thông tin đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[7px] text-center font-semibold text-[#333] w-[60px]">Số đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Hình thức tiếp nhận</th>
+                  {khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[190px]">Đơn vị giải quyết</th>}
+                  {!khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-center font-semibold text-[#333] w-[60px]">Số đơn</th>}
+                  {!khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Hình thức tiếp nhận</th>}
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[170px]">Thông tin giải quyết</th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Người nhập / Sửa</th>
                   <th className="border border-[#ddd] px-2 py-[7px] text-center font-semibold text-[#333] w-[56px]">Thao tác</th>
@@ -2912,7 +3076,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="border border-[#ddd] px-3 py-10 text-center text-[#888]">
+                    <td colSpan={khangNghi ? 7 : 8} className="border border-[#ddd] px-3 py-10 text-center text-[#888]">
                       <div className="flex flex-col items-center gap-1.5">
                         <Search size={22} className="text-[#ccc]" />
                         <span className="text-[13px]">Không có đơn nào khớp bộ lọc.</span>
@@ -2941,9 +3105,19 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
                       {/* Người gửi */}
                       <td className="border border-[#ddd] px-3 py-2">
-                        <div className="font-medium text-[#1a5a96] hover:underline cursor-pointer leading-snug">{row.nguoiGui}</div>
-                        <div className="text-[11px] text-[#666] mt-0.5 leading-snug">{row.diaChi}</div>
+                        <div className="font-medium text-[#1a5a96] hover:underline cursor-pointer leading-snug">
+                          {khangNghi ? donViKhangNghi(row.id).ten : row.nguoiGui}
+                        </div>
+                        <div className="text-[11px] text-[#666] mt-0.5 leading-snug">
+                          {khangNghi ? donViKhangNghi(row.id).diaChi : row.diaChi}
+                        </div>
                         <div className="text-[11px] text-[#666] mt-0.5">{row.maDon}</div>
+                        {row.hetThoiHanKhangNghi && (
+                          <div className="mt-1 inline-flex items-center gap-1 px-2 py-[2px] rounded-[3px] bg-[#fdecea] border border-[#e6a5a0] text-[10px] font-medium text-[#c0392b] leading-snug">
+                            <AlertCircle size={10} className="flex-shrink-0" />
+                            Đơn đã vượt quá hạn giải quyết
+                          </div>
+                        )}
                       </td>
 
                       {/* Thông tin đơn */}
@@ -2958,17 +3132,31 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           <div><span className="text-[#555]">Loại CV: </span><span>{d.loaiCV || "—"}</span></div>
                           <div><span className="text-[#555]">Đơn vị gửi: </span><span>{d.donViGui || "—"}</span></div>
                           <div><span className="text-[#555]">Thẩm phán: </span><span className="text-[#333]">{d.thamPhan || "—"}</span></div>
-                          <div><span className="text-[#555]">Đơn vị giải quyết: </span><span>{d.donViGiaiQuyet || "—"}</span></div>
+                          {/* Ở màn Hồ sơ kháng nghị, đơn vị giải quyết tách thành cột riêng */}
+                          {!khangNghi && <div><span className="text-[#555]">Đơn vị giải quyết: </span><span>{d.donViGiaiQuyet || "—"}</span></div>}
                         </div>
                         {row.daNhan && (
                           <span className="inline-block mt-2 px-2 py-[2px] rounded text-[10px] font-medium bg-[#27ae60] text-white">Đã nhận</span>
                         )}
                       </td>
 
+                      {/* Đơn vị giải quyết — cột riêng của màn Hồ sơ kháng nghị */}
+                      {khangNghi && (
+                        <td className="border border-[#ddd] px-3 py-2">
+                          <div className="text-[12px] text-[#333] leading-snug">{d.donViGiaiQuyet || "—"}</div>
+                          <div className="text-[11px] text-[#666] mt-1 leading-snug">
+                            <span className="text-[#888]">Nơi nhận kèm: </span>{donViKhangNghi(row.id).noiNhan}
+                          </div>
+                        </td>
+                      )}
+
                       {/* Số đơn */}
-                      <td className="border border-[#ddd] px-2 py-2 text-center font-medium">{row.soDon ? row.soDon : "—"}</td>
+                      {!khangNghi && (
+                        <td className="border border-[#ddd] px-2 py-2 text-center font-medium">{row.soDon ? row.soDon : "—"}</td>
+                      )}
 
                       {/* Hình thức tiếp nhận */}
+                      {!khangNghi && (
                       <td className="border border-[#ddd] px-3 py-2 align-top">
                         <span className={`inline-block px-2 py-[2px] rounded-sm text-[10px] font-medium border ${row.hinhThucTiepNhan === "Trực tiếp" ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
                           : row.hinhThucTiepNhan === "Bưu điện" ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"
@@ -2977,9 +3165,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {row.hinhThucTiepNhan || "—"}
                         </span>
                       </td>
+                      )}
 
                       {/* Thông tin giải quyết */}
                       <td className="border border-[#ddd] px-3 py-2">
+                        {khangNghi ? (() => {
+                          const kn = ketQuaKhangNghi(row.id);
+                          return (
+                            <>
+                              <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-medium border ${kn.trangThai === "Đã xét xử"
+                                ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
+                                : "bg-[#fff3cd] text-[#856404] border-[#ffecb5]"}`}>
+                                {kn.trangThai}
+                              </span>
+                              {kn.ketQua && (
+                                <div className="text-[11px] text-[#333] mt-1 leading-snug">
+                                  <span className="text-[#888]">Kết quả: </span>{kn.ketQua}
+                                </div>
+                              )}
+                            </>
+                          );
+                        })() : (<>
                         {row.traLai ? (
                           <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-medium ${row.traLai.status === "pendingApproval" ? "bg-[#fff3cd] text-[#856404] border border-[#ffecb5]" : "bg-[#e8f7ee] text-[#1a7a45] border border-[#a9debb]"}`}>
                             {row.traLai.status === "pendingApproval" ? "Trả lại - chờ TP duyệt" : "Đã trả lại HCTP"}
@@ -3056,6 +3262,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             </button>
                           </div>
                         )}
+                        </>)}
                       </td>
 
                       {/* Người nhập */}
@@ -3254,6 +3461,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               ngayBA: row.thongTinDon.ngay,
               toaBA: row.thongTinDon.toaXetXu,
             }]}
+            isRecipientConfirmation={true}
             onClose={() => setShowConfirmRow(null)}
             onConfirm={() => {
               setMergeState(prev => {
@@ -3268,6 +3476,19 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã được ghép với đơn [${chinhRow?.maDon}] của ${chinhRow?.nguoiGui}`);
               setShowConfirmRow(null);
             }}
+            onReject={() => {
+              setMergeState(prev => {
+                const next = { ...prev };
+                delete next[showConfirmRow!]?.pendingFrom;
+                if (chinhRow) {
+                  const { pendingTo, ...rest } = next[chinhRow.id] ?? {};
+                  next[chinhRow.id] = rest;
+                }
+                return next;
+              });
+              triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã từ chối yêu cầu ghép.`);
+              setShowConfirmRow(null);
+            }}
           />
         );
       })()}
@@ -3278,7 +3499,13 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           isOpen={true}
           onClose={() => setShowNumberingModal(null)}
           currentRole={currentRole}
-          selectedRows={rows.filter(r => selectedRows.includes(r.id)).length > 0 ? rows.filter(r => selectedRows.includes(r.id)) : [rows[0]]}
+          loaiVanBanMacDinh={loaiVanBan}
+          // Chưa tick dòng nào thì lấy toàn bộ đơn đang hiển thị theo bộ lọc
+          selectedRows={
+            filteredRows.filter(r => selectedRows.includes(r.id)).length > 0
+              ? filteredRows.filter(r => selectedRows.includes(r.id))
+              : filteredRows
+          }
         />
       )}
 
@@ -6010,215 +6237,254 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
             </div>
 
 
-            {/* Body: 2 columns */}
-            <div className="flex flex-1 overflow-hidden">
+            {/* Body: 3 panels */}
+            <div className="flex flex-1 overflow-hidden bg-[#eef1f5]">
 
-              {/* LEFT: Document preview */}
-              <div className="w-[55%] border-r border-[#e0e0e0] bg-[#f0f0f0] overflow-y-auto flex flex-col items-center py-6 px-4 gap-4">
-                {/* Document list sidebar within left */}
-                <div className="w-full max-w-[520px] bg-white border border-[#ccc] rounded shadow-sm">
-                  <div className="px-3 py-2 bg-[#f5f5f5] border-b border-[#ddd] text-[12px] font-semibold text-[#333]">Danh sách tài liệu</div>
-                  <div className="p-2 space-y-1">
-                    <div className="flex items-center gap-2 p-2 bg-[#e8f4ff] rounded border border-[#b3d4f5] text-[12px] font-medium text-[#1a5a96] cursor-pointer">
-                      <FileText size={14} /> Văn bản
+              {/* PANEL 1: Left List Panel (Danh sách tài liệu) */}
+              <div className="w-[200px] flex-shrink-0 border-r border-[#eee] bg-[#fbfbfb] p-3 flex flex-col overflow-y-auto">
+                <h3 className="text-[12px] font-bold text-[#1d2e4f] mb-3 uppercase tracking-wider">Danh sách tài liệu</h3>
+                
+                <div className="space-y-2 text-[12px]">
+                  {/* Collapsible Văn bản */}
+                  <div>
+                    <div className="flex items-center justify-between py-1.5 px-2 bg-[#f0f0f0] rounded font-semibold text-[#333] cursor-pointer">
+                      <div className="flex items-center gap-1.5">
+                        <ChevronDown size={12} />
+                        <span>Văn bản</span>
+                      </div>
+                      <span className="text-[10px] bg-[#e91e63] text-white px-1.5 py-0.2 rounded-full font-bold">1</span>
                     </div>
-                    <div className="pl-4 space-y-1">
-                      <div className="flex items-center gap-2 p-1.5 bg-[#fff8e1] rounded text-[11px] text-[#555] cursor-pointer hover:bg-[#fff3cd]">
-                        <FileText size={12} className="text-[#f57f17]" /> Tờ trình phân công thẩm phán
+                    <div className="mt-1 pl-4 space-y-1">
+                      <div className="flex items-center gap-1.5 py-1 px-2 rounded bg-[#fdf2f6] text-[#e91e63] font-medium border border-[#f8bbd0] cursor-pointer">
+                        <FileText size={13} />
+                        <span className="truncate">{showDuyetPopup.noiDung}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 p-2 text-[12px] text-[#555] cursor-pointer hover:bg-[#f9f9f9] rounded">
-                      Tài liệu, hồ sơ đính kèm
+                  </div>
+
+                  {/* Collapsible Tài liệu đính kèm */}
+                  <div>
+                    <div className="flex items-center justify-between py-1.5 px-2 bg-[#f0f0f0] rounded font-semibold text-[#333] cursor-pointer">
+                      <div className="flex items-center gap-1.5">
+                        <ChevronRight size={12} />
+                        <span>Tài liệu đính kèm</span>
+                      </div>
                     </div>
-                    <div className="pl-4 text-[11px] text-[#aaa] italic px-2">Không có tài liệu</div>
+                    <div className="mt-1 pl-4 text-[11px] text-gray-500 italic py-1">
+                      Không có tài liệu đính kèm
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* PANEL 2: Middle Preview Panel (Preview panel) */}
+              <div className="flex-1 bg-[#f0f0f0] overflow-y-auto flex flex-col items-center py-6 px-4 gap-4 border-r border-[#eee]">
+                {/* Toolbar */}
+                <div className="w-full max-w-[560px] flex items-center justify-between bg-white border border-[#ccc] rounded px-3 py-2 shadow-sm flex-shrink-0">
+                  <span className="text-[12px] font-bold text-[#1d2e4f] flex items-center gap-1.5">
+                    <FileText size={14} className="text-[#1a5a96]" /> Xem trước tài liệu ({showDuyetPopup.noiDung})
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Phóng to"><ZoomIn size={14} className="text-[#666]" /></button>
+                    <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Thu nhỏ"><ZoomOut size={14} className="text-[#666]" /></button>
+                    <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Xoay"><RotateCcw size={14} className="text-[#666]" /></button>
+                    <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Tải về"><Download size={14} className="text-[#666]" /></button>
                   </div>
                 </div>
 
-                {/* Document preview */}
-                <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-8 relative min-h-[500px]">
-                  <div className="text-center mb-6">
-                    <div className="text-[11px] font-bold">TÒA ÁN NHÂN DÂN TỐI CAO</div>
-                    <div className="text-[10px]">VĂN PHÒNG</div>
-                    <div className="w-[60px] h-px bg-black mx-auto my-1" />
-                    <div className="text-[10px] text-[#666]">Số: ..../2026/TB-TA</div>
-                  </div>
-                  <div className="flex justify-end mb-4">
-                    <div className="text-[10px] text-center">
-                      <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-                      <div className="font-medium">Độc lập - Tự do - Hạnh phúc</div>
-                      <div className="w-[80px] h-px bg-black mx-auto my-1" />
-                      <div className="italic">TP. Hà Nội, ngày..... tháng..... năm.....</div>
+                {/* Phiếu mượn document preview */}
+                <div className="w-full max-w-[560px] bg-white border border-[#ccc] shadow-lg rounded p-8 relative min-h-[640px] font-serif text-[11px] leading-relaxed text-[#000]">
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="text-center w-[190px] leading-tight">
+                      <div className="text-[10px] font-bold uppercase">VỤ GIÁM ĐỐC KIỂM TRA VỀ HÌNH SỰ</div>
+                      <div className="w-[70px] h-px bg-black mx-auto my-1" />
+                      <div className="text-[9px] mt-1">Số: 10/2026/CV-Vụ Giám đốc,<br/>kiểm tra ICV-VỤ GIÁM ĐỐC,<br/>KIỂM TRA I</div>
+                      <div className="text-[9px] mt-1 italic">V/v: Yêu cầu chuyển hồ sơ vụ án</div>
+                    </div>
+                    <div className="text-center w-[270px] leading-tight">
+                      <div className="text-[10px] font-bold uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                      <div className="text-[10px] font-bold underline decoration-solid underline-offset-4">Độc lập - Tự do - Hạnh phúc</div>
+                      <div className="text-[9px] italic mt-2.5">TP. Hà Nội, ngày 31 tháng 07 năm 2026</div>
                     </div>
                   </div>
-                  <div className="text-center mb-4">
-                    <div className="text-[13px] font-bold">TỜ TRÌNH</div>
-                    <div className="text-[11px] font-semibold mt-1">{showDuyetPopup.noiDung}</div>
+
+                  {/* Recipient */}
+                  <div className="mb-4 text-center">
+                    <span className="font-bold">Kính gửi:</span> Phân trại tạm giam Tuần Giáo, Công an Tỉnh Điện Biên
                   </div>
-                  <div className="text-[11px] leading-relaxed space-y-3">
-                    <p>Kính gửi: Lãnh đạo Tòa án nhân dân tối cao.</p>
-                    <p>Văn phòng trình Lãnh đạo xem xét phê duyệt danh sách phân công Thẩm phán giải quyết các đơn như sau:</p>
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Tổng số đơn trình: {showDuyetPopup.danhSachDon?.length || 5} đơn.</li>
-                      <li>Phân công cho {showDuyetPopup.danhSachDon?.length || 2} Thẩm phán.</li>
-                    </ul>
-                    <div className="flex justify-end mt-8">
-                      <div className="text-center text-[10px]">
-                        <div className="font-bold">TL. CHÁNH ÁN</div>
-                        <div className="font-bold">KT. CHÁNH VĂN PHÒNG</div>
-                        <div className="font-bold">PHÓ CHÁNH VĂN PHÒNG</div>
-                        <div className="italic text-[9px] mt-1">(Ký tên, ghi rõ họ tên, đóng dấu)</div>
-                      </div>
+
+                  {/* Body Paragraphs */}
+                  <div className="space-y-3.5 text-justify text-[10.5px] leading-relaxed">
+                    <p>
+                      Căn cứ vào khoản 1 Điều 33 Điều 373 Bộ luật Tố tụng Hình sự;
+                    </p>
+                    <p>
+                      Để có cơ sở giải quyết đơn đề nghị xem xét theo thủ tục giám đốc thẩm của đương sự, đề nghị Phân trại tạm giam Tuần Giáo, Công an Tỉnh Điện Biên chỉ đạo chuyển cho Vụ Giám đốc kiểm tra về hình sự - Vụ Giám đốc kiểm tra về hình sự hồ sơ vụ án "Vụ án Phùng Văn Nam - Tội cố ý gây thương tích hoặc gây tổn hại cho sức khoẻ của người khác" giữa các đương sự là:
+                    </p>
+                    <div className="pl-6 space-y-1.5">
+                      <div>- Người khiếu nại: <span className="font-semibold">Tòa án nhân dân tỉnh Bắc Ninh</span></div>
+                      <div>- Người bị khiếu nại: <span className="font-semibold">Phùng Văn Nam</span></div>
+                    </div>
+                    <p>
+                      Do Phân trại tạm giam Tuần Giáo, Công an Tỉnh Điện Biên xét xử Sơ thẩm tại Bản án Sơ thẩm số Test_2407 ngày 24/07/2026.
+                    </p>
+                    <p className="italic">
+                      (Hồ sơ xin gửi chuyển phát nhanh về địa chỉ: trong thời hạn 07 ngày kể từ ngày nhận được Công văn yêu cầu chuyển hồ sơ vụ án)
+                    </p>
+                    <p>
+                      Trường hợp hồ sơ vụ án đã được chuyển cho cơ quan, đơn vị khác thì đề nghị Phân trại tạm giam Tuần Giáo, Công an Tỉnh Điện Biên thông báo cho Vụ Giám đốc kiểm tra về hình sự để theo dõi.
+                    </p>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex justify-between items-start mt-10">
+                    <div className="text-[9px] leading-tight">
+                      <span className="font-bold block">Nơi nhận:</span>
+                      - Như trên;<br/>
+                      - Lưu HS.
+                    </div>
+                    <div className="text-center w-[230px] text-[9.5px] leading-tight">
+                      <div className="font-bold">TL. CHÁNH ÁN</div>
+                      <div className="font-bold uppercase">KT. VỤ TRƯỞNG VỤ GIÁM ĐỐC KIỂM...</div>
+                      <div className="h-[45px]"></div>
+                      <div className="font-bold underline text-[#1a5a96]">Đặng Xuân Đào</div>
                     </div>
                   </div>
+
                   {showDuyetPopup.trangThai === "Đã duyệt" && (
-                    <div className="absolute right-8 bottom-16 text-[#a31515] border-2 border-[#a31515] px-4 py-1.5 font-bold text-[14px] transform -rotate-12 opacity-80 rounded">
+                    <div className="absolute right-8 bottom-16 text-[#a31515] border-2 border-[#a31515] px-4 py-1.5 font-bold text-[14px] transform -rotate-12 opacity-80 rounded bg-white">
                       ĐÃ PHÊ DUYỆT
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* RIGHT: Action panel */}
-              <div className="w-[45%] flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
-
-                  {/* Ý kiến lãnh đạo */}
+              {/* PANEL 3: Right Signing Panel (Màn ý kiến, ký) */}
+              <div className="w-[340px] flex-shrink-0 bg-white p-4 flex flex-col border-l border-[#eee]">
+                <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+                  
+                  {/* Section 1: Nội dung xin ý kiến lãnh đạo */}
                   <div>
-                    <label className="block text-[12px] font-semibold text-[#333] mb-1">
-                      Nội dung ý kiến lãnh đạo
-                    </label>
-                    <textarea
-                      className="w-full h-[90px] p-2.5 text-[12px] border border-[#ccc] rounded-[3px] outline-none focus:border-[#1a5a96] resize-none"
-                      placeholder="Nhập ý kiến chỉ đạo, phê duyệt..."
+                    <label className="block text-[12px] font-bold text-[#333] mb-1.5">Nội dung xin ý kiến lãnh đạo</label>
+                    <div className="relative">
+                      <textarea 
+                        readOnly
+                        value={showDuyetPopup.noiDung}
+                        className="w-full p-2.5 text-[13px] border border-[#ccc] rounded-[4px] bg-[#fff] focus:outline-none min-h-[90px] resize-none text-[#333] font-medium"
+                      />
+                      <div className="absolute right-2.5 bottom-2.5 text-[#555]">
+                        <Settings size={14} className="opacity-60" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Đánh dấu & Ghi chú (0) */}
+                  <div className="border border-[#e2e8f0] rounded-[6px] p-3 bg-white shadow-sm">
+                    <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#333] mb-2">
+                      <HistoryIcon size={13} className="text-[#666]" />
+                      <span>Đánh dấu & Ghi chú (0)</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center justify-center py-6 text-[#999] border border-dashed border-[#e2e8f0] rounded-[4px] bg-[#fafafa]">
+                      <div className="w-8 h-8 rounded-full bg-[#f1f3f5] flex items-center justify-center mb-1">
+                        <Archive size={14} className="text-[#aaa]" />
+                      </div>
+                      <span className="text-[11px]">Chưa có đánh dấu</span>
+                    </div>
+
+                    <button className="mt-3 w-full h-[32px] bg-[#e91e63] hover:bg-[#d81b60] text-white rounded-[4px] text-[12px] font-bold transition-colors flex items-center justify-center gap-1">
+                      + Thêm ghi chú mới
+                    </button>
+                  </div>
+
+                  {/* Section 3: Ý kiến của lãnh đạo */}
+                  <div>
+                    <label className="block text-[12px] font-bold text-[#333] mb-1.5">Ý kiến của lãnh đạo</label>
+                    <textarea 
+                      placeholder="Nhập ý kiến lãnh đạo..."
                       value={yKienInput}
                       onChange={e => setYKienInput(e.target.value)}
                       disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}
+                      className="w-full p-2.5 text-[13px] border border-[#ccc] rounded-[4px] focus:outline-none focus:border-[#8b1a1a] min-h-[90px] resize-none"
                     />
                   </div>
-
-                  {/* Đánh dấu & Ghi chú */}
-                  <div className="border border-[#eee] rounded-[4px] overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2 bg-[#f9f9f9] border-b border-[#eee] text-[12px] font-semibold text-[#444]">
-                      Đánh dấu & Ghi chú (0)
-                    </div>
-                    <div className="p-4 text-center text-[11px] text-[#aaa] italic">Chưa có đánh dấu</div>
-                    <div className="px-3 pb-3">
-                      <button className="w-full h-[30px] border border-dashed border-[#ccc] text-[12px] text-[#888] rounded hover:bg-[#f5f5f5] transition-colors">
-                        + Thêm ghi chú mới
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Ý kiến của lãnh đạo (freetext) */}
-                  <div>
-                    <label className="block text-[12px] font-semibold text-[#333] mb-1">Ý kiến của lãnh đạo</label>
-                    <textarea
-                      className="w-full h-[70px] p-2.5 text-[12px] border border-[#ccc] rounded-[3px] outline-none focus:border-[#1a5a96] resize-none"
-                      placeholder="Nhập ý kiến lãnh đạo..."
-                      disabled={showDuyetPopup.trangThai !== "Chờ duyệt"}
-                    />
-                  </div>
-
-
                 </div>
 
-                {/* Action Buttons — role-based */}
-                <div className="flex items-center justify-between p-4 border-t border-[#e0e0e0] bg-[#fafafa] flex-shrink-0">
-                  <button onClick={() => setShowDuyetPopup(null)} className="h-[32px] px-4 bg-white border border-[#ccc] text-[#333] rounded-[3px] text-[12px] font-medium hover:bg-gray-50">
-                    Quay lại
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    {showDuyetPopup.trangThai === "Chờ duyệt" ? (
-                      <>
-                        {/* Từ chối — all roles */}
-                        <button
-                          onClick={() => {
-                            setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Từ chối" } : t));
-                            setShowDuyetPopup(null);
-                          }}
-                          className="h-[32px] px-4 bg-white border border-[#c0392b] text-[#c0392b] rounded-[3px] text-[12px] font-medium hover:bg-[#fdeaea] transition-colors"
-                        >
-                          Từ chối
-                        </button>
-
-                        {isTP ? (
-                          /* Trưởng phòng */
-                          <>
-                            <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] transition-colors">
-                              Đồng ý
-                            </button>
+                <div className="pt-3 border-t border-[#eee] bg-white flex flex-col gap-2 mt-4 flex-shrink-0">
+                  <div className="flex items-center justify-between w-full">
+                    <button onClick={() => setShowDuyetPopup(null)} className="h-[32px] px-3.5 bg-white border border-[#ccc] text-[#333] rounded-[4px] text-[12px] font-medium hover:bg-gray-50">
+                      Quay lại
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {showDuyetPopup.trangThai === "Chờ duyệt" ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Từ chối" } : t));
+                              setShowDuyetPopup(null);
+                            }}
+                            className="h-[32px] px-3.5 bg-white border border-[#c0392b] text-[#c0392b] rounded-[4px] text-[12px] font-medium hover:bg-[#fdeaea] transition-colors"
+                          >
+                            Từ chối
+                          </button>
+                          {isTP ? (
                             <button
                               onClick={() => {
                                 setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
-                                triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được Trưởng phòng phê duyệt.`);
+                                triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được Trưởng phòng phê duyệt.`);
                                 setShowDuyetPopup(null);
                               }}
-                              className="h-[32px] px-4 bg-[#27ae60] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#219653] transition-colors"
+                              className="h-[32px] px-3.5 bg-[#27ae60] text-white rounded-[4px] text-[12px] font-bold hover:bg-[#219653] transition-colors"
                             >
                               Phê duyệt
                             </button>
-                          </>
-                        ) : (isPCVP || isLanhDao) ? (
-                          /* PCVP / Lãnh đạo */
-                          <>
-                            <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] transition-colors">
-                              Đồng ý
-                            </button>
-                            <button className="h-[32px] px-4 bg-white border border-[#555] text-[#444] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f0f0] transition-colors">
-                              Ký logic
-                            </button>
+                          ) : (isPCVP || isLanhDao) ? (
                             <button
                               onClick={() => {
                                 setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
-                                triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được Lãnh đạo ký số.`);
+                                triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được Lãnh đạo ký số.`);
                                 setShowDuyetPopup(null);
                               }}
-                              className="h-[34px] px-5 font-bold text-white rounded-[4px] text-[12px] flex items-center gap-2 shadow-md hover:opacity-90 transition-all"
+                              className="h-[34px] px-4 font-bold text-white rounded-[4px] text-[12px] flex items-center gap-2 shadow-md hover:opacity-90 transition-all"
                               style={{ background: "linear-gradient(135deg, #e91e8c 0%, #c2185b 100%)" }}
                             >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                              Ký số
+                              <PenLine size={13} /> Ký số
                             </button>
-                          </>
-                        ) : (
-                          /* Cán bộ: nút trình duyệt */
-                          <button
-                            onClick={() => {
-                              setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt" } : t));
-                              triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được trình duyệt.`);
-                              setShowDuyetPopup(null);
-                            }}
-                            className="h-[32px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#6e1414] flex items-center gap-1.5 transition-colors"
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            Trình duyệt
-                          </button>
-                        )}
-                      </>
-                    ) : showDuyetPopup.trangThai === "Đã duyệt" ? (
-                      /* Đã duyệt: chỉ cho in */
-                      <button className="h-[32px] px-4 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[12px] font-medium hover:bg-[#f0f7ff] flex items-center gap-1.5 transition-colors">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                        In văn bản
-                      </button>
-                    ) : showDuyetPopup.trangThai === "Từ chối" ? (
-                      /* Từ chối: cho sửa và gửi lại */
-                      <button
-                        onClick={() => {
-                          setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt", yKienLanhDao: "" } : t));
-                          triggerNoti(`Tờ trình "${showDuyetPopup.noiDung}" đã được trình lại.`);
-                          setShowDuyetPopup(null);
-                        }}
-                        className="h-[32px] px-4 bg-[#f57f17] text-white rounded-[3px] text-[12px] font-bold hover:bg-[#e65100] flex items-center gap-1.5 transition-colors"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                        Gửi lại
-                      </button>
-                    ) : null}
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt" } : t));
+                                triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được trình duyệt.`);
+                                setShowDuyetPopup(null);
+                              }}
+                              className="h-[32px] px-3.5 bg-[#8b1a1a] text-white rounded-[4px] text-[12px] font-bold hover:bg-[#6e1414] transition-colors"
+                            >
+                              Trình duyệt
+                            </button>
+                          )}
+                        </>
+                      ) : showDuyetPopup.trangThai === "Đã duyệt" ? (
+                        <button className="h-[32px] px-3.5 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[4px] text-[12px] font-medium hover:bg-[#f0f7ff] flex items-center gap-1.5 transition-colors">
+                          <Printer size={13} /> In văn bản
+                        </button>
+                      ) : showDuyetPopup.trangThai === "Từ chối" ? (
+                        <button
+                          onClick={() => {
+                            setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt", yKienLanhDao: "" } : t));
+                            triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được trình lại.`);
+                            setShowDuyetPopup(null);
+                          }}
+                          className="h-[32px] px-3.5 bg-[#f57f17] text-white rounded-[4px] text-[12px] font-bold hover:bg-[#e65100] transition-colors"
+                        >
+                          Gửi lại
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -6230,7 +6496,7 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
 
 
 export default function App() {
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet">("list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "khangnghi">("list");
   const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
     {
       id: "TT-2026-001",
@@ -6554,6 +6820,8 @@ export default function App() {
           <FileText size={14} />
           {view === "list"
             ? "Danh sách đơn"
+            : view === "khangnghi"
+            ? "Hồ sơ kháng nghị"
             : view === "prototype"
               ? "Prototype: Luồng Ghép đơn"
               : view === "bieumau"
@@ -6629,6 +6897,8 @@ export default function App() {
               ? <span className="text-[#333]">Tổng quan</span>
               : view === "list"
                 ? <span className="text-[#333]">Danh sách đơn</span>
+                : view === "khangnghi"
+                ? <span className="text-[#333]">Hồ sơ kháng nghị</span>
                 : view === "prototype"
                   ? <>
                     <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
@@ -6687,6 +6957,33 @@ export default function App() {
                   setView("form");
                   setShowPDF(false);
                   // Thêm mới luôn bắt đầu bằng luồng nhập PDF → OCR.
+                  ocrRunId.current++;
+                  clearOcrTimers();
+                  setOcrFile(null);
+                  setOcrStatus("chua");
+                  setOcrStep(0);
+                  setOcrFields(new Set());
+                  setShowUploadPopup(true);
+                }}
+                onBieuMau={(r) => { setBieuMauRow(r); setView("bieumau"); }}
+                onWordEditor={() => setView("wordeditor")}
+                onEditRow={(id) => { setEditingRowId(id); setView("form"); }}
+                isTruongPhong={false}
+              />
+            </div>
+          )}
+
+          {/* Hồ sơ kháng nghị view — dùng lại màn Danh sách đơn, khác cột Thông tin giải quyết */}
+          {view === "khangnghi" && (
+            <div className="flex-1 overflow-y-auto">
+              <DanhSachDon
+                khangNghi
+                currentRole={currentRole}
+                onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
+                onThemMoi={() => {
+                  setEditingRowId(null);
+                  setView("form");
+                  setShowPDF(false);
                   ocrRunId.current++;
                   clearOcrTimers();
                   setOcrFile(null);
@@ -7360,8 +7657,8 @@ export default function App() {
                             <Lbl req>Lý do không đủ điều kiện</Lbl>
                             <Sel value={lyDoKhongDu} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoKhongDu(e.target.value)}>
                               <option value="">-- Chọn lý do --</option>
-                              <option>Thiếu bản án quyết định</option>
-                              <option>Thiếu xác nhận căn cước công dân</option>
+                              <option>Bản án/quyết định có hiệu lực pháp luật</option>
+                              <option>Thiếu thông tin căn cước công dân</option>
                               <option>Viết lại đơn</option>
                               <option>Lý do khác</option>
                             </Sel>
@@ -7468,9 +7765,9 @@ export default function App() {
                 {/* Các thành phần chỉ dành cho Đơn */}
                 {hinhThuc !== "CV khác" && (
                   <>
-                    {/* 6. Đương sự */}
+                    {/* 6. Người tham gia tố tụng */}
                     {!isDonKhieuNaiTuPhap && (
-                      <Section title={`${6 + secOffset}. Đương sự`}>
+                      <Section title={`${6 + secOffset}. Người tham gia tố tụng`}>
                         <div className="space-y-4">
                           {loaiAnForm !== "Hình sự" && <>
                             <div>
