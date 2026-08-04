@@ -735,14 +735,21 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
 };
 
 // ─── Popup Ghép đơn ──────────────────────────────────────────────────────────
-interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; nguoiNhap?: string; cuaToi?: boolean; }
+interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; nguoiNhap?: string; cuaToi?: boolean; yeuCauBosung?: { soTB: string; ngayGui: string }[]; }
 
 const GHEP_CANDIDATES: GhepRow[] = [
-  { id: 10, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Đủ điều kiện", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
-  { id: 11, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false },
-  { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đủ điều kiện", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
-  { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Đủ điều kiện", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 10, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 11, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false,
+    yeuCauBosung: [
+      { soTB: "TB-01", ngayGui: "16/07/2026" },
+      { soTB: "TB-02", ngayGui: "18/07/2026" },
+    ],
+  },
+  { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
+  { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
 ];
+
+const VALID_GHEP_STATUSES = ["Thụ lý mới", "Đã thụ lý", "Chưa đủ điều kiện"];
 
 // ─── Popup Tải lên tài liệu / OCR ────────────────────────────────────────────
 const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload: (f: OcrFile) => void }) => {
@@ -1285,9 +1292,8 @@ const PopupGhepDon = ({
     return Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year) ? new Date(0) : new Date(year, month - 1, day);
   };
 
-  // Chỉ hiển thị đơn đủ điều kiện ghép
   const eligibleCandidates = GHEP_CANDIDATES
-    .filter(r => r.trangThai === "Đủ điều kiện")
+    .filter(r => VALID_GHEP_STATUSES.includes(r.trangThai))
     .sort((a, b) => parseDate(a.ngayNhap).getTime() - parseDate(b.ngayNhap).getTime());
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -1309,10 +1315,10 @@ const PopupGhepDon = ({
           <button onClick={onClose} className="text-white/70 hover:text-white"><X size={17} /></button>
         </div>
 
-        {/* Đơn chính info bar */}
+        {/* Đơn hiện tại info bar */}
         <div className="px-4 pt-3 pb-3 bg-[#f9f9f9] border-b border-[#eee]">
-          <p className="text-[12px] text-[#555] mb-2">Đơn chính (đang chọn ghép vào)</p>
-          <div className="flex items-center gap-6 text-[12px]">
+          <p className="text-[12px] text-[#555] mb-2">Đơn hiện tại</p>
+          <div className="flex flex-wrap items-center gap-6 text-[12px]">
             <div className="flex items-center gap-2">
               <span className="text-[#888]">Mã đơn:</span>
               <span className="font-semibold text-[#1d2e4f]">{donChinh.maDon}</span>
@@ -1342,7 +1348,7 @@ const PopupGhepDon = ({
         <div className="flex-1 overflow-y-auto px-4 py-3">
           <p className="text-[12px] font-semibold text-[#333] mb-2">Danh sách đơn có thể ghép</p>
           {eligibleCandidates.length === 0 ? (
-            <div className="text-[13px] text-[#999] italic py-4 text-center">Không có đơn đủ điều kiện ghép</div>
+            <div className="text-[13px] text-[#999] italic py-4 text-center">Không có đơn có thể ghép</div>
           ) : (
             <table className="w-full border-collapse text-[12px]">
               <thead>
@@ -1363,27 +1369,37 @@ const PopupGhepDon = ({
               <tbody>
                 {eligibleCandidates.map((r, i) => (
                   <tr key={r.id}
-                    className={`cursor-pointer ${selected.includes(r.id) ? "bg-[#fdeaea]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}
+                    className={`cursor-pointer ${selected.includes(r.id) ? "bg-[#eef3ff]" : i % 2 === 1 ? "bg-[#fbfbfb]" : "bg-white"}`}
                     onClick={() => toggle(r.id)}>
                     <td className="border border-[#ddd] px-2 py-[6px] text-center">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={selected.includes(r.id)} onChange={() => toggle(r.id)}
                         onClick={e => e.stopPropagation()} />
                     </td>
-                    <td className="border border-[#ddd] px-3 py-[6px] font-medium text-[#1a5a96]">{r.maDon}</td>
+                    <td className="border border-[#ddd] px-3 py-[6px] align-top">
+                      <div className="font-medium text-[#1a5a96]">{r.maDon}</div>
+                      {r.cuaToi && (
+                        <div className="mt-1 inline-flex items-center rounded-[3px] bg-[#eef7ef] border border-[#c8e3c7] px-2 py-[2px] text-[11px] font-semibold text-[#23632d]">
+                          Đơn của tôi
+                        </div>
+                      )}
+                    </td>
                     <td className="border border-[#ddd] px-3 py-[6px]">
                       {r.soBA && (
-                        <div className="leading-snug space-y-[1px]">
+                        <div className="leading-snug space-y-[1px] text-[12px] text-[#333]">
                           <div><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{r.soBA}</span></div>
                           <div><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{r.ngayBA}</span></div>
-                          <div><span className="text-[#888]">Tòa XX: </span><span className="text-[#555]">{r.toaBA}</span></div>
+                          <div><span className="text-[#888]">Tòa xét xử: </span><span className="text-[#555]">{r.toaBA}</span></div>
                         </div>
                       )}
                     </td>
                     <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
                     <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.nguoiNhap ?? "—"}</td>
                     <td className="border border-[#ddd] px-3 py-[6px]">
-                      <span className="inline-block px-2 py-[2px] rounded text-[11px] font-medium bg-[#27ae60] text-white">{r.trangThai}</span>
+                      <span className={`inline-block px-2 py-[2px] rounded text-[11px] font-medium
+                          ${r.trangThai === "Chưa đủ điều kiện" ? "bg-[#f9e6e2] text-[#a33a29]" : r.trangThai === "Đã thụ lý" ? "bg-[#e9eff8] text-[#2d4b74]" : "bg-[#eef5f6] text-[#285662]"}`}>
+                        {r.trangThai}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -1415,16 +1431,18 @@ const PopupGhepDon = ({
 
 // ─── Popup Xác nhận Ghép đơn ─────────────────────────────────────────────────
 const PopupXacNhanGhep = ({
-  donChinh, donGhep, onClose, onConfirm,
+  donChinh, donGhep, onClose, onConfirm, isRecipientConfirmation = false, onReject,
 }: {
-  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string; nguoiNhap?: string; cuaToi?: boolean };
+  donChinh: { maDon: string; nguoiGui: string; soBA?: string; ngayBA?: string; toaXetXu?: string; nguoiNhap?: string; cuaToi?: boolean; trangThai?: string };
   donGhep: GhepRow[];
   onClose: () => void;
   onConfirm: () => void;
+  isRecipientConfirmation?: boolean;
+  onReject?: () => void;
 }) => {
   // Build full list: đơn chính + các đơn ghép
   const allDons = [
-    { id: -1, maDon: donChinh.maDon, nguoiGui: donChinh.nguoiGui, nguoiNhap: donChinh.nguoiNhap ?? CURRENT_USER, cuaToi: donChinh.cuaToi ?? true, soBA: donChinh.soBA, ngayBA: donChinh.ngayBA, toaBA: donChinh.toaXetXu, ngayNhap: "", trangThai: "" },
+    { id: -1, maDon: donChinh.maDon, nguoiGui: donChinh.nguoiGui, nguoiNhap: donChinh.nguoiNhap ?? CURRENT_USER, cuaToi: donChinh.cuaToi ?? true, soBA: donChinh.soBA, ngayBA: donChinh.ngayBA, toaBA: donChinh.toaXetXu, ngayNhap: "", trangThai: donChinh.trangThai ?? "" },
     ...donGhep.map(d => ({ ...d, nguoiNhap: d.nguoiNhap ?? "—", cuaToi: d.cuaToi ?? false })),
   ];
 
@@ -1438,15 +1456,14 @@ const PopupXacNhanGhep = ({
   const [donChinhId, setDonChinhId] = useState<number>(defaultChinh);
 
   // Yêu cầu bổ sung liên quan (multi-select, chỉ khi có đơn Chưa đủ điều kiện)
-  const coChưaDuDK = donGhep.some(d => d.trangThai === "Chưa đủ điều kiện");
-  const YEU_CAU_BOSUNG_OPTIONS = [
-    "Yêu cầu cung cấp bản án gốc",
-    "Yêu cầu xác nhận tư cách tố tụng",
-    "Yêu cầu bổ sung tài liệu chứng minh",
-    "Yêu cầu xác nhận đương sự",
-  ];
+  const selectedYeuCauOptions = donGhep.flatMap(d => (d.yeuCauBosung ?? []).map(item => ({
+    label: `Yêu cầu bổ sung số ${item.soTB} - đơn ${d.maDon} - ngày ${item.ngayGui}`,
+    key: `${d.maDon}-${item.soTB}-${item.ngayGui}`,
+  })));
   const [selectedYeuCau, setSelectedYeuCau] = useState<string[]>([]);
   const toggleYeuCau = (v: string) => setSelectedYeuCau(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+
+  const hasRequestOptions = selectedYeuCauOptions.length > 0;
 
   // Kiểm tra xem đơn đang chọn làm chính có hợp lệ không
   const selectedDon = allDons.find(d => d.id === donChinhId);
@@ -1464,6 +1481,8 @@ const PopupXacNhanGhep = ({
 
   // Xác định luồng: cần gửi yêu cầu hay ghép thẳng?
   const needsRequest = hasOthers; // có bất kỳ đơn người khác → cần yêu cầu
+  const showSelection = !isRecipientConfirmation;
+  const showRecipientInfo = isRecipientConfirmation;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
@@ -1485,46 +1504,52 @@ const PopupXacNhanGhep = ({
             </div>
           )}
 
-          {/* Danh sách tất cả đơn — chọn đơn chính qua Radio */}
           <div>
-            <p className="text-[12px] font-semibold text-[#333] mb-2">Chọn đơn chính</p>
+            <p className="text-[12px] font-semibold text-[#333] mb-2">
+              {showSelection ? "Chọn đơn chính" : "Thông tin yêu cầu ghép"}
+            </p>
             <div className="space-y-2">
               {allDons.map(d => {
                 const isChinh = d.id === donChinhId;
                 const disabled = isRadioDisabled(d);
                 return (
                   <div key={d.id}
-                    onClick={() => !disabled && setDonChinhId(d.id)}
+                    onClick={() => showSelection && !disabled && setDonChinhId(d.id)}
                     className={`border rounded-[3px] px-3 py-2 text-[12px] flex items-start gap-3 transition-colors
                       ${isChinh ? "border-[#1d2e4f] bg-[#f0f7ff]" : "border-[#ddd] bg-white"}
-                      ${disabled ? "opacity-50" : "cursor-pointer hover:border-[#8b1a1a] hover:bg-[#fdeaea]"}`}>
-                    <input
-                      type="radio"
-                      name="don-chinh"
-                      checked={isChinh}
-                      disabled={disabled}
-                      onChange={() => !disabled && setDonChinhId(d.id)}
-                      onClick={e => e.stopPropagation()}
-                      className="mt-[2px] w-[14px] h-[14px] accent-[#8b1a1a] flex-shrink-0"
-                    />
+                      ${showSelection ? (disabled ? "opacity-50" : "cursor-pointer hover:border-[#8b1a1a] hover:bg-[#fdeaea]") : ""}`}>
+                    {showSelection && (
+                      <input
+                        type="radio"
+                        name="don-chinh"
+                        checked={isChinh}
+                        disabled={disabled}
+                        onChange={() => !disabled && setDonChinhId(d.id)}
+                        onClick={e => e.stopPropagation()}
+                        className="mt-[2px] w-[14px] h-[14px] accent-[#8b1a1a] flex-shrink-0"
+                      />
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className="font-semibold text-[#1a5a96]">Mã đơn: {d.maDon}</span>
-                        {/* Tag Đơn chính */}
                         {isChinh && (
-                          <span className="inline-block px-1.5 py-[1px] rounded text-[10px] font-semibold bg-[#1d2e4f] text-white">
+                          <span className="inline-flex items-center rounded-[3px] bg-[#1d2e4f] text-white text-[10px] font-semibold px-2 py-[2px]">
                             Đơn chính
                           </span>
                         )}
-                        {/* Tag Đơn của tôi — chỉ thể hiện quyền sở hữu */}
-                        {d.cuaToi && (
-                          <span className="inline-block px-1.5 py-[1px] rounded text-[10px] font-semibold bg-[#e8f5e9] text-[#2e7d32] border border-[#a5d6a7]">
+                        {!isChinh && !showSelection && (
+                          <span className="inline-flex items-center rounded-[3px] bg-[#f0f4f7] text-[#3d546a] text-[10px] font-semibold px-2 py-[2px]">
+                            Đơn kèm
+                          </span>
+                        )}
+                        {!isChinh && showSelection && d.cuaToi && (
+                          <span className="inline-flex items-center rounded-[3px] border border-[#cdd9d7] bg-[#f0f6f2] text-[#256029] text-[10px] font-semibold px-2 py-[2px]">
                             Đơn của tôi
                           </span>
                         )}
                         {d.trangThai && (
-                          <span className={`inline-block px-1.5 py-[1px] rounded text-[10px] font-medium
-                            ${d.trangThai === "Đủ điều kiện" ? "bg-[#27ae60] text-white" : "bg-[#e67e22] text-white"}`}>
+                          <span className={`inline-block px-2 py-[2px] rounded text-[11px] font-medium
+                            ${d.trangThai === "Chưa đủ điều kiện" ? "bg-[#f9e6e2] text-[#a33a29]" : d.trangThai === "Đã thụ lý" ? "bg-[#e9eff8] text-[#2d4b74]" : "bg-[#eef5f6] text-[#285662]"}`}>
                             {d.trangThai}
                           </span>
                         )}
@@ -1543,23 +1568,23 @@ const PopupXacNhanGhep = ({
             </div>
           </div>
 
-          {/* Yêu cầu bổ sung liên quan — chỉ khi có đơn Chưa đủ điều kiện */}
-          {coChưaDuDK && (
+          {/* Yêu cầu bổ sung liên quan — chỉ khi có đơn có yêu cầu bổ sung */}
+          {hasRequestOptions && (
             <div>
               <p className="text-[12px] font-semibold text-[#333] mb-1.5">
                 Yêu cầu bổ sung liên quan
                 <span className="ml-1 text-[11px] font-normal text-[#888]">(không bắt buộc)</span>
               </p>
               <div className="border border-[#ddd] rounded-[3px] p-2 space-y-1.5 bg-[#fafafa]">
-                {YEU_CAU_BOSUNG_OPTIONS.map(opt => (
-                  <label key={opt} className="flex items-center gap-2 text-[12px] text-[#333] cursor-pointer hover:text-[#8b1a1a]">
+                {selectedYeuCauOptions.map(opt => (
+                  <label key={opt.key} className="flex items-center gap-2 text-[12px] text-[#333] cursor-pointer hover:text-[#8b1a1a]">
                     <input
                       type="checkbox"
                       className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                      checked={selectedYeuCau.includes(opt)}
-                      onChange={() => toggleYeuCau(opt)}
+                      checked={selectedYeuCau.includes(opt.key)}
+                      onChange={() => toggleYeuCau(opt.key)}
                     />
-                    {opt}
+                    {opt.label}
                   </label>
                 ))}
               </div>
@@ -1569,10 +1594,7 @@ const PopupXacNhanGhep = ({
           {/* Tóm tắt luồng */}
           <div className="bg-[#f5f5f5] rounded-[3px] px-3 py-2 text-[11px] text-[#555] space-y-0.5">
             {!hasOthers && <div>Tất cả đơn đều của bạn → Ghép ngay sau xác nhận.</div>}
-            {hasOthers && chinhIsMine && othersDons.length > 0 && (
-              <div>Đơn của người khác sẽ nhận yêu cầu xác nhận ghép từ bạn.</div>
-            )}
-            {hasOthers && !chinhIsMine && (
+              {hasOthers && !chinhIsMine && (
               <div>Người nhập đơn chính sẽ nhận yêu cầu xác nhận. Sau khi họ xác nhận, ghép đơn sẽ được thực hiện.</div>
             )}
           </div>
@@ -1580,13 +1602,24 @@ const PopupXacNhanGhep = ({
 
         {/* Footer */}
         <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
-          <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
-          <BtnPrimary onClick={onConfirm}>
-            {needsRequest
-              ? <><Send size={13} /> Gửi yêu cầu ghép</>
-              : <><Check size={13} /> Xác nhận ghép đơn</>
-            }
-          </BtnPrimary>
+          {showRecipientInfo ? (
+            <>
+              <BtnSecondary onClick={onReject ?? onClose}>Từ chối</BtnSecondary>
+              <BtnPrimary onClick={onConfirm}>
+                <Check size={13} /> Xác nhận
+              </BtnPrimary>
+            </>
+          ) : (
+            <>
+              <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
+              <BtnPrimary onClick={onConfirm} disabled={!selectedDon}>
+                {needsRequest
+                  ? <><Send size={13} /> Gửi yêu cầu ghép</>
+                  : <><Check size={13} /> Xác nhận ghép đơn</>
+                }
+              </BtnPrimary>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -3350,6 +3383,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               ngayBA: row.thongTinDon.ngay,
               toaBA: row.thongTinDon.toaXetXu,
             }]}
+            isRecipientConfirmation={true}
             onClose={() => setShowConfirmRow(null)}
             onConfirm={() => {
               setMergeState(prev => {
@@ -3362,6 +3396,19 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 return next;
               });
               triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã được ghép với đơn [${chinhRow?.maDon}] của ${chinhRow?.nguoiGui}`);
+              setShowConfirmRow(null);
+            }}
+            onReject={() => {
+              setMergeState(prev => {
+                const next = { ...prev };
+                delete next[showConfirmRow!]?.pendingFrom;
+                if (chinhRow) {
+                  const { pendingTo, ...rest } = next[chinhRow.id] ?? {};
+                  next[chinhRow.id] = rest;
+                }
+                return next;
+              });
+              triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã từ chối yêu cầu ghép.`);
               setShowConfirmRow(null);
             }}
           />
