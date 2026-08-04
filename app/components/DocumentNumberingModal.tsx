@@ -32,6 +32,7 @@ interface DocumentNumberingModalProps {
   onClose: () => void;
   currentRole: string; // "can-bo" or "truong-phong" or others
   selectedRows: any[];
+  loaiVanBanMacDinh?: string; // Loại văn bản đã chọn ở bộ lọc màn Danh sách đơn
 }
 
 // --- Mock Data ---
@@ -43,9 +44,7 @@ const DOC_TYPES = [
   "Công văn chuyển ngoài", 
   "Trả lại đơn", 
   "Tờ trình phân công thẩm phán", 
-  "Tờ trình xét xử GĐT", 
-  "Tờ trình thụ lý lại", 
-  "Tờ trình đơn trùng", 
+  "Tờ trình khác", 
   "Thông báo phân công TP", 
   "Yêu cầu bổ sung"
 ];
@@ -87,6 +86,8 @@ const VAN_BAN_DI_KEM_TAT_CA = [
   "Công văn chuyển nội bộ",
   "Công văn chuyển tòa khác",
   "Công văn chuyển ngoài",
+  "Danh sách đơn chuyển tòa khác",
+  "Danh sách thụ lý mới",
   "Trả lại đơn",
   "Tờ trình phân công",
   "Tờ trình khác",
@@ -101,16 +102,49 @@ const VAN_BAN_DI_KEM_GIOI_HAN: Record<string, string[]> = {
     "Giấy xác nhận",
     "Giấy xác nhận cơ quan chuyển đơn",
   ],
+  "Giấy xác nhận": [
+    "Giấy xác nhận cơ quan chuyển đơn",
+    "Danh sách thụ lý mới",
+  ],
+  "Giấy xác nhận cơ quan chuyển đơn": [
+    "Giấy xác nhận",
+  ],
+  "Công văn chuyển nội bộ": [
+    "Giấy xác nhận",
+    "Giấy xác nhận cơ quan chuyển đơn",
+  ],
+  "Công văn chuyển tòa khác": [
+    "Danh sách đơn chuyển tòa khác",
+  "Danh sách thụ lý mới",
+    "Giấy xác nhận cơ quan chuyển đơn",
+  ],
+  "Công văn chuyển ngoài": [
+    "Danh sách đơn chuyển tòa khác",
+  "Danh sách thụ lý mới",
+    "Giấy xác nhận cơ quan chuyển đơn",
+    "Giấy xác nhận",
+  ],
+  // DOC_TYPES đặt tên loại này là "Trả lại đơn"
+  "Trả lại đơn": [
+    "Giấy xác nhận",
+    "Yêu cầu bổ sung",
+    "Giấy xác nhận cơ quan chuyển đơn",
+  ],
+  "Thông báo phân công TP": [
+    "Công văn chuyển nội bộ",
+    "Giấy xác nhận",
+    "Giấy xác nhận cơ quan chuyển đơn",
+  ],
+  "Yêu cầu bổ sung": [
+    "Giấy xác nhận",
+    "Giấy xác nhận cơ quan chuyển đơn",
+  ],
 };
 
 const MUC_DO_UU_TIEN = ["Bình thường", "Khẩn", "Thượng khẩn", "Hỏa tốc"];
 
 // Ký hiệu số theo loại văn bản. Loại không khai ở đây dùng mặc định TANDTC-VP.
 const HAU_TO_SO_RIENG: Record<string, string> = {
-  "Tờ trình phân công thẩm phán": "TTr-TANDTC-VP",
-  "Tờ trình xét xử GĐT": "TTr-TANDTC-VP",
-  "Tờ trình thụ lý lại": "TTr-TANDTC-VP",
-  "Tờ trình đơn trùng": "TTr-TANDTC-VP",
   "Thông báo phân công TP": "TB-TA",
   "Giấy xác nhận": "TB-TA",
 };
@@ -345,6 +379,332 @@ const MauGiayXacNhan = ({ so, ngay, row }: { so: string; ngay: string; row?: any
   );
 };
 
+// Biểu mẫu: Thông báo yêu cầu sửa đổi, bổ sung — gửi ĐƯƠNG SỰ
+const MauYCBSDuongSu = ({ so, ngay, row }: { so: string; ngay: string; row?: any }) => {
+  const d = row?.thongTinDon ?? {};
+  return (
+    <TrangA4>
+      <div className="grid grid-cols-2 text-center text-[13px]">
+        <div>
+          <div>TÒA ÁN NHÂN DÂN <Sup n="1" />CẤP CAO</div>
+          <div className="font-bold">TẠI HÀ NỘI</div>
+          <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="mt-2">Số: <Sup n="2" />{so}/TB-TA</div>
+        </div>
+        <div>
+          <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+          <div className="font-bold mt-1">Độc lập - Tự do - Hạnh phúc</div>
+          <div className="w-[185px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="italic mt-3"><Sup n="3" />{ngay}</div>
+        </div>
+      </div>
+
+      <div className="text-center mt-7">
+        <div className="text-[15px] font-bold">THÔNG BÁO</div>
+        <div className="text-[14px] font-bold mt-0.5">YÊU CẦU SỬA ĐỔI, BỔ SUNG</div>
+        <div className="text-[14px] font-bold mt-0.5">ĐƠN ĐỀ NGHỊ GIÁM ĐỐC THẨM, TÁI THẨM</div>
+      </div>
+
+      <div className="mt-6 pl-[70px] space-y-1">
+        <div>Kính gửi: <Sup n="5" />{row?.nguoiGui || "……"}</div>
+        <div>Địa chỉ: <Sup n="6" />{row?.diaChi || "……"}</div>
+      </div>
+
+      <div className="mt-5 space-y-3 text-justify">
+        <p className="indent-[42px]">
+          Căn cứ <Sup n="7" />khoản 2 Điều 329, Điều 353, 357 của Bộ luật tố tụng dân sự về thủ tục
+          nhận đơn đề nghị xem xét bản án, quyết định của Tòa án đã có hiệu lực pháp luật theo thủ tục
+          giám đốc thẩm/tái thẩm;
+        </p>
+        <p className="indent-[42px]">
+          Xét đơn đề nghị giám đốc thẩm/tái thẩm của <Sup n="5" />{row?.nguoiGui || "……"} đề ngày{" "}
+          {d.ngayCV || d.ngay || "……"} về việc đề nghị Chánh án Tòa án nhân dân tối cao xem xét theo
+          thủ tục giám đốc thẩm/tái thẩm đối với <Sup n="8" />Bản án/Quyết định số {d.soBaqd || "……"}{" "}
+          ngày {d.ngay || "……"} của {d.toaXetXu || "……"} đã có hiệu lực pháp luật;
+        </p>
+        <p className="indent-[42px]">
+          Tòa án nhân dân tối cao yêu cầu <Sup n="5" />{row?.nguoiGui || "……"} sửa đổi, bổ sung các
+          nội dung sau đây trong thời hạn 30 ngày, kể từ ngày nhận được thông báo này:
+        </p>
+        <div className="pl-[42px] space-y-1">
+          <div>- <Sup n="9" />Khiếu nại Bản án/Quyết định số {d.soBaqd || "……"} ngày {d.ngay || "……"} của {d.toaXetXu || "……"};</div>
+          <div>- <Sup n="9" />Xác nhận của Ủy ban nhân dân xã, phường, thị trấn nơi cư trú hoặc kèm theo bản photo giấy tờ tùy thân;</div>
+          <div>- <Sup n="9" />Giấy ủy quyền và căn cước công dân.</div>
+        </div>
+        <p className="indent-[42px]">
+          Trường hợp người đề nghị không sửa đổi, bổ sung đơn đề nghị và gửi lại cho Tòa án trong thời
+          hạn trên thì Tòa án trả lại đơn đề nghị, tài liệu chứng cứ kèm theo cho người đề nghị.
+        </p>
+        <p className="indent-[42px] italic text-[13px]">
+          (Lưu ý: Để sớm hoàn thành việc xử lý đơn, khi nộp đơn sửa đổi, bổ sung và các tài liệu kèm
+          theo, đề nghị gửi kèm theo bản photo thông báo này cho Phòng Tiếp công dân và xử lý đơn tư
+          pháp thuộc Văn phòng Tòa án nhân dân tối cao theo địa chỉ: ).
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 mt-8">
+        <div className="text-[12px]">
+          <div className="font-bold italic">Nơi nhận:</div>
+          <div>- Như trên;</div>
+          <div>- Đ/c Chánh văn phòng <Sup n="10" />TANDCC (để b/c);</div>
+          <div>- Lưu: HCTP, VP TANDTC;</div>
+          <div className="mt-1"><Sup n="11" />09D01167375-</div>
+        </div>
+        <div className="text-center text-[13px] font-bold">
+          <div>TL. CHÁNH ÁN</div>
+          <div>KT. CHÁNH VĂN PHÒNG</div>
+          <div>PHÓ CHÁNH VĂN PHÒNG</div>
+        </div>
+      </div>
+    </TrangA4>
+  );
+};
+
+// Biểu mẫu: Hướng dẫn sửa đổi, bổ sung đơn thư — gửi TRẠI GIAM
+const MauYCBSTraiGiam = ({ so, ngay, row }: { so: string; ngay: string; row?: any }) => {
+  const d = row?.thongTinDon ?? {};
+  const traiGiam = d.donViGui || "Trại tạm giam ……";
+  return (
+    <TrangA4>
+      <div className="grid grid-cols-2 text-center text-[13px]">
+        <div>
+          <div>TÒA ÁN NHÂN DÂN TỐI CAO</div>
+          <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="mt-3">Số: {so}/TB-TA</div>
+          <div className="italic leading-tight mt-3">V/v Hướng dẫn sửa đổi,<br />Bổ sung đơn thư</div>
+        </div>
+        <div>
+          <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+          <div className="font-bold mt-1">Độc lập - Tự do - Hạnh phúc</div>
+          <div className="w-[185px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="italic mt-3">{ngay}</div>
+        </div>
+      </div>
+
+      <div className="mt-8 pl-[70px] space-y-1">
+        <div>Kính gửi: {traiGiam}</div>
+        <div>Địa chỉ:</div>
+      </div>
+
+      <div className="mt-5 space-y-3 text-justify">
+        <p className="indent-[42px]">
+          Tòa án nhân dân tối cao nhận được đơn của phạm nhân {row?.nguoiGui || "……"} đề ngày{" "}
+          {d.ngayCV || d.ngay || "……"} (do {traiGiam} chuyển đến), trong đơn có nội dung đề nghị xem
+          xét theo thủ tục giám đốc thẩm đối với Bản án số {d.soBaqd || "……"} ngày {d.ngay || "……"}{" "}
+          của {d.toaXetXu || "……"} đã có hiệu lực pháp luật;
+        </p>
+        <p className="indent-[42px]">
+          Để có cơ sở xem xét đơn đề nghị giám đốc thẩm nêu trên, Tòa án nhân dân tối cao đề nghị{" "}
+          {traiGiam} hướng dẫn phạm nhân {row?.nguoiGui || "……"} bổ sung các nội dung sau:
+        </p>
+        <div className="pl-[42px]">
+          - Cung cấp bản sao bản án/quyết định số {d.soBaqd || "……"} ngày {d.ngay || "……"} của{" "}
+          {d.toaXetXu || "……"} đã có hiệu lực pháp luật và các tài liệu liên quan đến việc đề nghị
+          giám đốc thẩm.
+        </div>
+        <p className="indent-[42px] italic text-[13px]">
+          (Lưu ý: Đề nghị gửi đơn và các tài liệu kèm theo đến Phòng Tiếp công dân và xử lý đơn tư
+          pháp thuộc Văn phòng Tòa án nhân dân tối cao theo địa chỉ: ).
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 mt-8">
+        <div className="text-[12px]">
+          <div className="font-bold italic">Nơi nhận:</div>
+          <div>- Như trên;</div>
+          <div>- Lưu: Văn phòng;</div>
+          <div>09D01165231-PTLH</div>
+        </div>
+        <div className="text-center text-[13px] font-bold">
+          <div>TL. CHÁNH ÁN</div>
+          <div>KT. CHÁNH VĂN PHÒNG</div>
+          <div>PHÓ CHÁNH VĂN PHÒNG</div>
+          <div className="mt-14">Nguyễn Văn A</div>
+        </div>
+      </div>
+    </TrangA4>
+  );
+};
+
+// Popup chặn trình duyệt khi còn đơn không hợp lệ
+const PopupChanTrinhDuyet = ({ soDon, lyDo, onBoDon, onDong }: {
+  soDon: number; lyDo: string[]; onBoDon: () => void; onDong: () => void;
+}) => (
+  <div className="fixed inset-0 z-[210] bg-black/50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-[8px] shadow-2xl w-[560px] overflow-hidden">
+      <div className="px-6 pt-7 pb-4 text-center">
+        <div className="w-14 h-14 rounded-full bg-[#fdecea] border-2 border-[#e57373] flex items-center justify-center mx-auto">
+          <AlertTriangle size={28} className="text-[#c0392b]" />
+        </div>
+        <div className="text-[17px] font-bold text-[#8b1a1a] mt-3">Không thể trình duyệt</div>
+        <div className="text-[13px] text-[#666] mt-1">
+          Còn <b className="text-[#c0392b]">{soDon} đơn không hợp lệ</b> trong danh sách.
+          Vui lòng bỏ các đơn này rồi trình duyệt lại.
+        </div>
+      </div>
+
+      <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-[#8b1a1a]">
+        <div className="font-semibold mb-1">Lý do:</div>
+        <ul className="list-disc pl-4 space-y-0.5">
+          {lyDo.map(l => <li key={l}>{l}</li>)}
+        </ul>
+      </div>
+
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+        <button onClick={onDong}
+          className="px-5 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f5f5f5] transition-colors">
+          Đóng
+        </button>
+        <button onClick={onBoDon}
+          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-[#8b1a1a] hover:bg-[#6e1414] rounded-[4px] transition-colors">
+          <Trash2 size={14} /> Bỏ {soDon} đơn không hợp lệ
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Popup báo đã trình duyệt xong
+const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiKy, mucDo, onDong }: {
+  loaiVanBan: string; soVanBan: number; daLaySo: number;
+  nguoiDuyet: string; nguoiKy: string; mucDo: string; onDong: () => void;
+}) => (
+  <div className="fixed inset-0 z-[210] bg-black/50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-[8px] shadow-2xl w-[560px] overflow-hidden">
+      <div className="px-6 pt-7 pb-4 text-center">
+        <div className="w-14 h-14 rounded-full bg-[#e8f5e9] border-2 border-[#4caf50] flex items-center justify-center mx-auto">
+          <Check size={30} className="text-[#2e7d32]" strokeWidth={3} />
+        </div>
+        <div className="text-[17px] font-bold text-[#1b5e20] mt-3">Trình duyệt thành công</div>
+        <div className="text-[13px] text-[#666] mt-1">
+          Hồ sơ đã được gửi tới người duyệt. Bạn có thể theo dõi tại màn <b>Danh sách đơn</b>,
+          chọn <b>Danh sách văn bản</b>.
+        </div>
+      </div>
+
+      <div className="mx-6 mb-4 border border-[#e5e7eb] rounded-[6px] divide-y divide-[#f0f0f0] text-[13px]">
+        {[
+          ["Loại văn bản", loaiVanBan],
+          ["Số văn bản đã tạo", `${soVanBan} văn bản`],
+          ["Đã cấp số", `${daLaySo}/${soVanBan}`],
+          ["Người duyệt", nguoiDuyet.split(" - ")[0] || "—"],
+          ["Người ký", nguoiKy.split(" - ")[0] || "—"],
+          ["Mức độ ưu tiên", mucDo],
+        ].map(([k, v]) => (
+          <div key={k} className="flex items-center justify-between px-4 py-2">
+            <span className="text-[#777]">{k}</span>
+            <span className="font-medium text-[#222] text-right">{v}</span>
+          </div>
+        ))}
+      </div>
+
+      {daLaySo < soVanBan && (
+        <div className="mx-6 mb-4 flex items-start gap-2 px-3 py-2 bg-[#fff7e6] border border-[#f59e0b] rounded-[4px] text-[12px] text-[#92400e]">
+          <AlertTriangle size={14} className="flex-shrink-0 mt-[1px]" />
+          <span>
+            Còn {soVanBan - daLaySo} văn bản chưa cấp số — hệ thống sẽ tự động cấp số
+            sau khi Chánh Văn phòng/Phó Chánh Văn phòng ký.
+          </span>
+        </div>
+      )}
+
+      <div className="flex justify-end px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+        <button onClick={onDong}
+          className="px-6 py-2 text-[13px] font-semibold text-white bg-[#1d2e4f] hover:bg-[#15223a] rounded-[4px] transition-colors">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Biểu mẫu: Danh sách thụ lý mới — mỗi vụ (đơn vị giải quyết) một bản riêng
+const MauDanhSachThuLyMoi = ({ so, ngay, donVi, rows }: {
+  so: string; ngay: string; donVi: string; rows: any[];
+}) => (
+  <div className="mx-auto bg-white shadow-md w-full max-w-[1100px] px-[55px] py-[45px] text-black font-['Times_New_Roman','Times',serif] text-[13px] leading-[1.45]">
+    <div className="grid grid-cols-2 text-center text-[13px]">
+      <div>
+        <div>TÒA ÁN NHÂN DÂN TỐI CAO</div>
+        <div className="font-bold mt-1">VĂN PHÒNG</div>
+        <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
+      </div>
+      <div>
+        <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+        <div className="font-bold mt-1">Độc lập - Tự do - Hạnh phúc</div>
+        <div className="w-[185px] h-[1px] bg-black mx-auto mt-1" />
+      </div>
+    </div>
+
+    <div className="text-center mt-7">
+      <div className="text-[14px] font-bold leading-[1.5]">
+        Danh sách đơn thụ lý
+        <br />
+        của Văn phòng chuyển {donVi}
+      </div>
+      <div className="text-[13px] font-bold italic mt-1">
+        (Gửi kèm theo Tờ trình số {so}/TANDTC-VP ngày {ngay} của Tòa án nhân dân tối cao)
+      </div>
+    </div>
+
+    <table className="w-full border-collapse mt-5 text-[12px]">
+      <thead>
+        <tr>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[34px] align-middle">TT</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[56px] align-middle">Số Thụ lý</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[76px] align-middle">Ngày thụ lý</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[175px] align-middle">Người đề nghị, kiến nghị, thông báo</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[135px] align-middle">Địa chỉ</th>
+          <th colSpan={3} className="border border-black px-1 py-1">QĐ/BA đề nghị xem xét theo thủ tục GĐT/TT</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[86px] align-middle">Thẩm phán giải quyết</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[62px] align-middle">Số lượng đơn</th>
+          <th rowSpan={2} className="border border-black px-1 py-1 w-[135px] align-middle">Ghi chú</th>
+        </tr>
+        <tr>
+          <th className="border border-black px-1 py-1 w-[74px]">Số BA/QĐ</th>
+          <th className="border border-black px-1 py-1 w-[62px]">Ngày BA/QĐ</th>
+          <th className="border border-black px-1 py-1 w-[80px]">Tòa án Xét xử</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.length === 0 ? (
+          <tr><td colSpan={11} className="border border-black px-2 py-6 text-center italic">Chưa có đơn nào</td></tr>
+        ) : rows.map((r, i) => {
+          const d = r.thongTinDon ?? {};
+          return (
+            <tr key={r.id ?? i} className="align-top">
+              <td className="border border-black px-1 py-1.5 text-center">{i + 1}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.giaiQuyet?.stl || ""}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.ngayNhap || ""}</td>
+              <td className="border border-black px-1 py-1.5">{r.nguoiGui || ""}</td>
+              <td className="border border-black px-1 py-1.5">{r.diaChi || ""}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{d.soBaqd || ""}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{d.ngay || ""}</td>
+              <td className="border border-black px-1 py-1.5">{d.toaXetXu || ""}</td>
+              <td className="border border-black px-1 py-1.5">{(d.thamPhan || "").split(" (")[0]}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.soDon ?? 1}</td>
+              <td className="border border-black px-1 py-1.5" />
+            </tr>
+          );
+        })}
+        {/* Dòng tổng + khối ký */}
+        <tr>
+          <td colSpan={2} className="border border-black px-1 py-2 text-[12px]">
+            <span className="italic">Tổng số:</span> <b className="ml-2">{rows.length}</b>
+          </td>
+          <td colSpan={6} className="border border-black px-2 py-2 text-center">
+            <div className="font-bold">Xác nhận của {donVi}</div>
+            <div className="italic text-[11px]">(Ký ghi rõ họ tên)</div>
+          </td>
+          <td colSpan={3} className="border border-black px-2 py-2 text-center align-bottom">
+            <div className="font-bold">CHÁNH VĂN PHÒNG</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+);
+
 const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }: {
   rows: any[]; loaiVanBan: string; vanBanDiKem?: string[]; onClose: () => void;
 }) => {
@@ -379,14 +739,38 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   const ngayHienThi = `${info.ngay || "……"}/${info.thang || "……"}/${info.nam || "……"}`;
   const ngayVanBan = `Hà Nội, ngày ${info.ngay || "……"} tháng ${info.thang || "……"} năm ${info.nam || "……"}`;
 
-  // Tab 1 = văn bản chính, tab 2 = danh sách kèm theo, còn lại là văn bản đi kèm.
-  // Tên tab bind theo loại văn bản đang chọn.
-  const danhSachTab = [loaiVanBan, `Danh sách ${loaiVanBan}`, ...vanBanDiKem];
-  const mauDangXem = tab >= 2 ? vanBanDiKem[tab - 2] : null;
   const laToTrinhPhanCong = loaiVanBan === "Tờ trình phân công thẩm phán";
 
+  // Các vụ (đơn vị giải quyết) có trong đợt này
+  const danhSachVu = [...new Set(rows.map((r: any) => r.thongTinDon?.donViGiaiQuyet || "Chưa xác định"))];
+
+  // "Danh sách thụ lý mới" tách mỗi vụ 1 bản; loại khác 1 bản chung.
+  const tabDiKem = vanBanDiKem.flatMap(v =>
+    v === "Danh sách thụ lý mới"
+      ? danhSachVu.map(vu => ({ loai: v, vu, ten: `${v} - ${vu}` }))
+      : [{ loai: v, vu: null as string | null, ten: v }]);
+
+  // Yêu cầu bổ sung tách sẵn 2 biểu mẫu: gửi đương sự và gửi trại giam
+  const laYeuCauBoSung = loaiVanBan === "Yêu cầu bổ sung";
+  const tabChinh = laYeuCauBoSung
+    ? ["Thông báo yêu cầu bổ sung với đương sự", "Thông báo yêu cầu bổ sung với trại giam"]
+    : [loaiVanBan];
+
+  const danhSachTab = [
+    ...tabChinh,
+    ...(laToTrinhPhanCong ? [`Danh sách ${loaiVanBan}`] : []),
+    ...tabDiKem.map(t => t.ten),
+  ];
+  const viTriDiKem = tabChinh.length + (laToTrinhPhanCong ? 1 : 0);
+  const mucDiKem = tab >= viTriDiKem ? tabDiKem[tab - viTriDiKem] : null;
+
   // Bảng ánh xạ loại văn bản → biểu mẫu. Thêm loại mới chỉ cần thêm 1 nhánh.
-  const renderMau = (loai: string) => {
+  const renderMau = (loai: string, vu?: string | null) => {
+    if (loai === "Danh sách thụ lý mới")
+      return (
+        <MauDanhSachThuLyMoi so={soTTHienThi} ngay={ngayHienThi} donVi={vu ?? "—"}
+          rows={rows.filter((r: any) => (r.thongTinDon?.donViGiaiQuyet || "Chưa xác định") === vu)} />
+      );
     if (loai === "Công văn chuyển nội bộ")
       return <MauCongVanChuyenNoiBo so={soTTHienThi} ngay={ngayVanBan} />;
     if (loai === "Giấy xác nhận cơ quan chuyển đơn")
@@ -465,8 +849,10 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
         {/* Nội dung — chỉ cuộn dọc, trang tự co để không phải kéo ngang */}
         <div id="khu-vuc-in" className="flex-1 overflow-y-auto overflow-x-hidden bg-[#e9ecef] p-6">
 
-          {/* ── TAB 1: VĂN BẢN CHÍNH ── */}
-          {tab === 0 && !laToTrinhPhanCong && renderMau(loaiVanBan)}
+          {/* ── TAB VĂN BẢN CHÍNH ── */}
+          {laYeuCauBoSung && tab === 0 && <MauYCBSDuongSu so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />}
+          {laYeuCauBoSung && tab === 1 && <MauYCBSTraiGiam so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />}
+          {tab === 0 && !laToTrinhPhanCong && !laYeuCauBoSung && renderMau(loaiVanBan)}
           {tab === 0 && laToTrinhPhanCong && (
             <div className="mx-auto bg-white shadow-md w-full max-w-[794px] px-[85px] py-[55px] text-black font-['Times_New_Roman','Times',serif] text-[14.5px] leading-[1.55]">
               <QuocHieu />
@@ -518,8 +904,8 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
             </div>
           )}
 
-          {/* ── TAB 2: DANH SÁCH PHÂN CÔNG THẨM PHÁN ── */}
-          {tab === 1 && (
+          {/* ── TAB 2: DANH SÁCH KÈM THEO TỜ TRÌNH PHÂN CÔNG ── */}
+          {tab === 1 && laToTrinhPhanCong && (
             <div className="mx-auto bg-white shadow-md w-full max-w-[1100px] px-[55px] py-[45px] text-black font-['Times_New_Roman','Times',serif] text-[13px] leading-[1.45] relative">
               <div className="absolute right-[30px] top-[20px] text-[12px]">1</div>
               <QuocHieu />
@@ -599,13 +985,48 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
             </div>
           )}
 
-          {/* ── TAB ≥3: BIỂU MẪU CỦA TỪNG VĂN BẢN ĐI KÈM ── */}
-          {mauDangXem && renderMau(mauDangXem)}
+          {/* ── CÁC TAB VĂN BẢN ĐI KÈM ── */}
+          {mucDiKem && renderMau(mucDiKem.loai, mucDiKem.vu)}
         </div>
         </div>
       </div>
     </div>
   );
+};
+
+// Loại văn bản cấp theo TỪNG ĐƠN (mỗi đơn 1 tờ) thay vì gộp theo đơn vị.
+const CAP_THEO_TUNG_DON = new Set(["Giấy xác nhận", "Yêu cầu bổ sung"]);
+
+// Dựng 1 văn bản cho 1 đơn — không có tầng "Danh sách đơn" vì chỉ có đúng 1 đơn.
+const dungVanBanTheoDon = (
+  loaiVB: string,
+  row: any,
+  idPrefix: string,
+  chamValidation: boolean,
+): DocNode => {
+  const tenGoc = `${loaiVB} - ${row.maDon || row.nguoiGui || `Đơn ${row.id}`}`;
+  const hauToSo = hauToSoCua(loaiVB);
+  return {
+    id: idPrefix,
+    name: `${tenGoc} - (Số -/2026/${hauToSo})`,
+    tenGoc,
+    hauToSo,
+    type: loaiVB,
+    date: "30/07/2026",
+    isExpanded: true,
+    coTheLaySo: true,
+    khongCham: !chamValidation,
+    children: [{
+      id: `${idPrefix}-don-${row.id}`,
+      sttHienThi: 1,
+      name: row.maDon || row.nguoiGui || `Đơn ${row.id}`,
+      type: "Đơn",
+      date: row.ngayNhap || "30/07/2026",
+      isExpanded: false,
+      originalData: row,
+      khongCham: !chamValidation,
+    }],
+  };
 };
 
 // Dựng 1 văn bản cho 1 đơn vị chuyển đến, 3 cấp:
@@ -630,6 +1051,7 @@ const dungVanBanTheoDonVi = (
   });
 
   const hauToSo = hauToSoCua(loaiVB);
+
   return {
     id: idPrefix,
     name: `${tenGoc} - (Số -/2026/${hauToSo})`,
@@ -700,18 +1122,16 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
         if (tq !== "Trả lại đơn") { isValid = false; invalidReason = "TT Giải quyết phải là Trả lại đơn"; }
       } else if (selectedType === "Tờ trình phân công thẩm phán" || selectedType === "Tờ trình") {
         if (!tq.includes("Thụ lý mới") || !isPhanCong) { isValid = false; invalidReason = "TT Giải quyết: Thụ lý mới & Đã phân công"; }
-      } else if (selectedType === "Tờ trình xét xử GĐT") {
-        if (tc !== "Nội bộ" || !isPhanCong || tq !== "Thụ lý xét xử") { isValid = false; invalidReason = "Nội bộ, Đã phân công & Thụ lý xét xử"; }
       } else if (selectedType === "Thông báo phân công TP") {
         if (!["Thụ lý mới", "Thụ lý mới trùng TP", "Thụ lý xét xử", "Thụ lý mới trong thẩm phán", "Thụ lý mới trùng thẩm phán"].includes(tq) || toTrinhStatus === "none") {
           isValid = false; invalidReason = "Trạng thái thụ lý & Đã tạo tờ trình";
         }
-      } else if (selectedType === "Tờ trình thụ lý lại") {
-        if (!tq.includes("Thụ lý mới trùng")) { isValid = false; invalidReason = "TT Giải quyết: Thụ lý mới trùng thẩm phán"; }
-      } else if (selectedType === "Tờ trình đơn trùng") {
-        if (tq !== "Đã thụ lý") { isValid = false; invalidReason = "TT Giải quyết: Đã thụ lý"; }
       } else if (selectedType === "Yêu cầu bổ sung") {
-        if (tq !== "Đơn chưa đủ điều kiện") { isValid = false; invalidReason = "TT Giải quyết: Đơn chưa đủ điều kiện"; }
+        // Chỉ áp dụng cho đơn chưa đủ điều kiện. So khớp lỏng vì dữ liệu ghi
+        // "Chưa đủ điều kiện" còn danh mục cũ ghi "Đơn chưa đủ điều kiện".
+        if (!tq.toLowerCase().includes("chưa đủ điều kiện")) {
+          isValid = false; invalidReason = "Chỉ lập cho đơn Chưa đủ điều kiện";
+        }
       }
     }
 
@@ -735,6 +1155,13 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
 const countInvalidDocs = (nodes: DocNode[]): number =>
   nodes.reduce((sum, n) =>
     sum + (n.originalData && n.isValid === false ? 1 : 0) + (n.children ? countInvalidDocs(n.children) : 0), 0);
+
+// Gom lý do không hợp lệ của các ĐƠN để hiển thị trong cảnh báo
+const gomLyDoKhongHopLe = (nodes: DocNode[]): string[] =>
+  nodes.flatMap(n => [
+    ...(n.originalData && n.isValid === false && n.invalidReason ? [n.invalidReason] : []),
+    ...(n.children ? gomLyDoKhongHopLe(n.children) : []),
+  ]);
 
 // Bỏ mọi đơn không hợp lệ, rồi dọn các nhóm trở nên rỗng.
 const pruneInvalidDocs = (nodes: DocNode[]): DocNode[] =>
@@ -793,7 +1220,8 @@ const OChon = ({ value, onChange, options, placeholder }: {
     <select value={value} onChange={e => onChange(e.target.value)}
       className={`w-full h-[30px] pl-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96] ${value ? "text-[#222]" : "text-[#aaa]"}`}>
       <option value="" disabled hidden>{placeholder}</option>
-      {options.map(o => <option key={o} className="text-[#222]">{o.split(" - ")[0]}</option>)}
+      {/* value giữ chuỗi đầy đủ để khớp với ô tổng, chỉ hiển thị tên cho gọn cột */}
+      {options.map(o => <option key={o} value={o} className="text-[#222]">{o.split(" - ")[0]}</option>)}
     </select>
     <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
   </div>
@@ -801,6 +1229,7 @@ const OChon = ({ value, onChange, options, placeholder }: {
 
 const HangTaiLieu = ({
   node, level = 0, soCongVanCha, onToggleExpand, onLaySo, nguoiTheoDon, setNguoiTheoDon,
+  duyetChung, kyChung,
 }: {
   node: DocNode;
   level?: number;
@@ -809,6 +1238,8 @@ const HangTaiLieu = ({
   onLaySo?: (id: string) => void;
   nguoiTheoDon: Record<string, { duyet?: string; ky?: string }>;
   setNguoiTheoDon: React.Dispatch<React.SetStateAction<Record<string, { duyet?: string; ky?: string }>>>;
+  duyetChung: string;
+  kyChung: string;
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const coCon = !!node.children?.length;
@@ -868,7 +1299,8 @@ const HangTaiLieu = ({
           <HangTaiLieu key={c.id} node={c} level={level + 1}
             soCongVanCha={node.soVanBan ? `${node.soVanBan}/2026/${node.hauToSo ?? "TANDTC-VP"}` : soCongVanCha}
             onToggleExpand={onToggleExpand} onLaySo={onLaySo}
-            nguoiTheoDon={nguoiTheoDon} setNguoiTheoDon={setNguoiTheoDon} />
+            nguoiTheoDon={nguoiTheoDon} setNguoiTheoDon={setNguoiTheoDon}
+            duyetChung={duyetChung} kyChung={kyChung} />
         ))}
       </>
     );
@@ -900,11 +1332,11 @@ const HangTaiLieu = ({
         </div>
       </td>
       <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
-        <OChon value={nguoiTheoDon[node.id]?.duyet ?? ""} onChange={dat("duyet")}
+        <OChon value={nguoiTheoDon[node.id]?.duyet ?? duyetChung} onChange={dat("duyet")}
           options={NGUOI_DUYET_OPTIONS} placeholder="Chọn người duyệt" />
       </td>
       <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
-        <OChon value={nguoiTheoDon[node.id]?.ky ?? ""} onChange={dat("ky")}
+        <OChon value={nguoiTheoDon[node.id]?.ky ?? kyChung} onChange={dat("ky")}
           options={NGUOI_KY_OPTIONS} placeholder="Chọn người ký" />
       </td>
       <td className="border-b border-[#eee] px-2 py-2 text-center">{trangThai}</td>
@@ -1060,10 +1492,14 @@ const DocumentTreeRow = ({
 
 
 // --- Main Component ---
-export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows }: DocumentNumberingModalProps) {
-  const [docType, setDocType] = useState("Tờ trình phân công thẩm phán");
+export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows, loaiVanBanMacDinh }: DocumentNumberingModalProps) {
+  // Ăn theo Loại văn bản đang chọn ngoài màn Danh sách đơn.
+  // So khớp không phân biệt hoa thường vì hai danh mục viết hoa khác nhau.
+  const loaiKhoiTao =
+    DOC_TYPES.find(t => t.toLowerCase() === (loaiVanBanMacDinh ?? "").toLowerCase())
+    ?? "Tờ trình phân công thẩm phán";
+  const [docType, setDocType] = useState(loaiKhoiTao);
   const [treeData, setTreeData] = useState<DocNode[]>([]);
-  const [approvalNote, setApprovalNote] = useState("");
 
   // New UI states
   const [nguoiTao, setNguoiTao] = useState("Vũ Văn Yên");
@@ -1073,6 +1509,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const [yKienDuyet, setYKienDuyet] = useState("");
   const [yKienKy, setYKienKy] = useState("");
   const [mucDoUuTien, setMucDoUuTien] = useState("Bình thường");
+  const [daTrinhDuyet, setDaTrinhDuyet] = useState(false);
+  const [chanTrinhDuyet, setChanTrinhDuyet] = useState(false);
   const [showBieuMau, setShowBieuMau] = useState(false);
   const [vanBanDiKem, setVanBanDiKem] = useState<string[]>([]);
   // Người duyệt / người ký chọn riêng theo từng đơn trên bảng
@@ -1096,9 +1534,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const thieuNguoiDuyetKy = !nguoiDuyet || !nguoiKy;
   
   // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
-  // Cấu trúc luôn 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
-  //                       → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
-  //                       → Đơn
+  //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
+  //                    → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
+  //                    → Đơn
+  //   Loại trong CAP_THEO_TUNG_DON: mỗi đơn 1 văn bản, bỏ tầng Danh sách đơn.
   useEffect(() => {
     if (!isOpen) return;
 
@@ -1111,17 +1550,18 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     const nodes: DocNode[] = [];
     let n = 1;
 
-    // Văn bản chính
-    Object.entries(theoDonVi).forEach(([donVi, rowsDV]) => {
-      nodes.push(dungVanBanTheoDonVi(docType, donVi, rowsDV, `vb-${n++}`, true));
-    });
+    const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
+      if (CAP_THEO_TUNG_DON.has(loaiVB)) {
+        selectedRows.forEach(r => nodes.push(dungVanBanTheoDon(loaiVB, r, `${tienTo}-${n++}`, cham)));
+      } else {
+        Object.entries(theoDonVi).forEach(([donVi, rowsDV]) =>
+          nodes.push(dungVanBanTheoDonVi(loaiVB, donVi, rowsDV, `${tienTo}-${n++}`, cham)));
+      }
+    };
 
+    dungNhom(docType, true, "vb");
     // Văn bản đi kèm — cùng cấu trúc, chỉ khác là không bị chấm validation
-    vanBanDiKem.forEach(loaiVB => {
-      Object.entries(theoDonVi).forEach(([donVi, rowsDV]) => {
-        nodes.push(dungVanBanTheoDonVi(loaiVB, donVi, rowsDV, `dikem-${n++}`, false));
-      });
-    });
+    vanBanDiKem.forEach(loaiVB => dungNhom(loaiVB, false, "dikem"));
 
     setTreeData(validateTree(nodes, docType));
   }, [docType, isOpen, selectedRows, vanBanDiKem]);
@@ -1211,8 +1651,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
               </div>
             </div>
 
-            {/* Creator (fixed = current user) */}
-            {(docType.includes("Tờ trình") || docType === "Yêu cầu bổ sung") && (
+            {/* Creator (fixed = current user) — hiện với mọi loại văn bản */}
+            {(
               <div className="min-w-[180px]">
                 <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
                   Người tạo
@@ -1223,7 +1663,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
               </div>
             )}
 
-            {/* Tờ trình phân công thẩm phán: luồng duyệt 3 bước thay cho "Chuyển tiếp cho" */}
+            {/* Luồng duyệt — dùng chung cho mọi loại văn bản */}
             {/* Luồng duyệt — dùng chung cho mọi loại văn bản */}
             {(
               <div className="flex gap-5 items-end flex-1">
@@ -1335,90 +1775,6 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
               </div>
             )}
 
-            {/* Next Action Panel: Radio + Combobox */}
-            {docType !== "Tờ trình phân công thẩm phán" && (docType.includes("Tờ trình") || docType === "Yêu cầu bổ sung") && (
-              <div className="flex gap-4 items-end flex-1">
-                <div className="flex-1 min-w-[260px]">
-                  <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
-                    Chuyển tiếp cho <span className="text-[#e74c3c]">*</span>
-                  </label>
-                  {/* Radio buttons */}
-                  <div className="flex gap-4 mb-2">
-                    <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                      <input
-                        type="radio"
-                        name="nextActionType"
-                        value="duyet"
-                        checked={nguoiDuyet.startsWith("duyet:")}
-                        onChange={() => setNguoiDuyet("duyet:")}
-                        className="accent-[#1d2e4f]"
-                      />
-                      <span className="text-[#333]">Người duyệt</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                      <input
-                        type="radio"
-                        name="nextActionType"
-                        value="ky"
-                        checked={nguoiDuyet.startsWith("ky:")}
-                        onChange={() => setNguoiDuyet("ky:")}
-                        className="accent-[#1d2e4f]"
-                      />
-                      <span className="text-[#333]">Người ký</span>
-                    </label>
-                  </div>
-                  {/* Combobox */}
-                  <div className="relative">
-                    <div className="absolute left-2.5 top-[10px] text-[#888]">
-                      <User size={14} />
-                    </div>
-                    <select
-                      value={nguoiDuyet}
-                      onChange={(e) => setNguoiDuyet(e.target.value)}
-                      className="w-full h-[34px] pl-8 pr-8 text-[13px] border border-[#ccc] rounded-[4px] bg-white focus:border-[#1a5a96] outline-none appearance-none"
-                    >
-                      {nguoiDuyet.startsWith("ky:") || (!nguoiDuyet.startsWith("duyet:") && !nguoiDuyet.startsWith("ky:")) ? (
-                        <>
-                          <option value="">-- Chọn người --</option>
-                          <option value="duyet:Trần Văn B">Trần Văn B - Trưởng phòng - 15/04/1980</option>
-                          <option value="duyet:Lê Thị C">Lê Thị C - Phó phòng - 22/09/1985</option>
-                          <option value="ky:Nguyễn Minh An">Nguyễn Minh An - Phó CVP - 01/03/1975</option>
-                          <option value="ky:Hoàng Kim Long">Hoàng Kim Long - CVP - 10/08/1970</option>
-                        </>
-                      ) : nguoiDuyet.startsWith("duyet:") ? (
-                        <>
-                          <option value="duyet:">-- Chọn người duyệt --</option>
-                          <option value="duyet:Trần Văn B">Trần Văn B - Trưởng phòng - 15/04/1980</option>
-                          <option value="duyet:Lê Thị C">Lê Thị C - Phó phòng - 22/09/1985</option>
-                        </>
-                      ) : (
-                        <>
-                          <option value="ky:">-- Chọn người ký --</option>
-                          <option value="ky:Nguyễn Minh An">Nguyễn Minh An - Phó CVP - 01/03/1975</option>
-                          <option value="ky:Hoàng Kim Long">Hoàng Kim Long - CVP - 10/08/1970</option>
-                        </>
-                      )}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-2.5 top-[10px] text-[#888] pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Approval Note — shown when nguoiTao = nguoiDuyet (TP self-approve) */}
-                {currentRole === "truong-phong" && (
-                  <div className="flex-1 min-w-[200px]">
-                    <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
-                      Ý kiến duyệt
-                    </label>
-                    <textarea
-                      placeholder="Nhập ý kiến (Không bắt buộc)..."
-                      value={approvalNote}
-                      onChange={(e) => setApprovalNote(e.target.value)}
-                      className="w-full h-[34px] min-h-[34px] py-1.5 px-3 text-[13px] border border-[#ccc] rounded-[4px] focus:border-[#1a5a96] outline-none resize-none"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
 
           </div>
         </div>
@@ -1450,6 +1806,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     onLaySo={laySo}
                     nguoiTheoDon={nguoiTheoDon}
                     setNguoiTheoDon={setNguoiTheoDon}
+                    duyetChung={nguoiDuyet}
+                    kyChung={nguoiKy}
                   />
                 ))}
               </tbody>
@@ -1459,7 +1817,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
           <div className="mt-4 flex items-start gap-2 bg-[#e8f4fd] p-3 rounded border border-[#b3d7f6] text-[#1a5a96] text-[12px]">
             <Info size={16} className="mt-0.5 flex-shrink-0" />
             <p>
-              Văn bản chính sẽ được tự động cấp số theo sổ <strong>Công văn đi</strong> của hệ thống sau khi được
+              Văn bản chính sẽ được tự động cấp số sau khi được
               <strong> Chánh Văn phòng/Phó Chánh Văn phòng</strong> ký.
               Các tài liệu đính kèm sẽ được đánh số phụ lục.
             </p>
@@ -1548,6 +1906,11 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             ) : (
               // Can bo: Luu & Trinh duyet — chặn khi chưa chọn Người duyệt / Người ký
               <button
+                onClick={() => {
+                  // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
+                  if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
+                  setDaTrinhDuyet(true);
+                }}
                 disabled={thieuNguoiDuyetKy}
                 title={thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
@@ -1560,6 +1923,28 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
       </div>
 
+      {chanTrinhDuyet && (
+        <PopupChanTrinhDuyet
+          soDon={soDonKhongHopLe}
+          lyDo={[...new Set(gomLyDoKhongHopLe(treeData))]}
+          onBoDon={() => {
+            setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType));
+            setChanTrinhDuyet(false);
+          }}
+          onDong={() => setChanTrinhDuyet(false)}
+        />
+      )}
+      {daTrinhDuyet && (
+        <PopupTrinhDuyetXong
+          loaiVanBan={docType}
+          soVanBan={treeData.filter(n => n.coTheLaySo).length}
+          daLaySo={treeData.filter(n => n.soVanBan).length}
+          nguoiDuyet={nguoiDuyet}
+          nguoiKy={nguoiKy}
+          mucDo={mucDoUuTien}
+          onDong={() => { setDaTrinhDuyet(false); onClose(); }}
+        />
+      )}
       {showBieuMau && (
         <ToTrinhPhanCongPreview rows={selectedRows} loaiVanBan={docType} vanBanDiKem={vanBanDiKem}
           onClose={() => setShowBieuMau(false)} />

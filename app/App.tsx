@@ -574,8 +574,6 @@ const DonFields = () => {
 // ─── Sidebar navigation ──────────────────────────────────────────────────────
 const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: string) => void }) => {
   const [quanLyDonOpen, setQuanLyDonOpen] = useState(true);
-  const [hinhSuOpen, setHinhSuOpen] = useState(false);
-  const [thiHanhAnOpen, setThiHanhAnOpen] = useState(false);
   const [tichHopOpen, setTichHopOpen] = useState(false);
   const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
 
@@ -633,16 +631,8 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
           {quanLyDonOpen && (
             <div className="pb-1">
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
-              <SubItem icon={<FileText size={13} />} label="Vụ án TPB3 đề xuất kháng..." />
+              <SubItem icon={<Gavel size={13} />} label="Hồ sơ kháng nghị" active={activePage === "khangnghi"} nav="khangnghi" />
               <SubItem icon={<Users size={13} />} label="Phân công thẩm phán" active={activePage === "phancong"} nav="phancong" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Nhận đơn từ tòa khác" />
-              <SubItem icon={<FolderOpen size={13} />} label="Kháng cáo" />
-              <SubItem icon={<FileText size={13} />} label="Kháng nghị" />
-              <SubItem icon={<Clock size={13} />} label="Giải quyết KC quá hạn" />
-              <SubItem icon={<FileText size={13} />} label="Đơn khởi kiện / yêu cầu" />
-              <SubItem icon={<ArrowDownToLine size={13} />} label="Đơn chuyển đến" />
-              <SubItem icon={<ArrowUpFromLine size={13} />} label="Đơn chuyển đi" />
-              <SubItem icon={<Archive size={13} />} label="Hồ sơ tổng hợp vụ án" />
             </div>
           )}
         </div>
@@ -656,18 +646,6 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
               <SubItem icon={<Check size={13} />} label="Phê duyệt đề xuất" active={activePage === "phe_duyet"} nav="phe_duyet" />
             </div>
           )}
-        </div>
-
-        {/* Hình sự */}
-        <div>
-          <GroupItem icon={<Scale size={15} />} label="Hình sự"
-            open={hinhSuOpen} onToggle={() => setHinhSuOpen(!hinhSuOpen)} />
-        </div>
-
-        {/* Thi hành án */}
-        <div>
-          <GroupItem icon={<Gavel size={15} />} label="Thi hành án"
-            open={thiHanhAnOpen} onToggle={() => setThiHanhAnOpen(!thiHanhAnOpen)} />
         </div>
 
         {/* Cấu hình chung */}
@@ -2348,10 +2326,57 @@ const FDate = () => (
   <input type="date" className="w-full h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]" />
 );
 
+// ─── Hồ sơ kháng nghị: kết quả xét xử ────────────────────────────────────────
+const KET_QUA_KHANG_NGHI = [
+  "Không chấp nhận kháng nghị",
+  "Sửa toàn bộ bản án, quyết định của Tòa án đã có hiệu lực pháp luật",
+  "Sửa một phần bản án, quyết định của Tòa án đã có hiệu lực pháp luật",
+  "Sửa phần bồi thường thiệt hại",
+  "Sửa phần hình phạt",
+  "Sửa khác",
+  "Hủy bản án, quyết định có hiệu lực pháp luật để xét xử lại theo thủ tục sơ thẩm",
+];
+
+// Băm nhỏ để random "ổn định": cùng một đơn luôn ra cùng kết quả, không nhảy
+// lung tung mỗi lần bảng render lại (lọc, chọn dòng, mở popup...).
+const hashId = (n: number) => {
+  let h = (n ^ 0x9e3779b9) >>> 0;
+  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+};
+
+// Quyết định kháng nghị GĐT/TT chỉ do Chánh án TANDTC hoặc Viện trưởng VKSNDTC
+// ra và gửi kèm hồ sơ vụ án → cột "người gửi" của màn Hồ sơ kháng nghị lấy theo
+// 2 chức danh này (kèm nơi nhận chéo giữa hai cơ quan).
+const DON_VI_KHANG_NGHI = [
+  {
+    ten: "Chánh án Tòa án nhân dân tối cao",
+    diaChi: "Số 48 Lý Thường Kiệt, Phường Hoàn Kiếm, TP. Hà Nội",
+    noiNhan: "Viện kiểm sát nhân dân tối cao",
+  },
+  {
+    ten: "Viện trưởng Viện kiểm sát nhân dân tối cao",
+    diaChi: "Số 9 Phạm Văn Bạch, Phường Yên Hòa, TP. Hà Nội",
+    noiNhan: "Tòa án nhân dân tối cao",
+  },
+];
+
+const donViKhangNghi = (id: number) => DON_VI_KHANG_NGHI[hashId(id * 104729 + 11) % DON_VI_KHANG_NGHI.length];
+
+const ketQuaKhangNghi = (id: number) => {
+  const daXetXu = hashId(id) % 3 !== 0;
+  return {
+    trangThai: daXetXu ? "Đã xét xử" : "Đang xét xử",
+    ketQua: daXetXu ? KET_QUA_KHANG_NGHI[hashId(id * 7919 + 3) % KET_QUA_KHANG_NGHI.length] : "",
+  };
+};
+
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao";
   onCreateToTrinh?: (t: ToTrinh) => void;
+  khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
@@ -2581,13 +2606,15 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       <div className="p-3 space-y-3">
 
         {/* Title */}
-        <h2 className="text-[15px] font-semibold text-[#222]">Danh sách đơn</h2>
+        <h2 className="text-[15px] font-semibold text-[#222]">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
 
         {/* Card */}
         <div className="bg-white border border-[#ddd] rounded-[3px]">
 
           {/* Tabs — về tab "Tổng số" thì ô Loại văn bản bị ẩn, nên xóa luôn giá
-              trị để không còn bộ lọc chạy ngầm mà người dùng không nhìn thấy. */}
+              trị để không còn bộ lọc chạy ngầm mà người dùng không nhìn thấy.
+              Hồ sơ kháng nghị chỉ có một danh sách duy nhất → không có tabs. */}
+          {!khangNghi && (
           <div className="flex items-end border-b border-[#ddd] px-3 pt-2 gap-0">
             {tabs.map((t, i) => (
               <button key={i} onClick={() => { setActiveTab(i); if (i === 0) setLoaiVanBan(""); }}
@@ -2601,9 +2628,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             ))}
 
           </div>
+          )}
 
           {/* "Đơn của tôi" filter notice */}
-          {activeTab === 1 && (
+          {!khangNghi && activeTab === 1 && (
             <div className="flex items-center gap-2 px-3 py-2 bg-[#eef1f5] border-b border-[#ddd] text-[12px] text-[#1d2e4f]">
               <Users size={13} className="flex-shrink-0" />
               <span>Hiển thị đơn được giao cho tất cả cán bộ thuộc tài khoản: <span className="font-semibold">Phùng Trâm Anh</span></span>
@@ -2630,9 +2658,14 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 
                 {/* Thu gọn: 3 ô còn lại dành cho nút (luôn hiện ở filter cơ bản) */}
                 <div className="col-span-3 flex items-center justify-end gap-2">
-                  <button onClick={() => setCollapsed(false)}
-                    className="flex items-center justify-center gap-1.5 text-[12px] text-[#555] bg-[#f0f0f0] hover:bg-[#e4e4e4] px-4 h-[46px] rounded-[3px] border border-[#ddd] transition-colors whitespace-nowrap font-medium">
-                    <ChevronDown size={14} /> Bộ lọc Nâng cao
+                  {/* Bấm lần nữa thì thu gọn luôn */}
+                  <button onClick={() => setCollapsed(c => !c)}
+                    className={`flex items-center justify-center gap-1.5 text-[12px] px-4 h-[46px] rounded-[3px] border transition-colors whitespace-nowrap font-medium ${
+                      collapsed
+                        ? "text-[#555] bg-[#f0f0f0] hover:bg-[#e4e4e4] border-[#ddd]"
+                        : "text-[#8b1a1a] bg-[#fdecea] hover:bg-[#fbdcd9] border-[#e57373]"}`}>
+                    <ChevronDown size={14} className={`transition-transform ${collapsed ? "" : "rotate-180"}`} />
+                    Bộ lọc Nâng cao
                   </button>
                   <button onClick={() => setCollapsed(true)} className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-6 h-[46px] gap-0.5 transition-colors">
                     <Search size={14} />
@@ -3032,8 +3065,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[190px]">Thông tin người gửi / đơn vị gửi</th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333]">Thông tin đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[7px] text-center font-semibold text-[#333] w-[60px]">Số đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Hình thức tiếp nhận</th>
+                  {khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[190px]">Đơn vị giải quyết</th>}
+                  {!khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-center font-semibold text-[#333] w-[60px]">Số đơn</th>}
+                  {!khangNghi && <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Hình thức tiếp nhận</th>}
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[170px]">Thông tin giải quyết</th>
                   <th className="border border-[#ddd] px-3 py-[7px] text-left font-semibold text-[#333] w-[110px]">Người nhập / Sửa</th>
                   <th className="border border-[#ddd] px-2 py-[7px] text-center font-semibold text-[#333] w-[56px]">Thao tác</th>
@@ -3042,7 +3076,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="border border-[#ddd] px-3 py-10 text-center text-[#888]">
+                    <td colSpan={khangNghi ? 7 : 8} className="border border-[#ddd] px-3 py-10 text-center text-[#888]">
                       <div className="flex flex-col items-center gap-1.5">
                         <Search size={22} className="text-[#ccc]" />
                         <span className="text-[13px]">Không có đơn nào khớp bộ lọc.</span>
@@ -3071,9 +3105,19 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
                       {/* Người gửi */}
                       <td className="border border-[#ddd] px-3 py-2">
-                        <div className="font-medium text-[#1a5a96] hover:underline cursor-pointer leading-snug">{row.nguoiGui}</div>
-                        <div className="text-[11px] text-[#666] mt-0.5 leading-snug">{row.diaChi}</div>
+                        <div className="font-medium text-[#1a5a96] hover:underline cursor-pointer leading-snug">
+                          {khangNghi ? donViKhangNghi(row.id).ten : row.nguoiGui}
+                        </div>
+                        <div className="text-[11px] text-[#666] mt-0.5 leading-snug">
+                          {khangNghi ? donViKhangNghi(row.id).diaChi : row.diaChi}
+                        </div>
                         <div className="text-[11px] text-[#666] mt-0.5">{row.maDon}</div>
+                        {row.hetThoiHanKhangNghi && (
+                          <div className="mt-1 inline-flex items-center gap-1 px-2 py-[2px] rounded-[3px] bg-[#fdecea] border border-[#e6a5a0] text-[10px] font-medium text-[#c0392b] leading-snug">
+                            <AlertCircle size={10} className="flex-shrink-0" />
+                            Đơn đã vượt quá hạn giải quyết
+                          </div>
+                        )}
                       </td>
 
                       {/* Thông tin đơn */}
@@ -3088,17 +3132,31 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           <div><span className="text-[#555]">Loại CV: </span><span>{d.loaiCV || "—"}</span></div>
                           <div><span className="text-[#555]">Đơn vị gửi: </span><span>{d.donViGui || "—"}</span></div>
                           <div><span className="text-[#555]">Thẩm phán: </span><span className="text-[#333]">{d.thamPhan || "—"}</span></div>
-                          <div><span className="text-[#555]">Đơn vị giải quyết: </span><span>{d.donViGiaiQuyet || "—"}</span></div>
+                          {/* Ở màn Hồ sơ kháng nghị, đơn vị giải quyết tách thành cột riêng */}
+                          {!khangNghi && <div><span className="text-[#555]">Đơn vị giải quyết: </span><span>{d.donViGiaiQuyet || "—"}</span></div>}
                         </div>
                         {row.daNhan && (
                           <span className="inline-block mt-2 px-2 py-[2px] rounded text-[10px] font-medium bg-[#27ae60] text-white">Đã nhận</span>
                         )}
                       </td>
 
+                      {/* Đơn vị giải quyết — cột riêng của màn Hồ sơ kháng nghị */}
+                      {khangNghi && (
+                        <td className="border border-[#ddd] px-3 py-2">
+                          <div className="text-[12px] text-[#333] leading-snug">{d.donViGiaiQuyet || "—"}</div>
+                          <div className="text-[11px] text-[#666] mt-1 leading-snug">
+                            <span className="text-[#888]">Nơi nhận kèm: </span>{donViKhangNghi(row.id).noiNhan}
+                          </div>
+                        </td>
+                      )}
+
                       {/* Số đơn */}
-                      <td className="border border-[#ddd] px-2 py-2 text-center font-medium">{row.soDon ? row.soDon : "—"}</td>
+                      {!khangNghi && (
+                        <td className="border border-[#ddd] px-2 py-2 text-center font-medium">{row.soDon ? row.soDon : "—"}</td>
+                      )}
 
                       {/* Hình thức tiếp nhận */}
+                      {!khangNghi && (
                       <td className="border border-[#ddd] px-3 py-2 align-top">
                         <span className={`inline-block px-2 py-[2px] rounded-sm text-[10px] font-medium border ${row.hinhThucTiepNhan === "Trực tiếp" ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
                           : row.hinhThucTiepNhan === "Bưu điện" ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"
@@ -3107,9 +3165,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {row.hinhThucTiepNhan || "—"}
                         </span>
                       </td>
+                      )}
 
                       {/* Thông tin giải quyết */}
                       <td className="border border-[#ddd] px-3 py-2">
+                        {khangNghi ? (() => {
+                          const kn = ketQuaKhangNghi(row.id);
+                          return (
+                            <>
+                              <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-medium border ${kn.trangThai === "Đã xét xử"
+                                ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
+                                : "bg-[#fff3cd] text-[#856404] border-[#ffecb5]"}`}>
+                                {kn.trangThai}
+                              </span>
+                              {kn.ketQua && (
+                                <div className="text-[11px] text-[#333] mt-1 leading-snug">
+                                  <span className="text-[#888]">Kết quả: </span>{kn.ketQua}
+                                </div>
+                              )}
+                            </>
+                          );
+                        })() : (<>
                         {row.traLai ? (
                           <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-medium ${row.traLai.status === "pendingApproval" ? "bg-[#fff3cd] text-[#856404] border border-[#ffecb5]" : "bg-[#e8f7ee] text-[#1a7a45] border border-[#a9debb]"}`}>
                             {row.traLai.status === "pendingApproval" ? "Trả lại - chờ TP duyệt" : "Đã trả lại HCTP"}
@@ -3186,6 +3262,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             </button>
                           </div>
                         )}
+                        </>)}
                       </td>
 
                       {/* Người nhập */}
@@ -3422,7 +3499,13 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           isOpen={true}
           onClose={() => setShowNumberingModal(null)}
           currentRole={currentRole}
-          selectedRows={rows.filter(r => selectedRows.includes(r.id)).length > 0 ? rows.filter(r => selectedRows.includes(r.id)) : [rows[0]]}
+          loaiVanBanMacDinh={loaiVanBan}
+          // Chưa tick dòng nào thì lấy toàn bộ đơn đang hiển thị theo bộ lọc
+          selectedRows={
+            filteredRows.filter(r => selectedRows.includes(r.id)).length > 0
+              ? filteredRows.filter(r => selectedRows.includes(r.id))
+              : filteredRows
+          }
         />
       )}
 
@@ -6413,7 +6496,7 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
 
 
 export default function App() {
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet">("list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "khangnghi">("list");
   const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
     {
       id: "TT-2026-001",
@@ -6737,6 +6820,8 @@ export default function App() {
           <FileText size={14} />
           {view === "list"
             ? "Danh sách đơn"
+            : view === "khangnghi"
+            ? "Hồ sơ kháng nghị"
             : view === "prototype"
               ? "Prototype: Luồng Ghép đơn"
               : view === "bieumau"
@@ -6812,6 +6897,8 @@ export default function App() {
               ? <span className="text-[#333]">Tổng quan</span>
               : view === "list"
                 ? <span className="text-[#333]">Danh sách đơn</span>
+                : view === "khangnghi"
+                ? <span className="text-[#333]">Hồ sơ kháng nghị</span>
                 : view === "prototype"
                   ? <>
                     <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
@@ -6870,6 +6957,33 @@ export default function App() {
                   setView("form");
                   setShowPDF(false);
                   // Thêm mới luôn bắt đầu bằng luồng nhập PDF → OCR.
+                  ocrRunId.current++;
+                  clearOcrTimers();
+                  setOcrFile(null);
+                  setOcrStatus("chua");
+                  setOcrStep(0);
+                  setOcrFields(new Set());
+                  setShowUploadPopup(true);
+                }}
+                onBieuMau={(r) => { setBieuMauRow(r); setView("bieumau"); }}
+                onWordEditor={() => setView("wordeditor")}
+                onEditRow={(id) => { setEditingRowId(id); setView("form"); }}
+                isTruongPhong={false}
+              />
+            </div>
+          )}
+
+          {/* Hồ sơ kháng nghị view — dùng lại màn Danh sách đơn, khác cột Thông tin giải quyết */}
+          {view === "khangnghi" && (
+            <div className="flex-1 overflow-y-auto">
+              <DanhSachDon
+                khangNghi
+                currentRole={currentRole}
+                onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
+                onThemMoi={() => {
+                  setEditingRowId(null);
+                  setView("form");
+                  setShowPDF(false);
                   ocrRunId.current++;
                   clearOcrTimers();
                   setOcrFile(null);
