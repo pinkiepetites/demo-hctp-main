@@ -1538,6 +1538,7 @@ interface DanhSachDonRow {
     by: string;
   };
   isPhanCong?: boolean;
+  loaiPhanCong?: "chi-dinh" | "ngau-nhien"; // tách danh sách đơn theo hình thức phân công
   thongTinChuyenDon?: "Nội bộ" | "Tòa khác" | "Ngoài tòa án"; // Added for Document Numbering validation
   // ── Các trường phục vụ lọc ──
   loaiAn?: string;
@@ -1573,7 +1574,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       { date: "21/07/2026", step: "Tiếp nhận hồ sơ", actor: "HCTP - Phòng tiếp nhận", note: "Đã kiểm tra tính hợp lệ" },
       { date: "22/07/2026", step: "Chuyển Vụ Giám đốc kiểm tra và dân sự", actor: "HCTP", note: "Gửi hồ sơ kèm danh sách công văn" },
     ],
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "17:41:29",
   },
@@ -1626,7 +1627,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tuyến",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#e67e22", stl: "54682575", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "21/07/2026", gioNhap: "17:03:02",
   },
@@ -1651,7 +1652,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "15/11/2024", gioNhap: "09:15:44",
   },
@@ -1677,7 +1678,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien",
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "21/07/2026", gioNhap: "14:12:05",
   },
@@ -1785,7 +1786,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682590", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "ngau-nhien", cuaToi: true,
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Vũ Văn Yên", ngayNhap: "10/07/2026", gioNhap: "09:30:00",
   },
@@ -1811,7 +1812,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     soDon: 1,
     hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682591", coVanBan: true },
-    isPhanCong: true,
+    isPhanCong: true, loaiPhanCong: "chi-dinh", cuaToi: true,
     thongTinChuyenDon: "Nội bộ",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "05/06/2025", gioNhap: "14:20:00",
   },
@@ -1868,7 +1869,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Đã thụ lý", color: "#1a5a96", stl: "54682600", coVanBan: true },
-    loaiAn: "Hình sự", cuaToi: true, isPhanCong: true,
+    loaiAn: "Hình sự", cuaToi: true, isPhanCong: true, loaiPhanCong: "chi-dinh",
     nguoiNhap: "Phùng Trâm Anh", ngayNhap: "15/12/2024", gioNhap: "13:05:00",
   },
   {
@@ -2031,7 +2032,7 @@ const LOAI_VAN_BAN_FILTER = [
   "Công văn chuyển tòa khác",
   "Công văn chuyển ngoài",
   "Trả lại đơn",
-  "Tờ trình phân công",
+  "Tờ trình phân công Thẩm phán",
   "Tờ trình khác",
   "Thông báo phân công TP",
   "Yêu cầu bổ sung",
@@ -7360,8 +7361,8 @@ export default function App() {
                             <Lbl req>Lý do không đủ điều kiện</Lbl>
                             <Sel value={lyDoKhongDu} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoKhongDu(e.target.value)}>
                               <option value="">-- Chọn lý do --</option>
-                              <option>Thiếu bản án quyết định</option>
-                              <option>Thiếu xác nhận căn cước công dân</option>
+                              <option>Bản án/quyết định có hiệu lực pháp luật</option>
+                              <option>Thiếu thông tin căn cước công dân</option>
                               <option>Viết lại đơn</option>
                               <option>Lý do khác</option>
                             </Sel>
@@ -7468,9 +7469,9 @@ export default function App() {
                 {/* Các thành phần chỉ dành cho Đơn */}
                 {hinhThuc !== "CV khác" && (
                   <>
-                    {/* 6. Đương sự */}
+                    {/* 6. Người tham gia tố tụng */}
                     {!isDonKhieuNaiTuPhap && (
-                      <Section title={`${6 + secOffset}. Đương sự`}>
+                      <Section title={`${6 + secOffset}. Người tham gia tố tụng`}>
                         <div className="space-y-4">
                           {loaiAnForm !== "Hình sự" && <>
                             <div>
