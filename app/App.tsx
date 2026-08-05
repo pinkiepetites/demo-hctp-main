@@ -33,6 +33,7 @@ import {
 // ─── Types ───────────────────────────────────────────────────────────────────
 export interface ToTrinh {
   id: string;
+  documentNumberId?: string;
   tenVuAn: string;
   noiDung: string;
   loai: string;
@@ -41,6 +42,13 @@ export interface ToTrinh {
   trangThai: "Chờ duyệt" | "Đã duyệt" | "Từ chối";
   yKienLanhDao: string;
   danhSachDon: any[];
+}
+
+interface ProposalWorkflowUpdate {
+  trangThai: ToTrinh["trangThai"];
+  documentStatus: DemoDocumentNumber["status"];
+  rowStatus: NonNullable<DanhSachDonRow["toTrinhStatus"]>;
+  yKienLanhDao?: string;
 }
 
 // Tài liệu PDF đưa vào luồng OCR
@@ -6128,7 +6136,15 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
 };
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
-const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhList: ToTrinh[], setToTrinhList: React.Dispatch<React.SetStateAction<ToTrinh[]>>, currentRole: string }) => {
+const PheDuyetDeXuat = ({
+  toTrinhList,
+  currentRole,
+  onWorkflowUpdate,
+}: {
+  toTrinhList: ToTrinh[];
+  currentRole: string;
+  onWorkflowUpdate: (proposal: ToTrinh, update: ProposalWorkflowUpdate) => void;
+}) => {
   const [activeTab, setActiveTab] = useState<"all" | "cho_duyet" | "da_duyet" | "tu_choi">("all");
   const [showDuyetPopup, setShowDuyetPopup] = useState<ToTrinh | null>(null);
   const [yKienInput, setYKienInput] = useState("");
@@ -6457,7 +6473,11 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                         <>
                           <button
                             onClick={() => {
-                              setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Từ chối" } : t));
+                              onWorkflowUpdate(showDuyetPopup, {
+                                trangThai: "Từ chối",
+                                documentStatus: "tu_choi",
+                                rowStatus: "none",
+                              });
                               setShowDuyetPopup(null);
                             }}
                             className="h-[32px] px-3.5 bg-white border border-[#c0392b] text-[#c0392b] rounded-[4px] text-[12px] font-medium hover:bg-[#fdeaea] transition-colors"
@@ -6467,7 +6487,12 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                           {isTP ? (
                             <button
                               onClick={() => {
-                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
+                                onWorkflowUpdate(showDuyetPopup, {
+                                  trangThai: "Đã duyệt",
+                                  documentStatus: "duyet",
+                                  rowStatus: "da_ky",
+                                  yKienLanhDao: yKienInput,
+                                });
                                 triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được Trưởng phòng phê duyệt.`);
                                 setShowDuyetPopup(null);
                               }}
@@ -6478,7 +6503,12 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                           ) : (isPCVP || isLanhDao) ? (
                             <button
                               onClick={() => {
-                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Đã duyệt", yKienLanhDao: yKienInput } : t));
+                                onWorkflowUpdate(showDuyetPopup, {
+                                  trangThai: "Đã duyệt",
+                                  documentStatus: "da_ky",
+                                  rowStatus: "da_ky",
+                                  yKienLanhDao: yKienInput,
+                                });
                                 triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được Lãnh đạo ký số.`);
                                 setShowDuyetPopup(null);
                               }}
@@ -6490,7 +6520,11 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                           ) : (
                             <button
                               onClick={() => {
-                                setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt" } : t));
+                                onWorkflowUpdate(showDuyetPopup, {
+                                  trangThai: "Chờ duyệt",
+                                  documentStatus: "trinh_duyet",
+                                  rowStatus: "trinh_lanh_dao",
+                                });
                                 triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được trình duyệt.`);
                                 setShowDuyetPopup(null);
                               }}
@@ -6507,7 +6541,12 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
                       ) : showDuyetPopup.trangThai === "Từ chối" ? (
                         <button
                           onClick={() => {
-                            setToTrinhList(prev => prev.map(t => t.id === showDuyetPopup.id ? { ...t, trangThai: "Chờ duyệt", yKienLanhDao: "" } : t));
+                            onWorkflowUpdate(showDuyetPopup, {
+                              trangThai: "Chờ duyệt",
+                              documentStatus: "trinh_duyet",
+                              rowStatus: "trinh_lanh_dao",
+                              yKienLanhDao: "",
+                            });
                             triggerNoti(`Văn bản "${showDuyetPopup.noiDung}" đã được trình lại.`);
                             setShowDuyetPopup(null);
                           }}
@@ -6699,6 +6738,18 @@ export default function App() {
     const ok = window.confirm("Reset toàn bộ dữ liệu demo về trạng thái ban đầu?");
     if (!ok) return;
 
+    ocrRunId.current++;
+    clearOcrTimers();
+    setOcrFile(null);
+    setOcrStatus("chua");
+    setOcrStep(0);
+    setOcrFields(new Set());
+    setShowOcrConfirm(false);
+    setShowOcrProgress(false);
+    setShowOcrCancel(false);
+    setShowUploadPopup(false);
+    setShowPDF(false);
+
     const reset = resetDemoStore<DanhSachDonRow, ToTrinh>(DEMO_SEED);
     setRows(reset.rows);
     setToTrinhList(reset.toTrinhList);
@@ -6790,11 +6841,37 @@ export default function App() {
     quanHe: "Tranh chấp hành chính về đất đai",
   };
 
-  // Sửa đơn đã có: giữ nguyên hành vi cũ — highlight sẵn các trường OCR.
-  // Thêm mới: chỉ điền sau khi OCR chạy xong (xem startOcr bên dưới).
-  useEffect(() => {
-    if (view === "form" && editingRowId !== null) setOcrFields(new Set(Object.keys(OCR_MOCK)));
-  }, [view, editingRowId]);
+  const openEditRow = (id: number) => {
+    const row = rows.find(item => item.id === id);
+    if (!row) return;
+
+    ocrRunId.current++;
+    clearOcrTimers();
+    setOcrFile(null);
+    setOcrStatus("chua");
+    setOcrStep(0);
+    setOcrFields(new Set());
+    setShowOcrConfirm(false);
+    setShowOcrProgress(false);
+    setShowOcrCancel(false);
+    setShowUploadPopup(false);
+    setShowPDF(false);
+
+    const [day, month, year] = row.thongTinDon.ngay.split("/");
+    const ngayBA = day && month && year ? `${year}-${month}-${day}` : row.thongTinDon.ngay;
+    setHinhThuc(row.loaiHinhThuc || row.thongTinDon.hinhThuc || "");
+    setLoaiAnForm(row.loaiAn ?? "");
+    setBaForm({
+      soBA: row.thongTinDon.soBaqd,
+      ngayBA,
+      toaBA: row.thongTinDon.toaXetXu,
+      capXetXu: "",
+    });
+    setNoiChuyenDen(row.thongTinChuyenDon ?? "");
+    setTrangThaiDon(row.giaiQuyet.nhan);
+    setEditingRowId(id);
+    setView("form");
+  };
 
   // Đổi thành true để demo nhánh "OCR thất bại".
   const OCR_DEMO_FAIL = false;
@@ -6932,6 +7009,9 @@ export default function App() {
     const capXetXu = baForm.capXetXu || ocrValue("capXetXu");
     const nguoiGui = ocrValue("nguoiGui", existing?.nguoiGui ?? "Người gửi demo");
     const loaiAn = loaiAnForm || ocrValue("loaiAn");
+    const nextHinhThuc = hinhThuc || existing?.loaiHinhThuc || "Đơn đề nghị";
+    const hinhThucChanged = !existing || nextHinhThuc !== existing.loaiHinhThuc;
+    const nguoiGuiChanged = !existing || nguoiGui !== existing.nguoiGui;
 
     return {
       ...(existing ?? {}),
@@ -6939,18 +7019,20 @@ export default function App() {
       nguoiGui,
       diaChi: existing?.diaChi ?? "Địa chỉ demo",
       maDon: existing?.maDon ?? `Mã ${7031 + id}`,
-      loaiHinhThuc: hinhThuc || existing?.loaiHinhThuc || "Đơn đề nghị",
-      loaiHinhThucColor: hinhThuc.includes("CV") ? "#e67e22" : "#8b1a1a",
+      loaiHinhThuc: nextHinhThuc,
+      loaiHinhThucColor: hinhThucChanged
+        ? (nextHinhThuc.includes("CV") ? "#e67e22" : "#8b1a1a")
+        : existing?.loaiHinhThucColor ?? "#8b1a1a",
       thongTinDon: {
         soBaqd: soBA,
         ngay: ngayBA ? isoToVNDate(ngayBA) : existing?.thongTinDon?.ngay ?? "",
         toaXetXu: toaBA,
         thuTuc: existing?.thongTinDon?.thuTuc ?? "Giám đốc thẩm",
-        hinhThuc,
+        hinhThuc: hinhThucChanged ? nextHinhThuc : existing?.thongTinDon.hinhThuc ?? nextHinhThuc,
         soCV: existing?.thongTinDon?.soCV ?? "",
         ngayCV: existing?.thongTinDon?.ngayCV ?? "",
-        loaiCV: hinhThuc,
-        donViGui: nguoiGui,
+        loaiCV: hinhThucChanged ? nextHinhThuc : existing?.thongTinDon.loaiCV ?? nextHinhThuc,
+        donViGui: nguoiGuiChanged ? nguoiGui : existing?.thongTinDon.donViGui ?? nguoiGui,
         thamPhan: existing?.thongTinDon?.thamPhan ?? "",
         donViGiaiQuyet: existing?.thongTinDon?.donViGiaiQuyet ?? "Chưa quyết",
       },
@@ -7009,9 +7091,42 @@ export default function App() {
     addNotification(`Đã tạo ${t.loai} và trình duyệt.`);
   };
 
+  const handleProposalWorkflowUpdate = (proposal: ToTrinh, update: ProposalWorkflowUpdate) => {
+    setToTrinhList(prev => prev.map(item => item.id === proposal.id
+      ? {
+          ...item,
+          trangThai: update.trangThai,
+          yKienLanhDao: update.yKienLanhDao ?? item.yKienLanhDao,
+        }
+      : item));
+
+    const correlatedDocument = documentNumbers.find(document =>
+      document.id === proposal.documentNumberId || document.proposalId === proposal.id);
+    const rowIds = new Set<number>([
+      ...(proposal.danhSachDon ?? [])
+        .map(row => row?.id)
+        .filter((id): id is number => typeof id === "number" && Number.isFinite(id)),
+      ...(correlatedDocument?.rowIds ?? []),
+    ]);
+
+    if (proposal.documentNumberId || correlatedDocument) {
+      setDocumentNumbers(prev => prev.map(document =>
+        document.id === proposal.documentNumberId || document.proposalId === proposal.id
+          ? { ...document, status: update.documentStatus }
+          : document));
+    }
+    if (rowIds.size > 0) {
+      setRows(prev => prev.map(row => rowIds.has(row.id)
+        ? { ...row, toTrinhStatus: update.rowStatus }
+        : row));
+    }
+  };
+
   const handleDocumentNumberingSubmit = (result: DocumentNumberingSubmitResult) => {
+    const proposalId = `TT-${Date.now()}`;
     setDocumentNumbers(prev => [{
       id: result.id,
+      proposalId,
       docType: result.docType,
       rowIds: result.rowIds,
       numbers: result.numbers,
@@ -7023,7 +7138,8 @@ export default function App() {
     }, ...prev]);
 
     const proposal: ToTrinh = {
-      id: `TT-${Date.now()}`,
+      id: proposalId,
+      documentNumberId: result.id,
       tenVuAn: result.selectedRows[0]?.thongTinDon?.soBaqd || result.selectedRows[0]?.maDon || "-",
       noiDung: result.docType,
       loai: result.docType,
@@ -7035,7 +7151,6 @@ export default function App() {
     };
 
     addToTrinh(proposal);
-    addNotification(`Đã lưu và trình duyệt ${result.docType}.`);
   };
 
   const delCV = (id: number) => setCongVans(p => p.filter(c => c.id !== id));
@@ -7181,7 +7296,11 @@ export default function App() {
 
           {/* Phê duyệt đề xuất view */}
           {view === "phe_duyet" && (
-            <PheDuyetDeXuat toTrinhList={toTrinhList} setToTrinhList={setToTrinhList} currentRole={currentRole} />
+            <PheDuyetDeXuat
+              toTrinhList={toTrinhList}
+              currentRole={currentRole}
+              onWorkflowUpdate={handleProposalWorkflowUpdate}
+            />
           )}
 
 
@@ -7211,7 +7330,7 @@ export default function App() {
                 }}
                 onBieuMau={(r) => { setBieuMauRow(r); setView("bieumau"); }}
                 onWordEditor={() => setView("wordeditor")}
-                onEditRow={(id) => { setEditingRowId(id); setView("form"); }}
+                onEditRow={openEditRow}
                 isTruongPhong={false}
               />
             </div>
@@ -7243,7 +7362,7 @@ export default function App() {
                 }}
                 onBieuMau={(r) => { setBieuMauRow(r); setView("bieumau"); }}
                 onWordEditor={() => setView("wordeditor")}
-                onEditRow={(id) => { setEditingRowId(id); setView("form"); }}
+                onEditRow={openEditRow}
                 isTruongPhong={false}
               />
             </div>

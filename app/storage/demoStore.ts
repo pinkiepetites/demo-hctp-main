@@ -18,6 +18,7 @@ export interface DemoMergeInfo {
 
 export interface DemoDocumentNumber {
   id: string;
+  proposalId?: string;
   docType: string;
   rowIds: number[];
   numbers: { nodeId: string; soVanBan: string; ngayLaySo: string; label: string }[];
@@ -77,6 +78,65 @@ const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every(item => typeof item === "string");
+
+const isNumberArray = (value: unknown): value is number[] =>
+  Array.isArray(value) && value.every(item => typeof item === "number" && Number.isFinite(item));
+
+const isObjectArray = (value: unknown): value is Record<string, unknown>[] =>
+  Array.isArray(value) && value.every(isObject);
+
+const isNotification = (value: unknown): value is DemoNotification =>
+  isObject(value) &&
+  typeof value.id === "number" && Number.isFinite(value.id) &&
+  typeof value.text === "string" &&
+  typeof value.time === "string" &&
+  typeof value.read === "boolean";
+
+const isMergeEndpoint = (value: unknown) =>
+  isObject(value) && typeof value.maDon === "string" && typeof value.nguoiGui === "string";
+
+const isMergeInfo = (value: unknown): value is DemoMergeInfo =>
+  isObject(value) &&
+  (value.ghepVoi === undefined || typeof value.ghepVoi === "string") &&
+  (value.pendingFrom === undefined || isMergeEndpoint(value.pendingFrom)) &&
+  (value.pendingTo === undefined || isMergeEndpoint(value.pendingTo));
+
+const isMergeState = (value: unknown): value is Record<number, DemoMergeInfo> =>
+  isObject(value) &&
+  Object.keys(value).every(key => /^\d+$/.test(key)) &&
+  Object.values(value).every(isMergeInfo);
+
+const isDocumentNumberEntry = (value: unknown) =>
+  isObject(value) &&
+  typeof value.nodeId === "string" &&
+  typeof value.soVanBan === "string" &&
+  typeof value.ngayLaySo === "string" &&
+  typeof value.label === "string";
+
+const isDocumentNumber = (value: unknown): value is DemoDocumentNumber =>
+  isObject(value) &&
+  typeof value.id === "string" &&
+  (value.proposalId === undefined || typeof value.proposalId === "string") &&
+  typeof value.docType === "string" &&
+  isNumberArray(value.rowIds) &&
+  Array.isArray(value.numbers) && value.numbers.every(isDocumentNumberEntry) &&
+  typeof value.nguoiDuyet === "string" &&
+  typeof value.nguoiKy === "string" &&
+  typeof value.mucDoUuTien === "string" &&
+  ["trinh_duyet", "duyet", "trinh_ky", "da_ky", "tu_choi"].includes(value.status as string) &&
+  typeof value.createdAt === "string";
+
+const isOcrSession = (value: unknown): value is DemoOcrSession =>
+  isObject(value) &&
+  typeof value.id === "string" &&
+  typeof value.fileName === "string" &&
+  typeof value.sizeMB === "number" && Number.isFinite(value.sizeMB) &&
+  ["thanhcong", "thatbai", "dahuy"].includes(value.status as string) &&
+  isStringArray(value.extractedFields) &&
+  typeof value.createdAt === "string";
+
 export const createDemoSeed = <TRow, TProposal>(
   seed: DemoSeed<TRow, TProposal>,
 ): DemoStoreState<TRow, TProposal> => ({
@@ -100,11 +160,11 @@ const normalizeStore = <TRow, TProposal>(
   const seeded = createDemoSeed(seed);
   return {
     ...seeded,
-    rows: Array.isArray(value.rows) ? (value.rows as TRow[]) : seeded.rows,
-    toTrinhList: Array.isArray(value.toTrinhList)
+    rows: isObjectArray(value.rows) ? (value.rows as TRow[]) : seeded.rows,
+    toTrinhList: isObjectArray(value.toTrinhList)
       ? (value.toTrinhList as TProposal[])
       : seeded.toTrinhList,
-    notifications: Array.isArray(value.notifications)
+    notifications: Array.isArray(value.notifications) && value.notifications.every(isNotification)
       ? (value.notifications as DemoNotification[])
       : seeded.notifications,
     currentRole:
@@ -114,13 +174,13 @@ const normalizeStore = <TRow, TProposal>(
       value.currentRole === "lanh-dao"
         ? value.currentRole
         : seeded.currentRole,
-    mergeState: isObject(value.mergeState)
+    mergeState: isMergeState(value.mergeState)
       ? (value.mergeState as Record<number, DemoMergeInfo>)
       : seeded.mergeState,
-    documentNumbers: Array.isArray(value.documentNumbers)
+    documentNumbers: Array.isArray(value.documentNumbers) && value.documentNumbers.every(isDocumentNumber)
       ? (value.documentNumbers as DemoDocumentNumber[])
       : seeded.documentNumbers,
-    ocrSessions: Array.isArray(value.ocrSessions)
+    ocrSessions: Array.isArray(value.ocrSessions) && value.ocrSessions.every(isOcrSession)
       ? (value.ocrSessions as DemoOcrSession[])
       : seeded.ocrSessions,
     updatedAt: typeof value.updatedAt === "string" ? value.updatedAt : seeded.updatedAt,

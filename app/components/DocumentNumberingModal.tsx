@@ -1183,6 +1183,25 @@ const pruneInvalidDocs = (nodes: DocNode[]): DocNode[] =>
     .map(n => (n.children ? { ...n, children: pruneInvalidDocs(n.children) } : n))
     .filter(n => !(n.children && n.children.length === 0));
 
+const collectValidMainRows = (nodes: DocNode[]) => {
+  const rowsById = new Map<number, any>();
+
+  const visit = (items: DocNode[]) => {
+    items.forEach(node => {
+      if (node.originalData && !node.khongCham && node.isValid !== false) {
+        const rowId = node.originalData.id;
+        if (typeof rowId === "number" && Number.isFinite(rowId)) {
+          rowsById.set(rowId, node.originalData);
+        }
+      }
+      if (node.children) visit(node.children);
+    });
+  };
+
+  visit(nodes);
+  return Array.from(rowsById.values());
+};
+
 // --- Sub-components ---
 
 const ActionMenu = ({ onClose, onLaySo }: { onClose: () => void; onLaySo?: () => void }) => {
@@ -1567,13 +1586,14 @@ export default function DocumentNumberingModal({
         ngayLaySo: n.ngayLaySo ?? "",
         label: n.name,
       }));
+    const submittedRows = collectValidMainRows(treeData);
 
     setDaTrinhDuyet(true);
     onSubmitDocument?.({
       id: `doc-${Date.now()}`,
       docType,
-      selectedRows,
-      rowIds: selectedRows.map((row: any) => row.id).filter(Boolean),
+      selectedRows: submittedRows,
+      rowIds: submittedRows.map(row => row.id),
       numbers,
       nguoiDuyet,
       nguoiKy,
