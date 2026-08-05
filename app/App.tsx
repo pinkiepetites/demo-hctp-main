@@ -1658,6 +1658,13 @@ export interface DanhSachDonRow {
   isPhanCong?: boolean;
   loaiPhanCong?: "chi-dinh" | "ngau-nhien"; // tách danh sách đơn theo hình thức phân công
   thongTinChuyenDon?: "Nội bộ" | "Tòa khác" | "Ngoài tòa án"; // Added for Document Numbering validation
+  ocr?: {
+    fileName: string;
+    sizeMB: number;
+    status: "thanhcong" | "thatbai" | "dahuy";
+    extractedFields: string[];
+    savedAt: string;
+  };
   // ── Các trường phục vụ lọc ──
   loaiAn?: string;
   cuaToi?: boolean;               // thuộc tài khoản đang đăng nhập → tab "Đơn của tôi"
@@ -3760,7 +3767,23 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                   </button>
                 )}
                 {status === "trinh_ky" && (
-                  <button onClick={() => { setStatus("da_ky"); if (onCreateToTrinh) { onCreateToTrinh({ id: String(Math.floor(Math.random() * 1000) + 100), tenVuAn: "-", noiDung: "Tờ trình phân công", loai: "Tờ trình", nguoiDeXuat: "Phó Chánh Văn Phòng", ngayDeXuat: new Date().toLocaleString("vi-VN"), trangThai: "Chờ duyệt", yKienLanhDao: "", danhSachDon: initialRows }); } }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                  <button onClick={() => {
+                    setStatus("da_ky");
+                    if (onCreateToTrinh) {
+                      const id = `TT-${Date.now()}`;
+                      onCreateToTrinh({
+                        id,
+                        tenVuAn: initialRows[0]?.thongTinDon?.soBaqd || "-",
+                        noiDung: loai || "Tờ trình phân công",
+                        loai: loai || "Tờ trình",
+                        nguoiDeXuat: "Phó Chánh Văn Phòng",
+                        ngayDeXuat: new Date().toLocaleString("vi-VN"),
+                        trangThai: "Chờ duyệt",
+                        yKienLanhDao: "",
+                        danhSachDon: initialRows,
+                      });
+                    }
+                  }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <PenLine size={12} /> Trình ký
                   </button>
                 )}
@@ -6835,6 +6858,109 @@ export default function App() {
   const selectedBaResult = BA_SEARCH_RESULTS.find(r => r.id === selectedVuAnGoc) ?? null;
   const hasGiamDocThamResult = selectedBaResult?.giaiDoan === "Giám đốc thẩm";
 
+  const isoToVNDate = (iso: string) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
+  };
+
+  const nextRowId = () => Math.max(0, ...rows.map(r => r.id)) + 1;
+
+  const ocrValue = (key: string, fallback = "") =>
+    ocrFields.has(key) ? OCR_MOCK[key] ?? fallback : fallback;
+
+  const buildSavedRow = (): DanhSachDonRow => {
+    const existing = editingRowId !== null ? rows.find(r => r.id === editingRowId) : null;
+    const id = existing?.id ?? nextRowId();
+    const now = new Date();
+    const ngayNhap = now.toLocaleDateString("vi-VN");
+    const gioNhap = now.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const soBA = baForm.soBA || ocrValue("soBA");
+    const ngayBA = baForm.ngayBA || ocrValue("ngayBA");
+    const toaBA = baForm.toaBA || ocrValue("toaXetXu");
+    const capXetXu = baForm.capXetXu || ocrValue("capXetXu");
+    const nguoiGui = ocrValue("nguoiGui", existing?.nguoiGui ?? "Người gửi demo");
+    const loaiAn = loaiAnForm || ocrValue("loaiAn");
+
+    return {
+      ...(existing ?? {}),
+      id,
+      nguoiGui,
+      diaChi: existing?.diaChi ?? "Địa chỉ demo",
+      maDon: existing?.maDon ?? `Mã ${7031 + id}`,
+      loaiHinhThuc: hinhThuc || existing?.loaiHinhThuc || "Đơn đề nghị",
+      loaiHinhThucColor: hinhThuc.includes("CV") ? "#e67e22" : "#8b1a1a",
+      thongTinDon: {
+        soBaqd: soBA,
+        ngay: ngayBA ? isoToVNDate(ngayBA) : existing?.thongTinDon?.ngay ?? "",
+        toaXetXu: toaBA,
+        thuTuc: existing?.thongTinDon?.thuTuc ?? "Giám đốc thẩm",
+        hinhThuc,
+        soCV: existing?.thongTinDon?.soCV ?? "",
+        ngayCV: existing?.thongTinDon?.ngayCV ?? "",
+        loaiCV: hinhThuc,
+        donViGui: nguoiGui,
+        thamPhan: existing?.thongTinDon?.thamPhan ?? "",
+        donViGiaiQuyet: existing?.thongTinDon?.donViGiaiQuyet ?? "Chưa quyết",
+      },
+      daNhan: existing?.daNhan ?? true,
+      soDon: existing?.soDon ?? 1,
+      hinhThucTiepNhan: existing?.hinhThucTiepNhan ?? "Trực tiếp",
+      giaiQuyet: existing?.giaiQuyet ?? {
+        nhan: trangThaiDon || "Thụ lý mới",
+        color: "#27ae60",
+        stl: "",
+        coVanBan: false,
+      },
+      processingHistory: [
+        ...(existing?.processingHistory ?? []),
+        {
+          date: ngayNhap,
+          step: existing ? "Cập nhật đơn demo" : "Tạo mới đơn demo",
+          actor: "HCTP",
+          note: capXetXu ? `Cấp xét xử: ${capXetXu}` : undefined,
+        },
+      ],
+      nguoiNhap: existing?.nguoiNhap ?? "Nguyễn Văn An",
+      ngayNhap: existing?.ngayNhap ?? ngayNhap,
+      gioNhap: existing?.gioNhap ?? gioNhap,
+      thongTinChuyenDon: noiChuyenDen
+        ? (noiChuyenDen as DanhSachDonRow["thongTinChuyenDon"])
+        : existing?.thongTinChuyenDon,
+      loaiAn: loaiAn || existing?.loaiAn,
+      ocr: ocrFile && ocrFields.size > 0 ? {
+        fileName: ocrFile.name,
+        sizeMB: ocrFile.sizeMB,
+        status: ocrStatus === "thanhcong" ? "thanhcong" : "dahuy",
+        extractedFields: Array.from(ocrFields),
+        savedAt: now.toISOString(),
+      } : existing?.ocr,
+    };
+  };
+
+  const saveCurrentRow = () => {
+    const row = buildSavedRow();
+    setRows(prev => {
+      const exists = prev.some(r => r.id === row.id);
+      return exists ? prev.map(r => r.id === row.id ? row : r) : [row, ...prev];
+    });
+    addNotification(`Đơn ${row.maDon} đã được ${editingRowId === null ? "thêm mới" : "cập nhật"} bởi cán bộ Nguyễn Văn An`);
+    setEditingRowId(null);
+    setView("list");
+  };
+
+  const addToTrinh = (t: ToTrinh) => {
+    setToTrinhList(prev => [t, ...prev]);
+    const ids = new Set((t.danhSachDon ?? []).map((row: any) => row.id).filter(Boolean));
+    if (ids.size > 0) {
+      setRows(prev => prev.map(row => ids.has(row.id) ? { ...row, toTrinhStatus: "trinh_lanh_dao" } : row));
+    }
+    addNotification(`Đã tạo ${t.loai} và trình duyệt.`);
+  };
+
   const delCV = (id: number) => setCongVans(p => p.filter(c => c.id !== id));
 
   return (
@@ -6908,7 +7034,7 @@ export default function App() {
                 <RotateCcw size={13} /> Trả lại
               </BtnSecondary>
               <BtnSecondary onClick={() => setView("list")} className="bg-transparent border border-white/20 text-white hover:bg-white/10">Hủy</BtnSecondary>
-              <BtnPrimary onClick={() => { addNotification(`Đơn ${editingRow?.maDon || "7031"} đã được thêm mới bởi cán bộ Nguyễn Văn An`); setView("list"); }}>Lưu</BtnPrimary>
+              <BtnPrimary onClick={saveCurrentRow}>Lưu</BtnPrimary>
             </div>
           )}
         </div>
@@ -6991,7 +7117,7 @@ export default function App() {
                 mergeState={mergeState}
                 setMergeState={setMergeState}
                 currentRole={currentRole}
-                onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
+                onCreateToTrinh={addToTrinh}
                 onThemMoi={() => {
                   setEditingRowId(null);
                   setView("form");
@@ -7023,7 +7149,7 @@ export default function App() {
                 mergeState={mergeState}
                 setMergeState={setMergeState}
                 currentRole={currentRole}
-                onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
+                onCreateToTrinh={addToTrinh}
                 onThemMoi={() => {
                   setEditingRowId(null);
                   setView("form");
