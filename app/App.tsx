@@ -9,7 +9,9 @@ import {
   AlertCircle, Bell, FilePlus, Loader2, Ban, Inbox, ArrowLeft, History as HistoryIcon
 } from "lucide-react";
 import Dashboard from "./Dashboard";
-import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import DocumentNumberingModal, {
+  type DocumentNumberingSubmitResult,
+} from "./components/DocumentNumberingModal";
 import {
   type DemoDocumentNumber,
   type DemoMergeInfo,
@@ -2401,9 +2403,10 @@ const ketQuaKhangNghi = (id: number) => {
 };
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ rows, setRows, mergeState, setMergeState, onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, khangNghi }: { rows: DanhSachDonRow[]; setRows: React.Dispatch<React.SetStateAction<DanhSachDonRow[]>>; mergeState: Record<number, DemoMergeInfo>; setMergeState: React.Dispatch<React.SetStateAction<Record<number, DemoMergeInfo>>>; onThemMoi: () => void; onBieuMau?: (row: DanhSachDonRow) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ rows, setRows, mergeState, setMergeState, onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onSubmitDocument, khangNghi }: { rows: DanhSachDonRow[]; setRows: React.Dispatch<React.SetStateAction<DanhSachDonRow[]>>; mergeState: Record<number, DemoMergeInfo>; setMergeState: React.Dispatch<React.SetStateAction<Record<number, DemoMergeInfo>>>; onThemMoi: () => void; onBieuMau?: (row: DanhSachDonRow) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: DemoRole;
   onCreateToTrinh?: (t: ToTrinh) => void;
+  onSubmitDocument?: (result: DocumentNumberingSubmitResult) => void;
   khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
 }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -3514,6 +3517,7 @@ const DanhSachDon = ({ rows, setRows, mergeState, setMergeState, onThemMoi, onBi
           onClose={() => setShowNumberingModal(null)}
           currentRole={currentRole}
           loaiVanBanMacDinh={loaiVanBan}
+          onSubmitDocument={onSubmitDocument}
           // Chưa tick dòng nào thì lấy toàn bộ đơn đang hiển thị theo bộ lọc
           selectedRows={
             filteredRows.filter(r => selectedRows.includes(r.id)).length > 0
@@ -6803,10 +6807,26 @@ export default function App() {
         if (OCR_DEMO_FAIL) {
           setOcrStatus("thatbai");
           addNotification(`OCR thất bại cho tài liệu ${ocrFile?.name ?? ""}. Vui lòng thực hiện OCR lại.`);
+          setOcrSessions(prev => [{
+            id: `ocr-${Date.now()}`,
+            fileName: ocrFile?.name ?? "",
+            sizeMB: ocrFile?.sizeMB ?? 0,
+            status: "thatbai",
+            extractedFields: [],
+            createdAt: new Date().toISOString(),
+          }, ...prev]);
         } else {
           setOcrStatus("thanhcong");
           setOcrFields(new Set(Object.keys(OCR_MOCK)));
           addNotification(`OCR thành công cho tài liệu ${ocrFile?.name ?? ""}. Dữ liệu đã được trích xuất.`);
+          setOcrSessions(prev => [{
+            id: `ocr-${Date.now()}`,
+            fileName: ocrFile?.name ?? "",
+            sizeMB: ocrFile?.sizeMB ?? 0,
+            status: "thanhcong",
+            extractedFields: Object.keys(OCR_MOCK),
+            createdAt: new Date().toISOString(),
+          }, ...prev]);
         }
       }, OCR_TIMINGS[2]),
     );
@@ -6821,6 +6841,14 @@ export default function App() {
     setShowOcrCancel(false);
     setShowOcrProgress(false);
     addNotification("Đã hủy quá trình OCR. Bạn có thể thực hiện OCR lại bất cứ lúc nào.");
+    setOcrSessions(prev => [{
+      id: `ocr-${Date.now()}`,
+      fileName: ocrFile?.name ?? "",
+      sizeMB: ocrFile?.sizeMB ?? 0,
+      status: "dahuy",
+      extractedFields: [],
+      createdAt: new Date().toISOString(),
+    }, ...prev]);
   };
 
   // Mở lại luồng OCR từ đầu (chọn file mới).
@@ -6959,6 +6987,35 @@ export default function App() {
       setRows(prev => prev.map(row => ids.has(row.id) ? { ...row, toTrinhStatus: "trinh_lanh_dao" } : row));
     }
     addNotification(`Đã tạo ${t.loai} và trình duyệt.`);
+  };
+
+  const handleDocumentNumberingSubmit = (result: DocumentNumberingSubmitResult) => {
+    setDocumentNumbers(prev => [{
+      id: result.id,
+      docType: result.docType,
+      rowIds: result.rowIds,
+      numbers: result.numbers,
+      nguoiDuyet: result.nguoiDuyet,
+      nguoiKy: result.nguoiKy,
+      mucDoUuTien: result.mucDoUuTien,
+      status: "trinh_duyet",
+      createdAt: result.createdAt,
+    }, ...prev]);
+
+    const proposal: ToTrinh = {
+      id: `TT-${Date.now()}`,
+      tenVuAn: result.selectedRows[0]?.thongTinDon?.soBaqd || result.selectedRows[0]?.maDon || "-",
+      noiDung: result.docType,
+      loai: result.docType,
+      nguoiDeXuat: "Vũ Văn Yên",
+      ngayDeXuat: new Date(result.createdAt).toLocaleString("vi-VN"),
+      trangThai: "Chờ duyệt",
+      yKienLanhDao: "",
+      danhSachDon: result.selectedRows,
+    };
+
+    addToTrinh(proposal);
+    addNotification(`Đã lưu và trình duyệt ${result.docType}.`);
   };
 
   const delCV = (id: number) => setCongVans(p => p.filter(c => c.id !== id));
@@ -7118,6 +7175,7 @@ export default function App() {
                 setMergeState={setMergeState}
                 currentRole={currentRole}
                 onCreateToTrinh={addToTrinh}
+                onSubmitDocument={handleDocumentNumberingSubmit}
                 onThemMoi={() => {
                   setEditingRowId(null);
                   setView("form");
@@ -7150,6 +7208,7 @@ export default function App() {
                 setMergeState={setMergeState}
                 currentRole={currentRole}
                 onCreateToTrinh={addToTrinh}
+                onSubmitDocument={handleDocumentNumberingSubmit}
                 onThemMoi={() => {
                   setEditingRowId(null);
                   setView("form");
