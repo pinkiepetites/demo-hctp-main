@@ -141,7 +141,7 @@ const VAN_BAN_DI_KEM_GIOI_HAN: Record<string, string[]> = {
   ],
 };
 
-const MUC_DO_UU_TIEN = ["Bình thường", "Khẩn", "Thượng khẩn", "Hỏa tốc"];
+const MUC_DO_UU_TIEN = ["Bình thường", "Thấp", "Cao"];
 
 // Ký hiệu số theo loại văn bản. Loại không khai ở đây dùng mặc định TANDTC-VP.
 const HAU_TO_SO_RIENG: Record<string, string> = {
@@ -1121,10 +1121,32 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
       } else if (selectedType === "Trả lại đơn") {
         if (tq !== "Trả lại đơn") { isValid = false; invalidReason = "TT Giải quyết phải là Trả lại đơn"; }
       } else if (selectedType === "Tờ trình phân công thẩm phán" || selectedType === "Tờ trình") {
-        if (!tq.includes("Thụ lý mới") || !isPhanCong) { isValid = false; invalidReason = "TT Giải quyết: Thụ lý mới & Đã phân công"; }
+        // Chỉ đơn phân công ngẫu nhiên mới phải lập tờ trình để chánh án/phó
+        // chánh án ký; đơn phân công chỉ định không phải làm tờ trình.
+        if (!tq.includes("Thụ lý mới") || !isPhanCong) {
+          isValid = false; invalidReason = "TT Giải quyết: Thụ lý mới & Đã phân công";
+        } else if (data.loaiPhanCong === "chi-dinh") {
+          isValid = false; invalidReason = "Đơn phân công chỉ định không phải lập tờ trình";
+        }
       } else if (selectedType === "Thông báo phân công TP") {
-        if (!["Thụ lý mới", "Thụ lý mới trùng TP", "Thụ lý xét xử", "Thụ lý mới trong thẩm phán", "Thụ lý mới trùng thẩm phán"].includes(tq) || toTrinhStatus === "none") {
-          isValid = false; invalidReason = "Trạng thái thụ lý & Đã tạo tờ trình";
+        // Luật nghiệp vụ:
+        //  1. Đơn đã có thẩm phán dự kiến
+        //  2. Đơn là đơn thụ lý mới
+        //  3. Phân công ngẫu nhiên → bắt buộc có tờ trình phân công TP đã có
+        //     hiệu lực (chánh án/phó chánh án đã ký)
+        //  4. Phân công chỉ định → tạo được ngay, không cần tờ trình
+        const thamPhanDuKien = (data.thongTinDon?.thamPhan || "").trim();
+        const laThuLyMoi = tq.toLowerCase().includes("thụ lý mới");
+
+        if (!thamPhanDuKien) {
+          isValid = false; invalidReason = "Đơn chưa có thẩm phán dự kiến";
+        } else if (!laThuLyMoi) {
+          isValid = false; invalidReason = "Chỉ lập cho đơn Thụ lý mới";
+        } else if (data.loaiPhanCong === "ngau-nhien" && toTrinhStatus !== "da_ky") {
+          isValid = false;
+          invalidReason = toTrinhStatus === "trinh_lanh_dao"
+            ? "Phân công ngẫu nhiên: tờ trình đang chờ chánh án/phó chánh án ký"
+            : "Phân công ngẫu nhiên: cần tờ trình phân công TP đã được ký";
         }
       } else if (selectedType === "Yêu cầu bổ sung") {
         // Chỉ áp dụng cho đơn chưa đủ điều kiện. So khớp lỏng vì dữ liệu ghi
@@ -1701,9 +1723,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   value={mucDoUuTien}
                   onChange={e => setMucDoUuTien(e.target.value)}
                   className={`w-full h-[34px] pl-3 pr-8 text-[13px] border rounded-[4px] bg-white focus:border-[#1a5a96] outline-none appearance-none ${
-                    mucDoUuTien === "Bình thường"
-                      ? "border-[#ccc] text-[#222]"
-                      : "border-[#e67e22] text-[#c0392b] font-semibold"}`}
+                    mucDoUuTien === "Cao"
+                      ? "border-[#e67e22] text-[#c0392b] font-semibold"
+                      : "border-[#ccc] text-[#222]"}`}
                 >
                   {MUC_DO_UU_TIEN.map(m => <option key={m} className="text-[#222] font-normal">{m}</option>)}
                 </select>
