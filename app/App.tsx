@@ -10,6 +10,17 @@ import {
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import {
+  type DemoDocumentNumber,
+  type DemoMergeInfo,
+  type DemoNotification,
+  type DemoOcrSession,
+  type DemoRole,
+  loadDemoStore,
+  makeDemoNotification,
+  resetDemoStore,
+  saveDemoStore,
+} from "./storage/demoStore";
 
 // ─── Color tokens matching the real system ───────────────────────────────────
 // Primary red: #8b1a1a (dark crimson) — matches system buttons
@@ -1604,7 +1615,7 @@ const PopupXacNhanGhep = ({
   );
 };
 
-interface DanhSachDonRow {
+export interface DanhSachDonRow {
   id: number;
   nguoiGui: string;
   diaChi: string;
@@ -2107,6 +2118,16 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "10/10/2022", gioNhap: "14:35:00",
   },
 ];
+
+const INITIAL_NOTIFICATIONS: DemoNotification[] = [
+  { id: 1, text: "Đơn 7031 đã được phân công cho cán bộ Nguyễn Văn An", time: "08:30", read: false },
+];
+
+const INITIAL_MERGE_STATE: Record<number, DemoMergeInfo> = {
+  6: { ghepVoi: "7029" },
+  1: { pendingTo: { maDon: "7027", nguoiGui: "Nguyễn Thị Hoa" } },
+  5: { pendingFrom: { maDon: "7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh" } },
+};
 
 // ─── Bộ lọc Danh sách đơn: helper + luật nghiệp vụ ───────────────────────────
 
@@ -6495,9 +6516,7 @@ const PheDuyetDeXuat = ({ toTrinhList, setToTrinhList, currentRole }: { toTrinhL
 };
 
 
-export default function App() {
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "khangnghi">("list");
-  const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>([
+const INITIAL_TO_TRINH_LIST: ToTrinh[] = [
     {
       id: "TT-2026-001",
       tenVuAn: "Đơn đề nghị số 41/2024/DS-PT - TAND tỉnh Bắc Ninh",
@@ -6608,20 +6627,49 @@ export default function App() {
       yKienLanhDao: "",
       danhSachDon: [{ maDon: "Mã 7043", nguoiGui: "Lê Văn Tám", thamPhan: "" }],
     },
-  ]);
+];
 
-  const [currentRole, setCurrentRole] = useState<"can-bo" | "truong-phong" | "pho-vp" | "lanh-dao">("can-bo");
-  const [notifications, setNotifications] = useState<{ id: number, text: string, time: string, read: boolean }[]>([
-    { id: 1, text: "Đơn 7031 đã được phân công cho cán bộ Nguyễn Văn An", time: "08:30", read: false }
-  ]);
+const DEMO_SEED = {
+  rows: SAMPLE_ROWS,
+  toTrinhList: INITIAL_TO_TRINH_LIST,
+  notifications: INITIAL_NOTIFICATIONS,
+  currentRole: "can-bo" as DemoRole,
+  mergeState: INITIAL_MERGE_STATE,
+  documentNumbers: [] as DemoDocumentNumber[],
+  ocrSessions: [] as DemoOcrSession[],
+};
+
+export default function App() {
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "khangnghi">("list");
+  const [initialDemoStore] = useState(() =>
+    loadDemoStore<DanhSachDonRow, ToTrinh>(DEMO_SEED),
+  );
+
+  const [rows, setRows] = useState<DanhSachDonRow[]>(initialDemoStore.rows);
+  const [toTrinhList, setToTrinhList] = useState<ToTrinh[]>(initialDemoStore.toTrinhList);
+  const [currentRole, setCurrentRole] = useState<DemoRole>(initialDemoStore.currentRole);
+  const [notifications, setNotifications] = useState<DemoNotification[]>(initialDemoStore.notifications);
+  const [mergeState, setMergeState] = useState<Record<number, DemoMergeInfo>>(initialDemoStore.mergeState);
+  const [documentNumbers, setDocumentNumbers] = useState<DemoDocumentNumber[]>(initialDemoStore.documentNumbers);
+  const [ocrSessions, setOcrSessions] = useState<DemoOcrSession[]>(initialDemoStore.ocrSessions);
+
+  useEffect(() => {
+    saveDemoStore<DanhSachDonRow, ToTrinh>({
+      version: 1,
+      rows,
+      toTrinhList,
+      notifications,
+      currentRole,
+      mergeState,
+      documentNumbers,
+      ocrSessions,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [rows, toTrinhList, notifications, currentRole, mergeState, documentNumbers, ocrSessions]);
+
   const [showNoti, setShowNoti] = useState(false);
   const addNotification = (text: string) => {
-    setNotifications(prev => [{
-      id: Date.now(),
-      text,
-      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-      read: false
-    }, ...prev]);
+    setNotifications(prev => [makeDemoNotification(text), ...prev]);
   };
 
   useEffect(() => {
@@ -6693,7 +6741,7 @@ export default function App() {
   const [nhanSoBA, nhanNgayBA] = NHAN_SO_NGAY_BA[loaiQDBaEffective] ?? NHAN_SO_NGAY_BA["Bản án"];
   const [baForm, setBaForm] = useState({ soBA: "", ngayBA: "", toaBA: "", capXetXu: "" });
   const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
-  const editingRow = SAMPLE_ROWS.find(r => r.id === editingRowId) ?? null;
+  const editingRow = rows.find(r => r.id === editingRowId) ?? null;
 
   const OCR_MOCK: Record<string, string> = {
     nguoiGui: "Nguyễn Văn An",
