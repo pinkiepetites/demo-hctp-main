@@ -60,6 +60,7 @@ export interface DemoSeed<TRow = unknown, TProposal = unknown> {
 }
 
 let memoryState: DemoStoreState<any, any> | null = null;
+let lastDemoNotificationId = 0;
 
 const nowIso = () => new Date().toISOString();
 
@@ -189,9 +190,14 @@ export const resetDemoStore = <TRow, TProposal>(
   return next;
 };
 
-export const makeDemoNotification = (text: string): DemoNotification => ({
-  id: Date.now(),
-  text,
-  time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
-  read: false,
-});
+export const makeDemoNotification = (text: string): DemoNotification => {
+  const id = Math.max(Date.now(), lastDemoNotificationId + 1);
+  lastDemoNotificationId = id;
+
+  return {
+    id,
+    text,
+    time: new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+    read: false,
+  };
+};
