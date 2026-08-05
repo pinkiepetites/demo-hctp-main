@@ -2394,8 +2394,8 @@ const ketQuaKhangNghi = (id: number) => {
 };
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
-  currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao";
+const DanhSachDon = ({ rows, setRows, mergeState, setMergeState, onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, khangNghi }: { rows: DanhSachDonRow[]; setRows: React.Dispatch<React.SetStateAction<DanhSachDonRow[]>>; mergeState: Record<number, DemoMergeInfo>; setMergeState: React.Dispatch<React.SetStateAction<Record<number, DemoMergeInfo>>>; onThemMoi: () => void; onBieuMau?: (row: DanhSachDonRow) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+  currentRole?: DemoRole;
   onCreateToTrinh?: (t: ToTrinh) => void;
   khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
 }) => {
@@ -2405,7 +2405,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [assignmentMode, setAssignmentMode] = useState<"none" | "ngau-nhien" | "chi-dinh">("none");
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
   const OFFICERS = ["Nguyễn Văn An", "Trần Thị Bình", "Lê Thị Hà", "Phạm Văn Đức", "Hoàng Thị Thu"];
-  const [rows, setRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
 
   // ── State bộ lọc cơ bản ──
   const [fKeyword, setFKeyword] = useState("");
@@ -2481,19 +2480,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [showTraLai, setShowTraLai] = useState(false);
   const [traLaiReason, setTraLaiReason] = useState("");
   const [showXacNhan, setShowXacNhan] = useState(false);
-  // mergeState tracks per-row: pending (chờ cán bộ B xác nhận) hoặc đã ghép
-  const [mergeState, setMergeState] = useState<Record<number, {
-    ghepVoi?: string;
-    pendingFrom?: { maDon: string; nguoiGui: string };
-    pendingTo?: { maDon: string; nguoiGui: string };
-  }>>({
-    // TH1 - cùng cán bộ (Phùng Trâm Anh): đã ghép ngay, row 3 (7029) là đơn chính
-    6: { ghepVoi: "7029" },
-    // TH2 - đơn chính của cán bộ A: đã gửi yêu cầu, đang chờ cán bộ B xác nhận
-    1: { pendingTo: { maDon: "7027", nguoiGui: "Nguyễn Thị Hoa" } },
-    // TH2 - đơn của cán bộ B: nhận được yêu cầu ghép, chờ xác nhận
-    5: { pendingFrom: { maDon: "7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh" } },
-  });
   const [autoMergeMap, setAutoMergeMap] = useState<Record<number, string>>({});
   const [showConfirmRow, setShowConfirmRow] = useState<number | null>(null);
   const [showHuyGhep, setShowHuyGhep] = useState<number | null>(null);
@@ -3534,6 +3520,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       {showLuuSoVanBan && (
         <PopupLuuSoVanBan
           rows={rows.filter(r => selectedRows.includes(r.id))}
+          currentRole={currentRole}
+          onCreateToTrinh={onCreateToTrinh}
           onClose={() => setShowLuuSoVanBan(false)}
           onXemBieuMau={() => { setShowLuuSoVanBan(false); onWordEditor?.(); }}
         />
@@ -6998,6 +6986,10 @@ export default function App() {
           {view === "list" && (
             <div className="flex-1 overflow-y-auto">
               <DanhSachDon
+                rows={rows}
+                setRows={setRows}
+                mergeState={mergeState}
+                setMergeState={setMergeState}
                 currentRole={currentRole}
                 onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
                 onThemMoi={() => {
@@ -7026,6 +7018,10 @@ export default function App() {
             <div className="flex-1 overflow-y-auto">
               <DanhSachDon
                 khangNghi
+                rows={rows}
+                setRows={setRows}
+                mergeState={mergeState}
+                setMergeState={setMergeState}
                 currentRole={currentRole}
                 onCreateToTrinh={(t) => setToTrinhList([t, ...toTrinhList])}
                 onThemMoi={() => {
