@@ -6695,6 +6695,26 @@ export default function App() {
 
   const [bieuMauRow, setBieuMauRow] = useState<typeof SAMPLE_ROWS[0] | null>(null);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
+  const resetDemoData = () => {
+    const ok = window.confirm("Reset toàn bộ dữ liệu demo về trạng thái ban đầu?");
+    if (!ok) return;
+
+    const reset = resetDemoStore<DanhSachDonRow, ToTrinh>(DEMO_SEED);
+    setRows(reset.rows);
+    setToTrinhList(reset.toTrinhList);
+    setCurrentRole(reset.currentRole);
+    setMergeState(reset.mergeState);
+    setDocumentNumbers(reset.documentNumbers);
+    setOcrSessions(reset.ocrSessions);
+    setNotifications([
+      makeDemoNotification("Đã reset dữ liệu demo về trạng thái ban đầu."),
+      ...reset.notifications,
+    ]);
+    setEditingRowId(null);
+    setBieuMauRow(null);
+    setShowNoti(false);
+    setView("list");
+  };
   const [phanCongTab, setPhanCongTab] = useState<0 | 1 | 2>(0);
   const [showPopup, setShowPopup] = useState(false);
   const [showBiCaoPopup, setShowBiCaoPopup] = useState(false);
@@ -8197,14 +8217,21 @@ export default function App() {
 
       
       {/* Role Switcher */}
-      <div className="fixed bottom-4 right-4 bg-white p-2 rounded shadow-lg border border-gray-200 z-[9999] text-xs">
-        <label className="font-bold mr-2 text-gray-700">Vai trò:</label>
-        <select value={currentRole} onChange={e => setCurrentRole(e.target.value as any)} className="border p-1 rounded">
+      <div className="fixed bottom-4 right-4 bg-white p-2 rounded shadow-lg border border-gray-200 z-[9999] text-xs flex items-center gap-2">
+        <label className="font-bold text-gray-700">Vai trò:</label>
+        <select value={currentRole} onChange={e => setCurrentRole(e.target.value as DemoRole)} className="border p-1 rounded">
           <option value="can-bo">Cán bộ</option>
           <option value="truong-phong">Trưởng phòng</option>
           <option value="pho-vp">Phó / Chánh VP</option>
           <option value="lanh-dao">Lãnh đạo Tòa</option>
         </select>
+        <button
+          type="button"
+          onClick={resetDemoData}
+          className="border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fdeaea] rounded px-2 py-1 font-semibold"
+        >
+          Reset dữ liệu demo
+        </button>
       </div>
 
       {/* Popup */}
