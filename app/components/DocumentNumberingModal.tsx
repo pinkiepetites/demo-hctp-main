@@ -1353,13 +1353,11 @@ const HangTaiLieu = ({
           <div className="col-span-2"><span className="text-[#888]">Thủ tục giải quyết: </span>{d?.thongTinDon?.thuTuc || "-"}</div>
         </div>
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
-        <OChon value={nguoiTheoDon[node.id]?.duyet ?? duyetChung} onChange={dat("duyet")}
-          options={NGUOI_DUYET_OPTIONS} placeholder="Chọn người duyệt" />
+      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium vertical-middle">
+        {duyetChung ? duyetChung.split(" - ")[0] : ""}
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
-        <OChon value={nguoiTheoDon[node.id]?.ky ?? kyChung} onChange={dat("ky")}
-          options={NGUOI_KY_OPTIONS} placeholder="Chọn người ký" />
+      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium vertical-middle">
+        {kyChung ? kyChung.split(" - ")[0] : ""}
       </td>
       <td className="border-b border-[#eee] px-2 py-2 text-center">{trangThai}</td>
       <td className="border-b border-[#eee] px-2 py-2 text-right">{menu}</td>
@@ -1563,19 +1561,65 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   useEffect(() => {
     if (!isOpen) return;
 
-    const theoDonVi: Record<string, any[]> = {};
-    selectedRows.forEach(row => {
-      const dv = row.thongTinDon?.donViGiaiQuyet || "Chưa xác định";
-      (theoDonVi[dv] ||= []).push(row);
-    });
-
     const nodes: DocNode[] = [];
     let n = 1;
 
     const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
-      if (CAP_THEO_TUNG_DON.has(loaiVB)) {
+      if (loaiVB === "Tờ trình phân công thẩm phán") {
+        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất
+        const tenGoc = `${loaiVB} chung`;
+        const hauToSo = hauToSoCua(loaiVB);
+
+        // Tách các danh sách đơn theo: đơn vị gửi đến (donViGiaiQuyet/donViGui), thẩm phán (thamPhan), hình thức phân công (loaiPhanCong)
+        // Nếu có 1 trong 3 điều kiện này khác đi, bắt buộc phải tách thành 1 danh sách mới
+        const nhomDanhSach: Record<string, { donVi: string; tp: string; loai: string; rows: any[] }> = {};
+        selectedRows.forEach(r => {
+          const dv = r.thongTinDon?.donViGiaiQuyet || r.thongTinDon?.donViGui || "Chưa xác định";
+          const tp = (r.thongTinDon?.thamPhan || "Chưa phân công").split(" (")[0];
+          const loai = r.loaiPhanCong === "chi-dinh" ? "chỉ định"
+            : r.loaiPhanCong === "ngau-nhien" ? "ngẫu nhiên" : "chưa rõ";
+          const key = `${dv}|${tp}|${loai}`;
+          (nhomDanhSach[key] ||= { donVi: dv, tp, loai, rows: [] }).rows.push(r);
+        });
+
+        const toTrinhNode: DocNode = {
+          id: `${tienTo}-${n++}`,
+          name: `${tenGoc} - (Số -/2026/${hauToSo})`,
+          tenGoc,
+          hauToSo,
+          type: loaiVB,
+          date: "30/07/2026",
+          isExpanded: true,
+          coTheLaySo: true,
+          khongCham: !cham,
+          children: Object.values(nhomDanhSach).map((g, i) => ({
+            id: `${tienTo}-ds-${i}`,
+            name: `Danh sách đơn - ${g.donVi} - Thẩm phán ${g.tp} (${g.loai})`,
+            type: "Danh sách",
+            date: "30/07/2026",
+            isExpanded: true,
+            khongCham: !cham,
+            children: g.rows.map((r, j) => ({
+              id: `${tienTo}-ds-${i}-${r.id}`,
+              sttHienThi: j + 1,
+              name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
+              type: "Đơn",
+              date: r.ngayNhap || "30/07/2026",
+              isExpanded: false,
+              originalData: r,
+              khongCham: !cham,
+            })),
+          })),
+        };
+        nodes.push(toTrinhNode);
+      } else if (CAP_THEO_TUNG_DON.has(loaiVB)) {
         selectedRows.forEach(r => nodes.push(dungVanBanTheoDon(loaiVB, r, `${tienTo}-${n++}`, cham)));
       } else {
+        const theoDonVi: Record<string, any[]> = {};
+        selectedRows.forEach(row => {
+          const dv = row.thongTinDon?.donViGiaiQuyet || "Chưa xác định";
+          (theoDonVi[dv] ||= []).push(row);
+        });
         Object.entries(theoDonVi).forEach(([donVi, rowsDV]) =>
           nodes.push(dungVanBanTheoDonVi(loaiVB, donVi, rowsDV, `${tienTo}-${n++}`, cham)));
       }
