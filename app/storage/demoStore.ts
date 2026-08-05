@@ -135,13 +135,13 @@ export const loadDemoStore = <TRow, TProposal>(
   }
 
   const seeded = createDemoSeed(seed);
-  const raw = window.localStorage.getItem(DEMO_STORE_KEY);
-  if (!raw) {
-    saveDemoStore(seeded);
-    return seeded;
-  }
-
   try {
+    const raw = window.localStorage.getItem(DEMO_STORE_KEY);
+    if (!raw) {
+      saveDemoStore(seeded);
+      return seeded;
+    }
+
     const parsed = JSON.parse(raw);
     const normalized = normalizeStore(parsed, seed);
     if (!normalized) {
