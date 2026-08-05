@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import {
   X, Plus, Trash2, Edit2, FileText, ChevronDown, ChevronRight,
   ChevronUp, Search, ZoomIn, ZoomOut, RotateCcw, Download, Upload,
@@ -49,6 +49,36 @@ export const notiEmitter = new EventTarget();
 export const triggerNoti = (text: string) => {
   notiEmitter.dispatchEvent(new CustomEvent('notify', { detail: text }));
 };
+
+// ─── Ý kiến Lãnh đạo — dùng chung giữa Danh sách đơn và Nhận đơn & TL vụ án ──
+// Đơn nằm trong tab "Chờ ý kiến LĐ" hiển thị ở Danh sách đơn với trạng thái
+// "Chờ ý kiến Lãnh đạo"; khi Lãnh đạo kết luận thì đổi sang Thụ lý mới /
+// Không thụ lý. Hai màn nằm ở hai view khác nhau nên trạng thái để ở ngoài
+// component, đăng ký lại bằng useSyncExternalStore để cả hai cùng cập nhật.
+export type KetLuanLD = "Thụ lý mới" | "Không thụ lý";
+export const CHO_Y_KIEN_LD = "Chờ ý kiến Lãnh đạo";
+export const MAU_KET_LUAN_LD: Record<string, string> = {
+  [CHO_Y_KIEN_LD]: "#e67e22",
+  "Thụ lý mới": "#27ae60",
+  "Không thụ lý": "#c0392b",
+};
+
+const ketLuanLD: Record<string, KetLuanLD> = {};
+const ldEmitter = new EventTarget();
+let phienBanLD = 0;
+
+export const datKetLuanLD = (maDon: string, kl: KetLuanLD | null) => {
+  if (kl) ketLuanLD[maDon] = kl; else delete ketLuanLD[maDon];
+  phienBanLD++;
+  ldEmitter.dispatchEvent(new Event("thaydoi"));
+};
+const dangKyLD = (cb: () => void) => {
+  ldEmitter.addEventListener("thaydoi", cb);
+  return () => ldEmitter.removeEventListener("thaydoi", cb);
+};
+export const layKetLuanLD = (maDon: string): KetLuanLD | undefined => ketLuanLD[maDon];
+// Trả về số phiên bản — dùng làm dependency để component render lại khi LĐ đổi ý kiến
+const useKetLuanLD = () => useSyncExternalStore(dangKyLD, () => phienBanLD, () => phienBanLD);
 
 
 // ─── Shared primitives ───────────────────────────────────────────────────────
@@ -2397,6 +2427,9 @@ interface DanhSachDonRow {
   loaiAn?: string;
   cuaToi?: boolean;               // thuộc tài khoản đang đăng nhập → tab "Đơn của tôi"
   hetThoiHanKhangNghi?: boolean;  // → tab "Hết thời hạn kháng nghị"
+  // Mã đơn bên màn Nhận đơn và TL vụ án — có giá trị nghĩa là đơn đang ở
+  // tab "Chờ ý kiến LĐ", cột Thông tin giải quyết lấy theo kết luận của LĐ
+  choYKienLD?: string;
 }
 
 // ─── Sample list data ────────────────────────────────────────────────────────
@@ -2853,6 +2886,66 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     giaiQuyet: { nhan: "Chưa đủ điều kiện", color: "#e67e22", stl: "", coVanBan: false },
     loaiAn: "Hình sự",
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "10/10/2022", gioNhap: "14:35:00",
+  },
+  // ── 3 đơn đang ở tab "Chờ ý kiến LĐ" (màn Nhận đơn và TL vụ án) ──
+  // Cột Thông tin giải quyết của các đơn này lấy theo kết luận của Lãnh đạo,
+  // giá trị trong giaiQuyet.nhan chỉ là trạng thái ban đầu.
+  {
+    id: 21,
+    nguoiGui: "Đỗ Tất Đạt",
+    diaChi: "Phường Hải Châu, Thành phố Đà Nẵng",
+    maDon: "Mã 4984",
+    loaiHinhThuc: "Đơn đề nghị",
+    loaiHinhThucColor: "#8b1a1a",
+    thongTinDon: {
+      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 7 - Đà Nẵng",
+      thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
+      soCV: "31", ngayCV: "05/06/2026", loaiCV: "Công văn chuyển đơn",
+      donViGui: "Đỗ Tất Đạt", thamPhan: "Đỗ Tất Thống",
+      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+    },
+    daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
+    giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
+    loaiAn: "Hình sự", choYKienLD: "4984",
+    nguoiNhap: "Vũ Văn Yên", ngayNhap: "05/06/2026", gioNhap: "09:12:00",
+  },
+  {
+    id: 22,
+    nguoiGui: "Đỗ Tất Đạt",
+    diaChi: "Phường Hải Châu, Thành phố Đà Nẵng",
+    maDon: "Mã 4985",
+    loaiHinhThuc: "Đơn báo phát hiện vi phạm PL",
+    loaiHinhThucColor: "#e67e22",
+    thongTinDon: {
+      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 7 - Đà Nẵng",
+      thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn báo phát hiện vi phạm PL",
+      soCV: "31", ngayCV: "05/06/2026", loaiCV: "Công văn chuyển đơn",
+      donViGui: "Đỗ Tất Đạt", thamPhan: "Đỗ Tất Thống",
+      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+    },
+    daNhan: true, soDon: 1, hinhThucTiepNhan: "Bưu điện",
+    giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
+    loaiAn: "Hình sự", choYKienLD: "4985",
+    nguoiNhap: "Vũ Văn Yên", ngayNhap: "05/06/2026", gioNhap: "09:20:00",
+  },
+  {
+    id: 23,
+    nguoiGui: "Phạm Văn Tú",
+    diaChi: "Phường Châu Sơn, Tỉnh Hà Nam",
+    maDon: "Mã 5012",
+    loaiHinhThuc: "Đơn đề nghị",
+    loaiHinhThucColor: "#8b1a1a",
+    thongTinDon: {
+      soBaqd: "HKTT_1006_01", ngay: "08/06/2026", toaXetXu: "TAND tỉnh Hà Nam",
+      thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
+      soCV: "44", ngayCV: "10/06/2026", loaiCV: "Công văn chuyển đơn",
+      donViGui: "Phạm Văn Tú", thamPhan: "Lê Thị Hoa",
+      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+    },
+    daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
+    giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
+    loaiAn: "Hình sự", choYKienLD: "5012",
+    nguoiNhap: "Phùng Trâm Anh", ngayNhap: "10/06/2026", gioNhap: "16:05:00",
   },
 ];
 
@@ -3341,15 +3434,20 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
 };
 
 const NhanDonTLVuAn = () => {
+  const [tab, setTab] = useState(0);
+  const [moRong, setMoRong] = useState(false);
+  const [chon, setChon] = useState<number[]>([]);
+  useKetLuanLD();   // render lại khi kết luận của LĐ thay đổi
+
+  // Số trên tab "Chờ ý kiến LĐ" chỉ đếm đơn LĐ chưa cho kết luận
+  const soChoYKien = (DU_LIEU_TAB["Chờ ý kiến LĐ"] ?? [])
+    .filter(r => !r.maDon || !layKetLuanLD(r.maDon)).length;
   const TABS = [
-    { label: "Tất cả", count: "49" }, { label: "Chờ ý kiến LĐ", count: "4" },
+    { label: "Tất cả", count: "49" }, { label: "Chờ ý kiến LĐ", count: String(soChoYKien) },
     { label: "Chưa có vụ án", count: "5" }, { label: "Đã có vụ án", count: "+37" },
     { label: "Hồ sơ kháng nghị", count: "+3" }, { label: "Hồ sơ tử hình", count: "2" },
     { label: "Trả lại", count: "2" },
   ];
-  const [tab, setTab] = useState(0);
-  const [moRong, setMoRong] = useState(false);
-  const [chon, setChon] = useState<number[]>([]);
 
   const tenTab = TABS[tab].label;
   const rows = DU_LIEU_TAB[tenTab] ?? [];
@@ -3365,8 +3463,8 @@ const NhanDonTLVuAn = () => {
   const O = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div><FLbl>{label}</FLbl>{children}</div>
   );
-  const NutNho = ({ children, mau }: { children: React.ReactNode; mau: string }) => (
-    <button className={`h-[26px] px-3 rounded-[3px] text-[11px] font-medium transition-colors whitespace-nowrap ${mau}`}>
+  const NutNho = ({ children, mau, onClick }: { children: React.ReactNode; mau: string; onClick?: () => void }) => (
+    <button onClick={onClick} className={`h-[26px] px-3 rounded-[3px] text-[11px] font-medium transition-colors whitespace-nowrap ${mau}`}>
       {children}
     </button>
   );
@@ -3538,22 +3636,52 @@ const NhanDonTLVuAn = () => {
 
                     {/* Cột 5 — đổi theo tab */}
                     <td className="border border-[#ddd] px-3 py-2 leading-snug">
-                      {laYKien ? (
-                        <div className="space-y-2">
-                          {(r.yKien ?? []).map((y, k) => (
-                            <div key={k}>
-                              <span className={`inline-block px-2 py-[2px] rounded-[10px] border text-[10px] font-medium ${
-                                y.ketQua.toLowerCase().includes("không")
-                                  ? "bg-[#fdecea] text-[#c0392b] border-[#f3c0bb]"
-                                  : "bg-[#e8f5e9] text-[#1b5e20] border-[#a5d6a7]"}`}>
-                                {y.ketQua}
-                              </span>
-                              <div className="mt-0.5">{y.nguoi} – {y.chucVu}</div>
-                              <div className="text-[#27ae60]">Đã duyệt - {y.ngayDuyet}</div>
+                      {laYKien ? (() => {
+                        const kl = r.maDon ? layKetLuanLD(r.maDon) : undefined;
+                        return (
+                          <div className="space-y-2">
+                            {(r.yKien ?? []).map((y, k) => (
+                              <div key={k}>
+                                <span className={`inline-block px-2 py-[2px] rounded-[10px] border text-[10px] font-medium ${
+                                  y.ketQua.toLowerCase().includes("không")
+                                    ? "bg-[#fdecea] text-[#c0392b] border-[#f3c0bb]"
+                                    : "bg-[#e8f5e9] text-[#1b5e20] border-[#a5d6a7]"}`}>
+                                  {y.ketQua}
+                                </span>
+                                <div className="mt-0.5">{y.nguoi} – {y.chucVu}</div>
+                                <div className="text-[#27ae60]">Đã duyệt - {y.ngayDuyet}</div>
+                              </div>
+                            ))}
+
+                            {/* Kết luận của LĐ — đẩy sang cột Thông tin giải quyết ở màn Danh sách đơn */}
+                            <div className="pt-1.5 border-t border-dashed border-[#e0e0e0]">
+                              {kl ? (
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="inline-block px-2 py-[2px] rounded-[10px] text-[10px] font-medium text-white"
+                                    style={{ backgroundColor: MAU_KET_LUAN_LD[kl] }}>
+                                    Kết luận: {kl}
+                                  </span>
+                                  <button onClick={() => datKetLuanLD(r.maDon!, null)}
+                                    className="text-[10px] text-[#1a5a96] hover:underline">Hoàn tác</button>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="inline-block px-2 py-[2px] rounded-[10px] text-[10px] font-medium text-white"
+                                    style={{ backgroundColor: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD] }}>
+                                    {CHO_Y_KIEN_LD}
+                                  </span>
+                                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                                    <NutNho mau="bg-[#27ae60] hover:bg-[#219150] text-white"
+                                      onClick={() => datKetLuanLD(r.maDon!, "Thụ lý mới")}>Thụ lý mới</NutNho>
+                                    <NutNho mau="bg-white border border-[#c0392b] text-[#c0392b] hover:bg-[#fdecea]"
+                                      onClick={() => datKetLuanLD(r.maDon!, "Không thụ lý")}>Không thụ lý</NutNho>
+                                  </div>
+                                </>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      ) : laHoSo ? (
+                          </div>
+                        );
+                      })() : laHoSo ? (
                         <>
                           {r.maHS && <div className="text-[#1a5a96]">Mã HS: {r.maHS}</div>}
                           {r.maVuAn && <div>Mã vụ án: <span className="font-medium">{r.maVuAn}</span></div>}
@@ -3779,6 +3907,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   useEffect(() => {
     const groups = rows.reduce((acc: Record<string, DanhSachDonRow[]>, row) => {
       const caseKey = `${row.thongTinDon.soBaqd}|${row.ngayNhap}`;
+      // Đơn đang chờ ý kiến LĐ giữ nguyên trạng thái theo kết luận của LĐ,
+      // không để nhãn ghép đơn tự động đè lên
+      if (row.choYKienLD) return acc;
       if (!row.thongTinDon.soBaqd) return acc;
       acc[caseKey] = [...(acc[caseKey] || []), row];
       return acc;
@@ -3795,10 +3926,20 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     setAutoMergeMap(nextAuto);
   }, [rows]);
 
+  // Đơn thuộc tab "Chờ ý kiến LĐ" bên màn Nhận đơn và TL vụ án: trạng thái
+  // giải quyết lấy theo kết luận của Lãnh đạo. Thay ngay từ đây để tab, bộ lọc
+  // và cột Thông tin giải quyết cùng ăn theo một nguồn.
+  const vLD = useKetLuanLD();
+  const rowsLD = useMemo(() => rows.map(r => {
+    if (!r.choYKienLD) return r;
+    const nhan = layKetLuanLD(r.choYKienLD) ?? CHO_Y_KIEN_LD;
+    return { ...r, giaiQuyet: { ...r.giaiQuyet, nhan, color: MAU_KET_LUAN_LD[nhan] } };
+  }), [rows, vLD]);
+
   // ── Engine lọc ────────────────────────────────────────────────────────────
   // Mọi điều kiện cộng dồn với nhau (AND). Ô rỗng = bỏ qua điều kiện đó.
   // Tách khỏi điều kiện tab để số đếm trên tab phản ánh đúng các bộ lọc đang áp.
-  const rowsByFilters = useMemo(() => rows.filter(r => {
+  const rowsByFilters = useMemo(() => rowsLD.filter(r => {
     const d = r.thongTinDon ?? ({} as DanhSachDonRow["thongTinDon"]);
     const trangThai = r.giaiQuyet?.nhan ?? "";
 
@@ -3837,7 +3978,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     if (fTrangThai === "Đơn đủ điều kiện" && trangThai === "Chưa đủ điều kiện") return false;
 
     return true;
-  }), [rows, loaiVanBan, fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA,
+  }), [rowsLD, loaiVanBan, fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA,
     fNgayNhapFrom, fNgayNhapTo, fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap,
     fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai]);
 
@@ -8209,10 +8350,16 @@ export default function App() {
                   <X size={10} /> Xóa highlight
                 </button>
               )}
-              <BtnSecondary onClick={() => setShowTraLaiForm(true)} className="h-[28px] text-[12px] px-3 gap-1 bg-transparent border border-white/20 text-white hover:bg-white/10">
+              {/* Không dùng BtnSecondary ở đây: nền trắng mặc định của nó chống
+                  lại các lớp ghi đè nên nút bị trắng-trên-trắng, mất chữ. */}
+              <button type="button" onClick={() => setShowTraLaiForm(true)}
+                className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-white/50 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors">
                 <RotateCcw size={13} /> Trả lại
-              </BtnSecondary>
-              <BtnSecondary onClick={() => setView("list")} className="bg-transparent border border-white/20 text-white hover:bg-white/10">Hủy</BtnSecondary>
+              </button>
+              <button type="button" onClick={() => setView("list")}
+                className="inline-flex items-center h-[28px] px-4 rounded-[3px] border border-white/50 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors">
+                Hủy
+              </button>
               <BtnPrimary onClick={() => { addNotification(`Đơn ${editingRow?.maDon || "7031"} đã được thêm mới bởi cán bộ Nguyễn Văn An`); setView("list"); }}>Lưu</BtnPrimary>
             </div>
           )}
@@ -8465,6 +8612,16 @@ export default function App() {
                         <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
                       </div>
                     </div>
+                    <div>
+                      <Lbl>Thủ tục giải quyết</Lbl>
+                      <Sel>
+                        <option value="">-- Chọn --</option>
+                        <option>Giám đốc thẩm</option>
+                        <option>Tái thẩm</option>
+                        <option>Giám đốc thẩm + Tái thẩm</option>
+                        <option>Chưa xác định</option>
+                      </Sel>
+                    </div>
                     {/* Thông tin bì thư — chỉ với Trực tiếp / Bưu điện.
                         Nhập mã bì thư sẽ tự điền phần còn lại từ hệ thống bưu chính. */}
                     {canBiThu && (
@@ -8501,11 +8658,6 @@ export default function App() {
                               onChange={e => setBiThu(p => ({ ...p, diaChi: e.target.value }))} />
                           </div>
                         </div>
-                        {!biThu.ngayDau && (
-                          <div className="flex items-center gap-1 mt-2 text-[11px] text-[#c0392b]">
-                            <AlertCircle size={11} /> Ngày trên dấu bưu điện là trường bắt buộc.
-                          </div>
-                        )}
                       </div>
                     )}
 
@@ -8567,16 +8719,6 @@ export default function App() {
                         </label>
                       </div>
                     )}
-                    <div>
-                      <Lbl>Thủ tục giải quyết</Lbl>
-                      <Sel>
-                        <option value="">-- Chọn --</option>
-                        <option>Giám đốc thẩm</option>
-                        <option>Tái thẩm</option>
-                        <option>Giám đốc thẩm + Tái thẩm</option>
-                        <option>Chưa xác định</option>
-                      </Sel>
-                    </div>
                   </div>
                 </Section>
 
