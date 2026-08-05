@@ -87,6 +87,19 @@ const isNumberArray = (value: unknown): value is number[] =>
 const isObjectArray = (value: unknown): value is Record<string, unknown>[] =>
   Array.isArray(value) && value.every(isObject);
 
+const hasSeedItemShape = <T>(value: unknown, seedItems: T[]) => {
+  if (!isObjectArray(value)) return false;
+
+  const seedObjects = seedItems.filter(
+    (item): item is T & Record<string, unknown> => isObject(item),
+  );
+  return seedObjects.length === 0 || value.every(item =>
+    seedObjects.some(seedItem =>
+      Object.keys(seedItem).every(key => Object.prototype.hasOwnProperty.call(item, key)),
+    ),
+  );
+};
+
 const isNotification = (value: unknown): value is DemoNotification =>
   isObject(value) &&
   typeof value.id === "number" && Number.isFinite(value.id) &&
@@ -160,8 +173,8 @@ const normalizeStore = <TRow, TProposal>(
   const seeded = createDemoSeed(seed);
   return {
     ...seeded,
-    rows: isObjectArray(value.rows) ? (value.rows as TRow[]) : seeded.rows,
-    toTrinhList: isObjectArray(value.toTrinhList)
+    rows: hasSeedItemShape(value.rows, seed.rows) ? (value.rows as TRow[]) : seeded.rows,
+    toTrinhList: hasSeedItemShape(value.toTrinhList, seed.toTrinhList)
       ? (value.toTrinhList as TProposal[])
       : seeded.toTrinhList,
     notifications: Array.isArray(value.notifications) && value.notifications.every(isNotification)

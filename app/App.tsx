@@ -5541,7 +5541,15 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
 };
 
 // ─── Popup Lãnh đạo phê duyệt ý kiến ──────────────────────────────────────
-const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: () => void; initialLoaiDeXuat?: string }) => {
+const PopupLanhDaoPheDuyetYkien = ({
+  onClose,
+  initialLoaiDeXuat,
+  onApproveAndSign,
+}: {
+  onClose: () => void;
+  initialLoaiDeXuat?: string;
+  onApproveAndSign?: () => void;
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [rutGon, setRutGon] = useState(false);
   const [docType, setDocType] = useState(initialLoaiDeXuat || "Tờ trình phân công");
@@ -5675,10 +5683,10 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                         <button className="h-[32px] px-3 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[12px] font-medium transition-colors">
                           Lưu
                         </button>
-                        <button className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
+                        <button onClick={() => { onApproveAndSign?.(); onClose(); }} className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
                           Lưu và ký
                         </button>
-                        <button className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
+                        <button onClick={() => { onApproveAndSign?.(); onClose(); }} className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
                           Lưu và ký logic
                         </button>
                       </div>
@@ -6274,7 +6282,15 @@ const PheDuyetDeXuat = ({
 
       {showDuyetPopup && (
         showDuyetPopup.loai.toLowerCase().includes("tờ trình") || showDuyetPopup.loai.toLowerCase().includes("to trinh") ? (
-          <PopupLanhDaoPheDuyetYkien onClose={() => setShowDuyetPopup(null)} initialLoaiDeXuat={showDuyetPopup.loai} />
+          <PopupLanhDaoPheDuyetYkien
+            onClose={() => setShowDuyetPopup(null)}
+            initialLoaiDeXuat={showDuyetPopup.loai}
+            onApproveAndSign={() => onWorkflowUpdate(showDuyetPopup, {
+              trangThai: "Đã duyệt",
+              documentStatus: "da_ky",
+              rowStatus: "da_ky",
+            })}
+          />
         ) : (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
             <div className="bg-white rounded-[6px] shadow-2xl w-[1100px] max-h-[92vh] flex flex-col overflow-hidden">
