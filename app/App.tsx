@@ -9093,7 +9093,7 @@ export default function App() {
     const nguoiTao = kq.nguoiTao || nguoiTheoVaiTro(currentRole).nguoi;
     const vb = taoTuModal({ ...kq, nguoiTao, luongKy });
     // Bấm "Trình duyệt" nghĩa là tạo XONG và trình luôn — không dừng ở Nháp.
-    const daTrinh = luongKy.length ? apTrinhDuyet(vb, nguoiTao, "Cán bộ") : vb;
+    const daTrinh = luongKy.length ? apTrinhDuyet(vb, nguoiTao, "Cán bộ", kq.yKienTrinh) : vb;
     setVanBanList(ds => [daTrinh, ...ds]);
     setVbVuaTao(daTrinh.id);
     setChoDieuHuongVanBan(true);

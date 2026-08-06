@@ -168,11 +168,13 @@ export const apLaySoTam = (vb: VanBanTrinh, nguoi: string, chucVu: string, ds: V
   };
 };
 
-export const apTrinhDuyet = (vb: VanBanTrinh, nguoi: string, chucVu: string): VanBanTrinh => {
+export const apTrinhDuyet = (vb: VanBanTrinh, nguoi: string, chucVu: string, yKien?: string): VanBanTrinh => {
   if (!vb.luongKy.length) return vb;
   return {
     ...vb, trangThai: vb.luongKy[0].vaiTro === "ky" ? "ChoKy" : "ChoDuyet", buocHienTai: 0,
-    lichSu: themMoc(vb, { thoiGian: bayGio(), nguoi, chucVu, hanhDong: "Trinh" }),
+    // Ý kiến trình gắn vào chính mốc "Trình duyệt" — cùng một dòng thời gian với
+    // ý kiến của người duyệt và người ký, không phải một trường lơ lửng.
+    lichSu: themMoc(vb, { thoiGian: bayGio(), nguoi, chucVu, hanhDong: "Trinh", yKien: yKien?.trim() || undefined }),
   };
 };
 
@@ -886,6 +888,40 @@ const HopThoaiKySo = ({ vb, soSeCap, onXacNhan, onClose }: {
   </KhungHopThoai>
 );
 
+/** Duyệt — ô ý kiến tuỳ chọn gửi người ở bước sau.
+ *  Đây là chỗ THAY THẾ ô "Nội dung trình duyệt ký" cũ: lời nhắn cho người ký
+ *  do chính người duyệt viết, tại thời điểm duyệt, khi đã đọc bản mới nhất. */
+const HopThoaiDuyet = ({ vb, onXacNhan, onClose }: {
+  vb: VanBanTrinh; onXacNhan: (yKien: string) => void; onClose: () => void;
+}) => {
+  const [yKien, setYKien] = useState("");
+  const tiep = vb.luongKy[vb.buocHienTai + 1];
+  return (
+    <KhungHopThoai tieuDe="Duyệt văn bản" onClose={onClose}
+      chan={<><BtnNeutral onClick={onClose}>Huỷ</BtnNeutral>
+        <BtnPrimary onClick={() => onXacNhan(yKien.trim())}><Check size={13} /> Duyệt</BtnPrimary></>}>
+      <div className="text-[12px] leading-relaxed mb-3.5">
+        <span className="font-mono font-medium">{vb.soVanBan ?? "— chưa số —"}</span><br />
+        <span className="text-[#666]">{vb.trichYeu}</span>
+      </div>
+      <label className="block text-[11px] font-medium mb-1.5">
+        Ý kiến <span className="text-[#888] font-normal">(tuỳ chọn)</span>
+      </label>
+      <textarea value={yKien} onChange={e => setYKien(e.target.value)} rows={3} autoFocus
+        placeholder={tiep ? `Điều muốn lưu ý ${tiep.nguoi}…` : "Ghi chú khi duyệt…"}
+        className="w-full border border-[#ccc] rounded-[3px] px-2.5 py-2 text-[12px] leading-relaxed resize-none focus:outline-none focus:border-[#1a73e8]" />
+      <div className="mt-2.5 bg-[#e8f4ff] border border-[#a9c9f4] text-[#1a73e8] rounded-[4px] px-3 py-2 text-[12px] leading-relaxed flex gap-2">
+        <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+        <div>
+          {tiep
+            ? <>Duyệt xong văn bản chuyển sang <b>{tiep.nguoi}</b> — {tiep.chucVu} ({tiep.vaiTro === "ky" ? "ký" : "duyệt"}).</>
+            : <>Đây là bước cuối của luồng duyệt.</>}
+        </div>
+      </div>
+    </KhungHopThoai>
+  );
+};
+
 /** Sửa & duyệt — xác nhận rằng thay đổi sẽ hiện ra cho người tạo. */
 const HopThoaiSuaVaDuyet = ({ vb, onXacNhan, onClose }: {
   vb: VanBanTrinh; onXacNhan: (yKien: string) => void; onClose: () => void;
@@ -919,7 +955,7 @@ const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
   const [tab, setTab] = useState<"noidung" | "dinhkem" | "lichsu" | "banin">(
     vb.trangThai === "BiTraLai" ? "lichsu" : "noidung");
   const [mocDiff, setMocDiff] = useState<MocLichSu | null>(null);
-  const [hopThoai, setHopThoai] = useState<"tralai" | "kyso" | "suaduyet" | null>(null);
+  const [hopThoai, setHopThoai] = useState<"tralai" | "kyso" | "suaduyet" | "duyet" | null>(null);
 
   const pbHienTai = vb.phienBan.find(p => p.so === vb.phienBanHienTai) ?? vb.phienBan[vb.phienBan.length - 1];
   const [noiDung, setNoiDung] = useState(pbHienTai.noiDung);
@@ -975,7 +1011,7 @@ const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
         <>
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnOutline onClick={() => setHopThoai("suaduyet")}><Pencil size={13} /> Sửa &amp; duyệt</BtnOutline>
-          <BtnPrimary onClick={() => xong(apDuyet(vb, nguoiDung, chucVu))}><Check size={13} /> Duyệt</BtnPrimary>
+          <BtnPrimary onClick={() => setHopThoai("duyet")}><Check size={13} /> Duyệt</BtnPrimary>
         </>
       );
       case "ChoKy": return (
@@ -1150,6 +1186,10 @@ const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
 
       {mocDiff && <SoSanhPhienBan vb={vb} moc={mocDiff} onClose={() => setMocDiff(null)} />}
 
+      {hopThoai === "duyet" && (
+        <HopThoaiDuyet vb={vb} onClose={() => setHopThoai(null)}
+          onXacNhan={yk => xong(apDuyet(vb, nguoiDung, chucVu, yk || undefined))} />
+      )}
       {hopThoai === "tralai" && (
         <HopThoaiTraLai vb={vb} onClose={() => setHopThoai(null)}
           onXacNhan={yk => xong(apTraLai(vb, nguoiDung, chucVu, yk))} />

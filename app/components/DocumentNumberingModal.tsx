@@ -37,7 +37,11 @@ export interface KetQuaTrinhDuyet {
   nguoiTao: string;
   nguoiDuyet: string;
   nguoiKy: string;
+  /** Thân văn bản. Sinh từ loại văn bản + danh sách đơn kèm theo. */
   noiDung: string;
+  /** Lời nhắn gửi người duyệt bước 1. Tách hẳn khỏi thân văn bản: nó là
+   *  ý kiến của người trình, ghi vào lịch sử tại mốc "Trình duyệt". */
+  yKienTrinh?: string;
   soVanBan?: string;   // có nếu cán bộ đã bấm "Lấy số tạm"
   donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
 }
@@ -1283,7 +1287,7 @@ const OChon = ({ value, onChange, options, placeholder }: {
 
 const HangTaiLieu = ({
   node, level = 0, soCongVanCha, onToggleExpand, onLaySo, nguoiTheoDon, setNguoiTheoDon,
-  duyetChung, kyChung,
+  duyetChung, kyChung, riengTungDon,
 }: {
   node: DocNode;
   level?: number;
@@ -1294,6 +1298,8 @@ const HangTaiLieu = ({
   setNguoiTheoDon: React.Dispatch<React.SetStateAction<Record<string, { duyet?: string; ky?: string }>>>;
   duyetChung: string;
   kyChung: string;
+  /** Loại văn bản cấp theo TỪNG đơn ⇒ mỗi đơn một luồng ký riêng, cho chọn được. */
+  riengTungDon: boolean;
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const coCon = !!node.children?.length;
@@ -1385,11 +1391,25 @@ const HangTaiLieu = ({
           <div className="col-span-2"><span className="text-[#888]">Thủ tục giải quyết: </span>{d?.thongTinDon?.thuTuc || "-"}</div>
         </div>
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium vertical-middle">
-        {duyetChung ? duyetChung.split(" - ")[0] : ""}
+      {/* Ô chọn riêng theo từng đơn CHỈ có nghĩa khi mỗi đơn sinh một văn bản
+          riêng (Giấy xác nhận, Yêu cầu bổ sung). Với tờ trình gộp nhiều đơn thì
+          cả văn bản chỉ có MỘT luồng ký, nên hai cột này kế thừa giá trị ở thanh
+          trên và chỉ hiển thị — chọn khác nhau từng dòng sẽ là dữ liệu vô nghĩa. */}
+      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium">
+        {riengTungDon
+          ? <OChon value={nguoiTheoDon[node.id]?.duyet ?? duyetChung} onChange={dat("duyet")}
+              options={NGUOI_DUYET_OPTIONS} placeholder="Chọn người duyệt" />
+          : <span title="Kế thừa từ Người duyệt ở thanh trên — tờ trình gộp nhiều đơn chỉ có một luồng ký">
+              {duyetChung ? duyetChung.split(" - ")[0] : <span className="text-[#bbb] font-normal">—</span>}
+            </span>}
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium vertical-middle">
-        {kyChung ? kyChung.split(" - ")[0] : ""}
+      <td className="border-b border-[#eee] px-2 py-2 w-[150px] text-[12.5px] text-[#333] font-medium">
+        {riengTungDon
+          ? <OChon value={nguoiTheoDon[node.id]?.ky ?? kyChung} onChange={dat("ky")}
+              options={NGUOI_KY_OPTIONS} placeholder="Chọn người ký" />
+          : <span title="Kế thừa từ Người ký ở thanh trên — tờ trình gộp nhiều đơn chỉ có một luồng ký">
+              {kyChung ? kyChung.split(" - ")[0] : <span className="text-[#bbb] font-normal">—</span>}
+            </span>}
       </td>
       <td className="border-b border-[#eee] px-2 py-2 text-center">{trangThai}</td>
       <td className="border-b border-[#eee] px-2 py-2 text-right">{menu}</td>
@@ -1565,8 +1585,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const [nguoiDuyet, setNguoiDuyet] = useState("");
   // Luồng duyệt của Tờ trình phân công thẩm phán
   const [nguoiKy, setNguoiKy] = useState("");
+  // Ý kiến trình — gửi kèm tới người duyệt bước 1, lưu vào lịch sử văn bản.
   const [yKienDuyet, setYKienDuyet] = useState("");
-  const [yKienKy, setYKienKy] = useState("");
   const [mucDoUuTien, setMucDoUuTien] = useState("Bình thường");
   const [daTrinhDuyet, setDaTrinhDuyet] = useState(false);
   const [chanTrinhDuyet, setChanTrinhDuyet] = useState(false);
@@ -1737,7 +1757,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
         {/* Configuration Bar */}
         <div className="bg-white border-b border-[#ddd] px-5 py-4 flex-shrink-0 shadow-sm z-10">
-          <div className="flex flex-wrap gap-5 items-end">
+          {/* items-start (không phải items-end): hàng này có cả ô cao 34px và
+              ô nhập nhiều dòng; căn đáy sẽ đẩy nhãn của chúng lệch nhau. */}
+          <div className="flex flex-wrap gap-5 items-start">
 
             {/* Document Type */}
             <div className="min-w-[220px]">
@@ -1859,26 +1881,24 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
               </div>
             </div>
 
-            {/* Nội dung chỉ đạo — xuống hàng riêng, 2 cột khớp Người duyệt / Người ký */}
-            {/* Nội dung trình duyệt — dùng chung cho mọi loại văn bản */}
-            {(
-              <div className="w-full grid grid-cols-2 gap-5">
-                {([
-                  { label: "Nội dung trình duyệt", value: yKienDuyet, set: setYKienDuyet, ph: "Nhập nội dung trình duyệt..." },
-                  { label: "Nội dung trình duyệt ký", value: yKienKy, set: setYKienKy, ph: "Nhập nội dung trình duyệt ký..." },
-                ] as const).map(f => (
-                  <div key={f.label}>
-                    <label className="block text-[12px] font-semibold text-[#555] mb-1.5">{f.label}</label>
-                    <textarea
-                      rows={2}
-                      value={f.value}
-                      onChange={e => f.set(e.target.value)}
-                      placeholder={f.ph}
-                      className="w-full px-3 py-2 text-[13px] border border-[#ccc] rounded-[4px] bg-white focus:border-[#1a5a96] outline-none resize-y placeholder:text-[#aaa]" />
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* MỘT ô ý kiến duy nhất, gửi kèm tới người duyệt BƯỚC 1.
+                Trước đây có hai ô: "Nội dung trình duyệt" và "Nội dung trình duyệt ký".
+                Ô thứ hai bắt cán bộ viết hộ lời nhắn cho người ký — sai người, sai
+                thời điểm (người ký đọc nó nhiều ngày sau, khi nội dung có thể đã bị
+                người duyệt sửa), và không co giãn khi luồng ký có hơn 2 bước.
+                Ý kiến của từng người duyệt/ký giờ được ghi tại đúng bước của họ. */}
+            {/* Nằm cùng hàng với "Chọn văn bản đi kèm", khổ tương đương. */}
+            <div className="min-w-[300px] max-w-[420px] flex-1">
+              <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
+                Ý kiến trình <span className="font-normal text-[#888]">(tuỳ chọn)</span>
+              </label>
+              <textarea
+                rows={2}
+                value={yKienDuyet}
+                onChange={e => setYKienDuyet(e.target.value)}
+                placeholder="Điều muốn lưu ý người duyệt…"
+                className="w-full px-3 py-2 text-[13px] border border-[#ccc] rounded-[4px] bg-white focus:border-[#1a5a96] outline-none resize-y placeholder:text-[#aaa]" />
+            </div>
 
 
           </div>
@@ -2031,9 +2051,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     trichYeu: goc?.tenGoc ?? goc?.name ?? docType,
                     loaiVanBan: docType,
                     nguoiTao, nguoiDuyet, nguoiKy,
-                    noiDung: yKienDuyet.trim()
-                      ? yKienDuyet.trim()
-                      : `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của Tờ trình này.`,
+                    // Thân văn bản và ý kiến trình là hai thứ khác nhau — trước
+                    // đây bị gộp làm một nên ý kiến bị hiểu nhầm thành nội dung.
+                    noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
+                    yKienTrinh: yKienDuyet.trim() || undefined,
                     soVanBan: goc?.soVanBan,
                     donDinhKem: (selectedRows ?? []).map((r: any) => ({
                       ma: r?.maDon ?? String(r?.id ?? "—"),
