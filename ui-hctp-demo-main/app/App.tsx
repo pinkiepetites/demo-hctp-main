@@ -2135,6 +2135,19 @@ const optionsHinhThucDon = () =>
     </optgroup>
   ));
 
+const optionsHinhThucDonPhanCong = () =>
+  HINH_THUC_DON_NHOM.map(g => {
+    const items = g.items.filter(o => !["Đơn khác", "CV khác", "Tài liệu chứng cứ"].includes(o));
+    if (items.length === 0) return null;
+    return (
+      <optgroup key={g.label} label={g.label}>
+        {items.map((o, i) => (
+          <option key={o} value={o}>{g.danhSo ? `${i + 1}. ${o}` : o}</option>
+        ))}
+      </optgroup>
+    );
+  }).filter(Boolean);
+
 // Dữ liệu ghi "GĐT, TT" còn danh mục ghi "GĐT-TT" → so sánh sau khi bỏ dấu câu
 const chuanHoaHinhThuc = (v: unknown) =>
   String(v ?? "").toLowerCase().replace(/[\s,./-]+/g, "");
@@ -4546,11 +4559,14 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
   const [hinhThucFilter, setHinhThucFilter] = useState("");
   const [rows, setRows] = useState(PHANCONG_SAMPLE);
   const [editingRow, setEditingRow] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<{ soToTrinh: string; ngaySua: string; lyDo: string }>({ soToTrinh: "", ngaySua: "", lyDo: "" });
+  const [editFormMap, setEditFormMap] = useState<Record<number, { ngaySua: string; lyDo: string }>>({});
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const startEdit = (id: number) => {
     setEditingRow(id);
-    setEditForm({ soToTrinh: "", ngaySua: new Date().toISOString().split("T")[0], lyDo: "" });
+    setEditFormMap(prev => {
+      if (prev[id]) return prev;
+      return { ...prev, [id]: { ngaySua: new Date().toISOString().split("T")[0], lyDo: "" } };
+    });
   };
   const [assignMap, setAssignMap] = useState<Record<number, string>>(
     Object.fromEntries(PHANCONG_SAMPLE.map(r => [r.id, r.thamPhan]))
@@ -4628,91 +4644,92 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
         </div>
 
         {/* Filters */}
-        <div className="p-4 space-y-3">
-          {/* Cấp thẩm phán */}
-          <div className="flex items-center gap-5">
-            {[["tatca", "Tất cả"], ["toicao", "Thẩm phán tối cao"], ["bac3", "Thẩm phán bậc 3"]].map(([val, label]) => (
-              <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px]">
-                <input type="radio" name="capTP" className="accent-[#8b1a1a]"
-                  checked={capTP === val} onChange={() => setCapTP(val as "tatca" | "toicao" | "bac3")} />
-                <span className={capTP === val ? "font-semibold text-[#8b1a1a]" : "text-[#444]"}>{label}</span>
-              </label>
-            ))}
-          </div>
+        {tab === 2 ? (
+          <div className="p-4 space-y-3">
+            {/* Cấp thẩm phán */}
+            <div className="flex items-center gap-5">
+              {[["tatca", "Tất cả"], ["toicao", "Thẩm phán tối cao"], ["bac3", "Thẩm phán bậc 3"]].map(([val, label]) => (
+                <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px]">
+                  <input type="radio" name="capTP" className="accent-[#8b1a1a]"
+                    checked={capTP === val} onChange={() => setCapTP(val as "tatca" | "toicao" | "bac3")} />
+                  <span className={capTP === val ? "font-semibold text-[#8b1a1a]" : "text-[#444]"}>{label}</span>
+                </label>
+              ))}
+            </div>
 
-          {/* Row 1: Tên tòa, Ngày nhập, Hình thức, Người nhập */}
-          <div className="grid grid-cols-4 gap-3">
-            <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Tên tòa án</label>
-              <div className="relative">
-                <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
-                  <option>Tòa án nhân dân tối cao</option>
-                  <option>TAND cấp cao tại HN</option>
-                  <option>TAND cấp cao tại TP.HCM</option>
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+            {/* Row 1: Tên tòa, Ngày nhập, Hình thức, Người nhập */}
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <label className="block text-[11px] font-medium text-[#555] mb-1">Tên tòa án</label>
+                <div className="relative">
+                  <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <option>Tòa án nhân dân tối cao</option>
+                    <option>TAND cấp cao tại HN</option>
+                    <option>TAND cấp cao tại TP.HCM</option>
+                  </select>
+                  <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-[#555] mb-1">Ngày nhập đơn</label>
+                <div className="flex items-center gap-1">
+                  <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                  <span className="text-[#888] text-[11px]">—</span>
+                  <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-[#555] mb-1">Hình thức</label>
+                <div className="relative">
+                  <select value={hinhThucFilter} onChange={e => setHinhThucFilter(e.target.value)}
+                    className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <option value="">Tất cả hình thức</option>
+                    {optionsHinhThucDonPhanCong()}
+                  </select>
+                  <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-[#555] mb-1">Người nhập đơn</label>
+                <div className="relative">
+                  <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <option value="">-- Chọn người nhập đơn --</option>
+                    {["Vũ Văn Yên", "Lê Thị Hà", "Phùng Trâm Anh"].map(n => <option key={n}>{n}</option>)}
+                  </select>
+                  <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                </div>
               </div>
             </div>
-            <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Ngày nhập đơn</label>
-              <div className="flex items-center gap-1">
-                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
-                <span className="text-[#888] text-[11px]">—</span>
-                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Hình thức</label>
-              <div className="relative">
-                <select value={hinhThucFilter} onChange={e => setHinhThucFilter(e.target.value)}
-                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
-                  <option value="">-- Chọn hình thức đơn --</option>
-                  <option value="GĐT">Đề nghị GĐT</option>
-                  <option value="TT">Đề nghị TT</option>
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Người nhập đơn</label>
-              <div className="relative">
-                <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
-                  <option value="">-- Chọn người nhập đơn --</option>
-                  {["Vũ Văn Yên", "Lê Thị Hà", "Phùng Trâm Anh"].map(n => <option key={n}>{n}</option>)}
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-              </div>
-            </div>
-          </div>
 
-          {/* Loại án checkboxes */}
-          <div>
-            <label className="block text-[11px] font-medium text-[#555] mb-1.5">Loại án</label>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {LOAI_AN_OPTIONS.map(la => (
-                <label key={la} className="flex items-center gap-1.5 cursor-pointer text-[12px] text-[#333]">
-                  <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                    checked={loaiAnFilter.includes(la)} onChange={() => toggleLoaiAn(la)} />
-                  {la}
+            {/* Loại án checkboxes */}
+            <div>
+              <label className="block text-[11px] font-medium text-[#555] mb-1.5">Loại án</label>
+              <div className="flex flex-wrap gap-x-5 gap-y-2">
+                {LOAI_AN_OPTIONS.map(la => (
+                  <label key={la} className="flex items-center gap-1.5 cursor-pointer text-[12px] text-[#333]">
+                    <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
+                      checked={loaiAnFilter.includes(la)} onChange={() => toggleLoaiAn(la)} />
+                    {la}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+
+          </div>
+        ) : (
+          <div className="p-4">
+            <div className="flex items-center gap-5">
+              {[["tatca", "Tất cả"], ["toicao", "Thẩm phán tối cao"], ["bac3", "Thẩm phán bậc 3"]].map(([val, label]) => (
+                <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px]">
+                  <input type="radio" name="capTP" className="accent-[#8b1a1a]"
+                    checked={capTP === val} onChange={() => setCapTP(val as "tatca" | "toicao" | "bac3")} />
+                  <span className={capTP === val ? "font-semibold text-[#8b1a1a]" : "text-[#444]"}>{label}</span>
                 </label>
               ))}
             </div>
           </div>
-
-          {/* Tìm kiếm */}
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-              className="flex items-center justify-center border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] px-5 h-[46px] gap-2 transition-colors">
-              <Users size={14} />
-              <span className="text-[11px] font-medium leading-none">Danh sách thẩm phán</span>
-            </button>
-            <button className="flex flex-col items-center justify-center bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] px-5 h-[46px] gap-0.5 transition-colors">
-              <Search size={14} />
-              <span className="text-[11px] font-medium leading-none">Tìm kiếm</span>
-            </button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Table */}
@@ -4720,14 +4737,28 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
         <div className="px-4 py-[9px] border-b border-[#ddd] flex items-center justify-between">
           <span className="text-[13px] font-semibold text-[#1d2e4f]">Danh sách phân công</span>
           {tab === 0 && (
-            <div className="flex items-center gap-4">
-              <button onClick={() => { handleRandomAssign(); alert("Đã phân công ngẫu nhiên thành công!"); }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
+                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
+              >
+                <Users size={12} />
+                <span className="leading-none">Danh sách thẩm phán</span>
+              </button>
+              <button onClick={() => { handleRandomAssign(); alert("Đã phân công ngẫu nhiên thành công!"); }} className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                 <Users size={12} /> Phân công ngẫu nhiên
               </button>
             </div>
           )}
           {tab === 1 && (
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
+                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
+              >
+                <Users size={12} />
+                <span className="leading-none">Danh sách thẩm phán</span>
+              </button>
               <span className="text-[12px] font-medium text-[#555]">Chỉ định cho:</span>
               <div className="relative w-[180px]">
                 <select 
@@ -4740,6 +4771,21 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
                 </select>
                 <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
               </div>
+            </div>
+          )}
+          {tab === 2 && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
+                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
+              >
+                <Users size={12} />
+                <span className="leading-none">Danh sách thẩm phán</span>
+              </button>
+              <button className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                <Search size={12} />
+                <span className="leading-none">Tìm kiếm</span>
+              </button>
             </div>
           )}
         </div>
@@ -4802,6 +4848,10 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
                     {tab === 2 ? (
                       editingRow === row.id ? (
                         <div className="space-y-2 min-w-[220px]">
+                          {(() => {
+                            const currentEditForm = editFormMap[row.id] ?? { ngaySua: new Date().toISOString().split("T")[0], lyDo: "" };
+                            return (
+                              <>
                           {/* Thẩm phán mới */}
                           <div>
                             <label className="block text-[10px] text-[#888] mb-0.5">Thẩm phán</label>
@@ -4815,26 +4865,18 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
                               <ChevronDown size={9} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
                             </div>
                           </div>
-                          {/* Số tờ trình */}
-                          <div>
-                            <label className="block text-[10px] text-[#888] mb-0.5">Số tờ trình</label>
-                            <input value={editForm.soToTrinh}
-                              onChange={e => setEditForm(p => ({ ...p, soToTrinh: e.target.value }))}
-                              placeholder="VD: 12/2026/TTr-TANDTC"
-                              className="w-full h-[26px] px-2 text-[11px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
-                          </div>
                           {/* Ngày sửa */}
                           <div>
                             <label className="block text-[10px] text-[#888] mb-0.5">Ngày sửa</label>
-                            <input type="date" value={editForm.ngaySua}
-                              onChange={e => setEditForm(p => ({ ...p, ngaySua: e.target.value }))}
+                            <input type="date" value={currentEditForm.ngaySua}
+                              onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), ngaySua: e.target.value } }))}
                               className="w-full h-[26px] px-2 text-[11px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
                           </div>
                           {/* Lý do */}
                           <div>
                             <label className="block text-[10px] text-[#888] mb-0.5">Lý do sửa phân công</label>
-                            <textarea value={editForm.lyDo}
-                              onChange={e => setEditForm(p => ({ ...p, lyDo: e.target.value }))}
+                            <textarea value={currentEditForm.lyDo}
+                              onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), lyDo: e.target.value } }))}
                               placeholder="Nhập lý do..."
                               rows={2}
                               className="w-full px-2 py-1 text-[11px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none" />
@@ -4849,6 +4891,9 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup }: { initialTab?
                               <X size={10} /> Hủy
                             </button>
                           </div>
+                              </>
+                            );
+                          })()}
                         </div>
                       ) : (
                         <div className="flex items-center justify-between gap-2">
