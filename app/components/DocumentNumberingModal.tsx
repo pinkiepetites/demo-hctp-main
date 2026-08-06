@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
   X, ChevronDown, ChevronRight, AlertTriangle, MoreVertical, 
   Check, Info, FileText, Save, Send, Printer, User, Edit, Trash2
@@ -27,12 +27,32 @@ export interface DocNode {
   khongCham?: boolean;
 }
 
+/** Dữ liệu modal trả ra khi cán bộ bấm "Trình duyệt".
+ *  Đây là đường ra DUY NHẤT của popup — trước kia popup là ngõ cụt, tạo văn bản
+ *  xong không màn nào thấy. App nhận payload này, dựng VanBanTrinh và đẩy vào
+ *  kho dùng chung của module Quản lý văn bản. */
+export interface KetQuaTrinhDuyet {
+  trichYeu: string;
+  loaiVanBan: string;
+  nguoiTao: string;
+  nguoiDuyet: string;
+  nguoiKy: string;
+  noiDung: string;
+  soVanBan?: string;   // có nếu cán bộ đã bấm "Lấy số tạm"
+  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+}
+
 interface DocumentNumberingModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentRole: string; // "can-bo" or "truong-phong" or others
   selectedRows: any[];
   loaiVanBanMacDinh?: string; // Loại văn bản đã chọn ở bộ lọc màn Danh sách đơn
+  onTrinhDuyet?: (kq: KetQuaTrinhDuyet) => void;
+  /** Mã đơn (nguyên bản) → mô tả văn bản đang chứa nó, ví dụ
+   *  `"Mã 7022" → "545/2026/TTr-TANDTC-VP (bị trả lại)"`.
+   *  Đưa thẳng vào hệ thống "đơn không hợp lệ" sẵn có, không dựng cảnh báo riêng. */
+  donTrung?: Record<string, string>;
 }
 
 // --- Mock Data ---
@@ -576,9 +596,9 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
           <Check size={30} className="text-[#2e7d32]" strokeWidth={3} />
         </div>
         <div className="text-[17px] font-bold text-[#1b5e20] mt-3">Trình duyệt thành công</div>
-        <div className="text-[13px] text-[#666] mt-1">
-          Hồ sơ đã được gửi tới người duyệt. Bạn có thể theo dõi tại màn <b>Danh sách đơn</b>,
-          chọn <b>Danh sách văn bản</b>.
+        <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
+          Hồ sơ đã gửi tới <b>{nguoiDuyet.split(" - ")[0] || "người duyệt"}</b>.<br />
+          Đóng hộp thoại này để sang màn <b>Văn bản trình ký của tôi</b> theo dõi tiến độ.
         </div>
       </div>
 
@@ -1084,7 +1104,13 @@ const dungVanBanTheoDonVi = (
 };
 
 // --- Validation Service ---
-const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
+/** Chuẩn hoá mã đơn: dữ liệu mẫu có bản lẫn khoảng trắng thừa (" Mã 7031"). */
+const chuanMaDon = (s: string) => (s ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+
+/** @param trungMap  mã đơn (đã chuẩn hoá) → mô tả văn bản đang chứa nó.
+ *  Đơn trùng được đưa vào CHÍNH hệ thống hợp lệ này, không dựng cảnh báo riêng —
+ *  một nguồn, một con số, một nút xử lý. */
+const validateTree = (nodes: DocNode[], selectedType: string, trungMap: Record<string, string> = {}): DocNode[] => {
   return nodes.map(node => {
     // Văn bản đi kèm: luôn hợp lệ, chỉ đi tiếp xuống con để giữ nguyên cấu trúc
     if (node.khongCham) {
@@ -1092,7 +1118,7 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
         ...node,
         isValid: true,
         invalidReason: "",
-        ...(node.children ? { children: validateTree(node.children, selectedType) } : {}),
+        ...(node.children ? { children: validateTree(node.children, selectedType, trungMap) } : {}),
       };
     }
 
@@ -1106,7 +1132,13 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
       const isPhanCong = data.isPhanCong;
       const toTrinhStatus = data.toTrinhStatus || "none";
 
-      if (selectedType === "Giấy xác nhận") {
+      // Kiểm tra trùng TRƯỚC các luật theo loại văn bản: lý do này cụ thể nhất
+      // và người dùng hành động được ngay (bỏ đơn ra hoặc mở văn bản đang chứa).
+      const moTaTrung = trungMap[chuanMaDon(data.maDon)];
+      if (moTaTrung) {
+        isValid = false;
+        invalidReason = `Đã nằm trong ${moTaTrung}`;
+      } else if (selectedType === "Giấy xác nhận") {
         if (tc !== "Nội bộ") { isValid = false; invalidReason = "Thông tin chuyển đơn phải là Nội bộ"; }
       } else if (selectedType === "Giấy xác nhận cơ quan chuyển đơn") {
         if (tc !== "Tòa khác") { isValid = false; invalidReason = "Thông tin chuyển đơn phải là Tòa khác"; }
@@ -1159,7 +1191,7 @@ const validateTree = (nodes: DocNode[], selectedType: string): DocNode[] => {
 
     const updatedNode = { ...node, isValid, invalidReason };
     if (node.children) {
-      updatedNode.children = validateTree(node.children, selectedType);
+      updatedNode.children = validateTree(node.children, selectedType, trungMap);
       
       if (updatedNode.children.some(c => c.isValid === false)) {
         updatedNode.isValid = false;
@@ -1514,7 +1546,7 @@ const DocumentTreeRow = ({
 
 
 // --- Main Component ---
-export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows, loaiVanBanMacDinh }: DocumentNumberingModalProps) {
+export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows, loaiVanBanMacDinh, onTrinhDuyet, donTrung }: DocumentNumberingModalProps) {
   // Ăn theo Loại văn bản đang chọn ngoài màn Danh sách đơn.
   // So khớp không phân biệt hoa thường vì hai danh mục viết hoa khác nhau.
   const loaiKhoiTao =
@@ -1522,6 +1554,13 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     ?? "Tờ trình phân công thẩm phán";
   const [docType, setDocType] = useState(loaiKhoiTao);
   const [treeData, setTreeData] = useState<DocNode[]>([]);
+  // Chuẩn hoá key một lần để validateTree tra cứu nhanh và khớp được cả những
+  // mã đơn có khoảng trắng thừa trong dữ liệu.
+  const trungMap = useMemo(() => {
+    const m: Record<string, string> = {};
+    Object.entries(donTrung ?? {}).forEach(([ma, mo]) => { m[chuanMaDon(ma)] = mo; });
+    return m;
+  }, [donTrung]);
 
   // New UI states
   const [nguoiTao, setNguoiTao] = useState("Vũ Văn Yên");
@@ -1585,8 +1624,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     // Văn bản đi kèm — cùng cấu trúc, chỉ khác là không bị chấm validation
     vanBanDiKem.forEach(loaiVB => dungNhom(loaiVB, false, "dikem"));
 
-    setTreeData(validateTree(nodes, docType));
-  }, [docType, isOpen, selectedRows, vanBanDiKem]);
+    setTreeData(validateTree(nodes, docType, trungMap));
+  }, [docType, isOpen, selectedRows, vanBanDiKem, donTrung]);
 
   // Đổi loại văn bản thì bỏ các văn bản đi kèm không còn được phép
   useEffect(() => {
@@ -1849,17 +1888,26 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
         {/* Sticky Footer */}
         <div className="bg-white border-t border-[#ddd] p-4 flex items-center justify-between gap-3 flex-shrink-0 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
-            <div className="text-[11px] text-[#888]">
+            {/* Hai con số đếm hai thứ khác nhau (văn bản vs đơn) nên phải nói rõ
+                đơn vị, nếu không người đọc tưởng chúng phải khớp nhau. */}
+            <div className="text-[11px] text-[#888] leading-[1.5]">
               {treeData.length > 0 && (
-                <span>
-                  {treeData.filter(n => n.isValid !== false).length}/{treeData.length} tờ trình hợp lệ
-                </span>
+                <>
+                  <div>
+                    <b className="text-[#333]">{treeData.filter(n => n.isValid !== false).length}/{treeData.length}</b> văn bản hợp lệ
+                  </div>
+                  {soDonKhongHopLe > 0 && (
+                    <div className="text-[#8b1a1a]">
+                      <b>{soDonKhongHopLe}</b> đơn bên trong không hợp lệ
+                    </div>
+                  )}
+                </>
               )}
             </div>
             {/* Bỏ tất cả đơn không hợp lệ bằng 1 nút, thay vì xóa từng dòng */}
             {soDonKhongHopLe > 0 && (
               <button
-                onClick={() => setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType))}
+                onClick={() => setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType, trungMap))}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-[#8b1a1a] bg-white border border-[#8b1a1a] rounded-[4px] hover:bg-[#fdeaea] transition-colors whitespace-nowrap">
                 <Trash2 size={14} /> Bỏ {soDonKhongHopLe} đơn không hợp lệ
               </button>
@@ -1876,7 +1924,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   soVanBanChuaLaySo === 0
                     ? "text-[#aaa] bg-[#f5f5f5] border border-[#ddd] cursor-not-allowed"
                     : "text-white bg-[#1d2e4f] hover:bg-[#15223a] shadow-sm"}`}>
-                <Save size={15} /> Lấy số
+                <Save size={15} /> Lấy số tạm (tuỳ chọn)
               </button>
             )}
 
@@ -1931,13 +1979,32 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 onClick={() => {
                   // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
                   if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
+                  // Đường ra của popup: đẩy văn bản vào kho dùng chung.
+                  // Trước kia chỗ này chỉ setDaTrinhDuyet(true) rồi hết —
+                  // popup là ngõ cụt, tạo xong không màn nào thấy.
+                  const goc = treeData[0];
+                  onTrinhDuyet?.({
+                    trichYeu: goc?.tenGoc ?? goc?.name ?? docType,
+                    loaiVanBan: docType,
+                    nguoiTao, nguoiDuyet, nguoiKy,
+                    noiDung: yKienDuyet.trim()
+                      ? yKienDuyet.trim()
+                      : `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của Tờ trình này.`,
+                    soVanBan: goc?.soVanBan,
+                    donDinhKem: (selectedRows ?? []).map((r: any) => ({
+                      ma: r?.maDon ?? String(r?.id ?? "—"),
+                      nguoiGui: r?.nguoiGui ?? "—",
+                      soBA: r?.thongTinDon?.soBaqd ?? "—",
+                      hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
+                    })),
+                  });
                   setDaTrinhDuyet(true);
                 }}
                 disabled={thieuNguoiDuyetKy}
                 title={thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
                   thieuNguoiDuyetKy ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
-                <Send size={15} /> Lưu & Trình duyệt
+                <Send size={15} /> Trình duyệt
               </button>
             )}
           </div>
@@ -1950,7 +2017,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
           soDon={soDonKhongHopLe}
           lyDo={[...new Set(gomLyDoKhongHopLe(treeData))]}
           onBoDon={() => {
-            setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType));
+            setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType, trungMap));
             setChanTrinhDuyet(false);
           }}
           onDong={() => setChanTrinhDuyet(false)}
