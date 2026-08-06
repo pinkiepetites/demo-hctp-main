@@ -687,7 +687,7 @@ const Sidebar = ({ activePage, onNav }: { activePage: string; onNav?: (page: str
 };
 
 // ─── Row action dropdown menu ────────────────────────────────────────────────
-const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; }) => {
+const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, showDelete = true }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; showDelete?: boolean; }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -709,7 +709,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
     { icon: <GitMerge size={13} />, label: "Ghép đơn", action: "ghep" },
     { icon: <FileText size={13} />, label: "Tạo Yêu cầu bổ sung", action: "taoyeucau" },
     { icon: <FilePlus size={13} />, label: "Cập nhật Bổ sung tài liệu", action: "bosung" },
-    { icon: <Trash2 size={13} />, label: "Xóa", red: true },
+    ...(showDelete ? [{ icon: <Trash2 size={13} />, label: "Xóa", red: true }] : []),
   ];
 
   return (
@@ -3094,6 +3094,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               onGhepDon={() => { setGhepDonChinh(row.id); setShowGhepDon(row.id); setOpenMenu(null); }}
                               onBoSung={() => { setShowBoSungTaiLieu(row.id); setOpenMenu(null); }}
                               onTaoYeuCau={() => { setShowYeuCauBoSung(row.id); setOpenMenu(null); }}
+                              showDelete={!khangNghi}
                             />
                           )}
                         </div>
