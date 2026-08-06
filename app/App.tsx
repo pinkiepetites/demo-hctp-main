@@ -1768,6 +1768,9 @@ export interface DonLienQuan {
   nguoiGui: string; diaChi: string;
   soBA: string; ngayBA: string; hinhThuc: string; thuTuc: string;
   nguoiNhap: string; ngayNhap: string;
+  trangThai?: string; color?: string;
+  ycbsSo?: string; ycbsLyDo?: string; ycbsDonBoSung?: string;
+  ycbsSo2?: string; ycbsLyDo2?: string; ycbsDonBoSung2?: string;
 }
 
 const HINH_THUC_DON_OPTIONS = [
