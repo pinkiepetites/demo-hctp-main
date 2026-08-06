@@ -11,7 +11,7 @@
 //   không có admin ghi đè, không có "người tạo luôn được sửa".
 //
 // KHO DÙNG CHUNG: `VanBanTrinh[]` sống ở state của App và được cả ba màn
-// (Văn bản trình ký của tôi · Phê duyệt đề xuất · Sổ văn bản đi) cùng đọc,
+// (Danh sách văn bản · Phê duyệt đề xuất · Sổ văn bản đi) cùng đọc,
 // cùng ghi. Popup "Tạo văn bản & trình ký" đẩy bản ghi mới vào đây.
 // Không có kho thứ hai — đó là lý do trước kia ba màn không ăn nhập gì nhau.
 //
@@ -483,7 +483,9 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "01/08/2026 14:00", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet" },
       { vongTrinh: 1, thoiGian: "02/08/2026 09:30", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Duyet" },
     ],
-    donDinhKem: [],
+    donDinhKem: [
+      { ma: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", soBA: "BA_2107", hinhThuc: "Công văn kiến nghị" },
+    ],
   },
   {
     id: "vb-551",
@@ -1178,7 +1180,7 @@ const CotThaoTac = ({ vb, nguoiDung, onMo }: { vb: VanBanTrinh; nguoiDung: strin
   );
 };
 
-// ─── Màn "Văn bản trình ký của tôi" ──────────────────────────────────────────
+// ─── Màn "Danh sách văn bản" ──────────────────────────────────────────
 type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaKy" | "DaBanHanh";
 
 export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo }: {
@@ -1196,15 +1198,30 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   const [chonId, setChonId] = useState<string | null>(null);
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
 
+  // "Của tôi" giờ là BỘ LỌC mặc định, không còn là tên màn — người dùng thấy
+  // được và bỏ được, thay vì bị lọc ngầm mà không biết.
+  const [fNguoiTao, setFNguoiTao] = useState<string>(nguoiDung);
+  const [fMaDon, setFMaDon] = useState<string>("");
+  useEffect(() => { setFNguoiTao(nguoiDung); }, [nguoiDung]);
+
   useEffect(() => {
     if (openId) { setChonId(openId); onDaMo?.(); }
   }, [openId]);
 
-  // "của tôi" = văn bản do chính người đăng nhập khởi tạo.
-  const cuaToi = danhSach.filter(v => v.nguoiTao === nguoiDung && v.trangThai !== "DaHuy");
-  const dem = (t: TabDS) => t === "all" ? cuaToi.length : cuaToi.filter(v => v.trangThai === t).length;
+  const dsNguoiTao = useMemo(
+    () => Array.from(new Set(danhSach.map(v => v.nguoiTao))).sort(), [danhSach]);
+  const dsMaDon = useMemo(
+    () => Array.from(new Set(danhSach.flatMap(v => v.donDinhKem.map(d => d.ma.trim())))).sort(), [danhSach]);
 
-  const loc = cuaToi.filter(v => {
+  const theoBoLoc = danhSach.filter(v => {
+    if (v.trangThai === "DaHuy") return false;
+    if (fNguoiTao && v.nguoiTao !== fNguoiTao) return false;
+    if (fMaDon && !v.donDinhKem.some(d => d.ma.trim() === fMaDon)) return false;
+    return true;
+  });
+  const dem = (t: TabDS) => t === "all" ? theoBoLoc.length : theoBoLoc.filter(v => v.trangThai === t).length;
+
+  const loc = theoBoLoc.filter(v => {
     if (tab !== "all" && v.trangThai !== tab) return false;
     if (tim.trim()) {
       const q = tim.toLowerCase();
@@ -1212,6 +1229,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
     }
     return true;
   });
+  const coLocThem = !!fMaDon || fNguoiTao !== nguoiDung;
 
   const chon = danhSach.find(v => v.id === chonId) ?? null;
   const capNhat = (vbMoi: VanBanTrinh) =>
@@ -1225,7 +1243,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   ];
 
   const rong = () => {
-    if (tim.trim()) return { m: "Không có kết quả khớp bộ lọc.", nut: true };
+    if (tim.trim() || coLocThem) return { m: "Không có kết quả khớp bộ lọc.", nut: true };
     switch (tab) {
       case "Nhap": return { m: "Không có bản nháp nào." };
       case "ChoDuyet": return { m: "Không có văn bản nào đang chờ duyệt." };
@@ -1234,16 +1252,18 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
       case "DaKy": return { m: "Chưa có văn bản nào đã ký." };
       case "DaBanHanh": return { m: "Chưa có văn bản nào được ban hành." };
       default: return {
-        m: `${nguoiDung} chưa khởi tạo văn bản nào.`,
+        m: `${fNguoiTao || "Chưa ai"} chưa khởi tạo văn bản nào.`,
         phu: chucVu !== "Cán bộ" ? "Văn bản chờ bạn xử lý nằm ở màn Phê duyệt đề xuất." : undefined,
       };
     }
   };
 
+  const xoaBoLoc = () => { setTim(""); setFMaDon(""); setFNguoiTao(nguoiDung); };
+
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       <div className="px-5 pt-4">
-        <h1 className="text-[18px] font-bold text-[#1d2e4f] mb-3">Văn bản trình ký của tôi</h1>
+        <h1 className="text-[18px] font-bold text-[#1d2e4f] mb-3">Danh sách văn bản</h1>
       </div>
 
       <div className="flex items-center gap-5 border-b border-[#ddd] px-5">
@@ -1268,9 +1288,28 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
           <input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm số / trích yếu…"
             className="h-[30px] w-[240px] border border-[#ccc] rounded-[3px] pl-7 pr-2 text-[12px] focus:outline-none focus:border-[#1a73e8]" />
         </div>
-        <select className="h-[30px] border border-[#ccc] rounded-[3px] px-2 text-[12px] bg-white">
-          <option>Loại văn bản</option><option>Tờ trình phân công</option><option>Công văn chuyển nội bộ</option>
+        {/* Hai bộ lọc thật, thay cho việc lọc ngầm theo người đăng nhập.
+            "Của tôi" là giá trị mặc định của bộ lọc Người tạo — nhìn thấy và bỏ được. */}
+        <select value={fNguoiTao} onChange={e => setFNguoiTao(e.target.value)}
+          className={`h-[30px] border rounded-[3px] px-2 text-[12px] bg-white
+            ${fNguoiTao !== nguoiDung ? "border-[#8b1a1a] text-[#8b1a1a] font-medium" : "border-[#ccc]"}`}>
+          <option value="">Người tạo: tất cả</option>
+          {dsNguoiTao.map(n => (
+            <option key={n} value={n}>{n === nguoiDung ? `${n} (tôi)` : n}</option>
+          ))}
         </select>
+        <select value={fMaDon} onChange={e => setFMaDon(e.target.value)}
+          className={`h-[30px] border rounded-[3px] px-2 text-[12px] bg-white
+            ${fMaDon ? "border-[#8b1a1a] text-[#8b1a1a] font-medium" : "border-[#ccc]"}`}>
+          <option value="">Mã đơn: tất cả</option>
+          {dsMaDon.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
+        {(coLocThem || tim.trim()) && (
+          <button onClick={xoaBoLoc}
+            className="h-[30px] px-2.5 rounded-[3px] border border-[#ccc] text-[12px] text-[#666] hover:bg-[#f5f5f5]">
+            Xoá bộ lọc
+          </button>
+        )}
         <div className="flex-1" />
         <span className="text-[11px] text-[#888] italic mr-1">Tạo văn bản mới từ màn Danh sách đơn</span>
         <BtnPrimary disabled><Plus size={13} /> Tạo văn bản</BtnPrimary>
@@ -1345,7 +1384,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                   <div className="text-[12px] text-[#666]">{rong().m}</div>
                   {(rong() as any).phu && <div className="text-[11px] text-[#888] mt-1.5">{(rong() as any).phu}</div>}
                   {(rong() as any).nut && (
-                    <button onClick={() => setTim("")}
+                    <button onClick={xoaBoLoc}
                       className="mt-3 h-[28px] px-3 rounded-[3px] border border-[#ccc] text-[12px] font-medium hover:bg-[#f5f5f5]">
                       Xoá bộ lọc
                     </button>

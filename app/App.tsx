@@ -17,10 +17,20 @@ import {
   type VanBanTrinh, type BuocKy, type TrangThaiVB,
 } from "./components/QuanLyVanBan";
 
-/** Nhãn ngắn của trạng thái văn bản, dùng cho chip "Đã có trong …" ở Danh sách đơn. */
+/** Nhãn ngắn của trạng thái văn bản, dùng cho chip "Đã có trong …" ở Danh sách đơn
+ *  và cột Trạng thái ở màn Danh sách biểu mẫu. */
 const TRANG_THAI_NHAN: Record<TrangThaiVB, string> = {
   Nhap: "nháp", ChoDuyet: "chờ duyệt", ChoKy: "chờ ký", BiTraLai: "bị trả lại",
   DaKy: "đã ký", DaBanHanh: "đã ban hành", DaHuy: "đã huỷ",
+};
+const TRANG_THAI_CLS: Record<TrangThaiVB, string> = {
+  Nhap: "bg-[#f5f5f5] text-[#666] border-[#ddd]",
+  ChoDuyet: "bg-[#e8f4ff] text-[#1a73e8] border-[#a9c9f4]",
+  ChoKy: "bg-[#fff8e1] text-[#f57f17] border-[#ffe082]",
+  BiTraLai: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]",
+  DaKy: "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]",
+  DaBanHanh: "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]",
+  DaHuy: "bg-[#f0f0f0] text-[#999] border-[#ddd]",
 };
 import type { KetQuaTrinhDuyet } from "./components/DocumentNumberingModal";
 
@@ -1350,7 +1360,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo" }: {
       ${active ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#444] hover:bg-[#f5f5f5]"}`}>
       <span className={active ? "text-[#8b1a1a]" : "text-[#888]"}>{icon}</span>
       <span className="truncate flex-1">{label}</span>
-      {/* Badge đỏ: tín hiệu duy nhất kéo cán bộ vào màn "Văn bản trình ký của tôi"
+      {/* Badge đỏ: tín hiệu duy nhất kéo cán bộ vào màn "Danh sách văn bản"
           mỗi sáng. Chỉ hiện khi > 0. */}
       {!!badge && badge > 0 && (
         <span className="flex-shrink-0 bg-[#8b1a1a] text-white rounded-full text-[10px] font-medium min-w-[16px] h-[16px] leading-[16px] text-center px-1">
@@ -1407,7 +1417,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo" }: {
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
               {/* Đặt ngay dưới Danh sách đơn vì văn bản sinh ra từ chính màn đó —
                   cán bộ tạo tờ trình ở trên, theo dõi tiến độ ở đây. */}
-              <SubItem icon={<Send size={13} />} label="Văn bản trình ký của tôi"
+              <SubItem icon={<Send size={13} />} label="Danh sách văn bản"
                 active={activePage === "van_ban_trinh_ky"} nav="van_ban_trinh_ky"
                 badge={DU_LIEU_MAU.filter(v => v.trangThai === "BiTraLai").length} />
               <SubItem icon={<Gavel size={13} />} label="Hồ sơ kháng nghị" active={activePage === "khangnghi"} nav="khangnghi" />
@@ -7934,18 +7944,18 @@ Nơi nhận:
 };
 
 // ─── Danh sách biểu mẫu đơn ──────────────────────────────────────────────────
-const BIEU_MAU_ROWS = [
-  { id: 1, tenQD: "Thông báo phân công Thẩm phán", soQD: "54682577/2026/TANDTC-TB", ngayQD: "21/07/2026", nguoiKy: "Phạm Văn Nha", trangThai: "Đã có hiệu lực", nguoiTao: "Vũ Văn Yên" },
-  { id: 2, tenQD: "Tờ trình thụ lý lại", soQD: "107/2026/TTr-TANDTC-VP", ngayQD: "21/07/2026", nguoiKy: "Phạm Văn Nha", trangThai: "Đã có hiệu lực", nguoiTao: "Vũ Văn Yên" },
-  { id: 3, tenQD: "Công văn gửi nội bộ", soQD: "545/2026/TANDTC-VP", ngayQD: "21/07/2026", nguoiKy: "Phạm Văn Nha", trangThai: "Đã có hiệu lực", nguoiTao: "Vũ Văn Yên" },
-];
-
 const DanhSachBieuMau = ({
-  row, onBack,
+  row, onBack, vanBanList, onMoVanBan,
 }: {
   row: typeof SAMPLE_ROWS[0];
   onBack: () => void;
+  /** Kho văn bản dùng chung. Trước đây màn này đọc một mảng hardcode 3 dòng
+   *  nên bấm từ đơn nào cũng ra cùng kết quả và không bao giờ thấy văn bản
+   *  vừa tạo. Giờ lọc thật theo đơn đang mở. */
+  vanBanList?: VanBanTrinh[];
+  onMoVanBan?: (id: string) => void;
 }) => {
+  const vanBanCuaDon = timVanBanTheoDon(vanBanList ?? [], row.maDon);
   const d = row.thongTinDon;
   const infoLeft = [
     { label: "Số bản án", value: d.soBaqd },
@@ -8049,22 +8059,46 @@ const DanhSachBieuMau = ({
               </tr>
             </thead>
             <tbody>
-              {BIEU_MAU_ROWS.map((r, i) => (
-                <tr key={r.id} className={`border-b border-[#f0f0f0] hover:bg-[#fafafa] ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                  <td className="px-3 py-2.5 text-[#1a5a96] font-medium">{r.id}</td>
-                  <td className="px-3 py-2.5 font-semibold text-[#222]">{r.tenQD}</td>
-                  <td className="px-3 py-2.5 text-[#1a5a96]">{r.soQD}</td>
-                  <td className="px-3 py-2.5 text-[#555] whitespace-nowrap">{r.ngayQD}</td>
-                  <td className="px-3 py-2.5 font-medium text-[#333]">{r.nguoiKy}</td>
-                  <td className="px-3 py-2.5 text-[#27ae60] font-medium">{r.trangThai}</td>
-                  <td className="px-3 py-2.5 text-[#555]">{r.nguoiTao}</td>
-                  <td className="px-3 py-2.5 text-center">
-                    <button className="text-[#555] hover:text-[#8b1a1a] transition-colors">
-                      <FileText size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {vanBanCuaDon.map((vb, i) => {
+                const nguoiKy = vb.luongKy.find(b => b.vaiTro === "ky");
+                return (
+                  <tr key={vb.id} className={`border-b border-[#f0f0f0] hover:bg-[#fafafa] ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
+                    <td className="px-3 py-2.5 text-[#1a5a96] font-medium">{i + 1}</td>
+                    <td className="px-3 py-2.5 font-semibold text-[#222]">{vb.loaiVanBan}</td>
+                    <td className="px-3 py-2.5">
+                      {vb.soVanBan
+                        ? <button type="button" onClick={() => onMoVanBan?.(vb.id)}
+                            className="text-[#1a5a96] hover:underline font-mono text-[12px]">{vb.soVanBan}</button>
+                        : <span className="text-[#888] italic text-[12px]">— chưa số —</span>}
+                    </td>
+                    <td className="px-3 py-2.5 text-[#555] whitespace-nowrap">
+                      {vb.ngayBanHanh ?? vb.ngayCapSo ?? "—"}
+                    </td>
+                    <td className="px-3 py-2.5 font-medium text-[#333]">{nguoiKy?.nguoi ?? "—"}</td>
+                    <td className="px-3 py-2.5">
+                      <span className={`inline-block px-2 py-[2px] rounded-full text-[10px] font-medium border ${TRANG_THAI_CLS[vb.trangThai]}`}>
+                        {TRANG_THAI_NHAN[vb.trangThai]}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 text-[#555]">{vb.nguoiTao}</td>
+                    <td className="px-3 py-2.5 text-center">
+                      <button onClick={() => onMoVanBan?.(vb.id)} title="Xem văn bản"
+                        className="text-[#555] hover:text-[#8b1a1a] transition-colors">
+                        <FileText size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {vanBanCuaDon.length === 0 && (
+                <tr><td colSpan={8} className="py-12 text-center">
+                  <FileText size={24} className="mx-auto mb-2 text-[#ccc]" />
+                  <div className="text-[13px] text-[#666]">Đơn {row.maDon.trim()} chưa có văn bản nào.</div>
+                  <div className="text-[12px] text-[#888] mt-1">
+                    Lập văn bản từ màn Danh sách đơn — nút “Lưu số văn bản và in báo cáo”.
+                  </div>
+                </td></tr>
+              )}
             </tbody>
           </table>
           {/* Pagination */}
@@ -9881,13 +9915,13 @@ export default function App() {
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
-  //   · Văn bản trình ký của tôi (cán bộ)
+  //   · Danh sách văn bản (cán bộ)
   //   · Phê duyệt đề xuất        (lãnh đạo)
   //   · Sổ văn bản đi            (văn thư)
   // Popup "Tạo văn bản & trình ký" đẩy bản ghi mới vào đây. Trước kia mỗi màn
   // có kho riêng nên tạo văn bản xong không màn nào thấy — đó là lý do gộp.
   const [vanBanList, setVanBanList] = useState<VanBanTrinh[]>(DU_LIEU_MAU);
-  // Dòng vừa tạo, để highlight khi nhảy sang màn Văn bản trình ký của tôi.
+  // Dòng vừa tạo, để highlight khi nhảy sang màn Danh sách văn bản.
   const [vbVuaTao, setVbVuaTao] = useState<string | null>(null);
 
   /** Đóng vòng phản hồi: popup "Tạo văn bản & trình ký" → kho chung → màn cán bộ.
@@ -10341,7 +10375,7 @@ export default function App() {
                           ? <>
                               <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                               <ChevronRight size={12} />
-                              <span className="text-[#333]">Văn bản trình ký của tôi</span>
+                              <span className="text-[#333]">Danh sách văn bản</span>
                             </>
                         : view === "so_van_ban_di"
                           ? <span className="text-[#333]">Sổ văn bản đi</span>
@@ -10366,7 +10400,7 @@ export default function App() {
             <PheDuyetDeXuat danhSach={vanBanList} setDanhSach={setVanBanList} currentRole={currentRole} />
           )}
 
-          {/* Văn bản trình ký của tôi — hàng đợi cá nhân của cán bộ.
+          {/* Danh sách văn bản — hàng đợi cá nhân của cán bộ (lọc mặc định: người tạo = tôi).
               Đổi vai trò ở góc phải màn hình sẽ thấy quyền sửa đổi theo:
               chỉ người đang giữ văn bản mới được sửa. */}
           {view === "van_ban_trinh_ky" && (
@@ -10458,7 +10492,8 @@ export default function App() {
           {/* Biểu mẫu view */}
           {view === "bieumau" && bieuMauRow && (
             <div className="flex-1 overflow-y-auto">
-              <DanhSachBieuMau row={bieuMauRow} onBack={() => setView("list")} />
+              <DanhSachBieuMau row={bieuMauRow} onBack={() => setView("list")}
+                vanBanList={vanBanList} onMoVanBan={moVanBan} />
             </div>
           )}
 
