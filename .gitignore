@@ -2,6 +2,7 @@ node_modules
 dist
 .env
 .DS_Store
+.worktrees/
 
 # BMAD — công cụ cài cục bộ, không đưa vào repo
 .claude/

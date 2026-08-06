@@ -33,6 +33,19 @@ interface DocumentNumberingModalProps {
   currentRole: string; // "can-bo" or "truong-phong" or others
   selectedRows: any[];
   loaiVanBanMacDinh?: string; // Loại văn bản đã chọn ở bộ lọc màn Danh sách đơn
+  onSubmitDocument?: (result: DocumentNumberingSubmitResult) => void;
+}
+
+export interface DocumentNumberingSubmitResult {
+  id: string;
+  docType: string;
+  selectedRows: any[];
+  rowIds: number[];
+  numbers: { nodeId: string; soVanBan: string; ngayLaySo: string; label: string }[];
+  nguoiDuyet: string;
+  nguoiKy: string;
+  mucDoUuTien: string;
+  createdAt: string;
 }
 
 // --- Mock Data ---
@@ -1170,6 +1183,25 @@ const pruneInvalidDocs = (nodes: DocNode[]): DocNode[] =>
     .map(n => (n.children ? { ...n, children: pruneInvalidDocs(n.children) } : n))
     .filter(n => !(n.children && n.children.length === 0));
 
+const collectValidMainRows = (nodes: DocNode[]) => {
+  const rowsById = new Map<number, any>();
+
+  const visit = (items: DocNode[]) => {
+    items.forEach(node => {
+      if (node.originalData && !node.khongCham && node.isValid !== false) {
+        const rowId = node.originalData.id;
+        if (typeof rowId === "number" && Number.isFinite(rowId)) {
+          rowsById.set(rowId, node.originalData);
+        }
+      }
+      if (node.children) visit(node.children);
+    });
+  };
+
+  visit(nodes);
+  return Array.from(rowsById.values());
+};
+
 // --- Sub-components ---
 
 const ActionMenu = ({ onClose, onLaySo }: { onClose: () => void; onLaySo?: () => void }) => {
@@ -1492,7 +1524,14 @@ const DocumentTreeRow = ({
 
 
 // --- Main Component ---
-export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows, loaiVanBanMacDinh }: DocumentNumberingModalProps) {
+export default function DocumentNumberingModal({
+  isOpen,
+  onClose,
+  currentRole,
+  selectedRows,
+  loaiVanBanMacDinh,
+  onSubmitDocument,
+}: DocumentNumberingModalProps) {
   // Ăn theo Loại văn bản đang chọn ngoài màn Danh sách đơn.
   // So khớp không phân biệt hoa thường vì hai danh mục viết hoa khác nhau.
   const loaiKhoiTao =
@@ -1532,6 +1571,36 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
   const loaiDiKemChoPhep = VAN_BAN_DI_KEM_GIOI_HAN[docType] ?? VAN_BAN_DI_KEM_TAT_CA;
   const thieuNguoiDuyetKy = !nguoiDuyet || !nguoiKy;
+
+  const submitForApproval = () => {
+    if (soDonKhongHopLe > 0) {
+      setChanTrinhDuyet(true);
+      return;
+    }
+
+    const numbers = treeData
+      .filter(n => n.soVanBan)
+      .map(n => ({
+        nodeId: n.id,
+        soVanBan: n.soVanBan!,
+        ngayLaySo: n.ngayLaySo ?? "",
+        label: n.name,
+      }));
+    const submittedRows = collectValidMainRows(treeData);
+
+    setDaTrinhDuyet(true);
+    onSubmitDocument?.({
+      id: `doc-${Date.now()}`,
+      docType,
+      selectedRows: submittedRows,
+      rowIds: submittedRows.map(row => row.id),
+      numbers,
+      nguoiDuyet,
+      nguoiKy,
+      mucDoUuTien,
+      createdAt: new Date().toISOString(),
+    });
+  };
   
   // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
   //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
@@ -1906,11 +1975,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             ) : (
               // Can bo: Luu & Trinh duyet — chặn khi chưa chọn Người duyệt / Người ký
               <button
-                onClick={() => {
-                  // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
-                  if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
-                  setDaTrinhDuyet(true);
-                }}
+                onClick={submitForApproval}
                 disabled={thieuNguoiDuyetKy}
                 title={thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
