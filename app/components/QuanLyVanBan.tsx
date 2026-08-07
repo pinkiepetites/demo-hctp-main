@@ -28,6 +28,7 @@ import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
+  Inbox,
 } from "lucide-react";
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
@@ -1607,8 +1608,10 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
 // Bố cục theo đúng bản gốc (tabs Tất cả/Chờ duyệt/Đã duyệt/Từ chối, 3 nút thao
 // tác hàng loạt, cột Ý kiến lãnh đạo). Khác bản gốc ở chỗ dữ liệu lấy từ
 // vanBanList chứ không phải mảng ToTrinh riêng — nên tờ trình vừa tạo hiện ngay.
-type TabPD = "all" | "cho_duyet" | "da_duyet" | "tu_choi";
-type NhomPD = Exclude<TabPD, "all">;
+type TabPD = "all" | "sap_den" | "cho_duyet" | "da_duyet" | "tu_choi";
+// Nhóm trạng thái để tô chip ở cột Trạng thái — KHÁC danh sách tab, vì
+// "Sắp đến lượt" là lát cắt theo người chứ không phải một trạng thái.
+type NhomPD = "cho_duyet" | "da_duyet" | "tu_choi";
 
 /** Gộp 8 trạng thái nội bộ về 3 nhóm mà lãnh đạo quan tâm. */
 const nhomTrangThai = (tt: TrangThaiVB): NhomPD | null => {
@@ -1633,19 +1636,34 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
   const [tick, setTick] = useState<string[]>([]);
   const [hopThoaiTraLai, setHopThoaiTraLai] = useState(false);
   const [thongBao, setThongBao] = useState("");
-  // Vào màn là chỉ thấy việc của mình — hàng đợi cá nhân, không phải kho chung.
-  // Bỏ tích thì mở ra toàn bộ đề xuất đang trong luồng để tra cứu.
-  const [chiCuaToi, setChiCuaToi] = useState(true);
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
 
   const dangOToi = (v: VanBanTrinh) => nguoiDangGiu(v)?.nguoi === nguoiDung;
+  const toiDaLam = (v: VanBanTrinh, cacHanhDong: HanhDong[]) =>
+    v.lichSu.some(m => m.nguoi === nguoiDung && cacHanhDong.includes(m.hanhDong));
+
+  /** Văn bản CHƯA tới tay tôi nhưng tôi nằm ở một bước phía sau — tức là
+   *  sắp tới lượt. Cho lãnh đạo thấy trước khối lượng đang dồn về mình. */
+  const sapDenLuot = (v: VanBanTrinh) =>
+    dangChoXuLy(v.trangThai)
+    && !dangOToi(v)
+    && v.luongKy.some((b, i) => i > v.buocHienTai && b.nguoi === nguoiDung);
 
   const trongLuong = danhSach.filter(v => nhomTrangThai(v.trangThai) !== null);
-  const theoNguoi = chiCuaToi ? trongLuong.filter(dangOToi) : trongLuong;
-  const dem = (t: TabPD) =>
-    t === "all" ? theoNguoi.length : theoNguoi.filter(v => nhomTrangThai(v.trangThai) === t).length;
-  const loc = tab === "all" ? theoNguoi : theoNguoi.filter(v => nhomTrangThai(v.trangThai) === tab);
-  const soCuaToi = trongLuong.filter(dangOToi).length;
+
+  // Mỗi tab một phạm vi riêng:
+  //   Tất cả      — toàn bộ, để tra cứu
+  //   3 tab giữa  — chỉ việc ở chân mình
+  //   Sắp đến lượt — việc đang ở người khác nhưng sẽ chuyển tới mình
+  const LOC_TAB: Record<TabPD, (v: VanBanTrinh) => boolean> = {
+    all: () => true,
+    sap_den: sapDenLuot,
+    cho_duyet: v => dangChoXuLy(v.trangThai) && dangOToi(v),
+    da_duyet: v => toiDaLam(v, ["Duyet", "SuaVaDuyet", "Ky", "ButPhe"]),
+    tu_choi: v => toiDaLam(v, ["TraLai"]),
+  };
+  const dem = (t: TabPD) => trongLuong.filter(LOC_TAB[t]).length;
+  const loc = trongLuong.filter(LOC_TAB[tab]);
 
   const chon = danhSach.find(v => v.id === chonId) ?? null;
   const capNhat = (vbMoi: VanBanTrinh) => setDanhSach(ds => ds.map(v => v.id === vbMoi.id ? vbMoi : v));
@@ -1676,10 +1694,24 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
     setThongBao(`Đã trả lại ${n} đề xuất về người tạo.`);
   };
 
-  const TABS: { id: TabPD; nhan: string }[] = [
-    { id: "all", nhan: "Tất cả" }, { id: "cho_duyet", nhan: "Chờ duyệt" },
-    { id: "da_duyet", nhan: "Đã duyệt" }, { id: "tu_choi", nhan: "Từ chối" },
+  const TABS: { id: TabPD; nhan: string; mo: string; rong: string }[] = [
+    { id: "all", nhan: "Tất cả",
+      mo: "Toàn bộ đề xuất đang trong luồng duyệt, kể cả của người khác.",
+      rong: "Chưa có đề xuất nào trong luồng duyệt." },
+    { id: "sap_den", nhan: "Sắp đến lượt xử lý",
+      mo: `Đang ở người khác nhưng ${nguoiDung} nằm ở một bước phía sau — sắp phải xử lý.`,
+      rong: "Hiện chưa có đề xuất nào sắp đến lượt bạn xử lý." },
+    { id: "cho_duyet", nhan: "Chờ duyệt",
+      mo: `Đang chờ chính ${nguoiDung} xử lý.`,
+      rong: "Hiện chưa có đề xuất nào chờ bạn xử lý." },
+    { id: "da_duyet", nhan: "Đã duyệt",
+      mo: `${nguoiDung} đã duyệt / ký / bút phê.`,
+      rong: "Bạn chưa duyệt đề xuất nào." },
+    { id: "tu_choi", nhan: "Từ chối",
+      mo: `${nguoiDung} đã trả lại.`,
+      rong: "Bạn chưa trả lại đề xuất nào." },
   ];
+  const tabHienTai = TABS.find(t => t.id === tab)!;
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
@@ -1691,27 +1723,18 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
               Đang xem với vai trò <b className="text-[#333]">{nguoiDung}</b> — {chucVu}
             </div>
           </div>
-          {/* Mặc định chỉ hiện việc đang ở mình; bỏ tích để xem toàn bộ */}
-          <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] whitespace-nowrap flex-shrink-0 mt-1">
-            <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]"
-              checked={chiCuaToi} onChange={e => { setChiCuaToi(e.target.checked); setTick([]); }} />
-            Chỉ đề xuất đang chờ tôi xử lý
-            <span className={`min-w-[18px] text-center rounded-full text-[10px] font-semibold px-1 py-[1px] leading-[1.3]
-              ${chiCuaToi ? "bg-[#8b1a1a] text-white" : "bg-[#eee] text-[#666]"}`}>
-              {soCuaToi}
-            </span>
-            <span className="text-[#888]">/ {trongLuong.length}</span>
-          </label>
         </div>
         <div className="flex items-center gap-6 border-b border-[#ddd]">
           {TABS.map(t => (
-            <div key={t.id} onClick={() => setTab(t.id)}
-              className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 transition-colors
+            <div key={t.id} onClick={() => { setTab(t.id); setTick([]); }} title={t.mo}
+              className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 transition-colors whitespace-nowrap
                 ${tab === t.id ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`}>
               {t.nhan} ({dem(t.id)})
             </div>
           ))}
         </div>
+        {/* Mỗi tab một phạm vi khác nhau — nói rõ để không tưởng hệ thống mất dữ liệu */}
+        <div className="text-[11px] text-[#888] mt-2">{tabHienTai.mo}</div>
       </div>
 
       <div className="flex-1 overflow-auto p-5">
@@ -1807,17 +1830,33 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
                 );
               })}
               {loc.length === 0 && (
-                <tr><td colSpan={10} className="text-center py-8 text-[#888]">
-                  <div className="italic">Không có dữ liệu</div>
-                  {/* Trống vì đang lọc chứ không phải hệ thống rỗng — nói rõ và cho lối thoát */}
-                  {chiCuaToi && trongLuong.length > 0 && (
-                    <div className="text-[12px] mt-1.5 not-italic">
-                      Đang lọc <b>đề xuất chờ {nguoiDung}</b>.{" "}
-                      <button onClick={() => setChiCuaToi(false)} className="text-[#1a73e8] hover:underline">
-                        Xem tất cả {trongLuong.length} đề xuất
-                      </button>
+                <tr><td colSpan={10} className="py-12">
+                  <div className="flex items-center justify-center gap-6">
+                    {/* Minh hoạ hộp thư rỗng — vòng tròn hồng nhạt, hộp nét đứt,
+                        cánh thư bay ra góc trên phải */}
+                    <div className="relative w-[110px] h-[110px] flex-shrink-0">
+                      <div className="absolute inset-0 rounded-full bg-[#fdeaea]" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Inbox size={44} strokeWidth={1.2} className="text-[#e0a9a4]" />
+                      </div>
+                      <svg viewBox="0 0 110 110" className="absolute inset-0 w-full h-full pointer-events-none">
+                        <path d="M14 78 C 16 46, 40 26, 74 22" fill="none"
+                          stroke="#e8bcb8" strokeWidth="1.5" strokeDasharray="3 5" strokeLinecap="round" />
+                      </svg>
+                      <Send size={18} className="absolute top-[12px] right-[16px] text-[#c0392b] -rotate-12" />
                     </div>
-                  )}
+                    <div className="text-left">
+                      <div className="text-[15px] font-semibold text-[#1d2e4f]">Chưa có đề xuất nào</div>
+                      <div className="text-[13px] text-[#888] mt-1">{tabHienTai.rong}</div>
+                      {/* Trống vì phạm vi của tab chứ không phải hệ thống rỗng */}
+                      {tab !== "all" && trongLuong.length > 0 && (
+                        <button onClick={() => { setTab("all"); setTick([]); }}
+                          className="text-[12px] text-[#1a73e8] hover:underline mt-2">
+                          Xem tất cả {trongLuong.length} đề xuất
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </td></tr>
               )}
             </tbody>
