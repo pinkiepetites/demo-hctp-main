@@ -29,7 +29,7 @@ const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { titl
   </div>
 );
 
-export default function Dashboard() {
+export default function Dashboard({ onXemChiTietHieuSuat }: { onXemChiTietHieuSuat?: () => void } = {}) {
   const [chartPeriod, setChartPeriod] = useState<"day" | "week" | "month" | "year" | "custom">("week");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -376,7 +376,7 @@ export default function Dashboard() {
               <Users size={18} className="text-[#8b1a1a]" />
               Hiệu suất cán bộ {getPeriodLabel()}
             </h3>
-            <button className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
+            <button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
               Xem chi tiết
             </button>
           </div>
