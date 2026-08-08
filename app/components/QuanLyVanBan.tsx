@@ -2350,14 +2350,35 @@ const NGUOI_TRINH_TIEP = [
   "Nguyễn Hòa Bình — Phó Chánh án",
 ];
 
+// Ghi nhớ Cấp trình tiếp / Người đề xuất trình theo từng loại văn bản, để lần
+// trình tiếp sau (cùng loại văn bản) tự điền lại thay vì phải chọn lại từ đầu.
+const KEY_GHI_NHO_TRINH_TIEP = "hctp_ghiNho_deXuatTrinhTiep";
+type GhiNhoTrinhTiep = { capTrinh: string; nguoiTrinh: string };
+
+const docGhiNhoTrinhTiep = (loaiVanBan: string): GhiNhoTrinhTiep | null => {
+  try {
+    const map = JSON.parse(localStorage.getItem(KEY_GHI_NHO_TRINH_TIEP) ?? "{}");
+    return map[loaiVanBan] ?? null;
+  } catch { return null; }
+};
+const luuGhiNhoTrinhTiep = (loaiVanBan: string, data: GhiNhoTrinhTiep) => {
+  try {
+    const map = JSON.parse(localStorage.getItem(KEY_GHI_NHO_TRINH_TIEP) ?? "{}");
+    map[loaiVanBan] = data;
+    localStorage.setItem(KEY_GHI_NHO_TRINH_TIEP, JSON.stringify(map));
+  } catch { /* localStorage không khả dụng — bỏ qua */ }
+};
+
 const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
   vb: VanBanTrinh; nguoiDung: string; chucVu: string; danhSach: VanBanTrinh[];
   onCapNhat: (v: VanBanTrinh) => void; onClose: () => void;
 }) => {
   const [tab, setTab] = useState<"ykien" | "thongtin">("ykien");
   const [yKien, setYKien] = useState("Lãnh đạo đề xuất ý kiến:");
-  const [capTrinh, setCapTrinh] = useState("");
-  const [nguoiTrinh, setNguoiTrinh] = useState("");
+  const [capTrinh, setCapTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.capTrinh ?? "");
+  const [nguoiTrinh, setNguoiTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.nguoiTrinh ?? "");
+  const chonCapTrinh = (v: string) => { setCapTrinh(v); luuGhiNhoTrinhTiep(vb.loaiVanBan, { capTrinh: v, nguoiTrinh }); };
+  const chonNguoiTrinh = (v: string) => { setNguoiTrinh(v); luuGhiNhoTrinhTiep(vb.loaiVanBan, { capTrinh, nguoiTrinh: v }); };
   const [zoom, setZoom] = useState(100);
   const [xoay, setXoay] = useState(0);
   const [suaWord, setSuaWord] = useState(false);
@@ -2532,11 +2553,11 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                 <div className="p-4 grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[13px] text-[#333] mb-1.5">Cấp trình tiếp</label>
-                    <OSel value={capTrinh} onChange={setCapTrinh} holder="Chọn cấp trình tiếp" options={CAP_TRINH_TIEP} />
+                    <OSel value={capTrinh} onChange={chonCapTrinh} holder="Chọn cấp trình tiếp" options={CAP_TRINH_TIEP} />
                   </div>
                   <div>
                     <label className="block text-[13px] text-[#333] mb-1.5">Người đề xuất trình</label>
-                    <OSel value={nguoiTrinh} onChange={setNguoiTrinh} holder="Chọn người đề xuất trình" options={NGUOI_TRINH_TIEP} />
+                    <OSel value={nguoiTrinh} onChange={chonNguoiTrinh} holder="Chọn người đề xuất trình" options={NGUOI_TRINH_TIEP} />
                   </div>
                 </div>
 
