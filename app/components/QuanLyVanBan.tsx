@@ -1854,9 +1854,6 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
     { id: "all", nhan: "Tất cả",
       mo: "Toàn bộ đề xuất đang trong luồng duyệt, kể cả của người khác.",
       rong: "Chưa có đề xuất nào trong luồng duyệt." },
-    { id: "sap_den", nhan: "Sắp đến lượt xử lý",
-      mo: `Đang chờ xử lý ở người khác — theo luồng ký sẽ chuyển tiếp, chưa tới tay ${nguoiDung}.`,
-      rong: "Không có đề xuất nào đang chờ ở người khác." },
     { id: "cho_duyet", nhan: "Chờ duyệt",
       mo: `Mọi đề xuất đang chờ duyệt / ký / bút phê. Việc đang ở ${nguoiDung} được tô nền vàng và xếp lên đầu.`,
       rong: "Hiện chưa có đề xuất nào chờ xử lý." },
@@ -1866,6 +1863,9 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
     { id: "tu_choi", nhan: "Từ chối",
       mo: "Đề xuất đã bị trả lại về người tạo.",
       rong: "Chưa có đề xuất nào bị trả lại." },
+    { id: "sap_den", nhan: "Sắp đến lượt xử lý",
+      mo: `Đang chờ xử lý ở người khác — theo luồng ký sẽ chuyển tiếp, chưa tới tay ${nguoiDung}.`,
+      rong: "Không có đề xuất nào đang chờ ở người khác." },
   ];
   const tabHienTai = TABS.find(t => t.id === tab)!;
 
@@ -1887,8 +1887,9 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
                 ${tab === t.id ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`}>
               {t.nhan} ({dem(t.id)})
               {/* Tab không lọc theo người nữa, nên số việc đang ở chân mình
-                  phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số. */}
-              {demCuaToi(t.id) > 0 && (
+                  phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số.
+                  Bỏ chip này ở Tất cả / Đã duyệt / Từ chối theo yêu cầu. */}
+              {t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
                 <span title={`${demCuaToi(t.id)} đề xuất đang chờ chính ${nguoiDung} xử lý`}
                   className="ml-1.5 px-1.5 py-[1px] rounded-full text-[10px] font-bold bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
                   {demCuaToi(t.id)} của bạn
