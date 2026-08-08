@@ -1780,10 +1780,13 @@ const NHAN_NHOM: Record<NhomPD, { nhan: string; cls: string }> = {
   tu_choi: { nhan: "Từ chối", cls: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]" },
 };
 
-export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
+export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, anTagVang }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
+  /** Vào từ link trên Dashboard: đã thấy số việc của mình trên thẻ KPI rồi,
+   *  nên ẩn tag vàng "N của bạn" cạnh tab — tránh lặp lại thông tin. */
+  anTagVang?: boolean;
 }) => {
   // Mở màn là vào thẳng việc cần làm, không phải "Tất cả" rồi tự lọc lại.
   const [tab, setTab] = useState<TabPD>("cho_duyet");
@@ -1889,7 +1892,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
               {/* Tab không lọc theo người nữa, nên số việc đang ở chân mình
                   phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số.
                   Bỏ chip này ở Tất cả / Đã duyệt / Từ chối theo yêu cầu. */}
-              {t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
+              {!anTagVang && t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
                 <span title={`${demCuaToi(t.id)} đề xuất đang chờ chính ${nguoiDung} xử lý`}
                   className="ml-1.5 px-1.5 py-[1px] rounded-full text-[10px] font-bold bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
                   {demCuaToi(t.id)} của bạn

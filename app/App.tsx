@@ -11195,6 +11195,11 @@ export default function App() {
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
   const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet">(donChiTietTabMoi ? "form" : "list");
+  // Vào "Phê duyệt đề xuất" từ link trên Dashboard thì người dùng đã biết rõ
+  // số việc của mình rồi (đọc ngay trên thẻ KPI) — tag vàng "N của bạn" cạnh
+  // tab Chờ duyệt lúc này chỉ lặp lại thông tin, nên ẩn đi. Vào bằng menu bên
+  // trái thì vẫn hiện như cũ.
+  const [pheDuyetTuDash, setPheDuyetTuDash] = useState(false);
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
@@ -11736,7 +11741,7 @@ export default function App() {
       <div className="flex" style={{ height: "calc(100vh - 46px)" }}>
 
         {/* Sidebar */}
-        <Sidebar activePage={view} currentRole={currentRole} onNav={(page) => setView(page as any)}
+        <Sidebar activePage={view} currentRole={currentRole} onNav={(page) => { setView(page as any); setPheDuyetTuDash(false); }}
           onDoiVaiTro={(v) => setCurrentRole(v as any)} vanBanList={vanBanList} />
 
         {/* Main content area */}
@@ -11804,7 +11809,7 @@ export default function App() {
           {view === "home" && (
             <div className="flex-1 overflow-y-auto">
               <Dashboard onXemChiTietHieuSuat={() => setView("hieu_suat_chi_tiet")}
-                onXemPheDuyet={() => setView("phe_duyet")}
+                onXemPheDuyet={() => { setView("phe_duyet"); setPheDuyetTuDash(true); }}
                 vanBanList={vanBanList} currentRole={currentRole} />
             </div>
           )}
@@ -11818,7 +11823,7 @@ export default function App() {
 
           {/* Phê duyệt đề xuất view */}
           {view === "phe_duyet" && (
-            <PheDuyetDeXuat danhSach={vanBanList} setDanhSach={setVanBanList} currentRole={currentRole} />
+            <PheDuyetDeXuat danhSach={vanBanList} setDanhSach={setVanBanList} currentRole={currentRole} anTagVang={pheDuyetTuDash} />
           )}
 
           {/* Danh sách văn bản — hàng đợi cá nhân của cán bộ (lọc mặc định: người tạo = tôi).
