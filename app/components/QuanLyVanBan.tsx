@@ -1780,10 +1780,13 @@ const NHAN_NHOM: Record<NhomPD, { nhan: string; cls: string }> = {
   tu_choi: { nhan: "Từ chối", cls: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]" },
 };
 
-export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
+export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, anTagVang }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
+  /** Vào từ link trên Dashboard: đã thấy số việc của mình trên thẻ KPI rồi,
+   *  nên ẩn tag vàng "N của bạn" cạnh tab — tránh lặp lại thông tin. */
+  anTagVang?: boolean;
 }) => {
   // Mở màn là vào thẳng việc cần làm, không phải "Tất cả" rồi tự lọc lại.
   const [tab, setTab] = useState<TabPD>("cho_duyet");
@@ -1889,7 +1892,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
               {/* Tab không lọc theo người nữa, nên số việc đang ở chân mình
                   phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số.
                   Bỏ chip này ở Tất cả / Đã duyệt / Từ chối theo yêu cầu. */}
-              {t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
+              {!anTagVang && t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
                 <span title={`${demCuaToi(t.id)} đề xuất đang chờ chính ${nguoiDung} xử lý`}
                   className="ml-1.5 px-1.5 py-[1px] rounded-full text-[10px] font-bold bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
                   {demCuaToi(t.id)} của bạn
@@ -2350,14 +2353,35 @@ const NGUOI_TRINH_TIEP = [
   "Nguyễn Hòa Bình — Phó Chánh án",
 ];
 
+// Ghi nhớ Cấp trình tiếp / Người đề xuất trình theo từng loại văn bản, để lần
+// trình tiếp sau (cùng loại văn bản) tự điền lại thay vì phải chọn lại từ đầu.
+const KEY_GHI_NHO_TRINH_TIEP = "hctp_ghiNho_deXuatTrinhTiep";
+type GhiNhoTrinhTiep = { capTrinh: string; nguoiTrinh: string };
+
+const docGhiNhoTrinhTiep = (loaiVanBan: string): GhiNhoTrinhTiep | null => {
+  try {
+    const map = JSON.parse(localStorage.getItem(KEY_GHI_NHO_TRINH_TIEP) ?? "{}");
+    return map[loaiVanBan] ?? null;
+  } catch { return null; }
+};
+const luuGhiNhoTrinhTiep = (loaiVanBan: string, data: GhiNhoTrinhTiep) => {
+  try {
+    const map = JSON.parse(localStorage.getItem(KEY_GHI_NHO_TRINH_TIEP) ?? "{}");
+    map[loaiVanBan] = data;
+    localStorage.setItem(KEY_GHI_NHO_TRINH_TIEP, JSON.stringify(map));
+  } catch { /* localStorage không khả dụng — bỏ qua */ }
+};
+
 const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
   vb: VanBanTrinh; nguoiDung: string; chucVu: string; danhSach: VanBanTrinh[];
   onCapNhat: (v: VanBanTrinh) => void; onClose: () => void;
 }) => {
   const [tab, setTab] = useState<"ykien" | "thongtin">("ykien");
   const [yKien, setYKien] = useState("Lãnh đạo đề xuất ý kiến:");
-  const [capTrinh, setCapTrinh] = useState("");
-  const [nguoiTrinh, setNguoiTrinh] = useState("");
+  const [capTrinh, setCapTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.capTrinh ?? "");
+  const [nguoiTrinh, setNguoiTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.nguoiTrinh ?? "");
+  const chonCapTrinh = (v: string) => { setCapTrinh(v); luuGhiNhoTrinhTiep(vb.loaiVanBan, { capTrinh: v, nguoiTrinh }); };
+  const chonNguoiTrinh = (v: string) => { setNguoiTrinh(v); luuGhiNhoTrinhTiep(vb.loaiVanBan, { capTrinh, nguoiTrinh: v }); };
   const [zoom, setZoom] = useState(100);
   const [xoay, setXoay] = useState(0);
   const [suaWord, setSuaWord] = useState(false);
@@ -2532,11 +2556,11 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                 <div className="p-4 grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[13px] text-[#333] mb-1.5">Cấp trình tiếp</label>
-                    <OSel value={capTrinh} onChange={setCapTrinh} holder="Chọn cấp trình tiếp" options={CAP_TRINH_TIEP} />
+                    <OSel value={capTrinh} onChange={chonCapTrinh} holder="Chọn cấp trình tiếp" options={CAP_TRINH_TIEP} />
                   </div>
                   <div>
                     <label className="block text-[13px] text-[#333] mb-1.5">Người đề xuất trình</label>
-                    <OSel value={nguoiTrinh} onChange={setNguoiTrinh} holder="Chọn người đề xuất trình" options={NGUOI_TRINH_TIEP} />
+                    <OSel value={nguoiTrinh} onChange={chonNguoiTrinh} holder="Chọn người đề xuất trình" options={NGUOI_TRINH_TIEP} />
                   </div>
                 </div>
 

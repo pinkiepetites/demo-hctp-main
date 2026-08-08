@@ -9,8 +9,11 @@ import {
   Calendar,
   PieChart,
   BellRing,
-  ArrowRight
+  ArrowRight,
+  FileCheck,
+  Hourglass
 } from "lucide-react";
+import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh } from "./components/QuanLyVanBan";
 
 const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string }) => (
   <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
@@ -29,7 +32,50 @@ const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { titl
   </div>
 );
 
-export default function Dashboard({ onXemChiTietHieuSuat }: { onXemChiTietHieuSuat?: () => void } = {}) {
+// Biến thể của KPICard có nút "Xem chi tiết" ở góc phải — dùng cho 2 card
+// duyệt tài liệu, dẫn thẳng sang màn Phê duyệt đề xuất.
+const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, onXemChiTiet }: {
+  title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string,
+  onXemChiTiet?: () => void,
+}) => (
+  <div className="bg-white rounded-[8px] border border-[#eee] p-5 shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
+    <div className="flex items-start justify-between gap-2 mb-1.5">
+      <p className="text-[13px] text-[#666] font-medium">{title}</p>
+      <button
+        onClick={onXemChiTiet}
+        className="text-[#3b82f6] text-[11px] font-medium hover:underline flex items-center gap-0.5 flex-shrink-0"
+      >
+        Xem chi tiết <ArrowRight size={11} />
+      </button>
+    </div>
+    <div className="flex items-center justify-between">
+      <div className="flex items-baseline gap-2.5">
+        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
+        <span className={`text-[12px] font-semibold flex items-center gap-0.5 ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#f39c12]')}`}>
+          {trend}
+        </span>
+      </div>
+      <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center flex-shrink-0 ${bgColorClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+    </div>
+  </div>
+);
+
+export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanList = [], currentRole = "can-bo" }: {
+  onXemChiTietHieuSuat?: () => void;
+  onXemPheDuyet?: () => void;
+  vanBanList?: VanBanTrinh[];
+  currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
+} = {}) {
+  // Chỉ Trưởng phòng / Phó Chánh án-Chánh án / Lãnh đạo Tòa mới thấy 2 card
+  // duyệt tài liệu — đây là những vai trò nằm trong luồng ký duyệt văn bản.
+  const hienThiTheDuyet = currentRole === "truong-phong" || currentRole === "chanh-an" || currentRole === "lanh-dao";
+  const { nguoi: nguoiDung } = nguoiTheoVaiTro(currentRole);
+  const taiLieuChoDuyet = vanBanList.filter(v => dangChoXuLy(v.trangThai));
+  const soTaiLieuCanDuyet = taiLieuChoDuyet.filter(v => nguoiDangGiu(v)?.nguoi === nguoiDung).length;
+  const soTaiLieuDangChoDuyet = taiLieuChoDuyet.length;
+
   const [chartPeriod, setChartPeriod] = useState<"day" | "week" | "month" | "year" | "custom">("week");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -243,6 +289,36 @@ export default function Dashboard({ onXemChiTietHieuSuat }: { onXemChiTietHieuSu
           />
         </div>
       </div>
+
+      {/* Duyệt tài liệu — chỉ Trưởng phòng / Phó Chánh án-Chánh án / Lãnh đạo Tòa */}
+      {hienThiTheDuyet && (
+        <div>
+          <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
+            <FileCheck size={18} className="text-[#8b1a1a]" />
+            Duyệt tài liệu
+          </h2>
+          <div className="grid grid-cols-4 gap-5">
+            <KPICardCoLink
+              title="Tài liệu cần duyệt"
+              value={String(soTaiLieuCanDuyet)}
+              trend="Đang chờ bạn xử lý"
+              icon={<FileCheck size={24} />}
+              bgColorClass="bg-[#fef3e2]"
+              colorClass="text-[#f39c12]"
+              onXemChiTiet={onXemPheDuyet}
+            />
+            <KPICardCoLink
+              title="Tài liệu đang chờ duyệt"
+              value={String(soTaiLieuDangChoDuyet)}
+              trend="Đã gửi, đang trong luồng duyệt"
+              icon={<Hourglass size={24} />}
+              bgColorClass="bg-[#e8f4ff]"
+              colorClass="text-[#1a73e8]"
+              onXemChiTiet={onXemPheDuyet}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ROW 2: Chart & Alerts */}
       <div className="grid grid-cols-3 gap-5">
