@@ -615,6 +615,160 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
     ],
     donDinhKem: [],
   },
+
+  // ── Dữ liệu cho màn Phê duyệt đề xuất ──────────────────────────────────────
+  // Các tab ở màn đó lọc THEO NGƯỜI ĐANG ĐĂNG NHẬP, nên phải có bản ghi riêng
+  // cho từng vai trò duyệt thì đổi vai trò mới thấy đủ tab:
+  //   Chờ duyệt      — đang dừng đúng ở bước của người đó
+  //   Sắp đến lượt   — đang ở người khác, người đó nằm ở bước phía sau
+  //   Đã duyệt       — lịch sử có mốc Duyet/Ky/ButPhe của người đó
+  //   Từ chối        — lịch sử có mốc TraLai của người đó
+
+  // Trưởng phòng: CHỜ DUYỆT (bước 1 của luồng 3 bước)
+  {
+    id: "vb-560",
+    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hình sự",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & HS",
+    soVanBan: "560/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "05/08/2026",
+    trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 04 đơn đề nghị GĐT.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 08:10" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "05/08/2026 08:10", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "05/08/2026 08:25", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Kính trình Trưởng phòng xem xét, các đơn đều đã đủ điều kiện thụ lý." },
+    ],
+    donDinhKem: [{ ma: "Mã 7031", nguoiGui: "TAND tỉnh Bắc Ninh", soBA: "BA_2107", hinhThuc: "CV kiến nghị GĐT, TT" }],
+  },
+  // Phó CVP: CHỜ DUYỆT (bước 2) · Trưởng phòng: ĐÃ DUYỆT · Chánh án: SẮP ĐẾN LƯỢT
+  {
+    id: "vb-561",
+    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra và dân sự",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & DS",
+    soVanBan: "561/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "04/08/2026",
+    trangThai: "ChoKy", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong().map((b, i) =>
+      i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "04/08/2026 14:30" } : b),
+    buocHienTai: 1, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 06 đơn đề nghị GĐT.", nguoiSua: "Vũ Văn Yên", thoiGian: "04/08/2026 09:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "04/08/2026 09:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "04/08/2026 09:12", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình duyệt danh sách phân công tháng 8." },
+      { vongTrinh: 1, thoiGian: "04/08/2026 14:30", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí danh sách phân công, đề nghị PCVP ký ban hành." },
+    ],
+    donDinhKem: [{ ma: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", soBA: "917", hinhThuc: "CV kiến nghị GĐT, TT" }],
+  },
+  // Chánh án: CHỜ DUYỆT (bút phê) · Trưởng phòng + Phó CVP: ĐÃ DUYỆT
+  {
+    id: "vb-562",
+    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hành chính",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & HC",
+    soVanBan: "562/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "03/08/2026",
+    trangThai: "ChoButPhe", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong().map((b, i) =>
+      i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "03/08/2026 10:05" }
+        : i === 1 ? { ...b, ketQua: "da_ky" as const, thoiGian: "03/08/2026 15:40" } : b),
+    buocHienTai: 2, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 03 đơn hành chính.", nguoiSua: "Vũ Văn Yên", thoiGian: "03/08/2026 08:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "03/08/2026 08:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "03/08/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình phân công 03 đơn án hành chính." },
+      { vongTrinh: 1, thoiGian: "03/08/2026 10:05", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Đồng ý, đề nghị lãnh đạo xem xét." },
+      { vongTrinh: 1, thoiGian: "03/08/2026 15:40", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Ky", yKien: "Đã ký số, chuyển Phó Chánh án bút phê." },
+    ],
+    donDinhKem: [{ ma: "Mã 7040", nguoiGui: "TAND Quận Hoàn Kiếm", soBA: "22/2024/HC-PT", hinhThuc: "Đơn đề nghị GĐT/TT" }],
+  },
+  // ĐÃ DUYỆT cho cả 3 vai trò — đi hết luồng
+  {
+    id: "vb-563",
+    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về lao động",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & LĐ",
+    soVanBan: "563/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "01/08/2026",
+    trangThai: "DaBanHanh", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong().map((b, i) => ({
+      ...b,
+      ketQua: (i === 0 ? "da_duyet" : i === 1 ? "da_ky" : "da_but_phe") as "da_duyet" | "da_ky" | "da_but_phe",
+      thoiGian: ["01/08/2026 09:20", "01/08/2026 11:00", "01/08/2026 16:10"][i],
+    })),
+    buocHienTai: 2, vongTrinh: 1, phienBanHienTai: 1, ngayBanHanh: "01/08/2026",
+    phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 05 đơn lao động.", nguoiSua: "Vũ Văn Yên", thoiGian: "01/08/2026 08:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "01/08/2026 08:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "01/08/2026 08:40", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình phân công 05 đơn lao động." },
+      { vongTrinh: 1, thoiGian: "01/08/2026 09:20", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí." },
+      { vongTrinh: 1, thoiGian: "01/08/2026 11:00", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Ky", yKien: "Ký ban hành." },
+      { vongTrinh: 1, thoiGian: "01/08/2026 16:10", nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án", hanhDong: "ButPhe", yKien: "Đồng ý phân công. Yêu cầu báo cáo tiến độ giải quyết trước 30/9." },
+    ],
+    donDinhKem: [{ ma: "Mã 7037", nguoiGui: "Hoàng Văn Thịnh", soBA: "62/2021/LĐ-PT", hinhThuc: "Đơn đề nghị GĐT, TT" }],
+  },
+  // TỪ CHỐI — Trưởng phòng trả lại
+  {
+    id: "vb-564",
+    trichYeu: "Tờ trình đề xuất bổ sung kinh phí xác minh tại địa phương",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Kế hoạch – TC",
+    soVanBan: "564/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "02/08/2026",
+    trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
+    luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Đề xuất bổ sung 45 triệu đồng kinh phí xác minh tại Bắc Ninh.", nguoiSua: "Vũ Văn Yên", thoiGian: "02/08/2026 08:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "02/08/2026 08:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "02/08/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình duyệt kinh phí xác minh." },
+      { vongTrinh: 1, thoiGian: "02/08/2026 10:15", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "TraLai", yKien: "Thiếu dự toán chi tiết và căn cứ định mức. Đề nghị bổ sung rồi trình lại." },
+    ],
+    donDinhKem: [],
+  },
+  // TỪ CHỐI — Phó CVP trả lại sau khi Trưởng phòng đã duyệt
+  {
+    id: "vb-565",
+    trichYeu: "Tờ trình đề xuất mua sắm thiết bị số hoá hồ sơ",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Tổng hợp",
+    soVanBan: "565/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "31/07/2026",
+    trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
+    luongKy: luong3(), buocHienTai: 1, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Đề xuất mua 10 máy quét khổ A3 phục vụ số hoá hồ sơ.", nguoiSua: "Vũ Văn Yên", thoiGian: "31/07/2026 09:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "31/07/2026 09:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "31/07/2026 09:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình duyệt mua sắm thiết bị." },
+      { vongTrinh: 1, thoiGian: "31/07/2026 14:00", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí về chủ trương." },
+      { vongTrinh: 1, thoiGian: "31/07/2026 16:45", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "TraLai", yKien: "Chưa có trong kế hoạch mua sắm năm 2026, đề nghị rà soát lại nguồn vốn." },
+    ],
+    donDinhKem: [],
+  },
+  // TỪ CHỐI — Phó Chánh án trả lại ở bước bút phê
+  {
+    id: "vb-567",
+    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về kinh doanh thương mại",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & KDTM",
+    soVanBan: "567/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "30/07/2026",
+    trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong().map((b, i) =>
+      i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "30/07/2026 10:00" }
+        : i === 1 ? { ...b, ketQua: "da_ky" as const, thoiGian: "30/07/2026 14:20" } : b),
+    buocHienTai: 2, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 02 đơn KDTM.", nguoiSua: "Vũ Văn Yên", thoiGian: "30/07/2026 08:30" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "30/07/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "30/07/2026 09:10", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình phân công 02 đơn kinh doanh thương mại." },
+      { vongTrinh: 1, thoiGian: "30/07/2026 10:00", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí." },
+      { vongTrinh: 1, thoiGian: "30/07/2026 14:20", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Ky", yKien: "Đã ký, trình Phó Chánh án bút phê." },
+      { vongTrinh: 1, thoiGian: "30/07/2026 17:05", nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án", hanhDong: "TraLai", yKien: "Thẩm phán được đề xuất đang quá tải 12 vụ. Đề nghị phân công lại cho thẩm phán khác." },
+    ],
+    donDinhKem: [{ ma: "Mã 7042", nguoiGui: "TAND TP Từ Sơn", soBA: "33/2024/KDTM-PT", hinhThuc: "Đơn đề nghị GĐT/TT" }],
+  },
+  // SẮP ĐẾN LƯỢT của Phó CVP — đang dừng ở Trưởng phòng
+  {
+    id: "vb-566",
+    trichYeu: "Tờ trình đề xuất điều chỉnh lịch xét xử giám đốc thẩm quý IV",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Tổng hợp",
+    soVanBan: "566/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "06/08/2026",
+    trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
+    luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: "Đề xuất dời 03 phiên giám đốc thẩm sang tháng 11.", nguoiSua: "Vũ Văn Yên", thoiGian: "06/08/2026 08:00" }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:20", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình xin điều chỉnh lịch xét xử." },
+    ],
+    donDinhKem: [],
+  },
 ];
 
 // ─── Diff theo dòng (LCS) ────────────────────────────────────────────────────
@@ -1631,7 +1785,8 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
 }) => {
-  const [tab, setTab] = useState<TabPD>("all");
+  // Mở màn là vào thẳng việc cần làm, không phải "Tất cả" rồi tự lọc lại.
+  const [tab, setTab] = useState<TabPD>("cho_duyet");
   const [chonId, setChonId] = useState<string | null>(null);
   const [tick, setTick] = useState<string[]>([]);
   const [hopThoaiTraLai, setHopThoaiTraLai] = useState(false);
@@ -1639,31 +1794,32 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
 
   const dangOToi = (v: VanBanTrinh) => nguoiDangGiu(v)?.nguoi === nguoiDung;
-  const toiDaLam = (v: VanBanTrinh, cacHanhDong: HanhDong[]) =>
-    v.lichSu.some(m => m.nguoi === nguoiDung && cacHanhDong.includes(m.hanhDong));
+  const daCoHanhDong = (v: VanBanTrinh, cacHanhDong: HanhDong[]) =>
+    v.lichSu.some(m => cacHanhDong.includes(m.hanhDong));
 
-  /** Văn bản CHƯA tới tay tôi nhưng tôi nằm ở một bước phía sau — tức là
-   *  sắp tới lượt. Cho lãnh đạo thấy trước khối lượng đang dồn về mình. */
-  const sapDenLuot = (v: VanBanTrinh) =>
-    dangChoXuLy(v.trangThai)
-    && !dangOToi(v)
-    && v.luongKy.some((b, i) => i > v.buocHienTai && b.nguoi === nguoiDung);
-
+  // "Tất cả" là nguồn dữ liệu duy nhất; 4 tab còn lại đều cắt ra từ đây.
   const trongLuong = danhSach.filter(v => nhomTrangThai(v.trangThai) !== null);
 
-  // Mỗi tab một phạm vi riêng:
-  //   Tất cả      — toàn bộ, để tra cứu
-  //   3 tab giữa  — chỉ việc ở chân mình
-  //   Sắp đến lượt — việc đang ở người khác nhưng sẽ chuyển tới mình
+  // Trước đây 4 tab dưới lọc theo NGƯỜI đang đăng nhập, nên vai trò nào không
+  // nằm trong luồng ký (mặc định là Cán bộ) sẽ thấy tab Tất cả đầy dữ liệu còn
+  // 4 tab kia trắng trơn — trông như mất dữ liệu. Giờ cả 5 tab cùng cắt từ
+  // `trongLuong` theo TRẠNG THÁI văn bản; phần "của tôi" chuyển thành dấu nhấn
+  // (đếm riêng trên nhãn tab, nền vàng, chip "Đang ở bạn") chứ không còn là
+  // điều kiện lọc làm rỗng cả tab.
   const LOC_TAB: Record<TabPD, (v: VanBanTrinh) => boolean> = {
     all: () => true,
-    sap_den: sapDenLuot,
-    cho_duyet: v => dangChoXuLy(v.trangThai) && dangOToi(v),
-    da_duyet: v => toiDaLam(v, ["Duyet", "SuaVaDuyet", "Ky", "ButPhe"]),
-    tu_choi: v => toiDaLam(v, ["TraLai"]),
+    sap_den: v => dangChoXuLy(v.trangThai) && !dangOToi(v),
+    cho_duyet: v => dangChoXuLy(v.trangThai),
+    da_duyet: v => daCoHanhDong(v, ["Duyet", "SuaVaDuyet", "Ky", "ButPhe", "BanHanh"]),
+    tu_choi: v => v.trangThai === "BiTraLai" || daCoHanhDong(v, ["TraLai"]),
   };
   const dem = (t: TabPD) => trongLuong.filter(LOC_TAB[t]).length;
-  const loc = trongLuong.filter(LOC_TAB[tab]);
+  const demCuaToi = (t: TabPD) => trongLuong.filter(v => LOC_TAB[t](v) && dangOToi(v)).length;
+  // Việc đang ở chân mình xếp lên đầu — tab không còn lọc theo người thì thứ tự
+  // phải gánh vai trò đó, nếu không việc của mình lẫn giữa việc của người khác.
+  const loc = trongLuong.filter(LOC_TAB[tab])
+    .slice()
+    .sort((a, b) => Number(dangOToi(b)) - Number(dangOToi(a)));
 
   const chon = danhSach.find(v => v.id === chonId) ?? null;
   const capNhat = (vbMoi: VanBanTrinh) => setDanhSach(ds => ds.map(v => v.id === vbMoi.id ? vbMoi : v));
@@ -1699,17 +1855,17 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
       mo: "Toàn bộ đề xuất đang trong luồng duyệt, kể cả của người khác.",
       rong: "Chưa có đề xuất nào trong luồng duyệt." },
     { id: "sap_den", nhan: "Sắp đến lượt xử lý",
-      mo: `Đang ở người khác nhưng ${nguoiDung} nằm ở một bước phía sau — sắp phải xử lý.`,
-      rong: "Hiện chưa có đề xuất nào sắp đến lượt bạn xử lý." },
+      mo: `Đang chờ xử lý ở người khác — theo luồng ký sẽ chuyển tiếp, chưa tới tay ${nguoiDung}.`,
+      rong: "Không có đề xuất nào đang chờ ở người khác." },
     { id: "cho_duyet", nhan: "Chờ duyệt",
-      mo: `Đang chờ chính ${nguoiDung} xử lý.`,
-      rong: "Hiện chưa có đề xuất nào chờ bạn xử lý." },
+      mo: `Mọi đề xuất đang chờ duyệt / ký / bút phê. Việc đang ở ${nguoiDung} được tô nền vàng và xếp lên đầu.`,
+      rong: "Hiện chưa có đề xuất nào chờ xử lý." },
     { id: "da_duyet", nhan: "Đã duyệt",
-      mo: `${nguoiDung} đã duyệt / ký / bút phê.`,
-      rong: "Bạn chưa duyệt đề xuất nào." },
+      mo: "Đề xuất đã qua ít nhất một bước duyệt / ký / bút phê.",
+      rong: "Chưa có đề xuất nào được duyệt." },
     { id: "tu_choi", nhan: "Từ chối",
-      mo: `${nguoiDung} đã trả lại.`,
-      rong: "Bạn chưa trả lại đề xuất nào." },
+      mo: "Đề xuất đã bị trả lại về người tạo.",
+      rong: "Chưa có đề xuất nào bị trả lại." },
   ];
   const tabHienTai = TABS.find(t => t.id === tab)!;
 
@@ -1730,6 +1886,14 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
               className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 transition-colors whitespace-nowrap
                 ${tab === t.id ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`}>
               {t.nhan} ({dem(t.id)})
+              {/* Tab không lọc theo người nữa, nên số việc đang ở chân mình
+                  phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số. */}
+              {demCuaToi(t.id) > 0 && (
+                <span title={`${demCuaToi(t.id)} đề xuất đang chờ chính ${nguoiDung} xử lý`}
+                  className="ml-1.5 px-1.5 py-[1px] rounded-full text-[10px] font-bold bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
+                  {demCuaToi(t.id)} của bạn
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -1780,57 +1944,88 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
                     onChange={e => setTick(e.target.checked ? loc.map(v => v.id) : [])} />
                 </th>
                 <th className="px-3 py-2 font-semibold w-[44px]">STT</th>
-                <th className="px-3 py-2 font-semibold w-[200px]">Tên vụ án/Tên quyết định</th>
-                <th className="px-3 py-2 font-semibold">Nội dung đề xuất</th>
-                <th className="px-3 py-2 font-semibold w-[165px]">Loại đề xuất</th>
+                <th className="px-3 py-2 font-semibold w-[170px]">Thông tin văn bản</th>
+                <th className="px-3 py-2 font-semibold">Tên văn bản</th>
                 <th className="px-3 py-2 font-semibold w-[125px]">Người đề xuất</th>
                 <th className="px-3 py-2 font-semibold w-[135px]">Ngày đề xuất</th>
-                <th className="px-3 py-2 font-semibold text-center w-[110px]">Trạng thái</th>
-                <th className="px-3 py-2 font-semibold w-[170px]">Ý kiến lãnh đạo</th>
-                <th className="px-3 py-2 font-semibold text-center w-[70px]">Thao tác</th>
+                <th className="px-3 py-2 font-semibold text-center w-[130px]">Trạng thái</th>
+                <th className="px-3 py-2 font-semibold w-[260px]">Ý kiến</th>
               </tr>
             </thead>
             <tbody>
               {loc.map((v, i) => {
                 const nhom = nhomTrangThai(v.trangThai)!;
                 const mocTrinh = [...v.lichSu].reverse().find(m => m.hanhDong === "Trinh" || m.hanhDong === "Tao");
-                const yKienCuoi = [...v.lichSu].reverse().find(m => m.yKien)?.yKien;
-                const vuAn = v.donDinhKem[0]?.soBA;
+                // Ý kiến của MỌI người trong luồng, không chỉ ý kiến gần nhất
+                const cacYKien = v.lichSu.filter(m => m.yKien?.trim());
                 return (
-                  <tr key={v.id} className={`border-b border-[#f0f0f0] last:border-0 hover:bg-[#f9f9f9]
+                  <tr key={v.id}
+                    onDoubleClick={() => setChonId(v.id)}
+                    title="Bấm đúp để xem tờ trình / văn bản"
+                    className={`border-b border-[#f0f0f0] last:border-0 hover:bg-[#f9f9f9] cursor-pointer
                     ${dangOToi(v) ? "bg-[#fffdf5]" : ""}`}>
                     <td className="px-3 py-2 text-center align-top">
                       <input type="checkbox" checked={tick.includes(v.id)}
+                        onClick={e => e.stopPropagation()}
                         onChange={e => setTick(p => e.target.checked ? [...p, v.id] : p.filter(x => x !== v.id))} />
                     </td>
                     <td className="px-3 py-2 text-center text-[#666] align-top">{i + 1}</td>
-                    <td className="px-3 py-2 font-medium text-[#333] align-top leading-relaxed">
-                      {vuAn ?? v.trichYeu}
-                      {v.soVanBan && <div className="text-[11px] text-[#888] font-normal mt-0.5 font-mono">{v.soVanBan}</div>}
+                    {/* Thông tin văn bản = số tờ trình + ngày tờ trình */}
+                    <td className="px-3 py-2 align-top leading-relaxed">
+                      <div className="font-mono font-medium text-[#1d2e4f]">{v.soVanBan ?? "— chưa số —"}</div>
+                      <div className="text-[11px] text-[#888] mt-0.5">{v.ngayCapSo ?? mocTrinh?.thoiGian?.split(" ")[0] ?? "—"}</div>
                     </td>
-                    <td className="px-3 py-2 text-[#444] align-top leading-relaxed">{v.trichYeu}</td>
-                    <td className="px-3 py-2 text-[#666] align-top">{v.loaiVanBan}</td>
+                    <td className="px-3 py-2 text-[#333] align-top leading-relaxed">
+                      <div className="font-medium">{v.trichYeu}</div>
+                      <div className="text-[11px] text-[#888] mt-0.5">{v.loaiVanBan}</div>
+                    </td>
                     <td className="px-3 py-2 text-[#333] font-medium align-top">{v.nguoiTao}</td>
                     <td className="px-3 py-2 text-[#666] align-top">{mocTrinh?.thoiGian ?? "—"}</td>
                     <td className="px-3 py-2 text-center align-top">
-                      <span className={`inline-block px-2 py-[2px] rounded-[10px] text-[10px] font-medium border ${NHAN_NHOM[nhom].cls}`}>
-                        {NHAN_NHOM[nhom].nhan}
-                      </span>
-                      {dangOToi(v) && <div className="text-[10px] text-[#b45309] mt-1">Đang ở bạn</div>}
+                      {/* Tab "Chờ duyệt": trạng thái thay bằng nút phê duyệt luôn,
+                          bấm là chuyển sang đã phê duyệt — bớt một lần mở popup. */}
+                      {tab === "cho_duyet" && dangChoXuLy(v.trangThai) ? (
+                        <button type="button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            setDanhSach(ds => ds.map(x => x.id !== v.id ? x
+                              : x.trangThai === "ChoKy" ? apKySo(x, nguoiDung, chucVu, ds)
+                                : apDuyet(x, nguoiDung, chucVu)));
+                            setThongBao(`Đã phê duyệt ${v.soVanBan ?? v.trichYeu}.`);
+                          }}
+                          className="inline-flex items-center gap-1 h-[26px] px-2.5 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[11px] font-medium transition-colors whitespace-nowrap">
+                          <Check size={12} /> Phê duyệt
+                        </button>
+                      ) : (
+                        <>
+                          <span className={`inline-block px-2 py-[2px] rounded-[10px] text-[10px] font-medium border ${NHAN_NHOM[nhom].cls}`}>
+                            {NHAN_NHOM[nhom].nhan}
+                          </span>
+                          {dangOToi(v) && <div className="text-[10px] text-[#b45309] mt-1">Đang ở bạn</div>}
+                        </>
+                      )}
                     </td>
-                    <td className="px-3 py-2 text-[11px] text-[#666] italic align-top leading-snug">
-                      {yKienCuoi ?? ""}
-                    </td>
-                    <td className="px-3 py-2 text-center align-top">
-                      <button onClick={() => setChonId(v.id)} className="text-[#1a73e8] hover:text-[#1152a3]" title="Xem chi tiết">
-                        <Eye size={15} />
-                      </button>
+                    {/* Ý kiến của tất cả các bước, kèm người và thời điểm */}
+                    <td className="px-3 py-2 align-top leading-snug">
+                      {cacYKien.length === 0
+                        ? <span className="text-[11px] text-[#bbb] italic">—</span>
+                        : (
+                          <div className="space-y-1">
+                            {cacYKien.map((m, k) => (
+                              <div key={k} className="text-[11px] leading-snug">
+                                <span className="font-medium text-[#333]">{m.nguoi}</span>
+                                <span className="text-[#999]"> · {m.chucVu} · {m.thoiGian}</span>
+                                <div className="text-[#555] italic">{m.yKien}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </td>
                   </tr>
                 );
               })}
               {loc.length === 0 && (
-                <tr><td colSpan={10} className="py-12">
+                <tr><td colSpan={8} className="py-12">
                   <div className="flex items-center justify-center gap-6">
                     {/* Minh hoạ hộp thư rỗng — vòng tròn hồng nhạt, hộp nét đứt,
                         cánh thư bay ra góc trên phải */}
@@ -2168,6 +2363,9 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
   const [moThongTin, setMoThongTin] = useState(true);
   const [xemDienBien, setXemDienBien] = useState(false);
   const [bao, setBao] = useState("");
+  /** null = đang xem chính tờ trình; mã đơn = đang xem danh sách đơn kèm theo. */
+  const [taiLieuXem, setTaiLieuXem] = useState<string | null>(null);
+  const donDangXem = taiLieuXem ? vb.donDinhKem.find(d => d.ma === taiLieuXem) ?? null : null;
 
   const pbHienTai = vb.phienBan.find(p => p.so === vb.phienBanHienTai);
   const [noiDung, setNoiDung] = useState(pbHienTai?.noiDung ?? "");
@@ -2178,13 +2376,23 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
   const yKienTruoc = [...vb.lichSu].reverse().find(m => m.yKien?.trim());
 
   const MAX = 4000;
+  // Trình ký: nội dung đề xuất là tuỳ chọn. Từ chối: bắt buộc nêu lý do.
+  const duLyDoTuChoi = yKien.trim().length >= 10;
+  const [daBamTuChoi, setDaBamTuChoi] = useState(false);
+  const thieuLyDoTuChoi = daBamTuChoi && !duLyDoTuChoi;
+
   const xong = (v: VanBanTrinh) => { onCapNhat(v); onClose(); };
   const luuVaKy = (logic: boolean) => {
-    if (!yKien.trim()) return;
-    const ghi = logic ? `${yKien.trim()} (ký logic)` : yKien.trim();
-    if (vb.trangThai === "ChoButPhe") return xong(apButPhe(vb, nguoiDung, chucVu, ghi));
+    const ghiChuY = yKien.trim();
+    const ghi = ghiChuY ? (logic ? `${ghiChuY} (ký logic)` : ghiChuY) : undefined;
+    if (vb.trangThai === "ChoButPhe") return xong(apButPhe(vb, nguoiDung, chucVu, ghi ?? ""));
     if (vb.trangThai === "ChoKy") return xong(apKySo(vb, nguoiDung, chucVu, danhSach));
     xong(apDuyet(vb, nguoiDung, chucVu, ghi));
+  };
+  const tuChoi = () => {
+    setDaBamTuChoi(true);
+    if (!duLyDoTuChoi) return;
+    xong(apTraLai(vb, nguoiDung, chucVu, yKien.trim()));
   };
 
   const NutIcon = ({ children, onClick, title }: any) => (
@@ -2292,13 +2500,23 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                           className="ml-auto text-[#888] hover:text-[#333]"><RotateCcw size={13} /></button>
                       </div>
                       <div className="p-3">
+                        {/* Không đánh dấu bắt buộc cố định: trình ký thì để trống
+                            được, chỉ TỪ CHỐI mới bắt buộc nêu lý do. */}
                         <label className="block text-[13px] text-[#333] mb-1.5">
-                          <span className="text-[#c0392b] mr-1">*</span>Nội dung ý kiến lãnh đạo
+                          Nội dung đề xuất
+                          <span className="text-[#888] font-normal"> (bắt buộc khi từ chối)</span>
                         </label>
                         <textarea value={yKien} maxLength={MAX} rows={4}
                           onChange={e => setYKien(e.target.value)}
-                          className="w-full border border-[#ddd] rounded-[4px] px-2.5 py-2 text-[13px] leading-relaxed resize-none focus:outline-none focus:border-[#1a5a96]" />
-                        <div className="text-right text-[12px] text-[#999] mt-1">{yKien.length} / {MAX}</div>
+                          placeholder="Nhập nội dung đề xuất…"
+                          className={`w-full border rounded-[4px] px-2.5 py-2 text-[13px] leading-relaxed resize-none focus:outline-none
+                            ${thieuLyDoTuChoi ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`} />
+                        <div className="flex items-center mt-1">
+                          {thieuLyDoTuChoi && (
+                            <span className="text-[12px] text-[#c0392b]">Từ chối phải nêu lý do, tối thiểu 10 ký tự.</span>
+                          )}
+                          <span className="ml-auto text-[12px] text-[#999]">{yKien.length} / {MAX}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2340,13 +2558,20 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                   </button>
                   {laNguoiGiu && (
                     <>
-                      <button onClick={() => luuVaKy(false)} disabled={!yKien.trim()}
-                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] disabled:opacity-40 text-white text-[13px] font-semibold transition-colors">
+                      {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
+                      <button onClick={tuChoi}
+                        title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
+                        className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
+                        <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
+                      </button>
+                      {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
+                      <button onClick={() => luuVaKy(false)}
+                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
                         Lưu và ký
                       </button>
-                      <button onClick={() => luuVaKy(true)} disabled={!yKien.trim()}
+                      <button onClick={() => luuVaKy(true)}
                         title="Ký logic — xác nhận trên hệ thống, không dùng chứng thư số"
-                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] disabled:opacity-40 text-white text-[13px] font-semibold transition-colors">
+                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
                         Lưu và ký logic
                       </button>
                     </>
@@ -2355,43 +2580,47 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
               </div>
             </>
           ) : (
-            /* Tab Thông tin tờ trình */
-            <div className="border border-[#e5e5e5] rounded-[6px] p-4 space-y-3 text-[13px]">
-              {([
-                ["Loại văn bản", vb.loaiVanBan],
-                ["Số văn bản", `${vb.soVanBan ?? "— chưa số —"}${vb.trangThaiSo === "tam" ? " (số tạm)" : ""}`],
-                ["Ngày cấp số", vb.ngayCapSo ?? "—"],
-                ["Đơn vị soạn thảo", vb.donViSoanThao],
-                ["Người tạo", vb.nguoiTao],
-                ["Trạng thái", TRANG_THAI_META[vb.trangThai].nhan],
-                ["Vòng trình", `Vòng ${vb.vongTrinh} · bước ${vb.buocHienTai + 1}/${vb.luongKy.length}`],
-              ] as [string, string][]).map(([k, v]) => (
-                <div key={k} className="flex gap-3">
-                  <span className="w-[140px] flex-shrink-0 text-[#666]">{k}</span>
-                  <span className="text-[#222] font-medium">{v}</span>
-                </div>
-              ))}
-              <div className="pt-2 border-t border-[#eee]">
-                <div className="text-[#666] mb-1.5">Luồng ký</div>
-                <div className="border border-[#f0f0f0] rounded-[4px] divide-y divide-[#f0f0f0]">
-                  {vb.luongKy.map((b, i) => (
-                    <div key={i} className={`px-2.5 py-2 flex items-center gap-2 text-[12px] ${vb.buocHienTai === i ? "bg-[#fff8e1]" : ""}`}>
-                      <span className="text-[#888] w-[46px]">bước {b.thuTu}</span>
-                      <span className="font-medium">{b.nguoi}</span>
-                      <span className="text-[#888]">· {b.chucVu}</span>
-                      <span className="text-[#888]">· {NHAN_VAI_TRO_BUOC[b.vaiTro]}</span>
-                      {daXong(b) && <span className="ml-auto text-[#1a7a45]">✓ {b.thoiGian}</span>}
-                    </div>
-                  ))}
-                </div>
+            /* Tab Thông tin tờ trình — cây tài liệu giống màn tạo tờ trình phân
+               công: tờ trình ở gốc, dưới là các danh sách đơn kèm theo. Bỏ bảng
+               thuộc tính và mục "Đơn đính kèm" vì cùng một thông tin đã nằm ở
+               ô xem trước bên phải và ở tab Ý kiến. */
+            <div className="border border-[#e5e5e5] rounded-[6px] overflow-hidden">
+              <div className="px-3 py-2 bg-[#fafafa] border-b border-[#eee] text-[12px] font-semibold text-[#333]">
+                Danh sách tài liệu
               </div>
-              <div className="pt-2 border-t border-[#eee]">
-                <div className="text-[#666] mb-1.5">Đơn đính kèm ({vb.donDinhKem.length})</div>
-                {vb.donDinhKem.length === 0
-                  ? <div className="text-[12px] text-[#999] italic">Không có đơn đính kèm</div>
-                  : vb.donDinhKem.map(d => (
-                    <div key={d.ma} className="text-[12px] text-[#333] py-0.5">{d.ma} — {d.nguoiGui} · {d.soBA}</div>
-                  ))}
+              <div className="p-2 space-y-1">
+                {/* Gốc: chính tờ trình */}
+                <button type="button" onClick={() => setTaiLieuXem(null)}
+                  className={`w-full text-left flex items-start gap-2 px-2 py-2 rounded-[4px] border transition-colors
+                    ${taiLieuXem === null
+                      ? "bg-[#fdeaea] border-[#f5b7b7] text-[#8b1a1a]"
+                      : "bg-white border-transparent hover:bg-[#f5f5f5] text-[#333]"}`}>
+                  <FileText size={14} className="flex-shrink-0 mt-[2px]" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[12.5px] font-semibold leading-snug">{vb.loaiVanBan}</span>
+                    <span className="block text-[11px] text-[#888] mt-0.5 font-mono">
+                      {vb.soVanBan ?? "— chưa số —"}{vb.trangThaiSo === "tam" ? " (số tạm)" : ""}
+                    </span>
+                  </span>
+                </button>
+
+                {/* Các danh sách đơn kèm theo — bấm để xem nội dung bên phải */}
+                {vb.donDinhKem.map(d => (
+                  <button key={d.ma} type="button" onClick={() => setTaiLieuXem(d.ma)}
+                    className={`w-full text-left flex items-start gap-2 pl-6 pr-2 py-2 rounded-[4px] border transition-colors
+                      ${taiLieuXem === d.ma
+                        ? "bg-[#eaf4ff] border-[#c5d8f8] text-[#1a5a96]"
+                        : "bg-white border-transparent hover:bg-[#f5f5f5] text-[#333]"}`}>
+                    <FileText size={13} className="flex-shrink-0 mt-[2px] text-[#1a5a96]" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[12px] font-medium leading-snug">Danh sách đơn — {d.ma}</span>
+                      <span className="block text-[11px] text-[#888] mt-0.5 truncate">{d.nguoiGui} · {d.soBA}</span>
+                    </span>
+                  </button>
+                ))}
+                {vb.donDinhKem.length === 0 && (
+                  <div className="pl-6 py-2 text-[12px] text-[#999] italic">Không có tài liệu kèm theo</div>
+                )}
               </div>
             </div>
           )}
@@ -2412,7 +2641,30 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           <div className="flex-1 overflow-auto p-5">
             <div className="bg-white mx-auto shadow-sm border border-[#ddd] p-10 origin-top transition-transform"
               style={{ width: 700, transform: `scale(${zoom / 100}) rotate(${xoay}deg)` }}>
-              {suaWord ? (
+              {/* Đang chọn một danh sách đơn kèm theo ⇒ xem nội dung của danh sách
+                  đó, không phải nội dung tờ trình. */}
+              {donDangXem ? (
+                <>
+                  <div className="text-center text-[12px] text-[#666] mb-4">
+                    Danh sách đơn kèm theo — {donDangXem.ma}
+                  </div>
+                  <pre className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#222]"
+                    style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+{`Mục 1. Thông tin đơn
+Mã đơn: ${donDangXem.ma}
+Người gửi: ${donDangXem.nguoiGui}
+Số bản án/quyết định: ${donDangXem.soBA}
+Hình thức: ${donDangXem.hinhThuc}
+
+Mục 2. Nội dung
+Đơn nêu trên được lập danh sách kèm theo ${vb.loaiVanBan}
+số ${vb.soVanBan ?? "……"} để trình cấp có thẩm quyền xem xét.
+
+Mục 3. Kiến nghị
+Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
+                  </pre>
+                </>
+              ) : suaWord ? (
                 <textarea value={noiDung} onChange={e => setNoiDung(e.target.value)} rows={26}
                   className="w-full text-[13px] leading-relaxed text-[#222] resize-none focus:outline-none"
                   style={{ fontFamily: "'Times New Roman', Times, serif" }} />

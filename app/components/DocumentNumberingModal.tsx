@@ -200,7 +200,7 @@ const demYcbsDaCo = (d: any) =>
   [d?.ycbsSo, d?.ycbsSo2].filter(x => (x ?? "").trim()).length;
 
 // Lý do lập Yêu cầu bổ sung
-const LY_DO_YEU_CAU_BO_SUNG = [
+export const LY_DO_YEU_CAU_BO_SUNG = [
   "Thiếu Bản án/quyết định có hiệu lực pháp luật",
   "Thiếu thông tin căn cước công dân",
   "Viết lại đơn",
@@ -1165,6 +1165,76 @@ const chuanMaDon = (s: string) => (s ?? "").replace(/\s+/g, " ").trim().toLowerC
 /** @param trungMap  mã đơn (đã chuẩn hoá) → mô tả văn bản đang chứa nó.
  *  Đơn trùng được đưa vào CHÍNH hệ thống hợp lệ này, không dựng cảnh báo riêng —
  *  một nguồn, một con số, một nút xử lý. */
+/** Điều kiện để MỘT đơn được đưa vào văn bản loại `loaiVB`.
+ *  Trả về lý do nếu không hợp lệ, null nếu hợp lệ.
+ *
+ *  Đây là NGUỒN DUY NHẤT của luật hợp lệ — màn Danh sách đơn dùng chính hàm này
+ *  để lọc ngay khi chọn Loại văn bản, nên hai màn không bao giờ lệch kết luận.
+ *  `moTaTrung`: mô tả văn bản đang chứa đơn (nếu đơn đã nằm trong văn bản khác). */
+export const lyDoDonKhongHopLe = (
+  data: any, loaiVB: string, moTaTrung?: string,
+): string | null => {
+  if (!loaiVB) return null;
+  const tq = data?.giaiQuyet?.nhan || "";
+  const tc = data?.thongTinChuyenDon || "";
+  const toTrinhStatus = data?.toTrinhStatus || "none";
+  // Danh mục ở màn Danh sách đơn ghi "…Thẩm phán" (T hoa), trong modal là chữ
+  // thường — so khớp không phân biệt hoa thường để một luật chạy cho cả hai.
+  const loai = loaiVB.toLowerCase();
+
+  if (moTaTrung) return `Đã nằm trong ${moTaTrung}`;
+
+  if (loai === "giấy xác nhận")
+    return tc !== "Nội bộ" ? "Thông tin chuyển đơn phải là Nội bộ" : null;
+
+  if (loai === "giấy xác nhận cơ quan chuyển đơn")
+    return tc !== "Tòa khác" ? "Thông tin chuyển đơn phải là Tòa khác" : null;
+
+  if (loai === "công văn chuyển nội bộ")
+    return (tc !== "Nội bộ" || !["Thụ lý mới", "Thụ lý mới trùng TP", "Thụ lý xét xử", "Đã thụ lý", "Thụ lý mới trong thẩm phán", "Thụ lý mới trùng thẩm phán"].includes(tq))
+      ? "TT Chuyển đơn là Nội bộ & TT Giải quyết phải thuộc nhóm Thụ lý mới/xét xử/Đã thụ lý" : null;
+
+  if (loai === "công văn chuyển tòa khác")
+    return (tq !== "Chuyển đơn" || tc !== "Tòa khác")
+      ? "TT Giải quyết: Chuyển đơn & TT Chuyển đơn: Tòa khác" : null;
+
+  if (loai === "công văn chuyển ngoài")
+    return (tq !== "Chuyển đơn" || tc !== "Ngoài tòa án")
+      ? "TT Giải quyết: Chuyển đơn & TT Chuyển đơn: Ngoài tòa án" : null;
+
+  if (loai === "trả lại đơn")
+    return tq !== "Trả lại đơn" ? "TT Giải quyết phải là Trả lại đơn" : null;
+
+  if (loai === "tờ trình phân công thẩm phán" || loai === "tờ trình") {
+    // Chỉ đơn phân công ngẫu nhiên mới phải lập tờ trình để chánh án/phó
+    // chánh án ký; đơn phân công chỉ định không phải làm tờ trình.
+    if (!tq.includes("Thụ lý mới") || !data?.isPhanCong) return "TT Giải quyết: Thụ lý mới & Đã phân công";
+    if (data?.loaiPhanCong === "chi-dinh") return "Đơn phân công chỉ định không phải lập tờ trình";
+    return null;
+  }
+
+  if (loai === "thông báo phân công tp") {
+    //  1. Đơn đã có thẩm phán dự kiến
+    //  2. Đơn là đơn thụ lý mới
+    //  3. Phân công ngẫu nhiên → bắt buộc có tờ trình phân công TP đã ký
+    //  4. Phân công chỉ định → tạo được ngay, không cần tờ trình
+    if (!(data?.thongTinDon?.thamPhan || "").trim()) return "Đơn chưa có thẩm phán dự kiến";
+    if (!tq.toLowerCase().includes("thụ lý mới")) return "Chỉ lập cho đơn Thụ lý mới";
+    if (data?.loaiPhanCong === "ngau-nhien" && toTrinhStatus !== "da_ky")
+      return toTrinhStatus === "trinh_lanh_dao"
+        ? "Phân công ngẫu nhiên: tờ trình đang chờ chánh án/phó chánh án ký"
+        : "Phân công ngẫu nhiên: cần tờ trình phân công TP đã được ký";
+    return null;
+  }
+
+  if (loai === "yêu cầu bổ sung")
+    // So khớp lỏng vì dữ liệu ghi "Chưa đủ điều kiện" còn danh mục cũ ghi
+    // "Đơn chưa đủ điều kiện".
+    return !tq.toLowerCase().includes("chưa đủ điều kiện") ? "Chỉ lập cho đơn Chưa đủ điều kiện" : null;
+
+  return null;   // loại chưa có luật riêng → không ràng buộc
+};
+
 const validateTree = (nodes: DocNode[], selectedType: string, trungMap: Record<string, string> = {}): DocNode[] => {
   return nodes.map(node => {
     // Văn bản đi kèm: luôn hợp lệ, chỉ đi tiếp xuống con để giữ nguyên cấu trúc
@@ -1177,72 +1247,12 @@ const validateTree = (nodes: DocNode[], selectedType: string, trungMap: Record<s
       };
     }
 
-    let isValid = true;
-    let invalidReason = "";
-
-    if (node.originalData && selectedType) {
-      const data = node.originalData;
-      const tq = data.giaiQuyet?.nhan || "";
-      const tc = data.thongTinChuyenDon || "";
-      const isPhanCong = data.isPhanCong;
-      const toTrinhStatus = data.toTrinhStatus || "none";
-
-      // Kiểm tra trùng TRƯỚC các luật theo loại văn bản: lý do này cụ thể nhất
-      // và người dùng hành động được ngay (bỏ đơn ra hoặc mở văn bản đang chứa).
-      const moTaTrung = trungMap[chuanMaDon(data.maDon)];
-      if (moTaTrung) {
-        isValid = false;
-        invalidReason = `Đã nằm trong ${moTaTrung}`;
-      } else if (selectedType === "Giấy xác nhận") {
-        if (tc !== "Nội bộ") { isValid = false; invalidReason = "Thông tin chuyển đơn phải là Nội bộ"; }
-      } else if (selectedType === "Giấy xác nhận cơ quan chuyển đơn") {
-        if (tc !== "Tòa khác") { isValid = false; invalidReason = "Thông tin chuyển đơn phải là Tòa khác"; }
-      } else if (selectedType === "Công văn chuyển nội bộ") {
-        if (tc !== "Nội bộ" || !["Thụ lý mới", "Thụ lý mới trùng TP", "Thụ lý xét xử", "Đã thụ lý", "Thụ lý mới trong thẩm phán", "Thụ lý mới trùng thẩm phán"].includes(tq)) {
-          isValid = false; invalidReason = "TT Chuyển đơn là Nội bộ & TT Giải quyết phải thuộc nhóm Thụ lý mới/xét xử/Đã thụ lý";
-        }
-      } else if (selectedType === "Công văn chuyển tòa khác") {
-        if (tq !== "Chuyển đơn" || tc !== "Tòa khác") { isValid = false; invalidReason = "TT Giải quyết: Chuyển đơn & TT Chuyển đơn: Tòa khác"; }
-      } else if (selectedType === "Công văn chuyển ngoài") {
-        if (tq !== "Chuyển đơn" || tc !== "Ngoài tòa án") { isValid = false; invalidReason = "TT Giải quyết: Chuyển đơn & TT Chuyển đơn: Ngoài tòa án"; }
-      } else if (selectedType === "Trả lại đơn") {
-        if (tq !== "Trả lại đơn") { isValid = false; invalidReason = "TT Giải quyết phải là Trả lại đơn"; }
-      } else if (selectedType === "Tờ trình phân công thẩm phán" || selectedType === "Tờ trình") {
-        // Chỉ đơn phân công ngẫu nhiên mới phải lập tờ trình để chánh án/phó
-        // chánh án ký; đơn phân công chỉ định không phải làm tờ trình.
-        if (!tq.includes("Thụ lý mới") || !isPhanCong) {
-          isValid = false; invalidReason = "TT Giải quyết: Thụ lý mới & Đã phân công";
-        } else if (data.loaiPhanCong === "chi-dinh") {
-          isValid = false; invalidReason = "Đơn phân công chỉ định không phải lập tờ trình";
-        }
-      } else if (selectedType === "Thông báo phân công TP") {
-        // Luật nghiệp vụ:
-        //  1. Đơn đã có thẩm phán dự kiến
-        //  2. Đơn là đơn thụ lý mới
-        //  3. Phân công ngẫu nhiên → bắt buộc có tờ trình phân công TP đã có
-        //     hiệu lực (chánh án/phó chánh án đã ký)
-        //  4. Phân công chỉ định → tạo được ngay, không cần tờ trình
-        const thamPhanDuKien = (data.thongTinDon?.thamPhan || "").trim();
-        const laThuLyMoi = tq.toLowerCase().includes("thụ lý mới");
-
-        if (!thamPhanDuKien) {
-          isValid = false; invalidReason = "Đơn chưa có thẩm phán dự kiến";
-        } else if (!laThuLyMoi) {
-          isValid = false; invalidReason = "Chỉ lập cho đơn Thụ lý mới";
-        } else if (data.loaiPhanCong === "ngau-nhien" && toTrinhStatus !== "da_ky") {
-          isValid = false;
-          invalidReason = toTrinhStatus === "trinh_lanh_dao"
-            ? "Phân công ngẫu nhiên: tờ trình đang chờ chánh án/phó chánh án ký"
-            : "Phân công ngẫu nhiên: cần tờ trình phân công TP đã được ký";
-        }
-      } else if (selectedType === "Yêu cầu bổ sung") {
-        // Chỉ áp dụng cho đơn chưa đủ điều kiện. So khớp lỏng vì dữ liệu ghi
-        // "Chưa đủ điều kiện" còn danh mục cũ ghi "Đơn chưa đủ điều kiện".
-        if (!tq.toLowerCase().includes("chưa đủ điều kiện")) {
-          isValid = false; invalidReason = "Chỉ lập cho đơn Chưa đủ điều kiện";
-        }
-      }
-    }
+    // Luat hop le nam o MOT cho duy nhat: lyDoDonKhongHopLe
+    const lyDo = node.originalData
+      ? lyDoDonKhongHopLe(node.originalData, selectedType, trungMap[chuanMaDon(node.originalData.maDon)])
+      : null;
+    let isValid = !lyDo;
+    let invalidReason = lyDo ?? "";
 
     const updatedNode = { ...node, isValid, invalidReason };
     if (node.children) {
