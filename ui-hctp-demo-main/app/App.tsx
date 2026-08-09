@@ -297,9 +297,7 @@ const PopupCongVan = ({ onClose, onSave }: { onClose: () => void; onSave: (cv: C
             <Field label="Số công văn"><Inp value={f.soCongVan} onChange={txt("soCongVan")} placeholder="Nhập số công văn" /></Field>
             <Field label="Ngày công văn"><Inp type="date" value={f.ngayCongVan} onChange={txt("ngayCongVan")} /></Field>
           </Row>
-          <Row>
-            <Field label="Ngày nhận"><Inp type="date" value={f.ngayNhan} onChange={txt("ngayNhan")} /></Field>
-          </Row>
+
           <Field label="Loại công văn" req>
             <div className="relative">
               <select value={f.loaiCongVan} onChange={txt("loaiCongVan") as React.ChangeEventHandler<HTMLSelectElement>}

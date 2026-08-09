@@ -2102,7 +2102,7 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
   );
 };
 
-const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; }) => {
+const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS, onChuyenDon }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; onChuyenDon?: () => void; }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -2120,6 +2120,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
     { icon: <LayoutTemplate size={13} />, label: "Xem biểu mẫu" },
     { icon: <MessageSquare size={13} />, label: "Ý kiến lãnh đạo" },
     { icon: <Copy size={13} />, label: "Thêm đơn trùng", action: "dontrung" },
+    { icon: <Send size={13} />, label: "Chuyển đơn", action: "chuyen" },
     ...(onGhepDon ? [{ icon: <GitMerge size={13} />, label: "Ghép đơn", action: "ghep" }] : []),
     // Chỉ đơn Chưa đủ điều kiện mới lập được Yêu cầu bổ sung — đơn khác không
     // truyền onThemYCBS nên mục này không hiện.
@@ -2140,6 +2141,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
           if (item.action === "edit") { onEdit?.(); }
           if (item.action === "dontrung") { onDonTrung?.(); }
           if (item.action === "themycbs") { onThemYCBS?.(); }
+          if (item.action === "chuyen") { onChuyenDon?.(); }
           onClose();
         }}
           className={`w-full flex items-center gap-2.5 px-3 py-[6px] text-[13px] hover:bg-[#f5f5f5] transition-colors text-left
@@ -2156,16 +2158,16 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
 interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; nguoiNhap?: string; cuaToi?: boolean; yeuCauBosung?: { soTB: string; ngayGui: string }[]; }
 
 const GHEP_CANDIDATES: GhepRow[] = [
-  { id: 10, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 1000, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
   {
-    id: 11, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false,
+    id: 1001, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false,
     yeuCauBosung: [
       { soTB: "TB-01", ngayGui: "16/07/2026" },
       { soTB: "TB-02", ngayGui: "18/07/2026" },
     ],
   },
-  { id: 12, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
-  { id: 13, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 1002, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
+  { id: 1003, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
 ];
 
 const VALID_GHEP_STATUSES = ["Thụ lý mới", "Đã thụ lý", "Chưa đủ điều kiện"];
@@ -2714,8 +2716,12 @@ export interface DonLienQuan {
   // sang 1 trong 4 loại theo tiến độ giải quyết ở bên vụ, thay cho việc chỉ
   // đứng yên ở "Thụ lý mới".
   daChuyenVu?: boolean; trangThaiVu?: string;
-  ycbsSo?: string; ycbsLyDo?: string; ycbsDonBoSung?: string;
-  ycbsSo2?: string; ycbsLyDo2?: string; ycbsDonBoSung2?: string;
+  thamPhan?: string;
+  ycbsSo?: string; ycbsLyDo?: string; 
+  ycbsDonBoSung?: string; ycbsDonBoSungLoai?: string; ycbsDonBoSungNgay?: string; ycbsDonBoSungGhiChu?: string;
+  ycbsSo2?: string; ycbsLyDo2?: string; 
+  ycbsDonBoSung2?: string; ycbsDonBoSung2Loai?: string; ycbsDonBoSung2Ngay?: string; ycbsDonBoSung2GhiChu?: string;
+  boSungKhongYcbsMa?: string; boSungKhongYcbsLoai?: string; boSungKhongYcbsNgay?: string; boSungKhongYcbsGhiChu?: string;
 }
 
 // 4 trạng thái vụ hiển thị cho đơn "Thụ lý mới" đã chuyển sang vụ chuyên môn.
@@ -3399,7 +3405,7 @@ const PopupGhepDon = ({
   };
 
   const eligibleCandidates = GHEP_CANDIDATES
-    .filter(r => VALID_GHEP_STATUSES.includes(r.trangThai))
+    .filter(r => VALID_GHEP_STATUSES.includes(r.trangThai) && r.cuaToi)
     .sort((a, b) => parseDate(a.ngayNhap).getTime() - parseDate(b.ngayNhap).getTime());
 
   const [selected, setSelected] = useState<number[]>([]);
@@ -6754,15 +6760,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   // mergeState tracks per-row: pending (chờ cán bộ B xác nhận) hoặc đã ghép
   const [mergeState, setMergeState] = useState<Record<number, {
     ghepVoi?: string;
-    pendingFrom?: { maDon: string; nguoiGui: string };
-    pendingTo?: { maDon: string; nguoiGui: string };
   }>>({
-    // TH1 - cùng cán bộ (Phùng Trâm Anh): đã ghép ngay, row 3 (7029) là đơn chính
+    // Cùng cán bộ (Phùng Trâm Anh): đã ghép ngay, row 3 (7029) là đơn chính
     6: { ghepVoi: "7029" },
-    // TH2 - đơn chính của cán bộ A: đã gửi yêu cầu, đang chờ cán bộ B xác nhận
-    1: { pendingTo: { maDon: "7027", nguoiGui: "Nguyễn Thị Hoa" } },
-    // TH2 - đơn của cán bộ B: nhận được yêu cầu ghép, chờ xác nhận
-    5: { pendingFrom: { maDon: "7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh" } },
   });
   const [autoMergeMap, setAutoMergeMap] = useState<Record<number, string>>({});
   const [showConfirmRow, setShowConfirmRow] = useState<number | null>(null);
@@ -6770,6 +6770,23 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [showBoSungTaiLieu, setShowBoSungTaiLieu] = useState<number | null>(null);
   const [showYeuCauBoSung, setShowYeuCauBoSung] = useState<number | null>(null);
   const [showDonTrung, setShowDonTrung] = useState<number | null>(null);
+  const [showChuyenDon, setShowChuyenDon] = useState<number | null>(null);
+  const [chuyenDonOfficer, setChuyenDonOfficer] = useState<string>("");
+  const [chuyenDonReason, setChuyenDonReason] = useState<string>("");
+  const [transferState, setTransferState] = useState<Record<number, {
+    toOfficer: string;
+    fromOfficer: string;
+    reason: string;
+    isGroup?: boolean;
+    maDons?: string[];
+  }>>({
+    4: {
+      toOfficer: "Phùng Trâm Anh",
+      fromOfficer: "Nguyễn Thị Lan",
+      reason: "Chuyển giao hồ sơ do cán bộ cũ đi công tác đột xuất",
+      maDons: ["Mã 7028"]
+    }
+  });
 
   /** Sinh N đơn trùng từ đơn gốc. Mọi thông tin bản án giữ nguyên — đó chính là
    *  cái làm chúng "trùng" nhau; chỉ mã đơn, số hiệu và ngày là riêng.
@@ -7874,19 +7891,49 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {/* Bỏ link "Danh sách văn bản": đơn có văn bản thì đã liệt
                               kê đủ ở khối trên và bấm được; đơn chưa có thì không hiện
                               gì. Lối vào màn biểu mẫu vẫn còn ở menu ⋮ → Xem biểu mẫu. */}
-                          {mergeState[row.id]?.ghepVoi && (
-                            <div className="mt-1 flex items-center gap-2 flex-wrap">
-                              <div className="flex items-center gap-1">
-                                <GitMerge size={11} className="text-[#27ae60] flex-shrink-0" />
-                                <span className="text-[11px] text-[#27ae60] font-medium">Đã ghép với {mergeState[row.id].ghepVoi}</span>
+                          {(() => {
+                            const normMaDon = (ma?: string) => (ma || "").trim().toLowerCase();
+                            const isDonChinh = Object.values(mergeState).some(item => item.ghepVoi && normMaDon(item.ghepVoi) === normMaDon(row.maDon));
+                            const donKems = isDonChinh 
+                              ? rows.filter(r => mergeState[r.id]?.ghepVoi && normMaDon(mergeState[r.id].ghepVoi) === normMaDon(row.maDon))
+                              : [];
+
+                            return (
+                              <div className="space-y-1 mt-1">
+                                {mergeState[row.id]?.ghepVoi && (
+                                  <div className="flex items-center gap-2 flex-wrap bg-[#f0f9ff] border border-[#bae6fd] p-1.5 rounded-sm">
+                                    <div className="flex items-center gap-1 text-[11px] text-[#0369a1] font-semibold">
+                                      <GitMerge size={11} className="flex-shrink-0" />
+                                      <span>Đã ghép với đơn {mergeState[row.id].ghepVoi.startsWith("Mã") ? mergeState[row.id].ghepVoi : `Mã ${mergeState[row.id].ghepVoi}`}</span>
+                                    </div>
+                                    <button
+                                      onClick={() => setShowHuyGhep(row.id)}
+                                      className="flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[10px] font-medium border border-[#c0392b] text-[#c0392b] hover:bg-[#fdecea] transition-colors whitespace-nowrap ml-auto">
+                                      <X size={9} /> Hủy ghép
+                                    </button>
+                                  </div>
+                                )}
+                                
+                                {isDonChinh && (
+                                  <div className="flex flex-col gap-0.5 text-left bg-[#f0fdf4] border border-[#bbf7d0] p-1.5 rounded-sm">
+                                    <div className="flex items-center gap-1 text-[11px] text-[#166534] font-semibold">
+                                      <GitMerge size={11} className="flex-shrink-0" />
+                                      <span>Đơn chính nhóm ghép</span>
+                                    </div>
+                                    <div className="text-[10px] text-[#444] leading-normal">
+                                      <span className="font-medium text-[#666]">Đơn kèm:</span>{" "}
+                                      {donKems.map((dk, idx) => (
+                                        <span key={dk.id}>
+                                          {idx > 0 && ", "}
+                                          <span className="font-semibold underline text-[#1a5a96]" title={dk.nguoiGui}>{dk.maDon}</span>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <button
-                                onClick={() => setShowHuyGhep(row.id)}
-                                className="flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[10px] font-medium border border-[#c0392b] text-[#c0392b] hover:bg-[#fdecea] transition-colors whitespace-nowrap">
-                                <X size={9} /> Hủy ghép
-                              </button>
-                            </div>
-                          )}
+                            );
+                          })()}
                           {mergeState[row.id]?.pendingTo && (
                             <div className="mt-1 flex items-center gap-1">
                               <Clock size={11} className="text-[#856404] flex-shrink-0" />
@@ -7905,6 +7952,111 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               </button>
                             </div>
                           )}
+                          {transferState[row.id] && (() => {
+                            const ts = transferState[row.id];
+                            return (
+                              <div className="mt-1.5 p-1.5 bg-[#fef9c3] border border-[#fef08a] rounded-sm space-y-1">
+                                <div className="flex items-center gap-1">
+                                  <Clock size={11} className="text-[#856404] flex-shrink-0" />
+                                  <span className="text-[10px] text-[#856404] font-semibold">
+                                    Chờ xác nhận chuyển đơn
+                                  </span>
+                                </div>
+                                <div className="text-[9.5px] text-[#666] leading-tight">
+                                  <div><span className="font-semibold">Từ:</span> {ts.fromOfficer}</div>
+                                  <div><span className="font-semibold">Đến:</span> {ts.toOfficer}</div>
+                                  <div><span className="font-semibold">Lý do:</span> {ts.reason}</div>
+                                </div>
+                                {ts.toOfficer === "Phùng Trâm Anh" && (
+                                  <div className="flex gap-1 mt-1 pt-1 border-t border-[#fef08a]">
+                                    <button
+                                      onClick={() => {
+                                        setRows(prevRows => {
+                                          const targetMaDons = (ts.maDons || [row.maDon]).map(m => m.trim().toLowerCase());
+                                          return prevRows.map(r => {
+                                            const ma = (r.maDon || "").trim().toLowerCase();
+                                            if (targetMaDons.includes(ma)) {
+                                              const newHistory = [
+                                                ...(r.processingHistory || []),
+                                                {
+                                                  date: new Date().toLocaleDateString("vi-VN"),
+                                                  step: "Đồng ý nhận đơn",
+                                                  actor: "Phùng Trâm Anh",
+                                                  note: `Đồng ý nhận quyền quản lý đơn từ ${ts.fromOfficer}.`
+                                                }
+                                              ];
+                                              return {
+                                                ...r,
+                                                nguoiNhap: "Phùng Trâm Anh",
+                                                cuaToi: true,
+                                                processingHistory: newHistory
+                                              };
+                                            }
+                                            return r;
+                                          });
+                                        });
+                                        setTransferState(prev => {
+                                          const next = { ...prev };
+                                          delete next[row.id];
+                                          if (ts.maDons) {
+                                            rows.forEach(r => {
+                                              if (ts.maDons?.includes(r.maDon)) {
+                                                delete next[r.id];
+                                              }
+                                            });
+                                          }
+                                          return next;
+                                        });
+                                        triggerNoti(`Đã xác nhận nhận đơn ${row.maDon} từ cán bộ ${ts.fromOfficer}.`);
+                                      }}
+                                      className="px-1.5 py-[2px] rounded text-[9.5px] font-semibold bg-[#27ae60] text-white hover:bg-[#219653] transition-colors whitespace-nowrap">
+                                      Đồng ý nhận
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setRows(prevRows => {
+                                          const targetMaDons = (ts.maDons || [row.maDon]).map(m => m.trim().toLowerCase());
+                                          return prevRows.map(r => {
+                                            const ma = (r.maDon || "").trim().toLowerCase();
+                                            if (targetMaDons.includes(ma)) {
+                                              return {
+                                                ...r,
+                                                processingHistory: [
+                                                  ...(r.processingHistory || []),
+                                                  {
+                                                    date: new Date().toLocaleDateString("vi-VN"),
+                                                    step: "Từ chối nhận đơn",
+                                                    actor: "Phùng Trâm Anh",
+                                                    note: `Từ chối nhận quyền quản lý đơn từ ${ts.fromOfficer}.`
+                                                  }
+                                                ]
+                                              };
+                                            }
+                                            return r;
+                                          });
+                                        });
+                                        setTransferState(prev => {
+                                          const next = { ...prev };
+                                          delete next[row.id];
+                                          if (ts.maDons) {
+                                            rows.forEach(r => {
+                                              if (ts.maDons?.includes(r.maDon)) {
+                                                delete next[r.id];
+                                              }
+                                            });
+                                          }
+                                          return next;
+                                        });
+                                        triggerNoti(`Đã từ chối nhận đơn ${row.maDon} từ cán bộ ${ts.fromOfficer}.`);
+                                      }}
+                                      className="px-1.5 py-[2px] rounded text-[9.5px] font-semibold bg-[#c0392b] text-white hover:bg-[#a93226] transition-colors whitespace-nowrap">
+                                      Từ chối
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </>)}
                       </td>
 
@@ -7985,6 +8137,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               onThemYCBS={row.giaiQuyet?.nhan === "Chưa đủ điều kiện"
                                 ? () => { setYcbsRowId(row.id); setOpenMenu(null); }
                                 : undefined}
+                              onChuyenDon={() => { setShowChuyenDon(row.id); setOpenMenu(null); }}
                             />
                           )}
                         </div>
@@ -8110,6 +8263,133 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         />
       )}
 
+      {/* Popup Chuyển đơn */}
+      {showChuyenDon !== null && (() => {
+        const row = rows.find(r => r.id === showChuyenDon);
+        if (!row) return null;
+        
+        // Kiểm tra xem đơn này có phải Đơn kèm không
+        const isDonKem = !!mergeState[row.id]?.ghepVoi;
+        const normMaDon = (ma?: string) => (ma || "").trim().toLowerCase();
+        const isDonChinh = Object.values(mergeState).some(item => item.ghepVoi && normMaDon(item.ghepVoi) === normMaDon(row.maDon));
+
+        // Lấy tất cả các đơn kèm trong nhóm nếu đây là đơn chính
+        const nhomDonKem = isDonChinh 
+          ? rows.filter(r => mergeState[r.id]?.ghepVoi && normMaDon(mergeState[r.id].ghepVoi) === normMaDon(row.maDon))
+          : [];
+
+        const allOfficers = ["Phùng Trâm Anh", "Nguyễn Văn An", "Trần Thị Bình", "Lê Thị Hà", "Phạm Văn Đức", "Hoàng Thị Thu", "Vũ Văn Yên", "Nguyễn Thị Lan", "Nguyễn Minh An"];
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-[4px] shadow-xl w-[480px]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
+                <span className="text-[13px] font-semibold text-[#8b1a1a]">Chuyển quyền quản lý đơn</span>
+                <button onClick={() => { setShowChuyenDon(null); setChuyenDonOfficer(""); setChuyenDonReason(""); }} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+              </div>
+              <div className="px-5 py-4 space-y-3 text-[12px]">
+                {isDonKem ? (
+                  <div className="bg-[#fdecea] border border-[#f5c6cb] rounded px-3 py-2 text-[#721c24]">
+                    <strong>Không cho phép chuyển đơn kèm!</strong> Đơn <strong>{row.maDon}</strong> đang là đơn kèm trong nhóm. Bạn phải thực hiện <strong>Hủy ghép</strong> trước khi có thể chuyển đơn này độc lập.
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-1 bg-[#f9f9f9] p-3 border border-[#eee] rounded-sm">
+                      <div><span className="text-[#666]">Mã đơn cần chuyển: </span><span className="font-semibold text-[#1d2e4f]">{row.maDon}</span></div>
+                      <div><span className="text-[#666]">Người gửi: </span><span className="text-[#333]">{row.nguoiGui}</span></div>
+                      <div><span className="text-[#666]">Cán bộ xử lý hiện tại: </span><span className="font-medium text-[#333]">{row.nguoiNhap}</span></div>
+                      {isDonChinh && (
+                        <div className="mt-2 pt-2 border-t border-[#e6e6e6]">
+                          <span className="font-bold text-[#b45309]">Cảnh báo chuyển nhóm đơn (BR-06):</span>
+                          <p className="text-[11px] text-[#666] mt-0.5">
+                            Đơn này là <strong>Đơn chính</strong> của nhóm. Khi chuyển, toàn bộ các đơn kèm dưới đây sẽ được chuyển cùng sang cán bộ mới:
+                          </p>
+                          <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-[#555]">
+                            {nhomDonKem.map(dk => (
+                              <li key={dk.id}><strong>{dk.maDon}</strong> ({dk.nguoiGui})</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#555] mb-1">Chọn cán bộ nhận <span className="text-red-500">*</span></label>
+                      <div className="relative">
+                        <select value={chuyenDonOfficer} onChange={e => setChuyenDonOfficer(e.target.value)}
+                          className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                          <option value="">-- Chọn cán bộ nhận --</option>
+                          {allOfficers.filter(name => name !== row.nguoiNhap).map(name => (
+                            <option key={name} value={name}>{name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#555] mb-1">Lý do chuyển đơn <span className="text-red-500">*</span></label>
+                      <textarea rows={3} value={chuyenDonReason} onChange={e => setChuyenDonReason(e.target.value)}
+                        placeholder="Nhập lý do chuyển quyền quản lý đơn..." 
+                        className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+                <button onClick={() => { setShowChuyenDon(null); setChuyenDonOfficer(""); setChuyenDonReason(""); }}
+                  className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                  Đóng
+                </button>
+                {!isDonKem && (
+                  <button
+                    onClick={() => {
+                      if (!chuyenDonOfficer || !chuyenDonReason.trim()) return;
+                      
+                      const targetMaDons = [row.maDon, ...nhomDonKem.map(dk => dk.maDon)];
+
+                      setTransferState(prev => {
+                        const next = { ...prev };
+                        next[row.id] = {
+                          toOfficer: chuyenDonOfficer,
+                          fromOfficer: row.nguoiNhap,
+                          reason: chuyenDonReason,
+                          isGroup: isDonChinh,
+                          maDons: targetMaDons
+                        };
+                        nhomDonKem.forEach(dk => {
+                          next[dk.id] = {
+                            toOfficer: chuyenDonOfficer,
+                            fromOfficer: dk.nguoiNhap,
+                            reason: chuyenDonReason,
+                            isGroup: false,
+                            maDons: [dk.maDon]
+                          };
+                        });
+                        return next;
+                      });
+
+                      const msg = isDonChinh 
+                        ? `Đã gửi yêu cầu chuyển toàn bộ nhóm đơn (Đơn chính ${row.maDon} và ${nhomDonKem.length} đơn kèm) sang cán bộ ${chuyenDonOfficer}. Chờ xác nhận.`
+                        : `Đã gửi yêu cầu chuyển đơn ${row.maDon} sang cán bộ ${chuyenDonOfficer}. Chờ xác nhận.`;
+
+                      triggerNoti(msg);
+                      
+                      setShowChuyenDon(null);
+                      setChuyenDonOfficer("");
+                      setChuyenDonReason("");
+                    }}
+                    disabled={!chuyenDonOfficer || !chuyenDonReason.trim()}
+                    className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    Xác nhận chuyển
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Popup Ghép đơn */}
       {showGhepDon !== null && (() => {
         const row = SAMPLE_ROWS.find(r => r.id === showGhepDon);
@@ -8126,87 +8406,25 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
       {/* Popup Xác nhận ghép */}
       {showXacNhan && (() => {
-        const row = SAMPLE_ROWS.find(r => r.id === ghepDonChinh) ?? SAMPLE_ROWS[0];
+        const row = rows.find(r => r.id === ghepDonChinh) ?? rows[0];
         return (
           <PopupXacNhanGhep
             donChinh={{ maDon: row.maDon, nguoiGui: row.nguoiGui, soBA: row.thongTinDon.soBaqd, ngayBA: row.thongTinDon.ngay, toaXetXu: row.thongTinDon.toaXetXu }}
             donGhep={ghepSelected}
             onClose={() => { setShowXacNhan(false); setGhepSelected([]); }}
             onConfirm={() => {
-              // Tạo pending request trên từng đơn được ghép (cán bộ B cần xác nhận)
-              const donChinhRow = SAMPLE_ROWS.find(r => r.id === ghepDonChinh) ?? SAMPLE_ROWS[0];
+              // Ghép ngay lập tức (vì chỉ được phép ghép đơn của cùng cán bộ xử lý)
+              const donChinhRow = rows.find(r => r.id === ghepDonChinh) ?? rows[0];
               setMergeState(prev => {
                 const next = { ...prev };
-                // Đơn chính: hiển thị "Chờ xác nhận ghép"
-                next[donChinhRow.id] = {
-                  ...next[donChinhRow.id],
-                  pendingTo: { maDon: ghepSelected.map(d => d.maDon).join(", "), nguoiGui: ghepSelected[0]?.nguoiGui ?? "" },
-                };
-                // Đơn được ghép: hiển thị "Xác nhận ghép đơn"
                 ghepSelected.forEach(d => {
-                  next[d.id] = { pendingFrom: { maDon: donChinhRow.maDon, nguoiGui: donChinhRow.nguoiGui } };
+                  next[d.id] = { ghepVoi: donChinhRow.maDon };
                 });
                 return next;
               });
-              triggerNoti(`Đơn [${donChinhRow.maDon}] của ${donChinhRow.nguoiGui} đã được gửi yêu cầu ghép với đơn [${ghepSelected.map(d => d.maDon).join("], [")}] của ${ghepSelected.map(d => d.nguoiGui).join(", ")}`);
+              triggerNoti(`Đơn [${ghepSelected.map(d => d.maDon).join("], [")}] đã được ghép thành công vào đơn chính [${donChinhRow.maDon}].`);
               setShowXacNhan(false);
               setGhepSelected([]);
-            }}
-          />
-        );
-      })()}
-      {/* Popup xác nhận ghép cho cán bộ B (đơn được ghép vào) */}
-      {showConfirmRow !== null && (() => {
-        const row = SAMPLE_ROWS.find(r => r.id === showConfirmRow);
-        const pending = mergeState[showConfirmRow]?.pendingFrom;
-        if (!row || !pending) return null;
-        const chinhRow = SAMPLE_ROWS.find(r => r.maDon === pending.maDon);
-        return (
-          <PopupXacNhanGhep
-            donChinh={{
-              maDon: pending.maDon,
-              nguoiGui: pending.nguoiGui,
-              soBA: chinhRow?.thongTinDon.soBaqd,
-              ngayBA: chinhRow?.thongTinDon.ngay,
-              toaXetXu: chinhRow?.thongTinDon.toaXetXu,
-            }}
-            donGhep={[{
-              id: row.id,
-              maDon: row.maDon,
-              nguoiGui: row.nguoiGui,
-              ngayNhap: row.ngayNhap,
-              trangThai: row.giaiQuyet.nhan,
-              soBA: row.thongTinDon.soBaqd,
-              ngayBA: row.thongTinDon.ngay,
-              toaBA: row.thongTinDon.toaXetXu,
-            }]}
-            isRecipientConfirmation={true}
-            onClose={() => setShowConfirmRow(null)}
-            onConfirm={() => {
-              setMergeState(prev => {
-                const next = { ...prev };
-                next[showConfirmRow!] = { ghepVoi: pending.maDon };
-                if (chinhRow) {
-                  const { pendingTo, ...rest } = next[chinhRow.id] ?? {};
-                  next[chinhRow.id] = { ...rest, ghepVoi: row.maDon };
-                }
-                return next;
-              });
-              triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã được ghép với đơn [${chinhRow?.maDon}] của ${chinhRow?.nguoiGui}`);
-              setShowConfirmRow(null);
-            }}
-            onReject={() => {
-              setMergeState(prev => {
-                const next = { ...prev };
-                delete next[showConfirmRow!]?.pendingFrom;
-                if (chinhRow) {
-                  const { pendingTo, ...rest } = next[chinhRow.id] ?? {};
-                  next[chinhRow.id] = rest;
-                }
-                return next;
-              });
-              triggerNoti(`Đơn [${row?.maDon}] của ${row?.nguoiGui} đã từ chối yêu cầu ghép.`);
-              setShowConfirmRow(null);
             }}
           />
         );
@@ -11391,6 +11609,22 @@ export default function App() {
     setDonGocBoSung(r);
     addNotification(`Đã liên kết đơn bổ sung với ${r.maDon} và điền người đứng đơn: ${r.nguoiGui}.`);
   };
+  const [donTrungKey, setDonTrungKey] = useState<string | null>(null);
+  const [donTrungGoc, setDonTrungGoc] = useState<DonLienQuan | null>(null);
+  const chonLamDonTrung = (r: DonLienQuan, khoa: string) => {
+    // Chuẩn hóa so sánh hinhThuc: bỏ qua ký tự phân cách (/ vs -), khoảng trắng, chữ hoa/thường
+    const norm = (s: string) => s.toLowerCase().replace(/[/\-\s]+/g, '');
+    if (norm(r.hinhThuc) !== norm(hinhThuc)) {
+      addNotification(`Không thể liên kết: Hình thức của đơn được chọn (${r.hinhThuc}) không khớp với Hình thức đơn hiện tại (${hinhThuc}).`);
+      return;
+    }
+    setDonTrungKey(khoa);
+    setDonTrungGoc(r);
+    // Clone all details from the selected record into the new ticket state fields
+    if (r.soBA) setBaForm(prev => ({ ...prev, soBA: r.soBA || "" }));
+    if (r.ngayBA) setBaForm(prev => ({ ...prev, ngayBA: r.ngayBA ? r.ngayBA.split("/").reverse().join("-") : "" }));
+    addNotification(`Đã liên kết đơn trùng với ${r.maDon} và sao chép toàn bộ thông tin.`);
+  };
   const loaiQDBaOptions = ["Bản án", "Quyết định"];
   const loaiQDBaEffective = loaiQDBaOptions.includes(loaiQDBa) ? loaiQDBa : loaiQDBaOptions[0];
   const laHanhVi = false;
@@ -11532,10 +11766,13 @@ export default function App() {
       hinhThuc: "Đơn đề nghị GĐT/TT", thuTuc: "Giám đốc thẩm",
       trangThai: "Chưa đủ điều kiện", color: "#e67e22", stl: "",
       nguoiNhap: "Phùng Trâm Anh", ngayNhap: "02/11/2023",
-      ycbsSo: "YCBS-2023/089",
+      ycbsSo: "Số 089/TB-TA, 15/11/2023",
       ycbsLyDo: "Thiếu tài liệu chứng minh quyền sử dụng đất hợp pháp",
       ycbsDonBoSung: "Mã 6912",
-      ycbsSo2: "YCBS-2023/095",
+      ycbsDonBoSungLoai: "Tài liệu chứng cứ",
+      ycbsDonBoSungNgay: "20/11/2023",
+      ycbsDonBoSungGhiChu: "Đã nộp sổ đỏ bản sao y",
+      ycbsSo2: "Số 095/TB-TA, 25/11/2023",
       ycbsLyDo2: "Thiếu giấy ủy quyền hợp lệ của các đồng sở hữu",
       ycbsDonBoSung2: "",
     },
@@ -11553,10 +11790,21 @@ export default function App() {
       maDon: "Mã 7188", ngayNhan: "03/02/2024",
       nguoiGui: "Nguyễn Thị Hoa", diaChi: "Phường Ninh Xá, Tỉnh Bắc Ninh",
       soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024",
-      hinhThuc: "Đơn đề nghị GĐT/TT", thuTuc: "Giám đốc thẩm",
+      hinhThuc: "Đơn đề nghị GĐT-TT", thuTuc: "Giám đốc thẩm",
       trangThai: "Thụ lý mới", color: "#2980b9", stl: "54682460", ngayThuLy: "05/02/2024",
       daChuyenVu: true, trangThaiVu: "Xếp đơn",
+      thamPhan: "TP. Nguyễn Minh Tuấn",
       nguoiNhap: "Vũ Văn Yên", ngayNhap: "03/02/2024",
+    },
+    {
+      id: 5,
+      maDon: "Mã 7210", ngayNhan: "10/02/2024",
+      nguoiGui: "Lê Văn Bốn", diaChi: "Phường Suối Hoa, Tỉnh Bắc Ninh",
+      soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024",
+      hinhThuc: "Đơn đề nghị GĐT-TT", thuTuc: "Giám đốc thẩm",
+      trangThai: "Chưa đủ điều kiện", color: "#e67e22",
+      nguoiNhap: "Phùng Trâm Anh", ngayNhap: "10/02/2024",
+      // Không có YCBS nhưng vẫn có đơn bổ sung
     },
   ];
 
@@ -12444,12 +12692,30 @@ export default function App() {
                                               chuyển sang vụ chuyên môn, nêu thêm trạng thái vụ
                                               (1 trong 4 loại) — hồ sơ không còn nằm ở khâu thụ lý
                                               nữa nên phải nói rõ nó đang ở đâu. */}
-                                          {r.trangThai === "Thụ lý mới" && (r.stl || r.ngayThuLy || (r.daChuyenVu && r.trangThaiVu)) && (
-                                            <div className="text-left w-[218px] space-y-[2px] leading-snug">
-                                              {r.stl && <div><span className="text-[#888]">Số thụ lý: </span><span className="text-[#333]">{r.stl}</span></div>}
-                                              {r.ngayThuLy && <div><span className="text-[#888]">Ngày thụ lý: </span><span className="text-[#333]">{r.ngayThuLy}</span></div>}
-                                              {r.daChuyenVu && r.trangThaiVu && (
-                                                <div><span className="text-[#888]">Trạng thái vụ: </span><span className="font-medium text-[#333]">{r.trangThaiVu}</span></div>
+                                          {r.trangThai === "Thụ lý mới" && (
+                                            <div className="flex flex-col items-start gap-1 mt-1">
+                                              {donTrungKey === `${r.id}-trung` ? (
+                                                <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#1a7a45]">
+                                                  <Check size={9} /> trùng với đơn {r.maDon}
+                                                </span>
+                                              ) : (
+                                                <button type="button" onClick={() => chonLamDonTrung(r, `${r.id}-trung`)}
+                                                  title="Lấy đơn này làm đơn trùng"
+                                                  className="px-1.5 py-[1px] rounded-sm border border-[#8b1a1a] text-[#8b1a1a] text-[9px] font-semibold hover:bg-[#fdecea] transition-colors">
+                                                  Chọn làm đơn trùng
+                                                </button>
+                                              )}
+                                              {(r.stl || r.ngayThuLy || (r.daChuyenVu && r.trangThaiVu)) && (
+                                                <div className="text-left w-[218px] space-y-[2px] leading-snug mt-1">
+                                                  {r.stl && <div><span className="text-[#888]">Số thụ lý: </span><span className="text-[#333]">{r.stl}</span></div>}
+                                                  {r.ngayThuLy && <div><span className="text-[#888]">Ngày thụ lý: </span><span className="text-[#333]">{r.ngayThuLy}</span></div>}
+                                                  {r.daChuyenVu && r.trangThaiVu && (
+                                                    <div><span className="text-[#888]">Trạng thái vụ: </span><span className="font-medium text-[#333]">{r.trangThaiVu}</span></div>
+                                                  )}
+                                                  {r.daChuyenVu && r.thamPhan && (
+                                                    <div><span className="text-[#888]">Thẩm phán: </span><span className="font-medium text-[#333]">{r.thamPhan}</span></div>
+                                                  )}
+                                                </div>
                                               )}
                                             </div>
                                           )}
@@ -12458,45 +12724,71 @@ export default function App() {
                                               lãnh đạo trong đơn. Bỏ khung nền, chỉ còn vạch đỏ
                                               mảnh bên trái. */}
                                           {r.trangThai === "Chưa đủ điều kiện" && (() => {
-                                            const cacLan = [
-                                              { i: 1, so: r.ycbsSo, lyDo: r.ycbsLyDo, donBS: r.ycbsDonBoSung },
-                                              { i: 2, so: r.ycbsSo2, lyDo: r.ycbsLyDo2, donBS: r.ycbsDonBoSung2 },
+                                            const ycbss = [
+                                              { i: 1, so: r.ycbsSo, lyDo: r.ycbsLyDo },
+                                              { i: 2, so: r.ycbsSo2, lyDo: r.ycbsLyDo2 },
                                             ].filter(x => x.so || x.lyDo);
-                                            if (!cacLan.length) return null;
+                                            
+                                            const bsList = [
+                                              { ma: r.ycbsDonBoSung, loai: r.ycbsDonBoSungLoai, ngay: r.ycbsDonBoSungNgay, ghiChu: r.ycbsDonBoSungGhiChu },
+                                              { ma: r.ycbsDonBoSung2, loai: r.ycbsDonBoSung2Loai, ngay: r.ycbsDonBoSung2Ngay, ghiChu: r.ycbsDonBoSung2GhiChu },
+                                              { ma: r.boSungKhongYcbsMa, loai: r.boSungKhongYcbsLoai, ngay: r.boSungKhongYcbsNgay, ghiChu: r.boSungKhongYcbsGhiChu }
+                                            ].filter(x => x.ma);
+                                            
+                                            const standaloneDonChon = selectedYcbsKey === `${r.id}-alone`;
+
                                             return (
-                                              <div className="text-left w-[218px] mt-1 space-y-1.5 border-l-2 border-[#f3c0bb] pl-2">
-                                                {cacLan.map(l => {
-                                                  const daChon = selectedYcbsKey === `${r.id}-${l.i}`;
-                                                  return (
-                                                    <div key={l.i} className="leading-snug">
-                                                      <div className="flex items-center gap-1 flex-wrap">
-                                                        <span className="px-1 rounded-sm bg-[#fdecea] text-[#c0392b] text-[9px] font-bold">
-                                                          YCBS {l.i}
-                                                        </span>
-                                                        {l.so && <span className="font-mono text-[10px] text-[#333]">{l.so}</span>}
-                                                        {/* Đã có đơn bổ sung thì nêu luôn mã, chưa có thì cho nút chọn */}
-                                                        {l.donBS ? (
-                                                          <span className="text-[10px] text-[#1a7a45]">→ <span className="underline font-medium">{l.donBS}</span></span>
-                                                        ) : daChon ? (
-                                                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#1a7a45]">
-                                                            <Check size={9} /> đã liên kết
+                                              <div className="text-left w-[218px] mt-1 space-y-2 border-l-2 border-[#f3c0bb] pl-2">
+                                                {/* Danh sách YCBS (chỉ hiện Số và Lý do, không gắn nút chọn BS) */}
+                                                {ycbss.length > 0 && (
+                                                  <div className="space-y-1.5">
+                                                    {ycbss.map(l => (
+                                                      <div key={l.i} className="leading-snug">
+                                                        <div className="flex items-center gap-1 flex-wrap">
+                                                          <span className="px-1 rounded-sm bg-[#fdecea] text-[#c0392b] text-[9px] font-bold">
+                                                            YCBS {l.i}
                                                           </span>
-                                                        ) : (
-                                                          <button type="button" onClick={() => chonLamDonBoSung(r, `${r.id}-${l.i}`)}
-                                                            title="Lấy đơn này làm đơn bổ sung cho YCBS trên"
-                                                            className="px-1.5 py-[1px] rounded-sm border border-[#8b1a1a] text-[#8b1a1a] text-[9px] font-semibold hover:bg-[#fdecea] transition-colors">
-                                                            Chọn làm đơn BS
-                                                          </button>
+                                                          {l.so && <span className="font-mono text-[10px] text-[#333]" title="Số, ngày TB">{l.so}</span>}
+                                                        </div>
+                                                        {l.lyDo && (
+                                                          <div title={l.lyDo} className="text-[10px] text-[#777] mt-[2px] line-clamp-2">
+                                                            <span className="text-[#888]">Lý do: </span>{l.lyDo}
+                                                          </div>
                                                         )}
                                                       </div>
-                                                      {l.lyDo && (
-                                                        <div title={l.lyDo} className="text-[10px] text-[#777] mt-[1px] line-clamp-2">
-                                                          <span className="text-[#888]">Ý kiến lãnh đạo: </span>{l.lyDo}
+                                                    ))}
+                                                  </div>
+                                                )}
+                                                
+                                                {/* Danh sách Đơn/tài liệu bổ sung (liệt kê độc lập) */}
+                                                {bsList.length > 0 && (
+                                                  <div className="space-y-1">
+                                                    {bsList.map((bs, idx) => (
+                                                      <div key={idx} className="w-full bg-[#f9f9f9] border border-[#eee] p-1.5 rounded-sm">
+                                                        <div className="text-[10px] text-[#1a7a45] mb-0.5">
+                                                          → <span className="font-semibold">{bs.loai || "Đơn bổ sung"}</span>: <span className="underline font-medium">{bs.ma}</span>
                                                         </div>
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })}
+                                                        {bs.ngay && <div className="text-[9.5px] text-[#555]"><span className="text-[#888]">Ngày BS:</span> {bs.ngay}</div>}
+                                                        {bs.ghiChu && <div className="text-[9.5px] text-[#555] italic line-clamp-2" title={bs.ghiChu}><span className="text-[#888] not-italic">Ghi chú:</span> {bs.ghiChu}</div>}
+                                                      </div>
+                                                    ))}
+                                                  </div>
+                                                )}
+
+                                                {/* Nút hành động Chọn làm đơn BS (chỉ 1 nút cho cả đơn) */}
+                                                <div className="pt-0.5">
+                                                  {standaloneDonChon ? (
+                                                    <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#1a7a45]">
+                                                      <Check size={9} /> đã liên kết
+                                                    </span>
+                                                  ) : (
+                                                    <button type="button" onClick={() => chonLamDonBoSung(r, `${r.id}-alone`)}
+                                                      title="Chọn làm đơn bổ sung cho đơn này"
+                                                      className="px-1.5 py-[1px] rounded-sm border border-[#8b1a1a] text-[#8b1a1a] text-[9px] font-semibold hover:bg-[#fdecea] transition-colors">
+                                                      Chọn làm đơn BS
+                                                    </button>
+                                                  )}
+                                                </div>
                                               </div>
                                             );
                                           })()}
