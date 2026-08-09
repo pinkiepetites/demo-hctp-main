@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   FileText,
   CheckCircle,
@@ -11,7 +11,8 @@ import {
   BellRing,
   ArrowRight,
   FileCheck,
-  Hourglass
+  Hourglass,
+  X
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh } from "./components/QuanLyVanBan";
 
@@ -101,6 +102,35 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
     }
   };
 
+  // Số liệu gốc lấy từ báo cáo "Phòng Hành chính Tư pháp" (dòng Tổng cộng, kỳ 01/03/2026 - 18/03/2026)
+  // — đây là nguồn duy nhất để tính 4 số của card KPI, thay vì gõ tay từng số như trước.
+  const hctpReportTuanNay = {
+    tongDonNhan: 27,           // "Tổng số đơn đã xử lý HCTP"
+    traLaiDon: 1,               // "Trả lại đơn"
+    khongThuocThamQuyen: 1,     // "Đơn không thuộc thẩm quyền TATC"
+    chuaDuDieuKien: 1,          // "Đơn chưa đủ điều kiện"
+    gdkt1: { trung: 5, thuLyMoi: 3 },
+    gdkt2: { trung: 0, thuLyMoi: 0 },
+    gdkt3: { trung: 0, thuLyMoi: 0 },
+    conLaiChuaXuLy: 0,          // "Đơn còn lại chưa xử lý"
+  };
+
+  // Công thức gộp cột báo cáo thành 4 chỉ số KPI:
+  // - Tổng đơn nhận = Tổng số đơn đã xử lý HCTP.
+  // - Đã xử lý = Trả lại đơn + Đơn thụ lý mới (cả 3 Vụ GĐKT).
+  // - Đang giải quyết = Chưa đủ điều kiện + Không thuộc thẩm quyền TATC + Đơn trùng (cả 3 Vụ GĐKT).
+  // - Tồn đọng/Quá hạn = Đơn còn lại chưa xử lý.
+  const tinhKPITuBaoCao = (r: typeof hctpReportTuanNay) => {
+    const tongDonTrung = r.gdkt1.trung + r.gdkt2.trung + r.gdkt3.trung;
+    const tongDonThuLyMoi = r.gdkt1.thuLyMoi + r.gdkt2.thuLyMoi + r.gdkt3.thuLyMoi;
+    return {
+      total: r.tongDonNhan,
+      processed: r.traLaiDon + tongDonThuLyMoi,
+      processing: r.chuaDuDieuKien + r.khongThuocThamQuyen + tongDonTrung,
+      overdue: r.conLaiChuaXuLy,
+    };
+  };
+
   const getKPIData = () => {
     const compare = getCompareLabel();
     switch (chartPeriod) {
@@ -109,59 +139,70 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
       case "year": return { total: "15,400", processed: "12,800", processing: "1,500", overdue: "1,100", t1: `+8% so với ${compare}`, t2: `+10% so với ${compare}`, t3: `-2% so với ${compare}`, t4: `Giảm 5% so với ${compare}` };
       case "custom": return { total: "320", processed: "250", processing: "50", overdue: "20", t1: `---`, t2: `---`, t3: `---`, t4: `---` };
       case "week":
-      default:
-        return { total: "315", processed: "215", processing: "85", overdue: "15", t1: `+8% so với ${compare}`, t2: `+12% so với ${compare}`, t3: `+1% so với ${compare}`, t4: `Giảm 2 so với ${compare}` };
+      default: {
+        const k = tinhKPITuBaoCao(hctpReportTuanNay);
+        return {
+          total: String(k.total),
+          processed: String(k.processed),
+          processing: String(k.processing),
+          overdue: String(k.overdue),
+          t1: `+8% so với ${compare}`, t2: `+12% so với ${compare}`, t3: `+1% so với ${compare}`, t4: `Giảm 2 so với ${compare}`,
+        };
+      }
     }
   };
 
   const kpi = getKPIData();
 
-  const getChartData = () => {
-    switch (chartPeriod) {
-      case "day":
-        return [
-          { label: "08:00", received: 12, processed: 8 },
-          { label: "10:00", received: 25, processed: 18 },
-          { label: "12:00", received: 15, processed: 12 },
-          { label: "14:00", received: 32, processed: 24 },
-          { label: "16:00", received: 18, processed: 22 },
-        ];
-      case "month":
-        return [
-          { label: "Tuần 1", received: 310, processed: 280 },
-          { label: "Tuần 2", received: 345, processed: 290 },
-          { label: "Tuần 3", received: 295, processed: 240 },
-          { label: "Tuần 4", received: 300, processed: 270 },
-        ];
-      case "year":
-        return [
-          { label: "Quý 1", received: 3500, processed: 3200 },
-          { label: "Quý 2", received: 4200, processed: 3800 },
-          { label: "Quý 3", received: 3800, processed: 3500 },
-          { label: "Quý 4", received: 3900, processed: 3300 },
-        ];
-      case "custom":
-        return [
-          { label: "Đầu kỳ", received: 120, processed: 90 },
-          { label: "Giữa kỳ", received: 110, processed: 100 },
-          { label: "Cuối kỳ", received: 90, processed: 60 },
-        ];
-      case "week":
-      default:
-        return [
-          { label: "T2", received: 65, processed: 45 },
-          { label: "T3", received: 58, processed: 50 },
-          { label: "T4", received: 42, processed: 38 },
-          { label: "T5", received: 70, processed: 55 },
-          { label: "T6", received: 55, processed: 62 },
-          { label: "T7", received: 15, processed: 20 },
-          { label: "CN", received: 10, processed: 5 },
-        ];
-    }
+  // Màu theo Vụ GĐKT — dùng chung cho biểu đồ cột chồng và phần chú giải.
+  const GDKT_COLORS = {
+    gdkt1: "#3b82f6", // Vụ GĐKT 1 — xanh dương
+    gdkt2: "#22c55e", // Vụ GĐKT 2 — xanh lá
+    gdkt3: "#f97316", // Vụ GĐKT 3 — cam
+    chuaDu: "#94a3b8", // Đơn chưa đủ điều kiện — xám, không phân theo Vụ
   };
 
-  const chartData = getChartData();
-  const maxChartValue = Math.max(...chartData.map(d => Math.max(d.received, d.processed))) * 1.15 || 1;
+  // Dữ liệu chi tiết theo từng ngày trong tuần (Thứ 2 - Thứ 6), chia nhỏ đúng theo dòng
+  // "Tổng cộng" của báo cáo Phòng HCTP dùng cho card KPI ở trên (hctpReportTuanNay) —
+  // cộng dồn 5 ngày phải khớp 100% với số liệu report: Vụ GĐKT 1 trùng=5, thụ lý mới=3,
+  // Vụ GĐKT 2 và 3 chưa phát sinh (=0), chưa đủ điều kiện=1.
+  const gdktWeekdayData = [
+    { day: "Thứ 2", trung: { gdkt1: 2, gdkt2: 0, gdkt3: 0 }, thuLyMoi: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, chuaDu: 0 },
+    { day: "Thứ 3", trung: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, thuLyMoi: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, chuaDu: 0 },
+    { day: "Thứ 4", trung: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, thuLyMoi: { gdkt1: 0, gdkt2: 0, gdkt3: 0 }, chuaDu: 1 },
+    { day: "Thứ 5", trung: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, thuLyMoi: { gdkt1: 1, gdkt2: 0, gdkt3: 0 }, chuaDu: 0 },
+    { day: "Thứ 6", trung: { gdkt1: 0, gdkt2: 0, gdkt3: 0 }, thuLyMoi: { gdkt1: 0, gdkt2: 0, gdkt3: 0 }, chuaDu: 0 },
+  ];
+
+  const gdktGroupTotal = (g: { gdkt1: number; gdkt2: number; gdkt3: number }) => g.gdkt1 + g.gdkt2 + g.gdkt3;
+  const maxGDKTValue = Math.max(
+    ...gdktWeekdayData.flatMap(d => [gdktGroupTotal(d.trung), gdktGroupTotal(d.thuLyMoi), d.chuaDu])
+  ) * 1.15 || 1;
+
+  const chartAreaRef = useRef<HTMLDivElement>(null);
+  const [gdktPopup, setGdktPopup] = useState<{
+    x: number;
+    day: string;
+    title: string;
+    total: number;
+    breakdown?: { gdkt1: number; gdkt2: number; gdkt3: number };
+  } | null>(null);
+
+  const handleGdktColClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    day: string,
+    col: { title: string; stacked?: { gdkt1: number; gdkt2: number; gdkt3: number }; single?: number }
+  ) => {
+    const container = chartAreaRef.current;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const barRect = e.currentTarget.getBoundingClientRect();
+    const half = 140;
+    const rawX = barRect.left - containerRect.left + barRect.width / 2;
+    const x = Math.min(Math.max(rawX, half), containerRect.width - half);
+    const total = col.stacked ? gdktGroupTotal(col.stacked) : (col.single ?? 0);
+    setGdktPopup({ x, day, title: col.title, total, breakdown: col.stacked });
+  };
 
   const getOfficerData = () => {
     let mult = 1;
@@ -327,61 +368,154 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
           <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
               <BarChart3 size={18} className="text-[#3b82f6]" />
-              Thống kê lượng đơn {getPeriodLabel()}
+              Thống kê đơn theo Vụ GĐKT tuần này
             </h3>
           </div>
-          
-          <div className="flex-1 p-5 flex flex-col justify-end min-h-[300px]">
-            <div className="flex items-end justify-between h-[230px] gap-2 pt-4 relative">
-              <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[11px] text-[#94a3b8] pb-1 font-medium">
-                <span>{Math.round(maxChartValue)}</span>
-                <span>{Math.round(maxChartValue / 2)}</span>
+
+          <div className="flex-1 p-5 flex flex-col justify-end min-h-[320px]">
+            {gdktPopup && <div className="fixed inset-0 z-20" onClick={() => setGdktPopup(null)} />}
+            <div ref={chartAreaRef} className="flex items-end justify-between h-[230px] gap-2 pt-10 relative">
+              <div className="absolute left-0 top-6 bottom-6 w-8 flex flex-col justify-between text-[11px] text-[#94a3b8] pb-1 font-medium">
+                <span>{Math.round(maxGDKTValue)}</span>
+                <span>{Math.round(maxGDKTValue / 2)}</span>
                 <span>0</span>
               </div>
-              
-              <div className="absolute left-10 right-0 top-1.5 bottom-6 border-l border-b border-[#e2e8f0]">
+
+              <div className="absolute left-10 right-0 top-7 bottom-6 border-l border-b border-[#e2e8f0]">
                 <div className="absolute w-full top-0 border-t border-dashed border-[#e2e8f0]"></div>
                 <div className="absolute w-full top-1/2 border-t border-dashed border-[#e2e8f0]"></div>
               </div>
 
-              <div className="ml-10 w-full flex justify-around items-end h-full z-10 pb-[25px]">
-                {chartData.map((d, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 group relative w-full h-full justify-end">
-                    <div className="absolute -top-12 bg-[#1e293b] text-white text-[12px] px-3 py-1.5 rounded-[4px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none shadow-lg">
-                      <div className="font-semibold mb-0.5">{d.label}</div>
-                      <div className="text-[11px] text-gray-300">Nhận: {d.received} | Xử lý: {d.processed}</div>
-                    </div>
-                    
-                    <div className="flex items-end gap-[4px] w-full max-w-[44px] justify-center h-full">
-                      <div 
-                        className="w-[45%] bg-[#3b82f6] rounded-t-[4px] transition-all duration-700 hover:brightness-110 relative overflow-hidden" 
-                        style={{ height: `${(d.received / maxChartValue) * 100}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+              <div className="ml-10 w-full flex justify-evenly items-end h-full z-10 pb-[25px]">
+                {gdktWeekdayData.map((d) => {
+                  const columns = [
+                    { key: "trung", title: "Đơn trùng", stacked: d.trung, single: undefined as number | undefined },
+                    { key: "thuLyMoi", title: "Đơn thụ lý mới", stacked: d.thuLyMoi, single: undefined as number | undefined },
+                    { key: "chuaDu", title: "Đơn chưa đủ điều kiện", stacked: undefined as typeof d.trung | undefined, single: d.chuaDu },
+                  ];
+                  return (
+                    <div key={d.day} className="flex flex-col items-center gap-1 relative h-full justify-end">
+                      <div className="flex items-end gap-2 h-full">
+                        {columns.map(col => {
+                          const total = col.stacked ? gdktGroupTotal(col.stacked) : (col.single ?? 0);
+                          const fillPct = (total / maxGDKTValue) * 100;
+                          const isActive = gdktPopup?.day === d.day && gdktPopup?.title === col.title;
+                          return (
+                            <div
+                              key={col.key}
+                              onClick={(e) => handleGdktColClick(e, d.day, col)}
+                              className="relative w-[28px] h-full cursor-pointer"
+                            >
+                              <span
+                                className="absolute left-1/2 -translate-x-1/2 text-[11px] font-bold text-[#0f172a] whitespace-nowrap pointer-events-none"
+                                style={{ bottom: `calc(${fillPct}% + 4px)` }}
+                              >
+                                {total}
+                              </span>
+                              <div
+                                className={`absolute inset-0 flex flex-col-reverse rounded-t-[4px] overflow-hidden ring-offset-2 transition-all ${isActive ? "ring-2 ring-[#0f172a]/40" : ""}`}
+                              >
+                                {col.stacked ? (
+                                  <>
+                                    <div
+                                      className="w-full transition-all duration-700 hover:brightness-110"
+                                      style={{ height: `${(col.stacked.gdkt1 / maxGDKTValue) * 100}%`, backgroundColor: GDKT_COLORS.gdkt1 }}
+                                    />
+                                    <div
+                                      className="w-full transition-all duration-700 hover:brightness-110"
+                                      style={{ height: `${(col.stacked.gdkt2 / maxGDKTValue) * 100}%`, backgroundColor: GDKT_COLORS.gdkt2 }}
+                                    />
+                                    <div
+                                      className="w-full transition-all duration-700 hover:brightness-110"
+                                      style={{ height: `${(col.stacked.gdkt3 / maxGDKTValue) * 100}%`, backgroundColor: GDKT_COLORS.gdkt3 }}
+                                    />
+                                  </>
+                                ) : (
+                                  <div
+                                    className="w-full transition-all duration-700 hover:brightness-110"
+                                    style={{ height: `${((col.single ?? 0) / maxGDKTValue) * 100}%`, backgroundColor: GDKT_COLORS.chuaDu }}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div 
-                        className="w-[45%] bg-[#22c55e] rounded-t-[4px] transition-all duration-700 hover:brightness-110 relative overflow-hidden" 
-                        style={{ height: `${(d.processed / maxChartValue) * 100}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-                      </div>
+                      <span className="text-[12px] font-semibold text-[#334155] absolute bottom-0 translate-y-full mt-2 w-full text-center">{d.day}</span>
                     </div>
-                    <span className="text-[12px] font-medium text-[#64748b] absolute bottom-0 translate-y-full mt-2 w-full text-center group-hover:text-[#0f172a] transition-colors">{d.label}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {gdktPopup && (
+                <div
+                  className="absolute z-30 w-[280px] bg-white rounded-[10px] border border-[#e2e8f0] shadow-xl"
+                  style={{ left: gdktPopup.x, top: 0, transform: "translate(-50%, calc(-100% - 14px))" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#f1f5f9]">
+                    <div>
+                      <h4 className="text-[13px] font-bold text-[#0f172a] leading-tight">Chi tiết điều chuyển - {gdktPopup.title}</h4>
+                      <span className="text-[11px] text-[#94a3b8]">{gdktPopup.day}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-shrink-0">
+                      <span className="text-[12px] text-[#475569] whitespace-nowrap">Tổng: <span className="font-bold text-[#0f172a]">{gdktPopup.total}</span></span>
+                      <button onClick={() => setGdktPopup(null)} className="text-[#94a3b8] hover:text-[#0f172a] transition-colors">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {gdktPopup.breakdown ? (
+                    <div className="px-4 py-3">
+                      <div className="flex items-center justify-between text-[11px] font-semibold text-[#94a3b8] uppercase tracking-wide pb-2 border-b border-[#f1f5f9]">
+                        <span>Vụ GĐKT</span>
+                        <span>Số lượng</span>
+                      </div>
+                      {[
+                        { label: "Vụ GĐKT 1", value: gdktPopup.breakdown.gdkt1, color: GDKT_COLORS.gdkt1 },
+                        { label: "Vụ GĐKT 2", value: gdktPopup.breakdown.gdkt2, color: GDKT_COLORS.gdkt2 },
+                        { label: "Vụ GĐKT 3", value: gdktPopup.breakdown.gdkt3, color: GDKT_COLORS.gdkt3 },
+                      ].map(row => (
+                        <div key={row.label} className="flex items-center justify-between py-2 border-b border-[#f8fafc]">
+                          <span className="flex items-center gap-2 text-[13px] text-[#334155]">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: row.color }}></span>
+                            {row.label}
+                          </span>
+                          <span className="text-[13px] font-semibold" style={{ color: row.color }}>{row.value}</span>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between pt-2 mt-1 border-t border-[#e2e8f0]">
+                        <span className="text-[13px] font-bold text-[#0f172a]">Tổng cộng</span>
+                        <span className="text-[13px] font-bold text-[#0f172a]">{gdktPopup.total}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="px-4 py-4 text-[13px] text-[#64748b]">Không phân theo Vụ GĐKT</div>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="flex items-center justify-center gap-8 mt-10 pt-4 border-t border-[#f1f5f9]">
+            <div className="flex items-center justify-center gap-6 mt-10 pt-4 border-t border-[#f1f5f9] flex-wrap">
               <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
-                <div className="w-3.5 h-3.5 bg-[#3b82f6] rounded-[3px] shadow-sm"></div>
-                Đơn tiếp nhận
+                <div className="w-3.5 h-3.5 rounded-[3px] shadow-sm" style={{ backgroundColor: GDKT_COLORS.gdkt1 }}></div>
+                Vụ GĐKT 1
               </div>
               <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
-                <div className="w-3.5 h-3.5 bg-[#22c55e] rounded-[3px] shadow-sm"></div>
-                Đơn đã xử lý
+                <div className="w-3.5 h-3.5 rounded-[3px] shadow-sm" style={{ backgroundColor: GDKT_COLORS.gdkt2 }}></div>
+                Vụ GĐKT 2
+              </div>
+              <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
+                <div className="w-3.5 h-3.5 rounded-[3px] shadow-sm" style={{ backgroundColor: GDKT_COLORS.gdkt3 }}></div>
+                Vụ GĐKT 3
+              </div>
+              <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
+                <div className="w-3.5 h-3.5 rounded-[3px] shadow-sm" style={{ backgroundColor: GDKT_COLORS.chuaDu }}></div>
+                Đơn chưa đủ điều kiện
               </div>
             </div>
+            <div className="text-center text-[11px] text-[#94a3b8] mt-2">Mỗi ngày: 3 cột — Đơn trùng · Đơn thụ lý mới · Đơn chưa đủ điều kiện. Bấm vào cột để xem chi tiết theo Vụ.</div>
           </div>
         </div>
 
