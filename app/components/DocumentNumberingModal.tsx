@@ -1330,7 +1330,7 @@ const ActionMenu = ({ onClose, onLaySo }: { onClose: () => void; onLaySo?: () =>
 // ─── Bảng tài liệu: cột như màn lưu số, gom nhóm 3 tầng ─────────────────────
 // Tầng 1 (văn bản to) và tầng 2 (thẩm phán) là dòng gộp cả bảng, có chevron.
 // Tầng 3 (đơn) mới đổ vào từng cột.
-const SO_COT = 8;
+const SO_COT = 7;
 
 const OChon = ({ value, onChange, options, placeholder }: {
   value: string; onChange: (v: string) => void; options: string[]; placeholder: string;
@@ -1384,17 +1384,6 @@ const HangTaiLieu = ({
     </div>
   );
 
-  const trangThai = khongHopLe ? (
-    <span className="inline-flex items-center gap-1 text-[#e74c3c] bg-white px-2 py-1 rounded border border-[#fadbd8] text-[11px] whitespace-nowrap"
-      title={node.invalidReason}>
-      <AlertTriangle size={12} /> Không hợp lệ
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 text-[#27ae60] text-[11px] whitespace-nowrap">
-      <Check size={12} /> Hợp lệ
-    </span>
-  );
-
   // ── Tầng 1 & 2: dòng gộp cả bảng ──
   if (!laDon) {
     return (
@@ -1410,8 +1399,7 @@ const HangTaiLieu = ({
               <span className={`${level === 0 ? "text-[13px] font-bold text-[#1d2e4f]" : "text-[12.5px] font-semibold text-[#333]"}`}>
                 {node.name}
               </span>
-              <span className="ml-auto flex items-center gap-3 flex-shrink-0">
-                {trangThai}
+              <span className="ml-auto flex-shrink-0">
                 {menu}
               </span>
             </div>
@@ -1484,7 +1472,6 @@ const HangTaiLieu = ({
         <OChon value={nguoiTheoDon[node.id]?.ky ?? kyChung} onChange={dat("ky")}
           options={NGUOI_KY_OPTIONS} placeholder="Chọn người ký" />
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 text-center">{trangThai}</td>
       <td className="border-b border-[#eee] px-2 py-2 text-right">{menu}</td>
     </tr>
   );
@@ -2027,13 +2014,12 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   <th className="border-b border-[#ddd] px-3 py-2.5 min-w-[360px] text-left">Thông tin đơn</th>
                   <th className="border-b border-[#ddd] px-2 py-2.5 w-[145px] text-left">Người duyệt</th>
                   <th className="border-b border-[#ddd] px-2 py-2.5 w-[145px] text-left">Người ký</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[105px] text-center">Trạng thái</th>
                   <th className="border-b border-[#ddd] px-2 py-2.5 w-[54px] text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {treeData.length === 0 ? (
-                  <tr><td colSpan={8} className="px-3 py-8 text-center text-[13px] text-[#999] italic">Chưa có tài liệu</td></tr>
+                  <tr><td colSpan={7} className="px-3 py-8 text-center text-[13px] text-[#999] italic">Chưa có tài liệu</td></tr>
                 ) : treeData.map(node => (
                   <HangTaiLieu
                     key={node.id}

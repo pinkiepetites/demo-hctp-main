@@ -1780,13 +1780,10 @@ const NHAN_NHOM: Record<NhomPD, { nhan: string; cls: string }> = {
   tu_choi: { nhan: "Từ chối", cls: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]" },
 };
 
-export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, anTagVang }: {
+export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
-  /** Vào từ link trên Dashboard: đã thấy số việc của mình trên thẻ KPI rồi,
-   *  nên ẩn tag vàng "N của bạn" cạnh tab — tránh lặp lại thông tin. */
-  anTagVang?: boolean;
 }) => {
   // Mở màn là vào thẳng việc cần làm, không phải "Tất cả" rồi tự lọc lại.
   const [tab, setTab] = useState<TabPD>("cho_duyet");
@@ -1817,7 +1814,6 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, anTagVang }
     tu_choi: v => v.trangThai === "BiTraLai" || daCoHanhDong(v, ["TraLai"]),
   };
   const dem = (t: TabPD) => trongLuong.filter(LOC_TAB[t]).length;
-  const demCuaToi = (t: TabPD) => trongLuong.filter(v => LOC_TAB[t](v) && dangOToi(v)).length;
   // Việc đang ở chân mình xếp lên đầu — tab không còn lọc theo người thì thứ tự
   // phải gánh vai trò đó, nếu không việc của mình lẫn giữa việc của người khác.
   const loc = trongLuong.filter(LOC_TAB[tab])
@@ -1889,15 +1885,6 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, anTagVang }
               className={`px-2 py-2 cursor-pointer font-medium text-[13px] border-b-2 transition-colors whitespace-nowrap
                 ${tab === t.id ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"}`}>
               {t.nhan} ({dem(t.id)})
-              {/* Tab không lọc theo người nữa, nên số việc đang ở chân mình
-                  phải hiện thành chip riêng — nếu không sẽ chìm trong tổng số.
-                  Bỏ chip này ở Tất cả / Đã duyệt / Từ chối theo yêu cầu. */}
-              {!anTagVang && t.id !== "all" && t.id !== "da_duyet" && t.id !== "tu_choi" && demCuaToi(t.id) > 0 && (
-                <span title={`${demCuaToi(t.id)} đề xuất đang chờ chính ${nguoiDung} xử lý`}
-                  className="ml-1.5 px-1.5 py-[1px] rounded-full text-[10px] font-bold bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
-                  {demCuaToi(t.id)} của bạn
-                </span>
-              )}
             </div>
           ))}
         </div>
