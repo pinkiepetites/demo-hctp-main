@@ -2102,7 +2102,7 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
   );
 };
 
-const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS, onChuyenDon }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; onChuyenDon?: () => void; }) => {
+const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS, onChuyenDon, onHuySoThuLy, onThemKetQua }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; onChuyenDon?: () => void; onHuySoThuLy?: () => void; onThemKetQua?: () => void; }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -2126,6 +2126,8 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
     // truyền onThemYCBS nên mục này không hiện.
     ...(onThemYCBS ? [{ icon: <FilePlus size={13} />, label: "Thêm yêu cầu bổ sung", action: "themycbs" }] : []),
     ...(onBoSung ? [{ icon: <ArrowDownToLine size={13} />, label: "Bổ sung tài liệu", action: "bosung" }] : []),
+    ...(onThemKetQua ? [{ icon: <Check size={13} />, label: "Thêm kết quả giải quyết", action: "themketqua" }] : []),
+    ...(onHuySoThuLy ? [{ icon: <Trash2 size={13} />, label: "Hủy số thụ lý", action: "huysothuly", red: true }] : []),
     { icon: <Trash2 size={13} />, label: "Xóa", red: true },
   ];
 
@@ -2142,6 +2144,8 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
           if (item.action === "dontrung") { onDonTrung?.(); }
           if (item.action === "themycbs") { onThemYCBS?.(); }
           if (item.action === "chuyen") { onChuyenDon?.(); }
+          if (item.action === "huysothuly") { onHuySoThuLy?.(); }
+          if (item.action === "themketqua") { onThemKetQua?.(); }
           onClose();
         }}
           className={`w-full flex items-center gap-2.5 px-3 py-[6px] text-[13px] hover:bg-[#f5f5f5] transition-colors text-left
@@ -2171,6 +2175,264 @@ const GHEP_CANDIDATES: GhepRow[] = [
 ];
 
 const VALID_GHEP_STATUSES = ["Thụ lý mới", "Đã thụ lý", "Chưa đủ điều kiện"];
+
+// ─── Popup Thêm kết quả giải quyết ───────────────────────────────────────────
+const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClose: () => void, onConfirm: (updated: any) => void }) => {
+  const [ketQuaXuLy, setKetQuaXuLy] = useState("");
+  const [noiChuyenDen, setNoiChuyenDen] = useState("");
+  const [donViChuyenDen, setDonViChuyenDen] = useState("");
+  const [caNhanChuyenDen, setCaNhanChuyenDen] = useState("");
+  const [lyDoLuuTheoDoi, setLyDoLuuTheoDoi] = useState("");
+  const [lyDoTraLai, setLyDoTraLai] = useState("");
+  const [yeuCauTraLai, setYeuCauTraLai] = useState("");
+
+  const [trangThaiDon, setTrangThaiDon] = useState("");
+  const [thuLyDon, setThuLyDon] = useState("");
+  const [lyDoKhongDu, setLyDoKhongDu] = useState("");
+  const [lyDoKhongDuKhac, setLyDoKhongDuKhac] = useState("");
+  const [soThuLy, setSoThuLy] = useState("");
+  const [ngayThuLy, setNgayThuLy] = useState("");
+
+  const handleConfirm = () => {
+    if (!ketQuaXuLy) return;
+
+    let stepName = "";
+    let noteText = "";
+    let statusText = "";
+    let statusColor = "#999999";
+    let stl = row.giaiQuyet?.stl || "";
+    let ngayThuLyVal = row.giaiQuyet?.ngayThuLy || "";
+
+    if (ketQuaXuLy === "Chuyển đơn") {
+      stepName = `Chuyển đơn (${noiChuyenDen})`;
+      let subDetails = `Đến đơn vị: ${donViChuyenDen}${caNhanChuyenDen ? ` - ${caNhanChuyenDen}` : ""}`;
+      subDetails += ` | Trạng thái: ${trangThaiDon}`;
+      if (trangThaiDon === "Đơn đủ điều kiện") {
+        subDetails += ` | Thụ lý: ${thuLyDon}`;
+        if (thuLyDon === "Thụ lý mới") {
+          subDetails += ` (Số TL: ${soThuLy}, Ngày TL: ${ngayThuLy ? ngayThuLy.split("-").reverse().join("/") : ""})`;
+          stl = soThuLy;
+          ngayThuLyVal = ngayThuLy ? ngayThuLy.split("-").reverse().join("/") : "";
+        }
+        statusText = thuLyDon;
+        statusColor = thuLyDon === "Thụ lý mới" ? "#27ae60" : thuLyDon === "Đã thụ lý" ? "#1a5a96" : "#e67e22";
+      } else if (trangThaiDon === "Đơn không đủ điều kiện") {
+        const ldText = lyDoKhongDu === "Lý do khác" ? lyDoKhongDuKhac : lyDoKhongDu;
+        subDetails += ` | Lý do: ${ldText}`;
+        statusText = "Chưa đủ điều kiện";
+        statusColor = "#e67e22";
+      } else {
+        statusText = `Đã chuyển (${noiChuyenDen})`;
+        statusColor = "#1a5a96";
+      }
+      noteText = subDetails;
+    } else if (ketQuaXuLy === "Trả lại đơn") {
+      stepName = "Trả lại đơn";
+      noteText = `Lý do: ${lyDoTraLai}. Yêu cầu: ${yeuCauTraLai}`;
+      statusText = "Trả lại đơn";
+      statusColor = "#c0392b";
+    } else if (ketQuaXuLy === "Lưu theo dõi") {
+      stepName = "Lưu theo dõi";
+      noteText = `Lý do: ${lyDoLuuTheoDoi}`;
+      statusText = "Lưu theo dõi";
+      statusColor = "#7f8c8d";
+    }
+
+    const currentHistory = row.processingHistory || [];
+    const newHistory = [
+      ...currentHistory,
+      {
+        date: new Date().toLocaleDateString("vi-VN"),
+        step: stepName,
+        actor: "HCTP",
+        note: noteText
+      }
+    ];
+
+    const updated = {
+      ...row,
+      giaiQuyet: {
+        nhan: statusText,
+        color: statusColor,
+        stl: stl,
+        ngayThuLy: ngayThuLyVal,
+        coVanBan: row.giaiQuyet?.coVanBan || false
+      },
+      processingHistory: newHistory
+    };
+
+    onConfirm(updated);
+  };
+
+  const isChuyenDonDisabled = ketQuaXuLy === "Chuyển đơn" && (
+    !noiChuyenDen || 
+    !donViChuyenDen || 
+    !trangThaiDon || 
+    (trangThaiDon === "Đơn đủ điều kiện" && !thuLyDon) || 
+    (trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (!soThuLy || !ngayThuLy)) || 
+    (trangThaiDon === "Đơn không đủ điều kiện" && (!lyDoKhongDu || (lyDoKhongDu === "Lý do khác" && !lyDoKhongDuKhac.trim())))
+  );
+
+  const isDisabled = !ketQuaXuLy || 
+    isChuyenDonDisabled || 
+    (ketQuaXuLy === "Trả lại đơn" && !lyDoTraLai) || 
+    (ketQuaXuLy === "Lưu theo dõi" && !lyDoLuuTheoDoi.trim());
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
+        <div className="flex items-start justify-between px-6 pt-5 pb-1 sticky top-0 bg-white z-10">
+          <span className="text-[16px] font-bold text-[#222]">Thêm kết quả giải quyết</span>
+          <button onClick={onClose} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        </div>
+        <div className="px-6 py-4 space-y-3 text-[13px] text-[#333]">
+          <div>
+            <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Kết quả giải quyết</label>
+            <select value={ketQuaXuLy} onChange={e => { setKetQuaXuLy(e.target.value); setTrangThaiDon(""); setThuLyDon(""); }}
+              className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+              <option value="">-- Chọn kết quả --</option>
+              <option value="Chuyển đơn">Chuyển đơn</option>
+              <option value="Trả lại đơn">Trả lại đơn</option>
+              <option value="Lưu theo dõi">Lưu theo dõi</option>
+            </select>
+          </div>
+
+          {ketQuaXuLy === "Chuyển đơn" && (
+            <>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Nơi chuyển đến</label>
+                <select value={noiChuyenDen} onChange={e => setNoiChuyenDen(e.target.value)}
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  <option value="">-- Chọn nơi chuyển --</option>
+                  <option value="Nội bộ">Nội bộ</option>
+                  <option value="Tòa khác">Tòa khác</option>
+                  <option value="Ngoài tòa án">Ngoài tòa án</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Đơn vị nhận</label>
+                <input type="text" value={donViChuyenDen} onChange={e => setDonViChuyenDen(e.target.value)}
+                  placeholder="Nhập đơn vị nhận..."
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+              </div>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5">Cá nhân nhận</label>
+                <input type="text" value={caNhanChuyenDen} onChange={e => setCaNhanChuyenDen(e.target.value)}
+                  placeholder="Nhập cán bộ/cá nhân nhận..."
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+              </div>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Trạng thái đơn</label>
+                <select value={trangThaiDon} onChange={e => { setTrangThaiDon(e.target.value); setThuLyDon(""); setLyDoKhongDu(""); }}
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  <option value="">-- Chọn trạng thái --</option>
+                  <option value="Đơn đủ điều kiện">Đơn đủ điều kiện</option>
+                  <option value="Đơn không đủ điều kiện">Đơn không đủ điều kiện</option>
+                </select>
+              </div>
+
+              {trangThaiDon === "Đơn đủ điều kiện" && (
+                <>
+                  <div>
+                    <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Thụ lý đơn</label>
+                    <select value={thuLyDon} onChange={e => setThuLyDon(e.target.value)}
+                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                      <option value="">-- Chọn --</option>
+                      <option value="Thụ lý mới">Thụ lý mới</option>
+                      <option value="Đã thụ lý">Đã thụ lý</option>
+                      <option value="Xin ý kiến lãnh đạo">Xin ý kiến lãnh đạo</option>
+                      <option value="Không">Không</option>
+                    </select>
+                  </div>
+                  {thuLyDon === "Thụ lý mới" && (
+                    <>
+                      <div>
+                        <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Số thụ lý</label>
+                        <input type="text" value={soThuLy} onChange={e => setSoThuLy(e.target.value)}
+                          placeholder="Nhập số thụ lý..."
+                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                      </div>
+                      <div>
+                        <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Ngày thụ lý</label>
+                        <input type="date" value={ngayThuLy} onChange={e => setNgayThuLy(e.target.value)}
+                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
+              {trangThaiDon === "Đơn không đủ điều kiện" && (
+                <>
+                  <div>
+                    <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do không đủ điều kiện</label>
+                    <select value={lyDoKhongDu} onChange={e => setLyDoKhongDu(e.target.value)}
+                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                      <option value="">-- Chọn lý do --</option>
+                      <option value="Thiếu Bản án/quyết định có hiệu lực pháp luật">Thiếu Bản án/quyết định có hiệu lực pháp luật</option>
+                      <option value="Thiếu thông tin căn cước công dân">Thiếu thông tin căn cước công dân</option>
+                      <option value="Viết lại đơn">Viết lại đơn</option>
+                      <option value="Lý do khác">Lý do khác</option>
+                    </select>
+                  </div>
+                  {lyDoKhongDu === "Lý do khác" && (
+                    <div>
+                      <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do khác</label>
+                      <textarea rows={2} value={lyDoKhongDuKhac} onChange={e => setLyDoKhongDuKhac(e.target.value)}
+                        placeholder="Nhập lý do khác..."
+                        className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {ketQuaXuLy === "Trả lại đơn" && (
+            <>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do trả lại</label>
+                <select value={lyDoTraLai} onChange={e => setLyDoTraLai(e.target.value)}
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  <option value="">-- Chọn lý do --</option>
+                  <option value="Đơn không đủ điều kiện xử lý">Đơn không đủ điều kiện xử lý</option>
+                  <option value="Không thuộc thẩm quyền giải quyết">Không thuộc thẩm quyền giải quyết</option>
+                  <option value="Đã hết thời hạn giải quyết">Đã hết thời hạn giải quyết</option>
+                  <option value="Lý do khác">Lý do khác</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[13px] text-[#333] mb-1.5">Yêu cầu trả lại đơn</label>
+                <textarea rows={2} value={yeuCauTraLai} onChange={e => setYeuCauTraLai(e.target.value)}
+                  placeholder="Nhập yêu cầu trả lại đơn..."
+                  className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+              </div>
+            </>
+          )}
+
+          {ketQuaXuLy === "Lưu theo dõi" && (
+            <div>
+              <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do lưu theo dõi</label>
+              <textarea rows={3} value={lyDoLuuTheoDoi} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
+                placeholder="Nhập lý do lưu theo dõi..."
+                className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#e0e0e0] sticky bottom-0 bg-white z-10">
+          <button onClick={onClose}
+            className="h-[36px] px-5 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[6px] text-[13px] font-medium transition-colors">
+            Đóng
+          </button>
+          <button onClick={handleConfirm} disabled={isDisabled}
+            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[6px] text-[13px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ─── Popup Tải lên tài liệu / OCR ────────────────────────────────────────────
 const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload: (f: OcrFile) => void }) => {
@@ -6771,6 +7033,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [showYeuCauBoSung, setShowYeuCauBoSung] = useState<number | null>(null);
   const [showDonTrung, setShowDonTrung] = useState<number | null>(null);
   const [showChuyenDon, setShowChuyenDon] = useState<number | null>(null);
+  const [showHuySoThuLy, setShowHuySoThuLy] = useState<number | null>(null);
+  const [showThemKetQua, setShowThemKetQua] = useState<number | null>(null);
   const [chuyenDonOfficer, setChuyenDonOfficer] = useState<string>("");
   const [chuyenDonReason, setChuyenDonReason] = useState<string>("");
   const [transferState, setTransferState] = useState<Record<number, {
@@ -7904,7 +8168,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                   <div className="flex items-center gap-2 flex-wrap bg-[#f0f9ff] border border-[#bae6fd] p-1.5 rounded-sm">
                                     <div className="flex items-center gap-1 text-[11px] text-[#0369a1] font-semibold">
                                       <GitMerge size={11} className="flex-shrink-0" />
-                                      <span>Đã ghép với đơn {mergeState[row.id].ghepVoi.startsWith("Mã") ? mergeState[row.id].ghepVoi : `Mã ${mergeState[row.id].ghepVoi}`}</span>
+                                      <span>Đã ghép với đơn {mergeState[row.id].ghepVoi!.startsWith("Mã") ? mergeState[row.id].ghepVoi : `Mã ${mergeState[row.id].ghepVoi}`}</span>
                                     </div>
                                     <button
                                       onClick={() => setShowHuyGhep(row.id)}
@@ -7934,24 +8198,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               </div>
                             );
                           })()}
-                          {mergeState[row.id]?.pendingTo && (
-                            <div className="mt-1 flex items-center gap-1">
-                              <Clock size={11} className="text-[#856404] flex-shrink-0" />
-                              <span className="text-[11px] text-[#856404] font-medium">
-                                Chờ xác nhận ghép · {mergeState[row.id].pendingTo!.maDon}
-                              </span>
-                            </div>
-                          )}
-                          {mergeState[row.id]?.pendingFrom && (
-                            <div className="mt-1">
-                              <button
-                                onClick={() => setShowConfirmRow(row.id)}
-                                className="flex items-center gap-1 px-2 py-[3px] rounded text-[11px] font-medium bg-[#fff3cd] border border-[#ffc107] text-[#856404] hover:bg-[#ffe69c] transition-colors">
-                                <GitMerge size={11} />
-                                Xác nhận ghép đơn
-                              </button>
-                            </div>
-                          )}
                           {transferState[row.id] && (() => {
                             const ts = transferState[row.id];
                             return (
@@ -8138,6 +8384,12 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                 ? () => { setYcbsRowId(row.id); setOpenMenu(null); }
                                 : undefined}
                               onChuyenDon={() => { setShowChuyenDon(row.id); setOpenMenu(null); }}
+                              onHuySoThuLy={row.giaiQuyet?.nhan === "Thụ lý mới"
+                                ? () => { setShowHuySoThuLy(row.id); setOpenMenu(null); }
+                                : undefined}
+                              onThemKetQua={row.giaiQuyet?.nhan !== "Thụ lý mới"
+                                ? () => { setShowThemKetQua(row.id); setOpenMenu(null); }
+                                : undefined}
                             />
                           )}
                         </div>
@@ -8262,6 +8514,85 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           }}
         />
       )}
+      {/* Popup Hủy số thụ lý */}
+      {showHuySoThuLy !== null && (() => {
+        const row = rows.find(r => r.id === showHuySoThuLy);
+        if (!row) return null;
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-[4px] shadow-xl w-[480px]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
+                <span className="text-[13px] font-semibold text-[#8b1a1a]">Cảnh báo hủy số thụ lý</span>
+                <button onClick={() => setShowHuySoThuLy(null)} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+              </div>
+              <div className="px-5 py-4 space-y-3 text-[12px] text-[#333] leading-relaxed">
+                <div className="bg-[#fff3cd] border border-[#ffeeba] rounded px-3 py-2.5 text-[#856404] font-medium">
+                  Hủy số thụ lý sẽ làm mất số thụ lý của đơn này. Số thụ lý này chỉ có thể cấp cho đơn thụ lý mới khác trong cùng ngày hôm nay. Nếu để qua ngày, số thụ lý sẽ bị trống.
+                </div>
+                <p>
+                  Sau khi hủy, đơn <strong className="text-[#1d2e4f]">{row.maDon}</strong> sẽ chuyển sang trạng thái <strong>Không thụ lý</strong>.
+                </p>
+              </div>
+              <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+                <button onClick={() => setShowHuySoThuLy(null)}
+                  className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                  Hủy bỏ
+                </button>
+                <button
+                  onClick={() => {
+                    setRows(prev => prev.map(r => {
+                      if (r.id === row.id) {
+                        const currentHistory = r.processingHistory || [];
+                        const newHistory = [
+                          ...currentHistory,
+                          {
+                            date: new Date().toLocaleDateString("vi-VN"),
+                            step: "Hủy số thụ lý",
+                            actor: "HCTP",
+                            note: `Hủy số thụ lý ${r.giaiQuyet?.stl || ""}. Đơn chuyển sang trạng thái Không thụ lý.`
+                          }
+                        ];
+                        return {
+                          ...r,
+                          giaiQuyet: {
+                            nhan: "Không thụ lý",
+                            color: "#c0392b",
+                            stl: "",
+                            coVanBan: false
+                          },
+                          processingHistory: newHistory
+                        };
+                      }
+                      return r;
+                    }));
+                    triggerNoti(`Đơn ${row.maDon} đã hủy số thụ lý thành công và chuyển sang trạng thái Không thụ lý.`);
+                    setShowHuySoThuLy(null);
+                  }}
+                  className="h-[30px] px-4 bg-[#c0392b] hover:bg-[#a63022] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                  Xác nhận hủy
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Popup Thêm kết quả giải quyết */}
+      {showThemKetQua !== null && (() => {
+        const row = rows.find(r => r.id === showThemKetQua);
+        if (!row) return null;
+        return (
+          <PopupThemKetQuaGiaiQuyet
+            row={row}
+            onClose={() => setShowThemKetQua(null)}
+            onConfirm={(updated: any) => {
+              setRows(prev => prev.map(r => r.id === row.id ? updated : r));
+              triggerNoti(`Đã thêm kết quả giải quyết cho đơn ${row.maDon} thành công.`);
+              setShowThemKetQua(null);
+            }}
+          />
+        );
+      })()}
 
       {/* Popup Chuyển đơn */}
       {showChuyenDon !== null && (() => {
