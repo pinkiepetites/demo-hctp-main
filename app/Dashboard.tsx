@@ -1,9 +1,5 @@
 import React, { useState } from "react";
 import {
-  FileText,
-  CheckCircle,
-  Clock,
-  AlertCircle,
   BarChart3,
   Users,
   Calendar,
@@ -11,26 +7,13 @@ import {
   BellRing,
   ArrowRight,
   FileCheck,
-  Hourglass
+  Hourglass,
+  FileText,
+  Gavel,
+  Scale,
+  HelpCircle
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh } from "./components/QuanLyVanBan";
-
-const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string }) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
-    <div>
-      <p className="text-[13px] text-[#666] font-medium mb-1.5">{title}</p>
-      <div className="flex items-baseline gap-2.5">
-        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
-        <span className={`text-[12px] font-semibold flex items-center gap-0.5 ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#f39c12]')}`}>
-          {trend}
-        </span>
-      </div>
-    </div>
-    <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center ${bgColorClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
-      {icon}
-    </div>
-  </div>
-);
 
 // Biến thể của KPICard có nút "Xem chi tiết" ở góc phải — dùng cho 2 card
 // duyệt tài liệu, dẫn thẳng sang màn Phê duyệt đề xuất.
@@ -62,15 +45,195 @@ const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, on
   </div>
 );
 
+// Card thống kê đầu trang — nền trắng, chữ mảnh, số liệu lớn kèm % inline, icon tròn bên phải.
+// Dùng chung cho cả 4 card (Tổng đơn nhận / Hình sự / Dân sự / Chưa xác định) để đồng nhất giao diện.
+const StatCard = ({ title, value, trend, icon, iconColorClass, iconBgClass }: {
+  title: string; value: string; trend: string; icon: React.ReactNode; iconColorClass: string; iconBgClass: string;
+}) => (
+  <div className="bg-white rounded-[10px] border border-[#eef1f4] p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300">
+    <div>
+      <p className="text-[13px] text-[#8a94a6] font-normal mb-1.5">{title}</p>
+      <div className="flex items-baseline gap-2 flex-wrap">
+        <span className="text-[26px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
+        <span className="text-[12px] font-medium text-[#22c55e] whitespace-nowrap">{trend}</span>
+      </div>
+    </div>
+    <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 ${iconBgClass} ${iconColorClass}`}>
+      {icon}
+    </div>
+  </div>
+);
+
+// "Kết quả xử lý đơn" — bar ngang xếp hạng theo giá trị giảm dần, mỗi hạng mục một màu riêng
+// (nominal categorical, không phải chuỗi theo Vụ GĐKT), nhãn giá trị + % đặt ngay đầu mút bar.
+const KetQuaXuLyDonChart = ({ items, maxValue }: {
+  items: { label: string; value: number; percent: number; color: string }[];
+  maxValue: number;
+}) => {
+  const ticks = Array.from({ length: maxValue + 1 }, (_, i) => i);
+  return (
+    <div className="pt-1">
+      <div className="relative">
+        <div className="absolute left-[168px] right-2 top-0 bottom-0 pointer-events-none">
+          {ticks.map(t => (
+            <div key={t} className="absolute top-0 bottom-0 border-l border-dashed border-[#f1f5f9]" style={{ left: `${(t / maxValue) * 100}%` }} />
+          ))}
+        </div>
+        <div className="space-y-3 relative">
+          {items.map(item => (
+            <div key={item.label} className="flex items-center gap-2 h-[20px]">
+              <span className="w-[160px] flex-shrink-0 text-[12px] text-[#475569] text-right truncate">{item.label}</span>
+              <div className="flex-1 relative h-full mr-2">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-r-[4px] transition-all duration-700"
+                  style={{ width: `${Math.max((item.value / maxValue) * 100, item.value ? 2 : 0)}%`, backgroundColor: item.color }}
+                />
+                <span
+                  className="absolute top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#0f172a] whitespace-nowrap"
+                  style={{ left: `calc(${(item.value / maxValue) * 100}% + 8px)` }}
+                >
+                  {item.value} ({item.percent.toFixed(1).replace(".", ",")}%)
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center gap-2 mt-2 pt-1.5 border-t border-[#e2e8f0]">
+        <span className="w-[160px] flex-shrink-0" />
+        <div className="flex-1 flex justify-between text-[11px] text-[#94a3b8] mr-2">
+          {ticks.map(t => <span key={t}>{t}</span>)}
+        </div>
+      </div>
+      <div className="text-center text-[11px] text-[#94a3b8] mt-1">Số đơn</div>
+    </div>
+  );
+};
+
+// "So sánh số đơn theo loại án & kết quả" — mỗi loại án là một nhóm cột, trong nhóm là
+// 6 cột nhỏ theo hạng mục kết quả (cùng màu với KetQuaXuLyDonChart), giúp so trực quan
+// loại án nào phát sinh nhiều đơn trùng/thụ lý mới/v.v. nhất trong kỳ.
+const SoSanhLoaiAnChart = ({ groups, categories, maxValue }: {
+  groups: { loaiAn: string; values: Record<string, number> }[];
+  categories: readonly { key: string; label: string; color: string }[];
+  maxValue: number;
+}) => {
+  const ticks = Array.from({ length: maxValue + 1 }, (_, i) => i);
+  return (
+    <div>
+      <div className="flex items-end h-[300px] gap-1 pt-0.5 relative">
+        <div className="absolute left-0 top-0 bottom-5 w-6 flex flex-col justify-between text-[11px] text-[#94a3b8] font-medium">
+          {[...ticks].reverse().map(t => <span key={t}>{t}</span>)}
+        </div>
+        <div className="absolute left-8 right-0 top-0 bottom-5 border-l border-b border-[#e2e8f0]">
+          {ticks.slice(1).map(t => (
+            <div key={t} className="absolute w-full border-t border-dashed border-[#f1f5f9]" style={{ bottom: `${(t / maxValue) * 100}%` }} />
+          ))}
+        </div>
+        <div className="ml-8 w-full flex justify-around items-end h-full z-10 pb-5">
+          {groups.map(g => (
+            <div key={g.loaiAn} className="flex flex-col items-center gap-1 relative h-full justify-end">
+              <div className="flex items-end gap-[6px] h-full">
+                {categories.map(cat => {
+                  const v = g.values[cat.key] ?? 0;
+                  const pct = (v / maxValue) * 100;
+                  return (
+                    <div key={cat.key} className="relative w-[32px] h-full flex flex-col justify-end" title={`${cat.label}: ${v}`}>
+                      <span
+                        className="absolute left-1/2 -translate-x-1/2 text-[11px] font-bold text-[#0f172a] whitespace-nowrap pointer-events-none"
+                        style={{ bottom: `calc(${pct}% + 4px)` }}
+                      >
+                        {v}
+                      </span>
+                      <div
+                        className="w-full rounded-t-[4px] transition-all duration-700 hover:brightness-110"
+                        style={{ height: `${pct}%`, minHeight: v ? "2px" : 0, backgroundColor: cat.color }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <span className="text-[13px] font-semibold text-[#334155] absolute bottom-0 translate-y-full mt-2 w-full text-center whitespace-nowrap">{g.loaiAn}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center justify-center gap-4 mt-3 pt-2 border-t border-[#f1f5f9] flex-wrap">
+        {categories.map(cat => (
+          <div key={cat.key} className="flex items-center gap-1.5 text-[12px] font-medium text-[#475569]">
+            <div className="w-3 h-3 rounded-[3px] shadow-sm" style={{ backgroundColor: cat.color }}></div>
+            {cat.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Donut % cơ cấu xử lý đơn — vòng tròn rỗng chia theo tỉ lệ từng trạng thái, tâm hiển thị
+// tổng số đơn, chú giải liệt kê đủ nhãn + số lượng + % (đóng vai trò legend bắt buộc cho ≥2 chuỗi).
+const DonutChart = ({ items }: { items: { label: string; value: number; color: string }[] }) => {
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+  const size = 132, thickness = 20, radius = (size - thickness) / 2;
+  const circumference = 2 * Math.PI * radius;
+  let acc = 0;
+  return (
+    <div className="flex items-center gap-5">
+      <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+          <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#f1f5f9" strokeWidth={thickness} />
+          {total > 0 && items.filter(item => item.value > 0).map(item => {
+            const dash = Math.max((item.value / total) * circumference - 2, 0);
+            const el = (
+              <circle
+                key={item.label}
+                cx={size / 2} cy={size / 2} r={radius}
+                fill="none"
+                stroke={item.color}
+                strokeWidth={thickness}
+                strokeDasharray={`${dash} ${circumference - dash}`}
+                strokeDashoffset={-acc}
+              />
+            );
+            acc += (item.value / total) * circumference;
+            return el;
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-[22px] font-bold text-[#1d2e4f] leading-none">{total}</span>
+          <span className="text-[10px] text-[#94a3b8] mt-1">đơn</span>
+        </div>
+      </div>
+      <div className="flex-1 min-w-0 space-y-3">
+        {items.map(item => {
+          const percent = total ? (item.value / total) * 100 : 0;
+          return (
+            <div key={item.label} className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2 text-[13px] font-semibold text-[#0f172a] min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                <span className="truncate">{item.label}</span>
+              </span>
+              <span className="text-right flex-shrink-0">
+                <div className="text-[13px] font-bold leading-tight" style={{ color: item.color }}>{item.value} đơn</div>
+                <div className="text-[11px] text-[#94a3b8] leading-tight">{percent.toFixed(1).replace(".", ",")}%</div>
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanList = [], currentRole = "can-bo" }: {
   onXemChiTietHieuSuat?: () => void;
   onXemPheDuyet?: () => void;
   vanBanList?: VanBanTrinh[];
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
 } = {}) {
-  // Chỉ Trưởng phòng / Phó Chánh án-Chánh án / Lãnh đạo Tòa mới thấy 2 card
-  // duyệt tài liệu — đây là những vai trò nằm trong luồng ký duyệt văn bản.
-  const hienThiTheDuyet = currentRole === "truong-phong" || currentRole === "chanh-an" || currentRole === "lanh-dao";
+  // Chỉ Trưởng phòng / Phó-Chánh Văn phòng / Lãnh đạo Tòa / Chánh án-Phó Chánh án
+  // mới thấy 2 card duyệt tài liệu — đây là những vai trò nằm trong luồng ký duyệt văn bản.
+  const hienThiTheDuyet = currentRole === "truong-phong" || currentRole === "pho-vp" || currentRole === "chanh-an" || currentRole === "lanh-dao";
   const { nguoi: nguoiDung } = nguoiTheoVaiTro(currentRole);
   const taiLieuChoDuyet = vanBanList.filter(v => dangChoXuLy(v.trangThai));
   const soTaiLieuCanDuyet = taiLieuChoDuyet.filter(v => nguoiDangGiu(v)?.nguoi === nguoiDung).length;
@@ -101,6 +264,50 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
     }
   };
 
+  // Số liệu gốc lấy từ báo cáo "Phòng Hành chính Tư pháp" (dòng Tổng cộng, kỳ 01/03/2026 - 18/03/2026)
+  // — đây là nguồn duy nhất để tính 4 số của card KPI, thay vì gõ tay từng số như trước.
+  const hctpReportTuanNay = {
+    tongDonNhan: 27,           // "Tổng số đơn đã xử lý HCTP"
+    traLaiDon: 1,               // "Trả lại đơn"
+    khongThuocThamQuyen: 1,     // "Đơn không thuộc thẩm quyền TATC"
+    chuaDuDieuKien: 1,          // "Đơn chưa đủ điều kiện"
+    gdkt1: { trung: 5, thuLyMoi: 3 },
+    gdkt2: { trung: 0, thuLyMoi: 0 },
+    gdkt3: { trung: 0, thuLyMoi: 0 },
+    conLaiChuaXuLy: 0,          // "Đơn còn lại chưa xử lý"
+    chuyenToaAnKhac: 1,         // "Chuyển Toà án khác"
+  };
+
+  // "Kết quả xử lý đơn" — xếp hạng 6 hạng mục xử lý của kỳ báo cáo theo số lượng giảm dần,
+  // % tính trên tổng số đơn đã nhận (tongDonNhan), đúng như cách báo cáo Phòng HCTP trình bày.
+  const ketQuaXuLyDonItems = [
+    { label: "Đơn trùng", value: hctpReportTuanNay.gdkt1.trung + hctpReportTuanNay.gdkt2.trung + hctpReportTuanNay.gdkt3.trung, color: "#ef4444" },
+    { label: "Đơn thụ lý mới", value: hctpReportTuanNay.gdkt1.thuLyMoi + hctpReportTuanNay.gdkt2.thuLyMoi + hctpReportTuanNay.gdkt3.thuLyMoi, color: "#3b82f6" },
+    { label: "Chưa đủ điều kiện", value: hctpReportTuanNay.chuaDuDieuKien, color: "#eab308" },
+    { label: "Trả lại đơn", value: hctpReportTuanNay.traLaiDon, color: "#f97316" },
+    { label: "Không thuộc thẩm quyền TATC", value: hctpReportTuanNay.khongThuocThamQuyen, color: "#06b6d4" },
+    { label: "Chuyển Toà án khác", value: hctpReportTuanNay.chuyenToaAnKhac, color: "#8b5cf6" },
+  ]
+    .map(item => ({ ...item, percent: hctpReportTuanNay.tongDonNhan ? (item.value / hctpReportTuanNay.tongDonNhan) * 100 : 0 }))
+    .sort((a, b) => b.value - a.value);
+  const ketQuaXuLyDonMax = Math.max(...ketQuaXuLyDonItems.map(i => i.value), 1) + 1;
+
+  // Công thức gộp cột báo cáo thành 4 chỉ số KPI:
+  // - Tổng đơn nhận = Tổng số đơn đã xử lý HCTP.
+  // - Đã xử lý = Trả lại đơn + Đơn thụ lý mới (cả 3 Vụ GĐKT).
+  // - Đang giải quyết = Chưa đủ điều kiện + Không thuộc thẩm quyền TATC + Đơn trùng (cả 3 Vụ GĐKT).
+  // - Tồn đọng/Quá hạn = Đơn còn lại chưa xử lý.
+  const tinhKPITuBaoCao = (r: typeof hctpReportTuanNay) => {
+    const tongDonTrung = r.gdkt1.trung + r.gdkt2.trung + r.gdkt3.trung;
+    const tongDonThuLyMoi = r.gdkt1.thuLyMoi + r.gdkt2.thuLyMoi + r.gdkt3.thuLyMoi;
+    return {
+      total: r.tongDonNhan,
+      processed: r.traLaiDon + tongDonThuLyMoi,
+      processing: r.chuaDuDieuKien + r.khongThuocThamQuyen + tongDonTrung,
+      overdue: r.conLaiChuaXuLy,
+    };
+  };
+
   const getKPIData = () => {
     const compare = getCompareLabel();
     switch (chartPeriod) {
@@ -109,59 +316,65 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
       case "year": return { total: "15,400", processed: "12,800", processing: "1,500", overdue: "1,100", t1: `+8% so với ${compare}`, t2: `+10% so với ${compare}`, t3: `-2% so với ${compare}`, t4: `Giảm 5% so với ${compare}` };
       case "custom": return { total: "320", processed: "250", processing: "50", overdue: "20", t1: `---`, t2: `---`, t3: `---`, t4: `---` };
       case "week":
-      default:
-        return { total: "315", processed: "215", processing: "85", overdue: "15", t1: `+8% so với ${compare}`, t2: `+12% so với ${compare}`, t3: `+1% so với ${compare}`, t4: `Giảm 2 so với ${compare}` };
+      default: {
+        const k = tinhKPITuBaoCao(hctpReportTuanNay);
+        return {
+          total: String(k.total),
+          processed: String(k.processed),
+          processing: String(k.processing),
+          overdue: String(k.overdue),
+          t1: `+8% so với ${compare}`, t2: `+12% so với ${compare}`, t3: `+1% so với ${compare}`, t4: `Giảm 2 so với ${compare}`,
+        };
+      }
     }
   };
 
   const kpi = getKPIData();
 
-  const getChartData = () => {
-    switch (chartPeriod) {
-      case "day":
-        return [
-          { label: "08:00", received: 12, processed: 8 },
-          { label: "10:00", received: 25, processed: 18 },
-          { label: "12:00", received: 15, processed: 12 },
-          { label: "14:00", received: 32, processed: 24 },
-          { label: "16:00", received: 18, processed: 22 },
-        ];
-      case "month":
-        return [
-          { label: "Tuần 1", received: 310, processed: 280 },
-          { label: "Tuần 2", received: 345, processed: 290 },
-          { label: "Tuần 3", received: 295, processed: 240 },
-          { label: "Tuần 4", received: 300, processed: 270 },
-        ];
-      case "year":
-        return [
-          { label: "Quý 1", received: 3500, processed: 3200 },
-          { label: "Quý 2", received: 4200, processed: 3800 },
-          { label: "Quý 3", received: 3800, processed: 3500 },
-          { label: "Quý 4", received: 3900, processed: 3300 },
-        ];
-      case "custom":
-        return [
-          { label: "Đầu kỳ", received: 120, processed: 90 },
-          { label: "Giữa kỳ", received: 110, processed: 100 },
-          { label: "Cuối kỳ", received: 90, processed: 60 },
-        ];
-      case "week":
-      default:
-        return [
-          { label: "T2", received: 65, processed: 45 },
-          { label: "T3", received: 58, processed: 50 },
-          { label: "T4", received: 42, processed: 38 },
-          { label: "T5", received: 70, processed: 55 },
-          { label: "T6", received: 55, processed: 62 },
-          { label: "T7", received: 15, processed: 20 },
-          { label: "CN", received: 10, processed: 5 },
-        ];
-    }
+  // Phân loại 4 card thống kê đầu trang theo loại đơn (Hình sự / Dân sự / Chưa xác định),
+  // suy ra từ tổng đơn nhận theo tỉ lệ thực tế của kỳ báo cáo HCTP (14/10/3 trên tổng 27 đơn)
+  // để 3 số cộng lại luôn khớp đúng tổng, dù đổi kỳ xem (ngày/tuần/tháng/năm).
+  const getLoaiDonData = () => {
+    const total = parseInt(kpi.total.replace(/,/g, ""), 10) || 0;
+    const hinhSu = Math.round(total * (14 / 27));
+    const danSu = Math.round(total * (10 / 27));
+    const chuaXacDinh = Math.max(0, total - hinhSu - danSu);
+    return {
+      total,
+      hinhSu,
+      danSu,
+      chuaXacDinh,
+      percentHinhSu: total ? (hinhSu / total) * 100 : 0,
+      percentDanSu: total ? (danSu / total) * 100 : 0,
+      percentChuaXacDinh: total ? (chuaXacDinh / total) * 100 : 0,
+    };
   };
 
-  const chartData = getChartData();
-  const maxChartValue = Math.max(...chartData.map(d => Math.max(d.received, d.processed))) * 1.15 || 1;
+  const loaiDon = getLoaiDonData();
+
+  // 6 hạng mục kết quả xử lý — dùng chung màu cho cả bảng xếp hạng "Kết quả xử lý đơn"
+  // và biểu đồ so sánh theo loại án bên dưới, để cùng một hạng mục luôn cùng một màu.
+  const KET_QUA_CATEGORIES = [
+    { key: "donTrung", label: "Đơn trùng", color: "#ef4444" },
+    { key: "thuLyMoi", label: "Thụ lý mới", color: "#3b82f6" },
+    { key: "chuaDuDieuKien", label: "Chưa đủ điều kiện", color: "#eab308" },
+    { key: "traLai", label: "Trả lại", color: "#f97316" },
+    { key: "khongThamQuyen", label: "Không thẩm quyền", color: "#06b6d4" },
+    { key: "chuyenToaKhac", label: "Chuyển Toà án khác", color: "#8b5cf6" },
+  ] as const;
+
+  // Phân rã 6 hạng mục kết quả (đã có tổng ở hctpReportTuanNay/ketQuaXuLyDonItems) theo
+  // loại án (Hình sự / Dân sự / Chưa xác định) — cộng theo cột phải khớp đúng tổng hạng mục:
+  // Đơn trùng 5 (3+2+0), Thụ lý mới 3 (2+1+0), Chưa đủ điều kiện 1 (1+0+0), Trả lại 1 (1+0+0),
+  // Không thẩm quyền 1 (1+0+0), Chuyển Toà án khác 1 (0+1+0). Chưa xác định chưa xử lý (=0 cả 6).
+  const soSanhLoaiAnData = [
+    { loaiAn: "Hình sự", values: { donTrung: 3, thuLyMoi: 2, chuaDuDieuKien: 1, traLai: 1, khongThamQuyen: 1, chuyenToaKhac: 0 } },
+    { loaiAn: "Dân sự", values: { donTrung: 2, thuLyMoi: 1, chuaDuDieuKien: 0, traLai: 0, khongThamQuyen: 0, chuyenToaKhac: 1 } },
+    { loaiAn: "Chưa xác định", values: { donTrung: 0, thuLyMoi: 0, chuaDuDieuKien: 0, traLai: 0, khongThamQuyen: 0, chuyenToaKhac: 0 } },
+  ];
+  const soSanhLoaiAnMax = Math.max(
+    ...soSanhLoaiAnData.flatMap(g => KET_QUA_CATEGORIES.map(cat => g.values[cat.key]))
+  ) + 2;
 
   const getOfficerData = () => {
     let mult = 1;
@@ -182,12 +395,15 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
   const officerData = getOfficerData();
   const displayedOfficers = filterOfficer === "all" ? officerData : officerData.filter(o => o.name === filterOfficer);
 
-  // Data for new "Loại án" widget
-  const caseTypes = [
-    { label: "Dân sự", percent: 45, color: "bg-[#3498db]" },
-    { label: "Hình sự", percent: 30, color: "bg-[#e74c3c]" },
-    { label: "Hành chính", percent: 15, color: "bg-[#f39c12]" },
-    { label: "Kinh doanh - Thương mại", percent: 10, color: "bg-[#9b59b6]" },
+  // Cơ cấu xử lý đơn — donut % theo 5 trạng thái, lấy thẳng từ report HCTP dùng chung cho
+  // các card/biểu đồ khác: đơn đã thụ lý = tổng đơn trùng (nghĩa là đã có hồ sơ thụ lý từ
+  // trước), đơn thụ lý mới = tổng thụ lý mới 3 Vụ GĐKT, còn lại lấy thẳng các cột report.
+  const coCauXuLyDonItems = [
+    { label: "Đơn thụ lý mới", value: hctpReportTuanNay.gdkt1.thuLyMoi + hctpReportTuanNay.gdkt2.thuLyMoi + hctpReportTuanNay.gdkt3.thuLyMoi, color: "#22c55e" },
+    { label: "Đơn đã thụ lý", value: hctpReportTuanNay.gdkt1.trung + hctpReportTuanNay.gdkt2.trung + hctpReportTuanNay.gdkt3.trung, color: "#3b82f6" },
+    { label: "Trả lại đơn", value: hctpReportTuanNay.traLaiDon, color: "#8b5cf6" },
+    { label: "Chưa đủ điều kiện", value: hctpReportTuanNay.chuaDuDieuKien, color: "#94a3b8" },
+    { label: "Chờ xử lý", value: hctpReportTuanNay.conLaiChuaXuLy, color: "#1d2e4f" },
   ];
 
   return (
@@ -252,40 +468,40 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
       <div>
         <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
           <Calendar size={18} className="text-[#8b1a1a]" />
-          Tình hình xử lý đơn {getPeriodLabel()}
+          Thống kê đơn nhận {getPeriodLabel()}
         </h2>
         <div className="grid grid-cols-4 gap-5">
-          <KPICard
+          <StatCard
             title="Tổng đơn nhận"
-            value={kpi.total}
+            value={String(loaiDon.total)}
             trend={kpi.t1}
-            icon={<FileText size={24} />}
-            bgColorClass="bg-[#eff6ff]"
-            colorClass="text-[#3b82f6]"
+            icon={<FileText size={20} />}
+            iconColorClass="text-[#3b82f6]"
+            iconBgClass="bg-[#eff6ff]"
           />
-          <KPICard
-            title="Đã xử lý (Thụ lý/Trả lại)"
-            value={kpi.processed}
-            trend={kpi.t2}
-            icon={<CheckCircle size={24} />}
-            bgColorClass="bg-[#f0fdf4]"
-            colorClass="text-[#22c55e]"
+          <StatCard
+            title="Hình sự"
+            value={String(loaiDon.hinhSu)}
+            trend={`${loaiDon.percentHinhSu.toFixed(1).replace(".", ",")}% tổng số đơn`}
+            icon={<Gavel size={20} />}
+            iconColorClass="text-[#3b82f6]"
+            iconBgClass="bg-[#eff6ff]"
           />
-          <KPICard
-            title="Đang giải quyết"
-            value={kpi.processing}
-            trend={kpi.t3}
-            icon={<Clock size={24} />}
-            bgColorClass="bg-[#fefce8]"
-            colorClass="text-[#eab308]"
+          <StatCard
+            title="Dân sự"
+            value={String(loaiDon.danSu)}
+            trend={`${loaiDon.percentDanSu.toFixed(1).replace(".", ",")}% tổng số đơn`}
+            icon={<Scale size={20} />}
+            iconColorClass="text-[#22c55e]"
+            iconBgClass="bg-[#f0fdf4]"
           />
-          <KPICard
-            title="Tồn đọng / Quá hạn"
-            value={kpi.overdue}
-            trend={kpi.t4}
-            icon={<AlertCircle size={24} />}
-            bgColorClass="bg-[#fef2f2]"
-            colorClass="text-[#ef4444]"
+          <StatCard
+            title="Chưa xác định"
+            value={String(loaiDon.chuaXacDinh)}
+            trend={`${loaiDon.percentChuaXacDinh.toFixed(1).replace(".", ",")}% tổng số đơn`}
+            icon={<HelpCircle size={20} />}
+            iconColorClass="text-[#8b5cf6]"
+            iconBgClass="bg-[#f5f3ff]"
           />
         </div>
       </div>
@@ -327,121 +543,70 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
           <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
               <BarChart3 size={18} className="text-[#3b82f6]" />
-              Thống kê lượng đơn {getPeriodLabel()}
+              So sánh số đơn theo loại án & kết quả
             </h3>
           </div>
-          
-          <div className="flex-1 p-5 flex flex-col justify-end min-h-[300px]">
-            <div className="flex items-end justify-between h-[230px] gap-2 pt-4 relative">
-              <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[11px] text-[#94a3b8] pb-1 font-medium">
-                <span>{Math.round(maxChartValue)}</span>
-                <span>{Math.round(maxChartValue / 2)}</span>
-                <span>0</span>
-              </div>
-              
-              <div className="absolute left-10 right-0 top-1.5 bottom-6 border-l border-b border-[#e2e8f0]">
-                <div className="absolute w-full top-0 border-t border-dashed border-[#e2e8f0]"></div>
-                <div className="absolute w-full top-1/2 border-t border-dashed border-[#e2e8f0]"></div>
-              </div>
 
-              <div className="ml-10 w-full flex justify-around items-end h-full z-10 pb-[25px]">
-                {chartData.map((d, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 group relative w-full h-full justify-end">
-                    <div className="absolute -top-12 bg-[#1e293b] text-white text-[12px] px-3 py-1.5 rounded-[4px] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none shadow-lg">
-                      <div className="font-semibold mb-0.5">{d.label}</div>
-                      <div className="text-[11px] text-gray-300">Nhận: {d.received} | Xử lý: {d.processed}</div>
-                    </div>
-                    
-                    <div className="flex items-end gap-[4px] w-full max-w-[44px] justify-center h-full">
-                      <div 
-                        className="w-[45%] bg-[#3b82f6] rounded-t-[4px] transition-all duration-700 hover:brightness-110 relative overflow-hidden" 
-                        style={{ height: `${(d.received / maxChartValue) * 100}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-                      </div>
-                      <div 
-                        className="w-[45%] bg-[#22c55e] rounded-t-[4px] transition-all duration-700 hover:brightness-110 relative overflow-hidden" 
-                        style={{ height: `${(d.processed / maxChartValue) * 100}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-                      </div>
-                    </div>
-                    <span className="text-[12px] font-medium text-[#64748b] absolute bottom-0 translate-y-full mt-2 w-full text-center group-hover:text-[#0f172a] transition-colors">{d.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-8 mt-10 pt-4 border-t border-[#f1f5f9]">
-              <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
-                <div className="w-3.5 h-3.5 bg-[#3b82f6] rounded-[3px] shadow-sm"></div>
-                Đơn tiếp nhận
-              </div>
-              <div className="flex items-center gap-2 text-[12px] font-medium text-[#475569]">
-                <div className="w-3.5 h-3.5 bg-[#22c55e] rounded-[3px] shadow-sm"></div>
-                Đơn đã xử lý
-              </div>
-            </div>
+          <div className="flex-1 p-3 flex flex-col justify-center">
+            <SoSanhLoaiAnChart groups={soSanhLoaiAnData} categories={KET_QUA_CATEGORIES} maxValue={soSanhLoaiAnMax} />
           </div>
         </div>
 
-        {/* Alerts / To-do */}
-        <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
-          <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
-            <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
-              <BellRing size={18} className="text-[#ef4444]" />
-              Cần chú ý / Quá hạn
-            </h3>
-            <span className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-2 py-0.5 rounded-full">{kpi.overdue} đơn</span>
+        {/* Kết quả xử lý đơn + Alerts / To-do */}
+        <div className="col-span-1 flex flex-col gap-5">
+          <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-shadow">
+            <div className="px-5 py-4 border-b border-[#f1f5f9]">
+              <h3 className="text-[13px] font-bold text-[#8b1a1a] uppercase tracking-wide">Kết quả xử lý đơn</h3>
+            </div>
+            <div className="p-5">
+              <KetQuaXuLyDonChart items={ketQuaXuLyDonItems} maxValue={ketQuaXuLyDonMax} />
+            </div>
           </div>
-          <div className="flex-1 p-3 overflow-y-auto space-y-2">
-            {[1, 2, 3, 4, 5].map((_, i) => (
-              <div key={i} className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#ef4444]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
-                <div className="flex items-start justify-between mb-1.5">
-                  <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#ef4444] transition-colors">Đơn: 102{i}/2026</span>
-                  <span className="text-[11px] font-semibold text-[#ef4444] bg-[#fee2e2] px-1.5 py-0.5 rounded-[3px]">Quá hạn {i+1} ngày</span>
-                </div>
-                <p className="text-[12px] text-[#64748b] line-clamp-1 mb-2">Yêu cầu GĐT bản án dân sự số 45...</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#475569] font-medium">
-                    <Users size={12} className="text-[#94a3b8]" /> Nguyễn Văn {['An', 'Bình', 'Cường', 'Dũng', 'Em'][i]}
+
+          <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
+            <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
+              <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
+                <BellRing size={18} className="text-[#ef4444]" />
+                Cần chú ý / Quá hạn
+              </h3>
+              <span className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-2 py-0.5 rounded-full">{kpi.overdue} đơn</span>
+            </div>
+            <div className="flex-1 p-3 overflow-y-auto space-y-2">
+              {[1, 2].map((_, i) => (
+                <div key={i} className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#ef4444]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
+                  <div className="flex items-start justify-between mb-1.5">
+                    <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#ef4444] transition-colors">Đơn: 102{i}/2026</span>
+                    <span className="text-[11px] font-semibold text-[#ef4444] bg-[#fee2e2] px-1.5 py-0.5 rounded-[3px]">Quá hạn {i+1} ngày</span>
                   </div>
-                  <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-[#ef4444] transition-colors" />
+                  <p className="text-[12px] text-[#64748b] line-clamp-1 mb-2">Yêu cầu GĐT bản án dân sự số 45...</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#475569] font-medium">
+                      <Users size={12} className="text-[#94a3b8]" /> Nguyễn Văn {['An', 'Bình', 'Cường', 'Dũng', 'Em'][i]}
+                    </div>
+                    <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-[#ef4444] transition-colors" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-            <button className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">Xem tất cả cảnh báo</button>
+              ))}
+            </div>
+            <div className="p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
+              <button className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">Xem tất cả cảnh báo</button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ROW 3: Secondary widgets */}
       <div className="grid grid-cols-3 gap-5">
-        {/* Phân loại án */}
+        {/* Cơ cấu xử lý đơn */}
         <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-[#f1f5f9]">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
               <PieChart size={18} className="text-[#8b1a1a]" />
-              Cơ cấu loại hình án
+              Cơ cấu xử lý đơn
             </h3>
           </div>
-          <div className="flex-1 p-5 flex flex-col justify-center space-y-5">
-            {caseTypes.map((type, i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-[#334155]">{type.label}</span>
-                  <span className="text-[13px] font-bold text-[#0f172a]">{type.percent}%</span>
-                </div>
-                <div className="w-full h-[8px] bg-[#f1f5f9] rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${type.color} rounded-full transition-all duration-1000`} 
-                    style={{ width: `${type.percent}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
+          <div className="flex-1 p-5 flex flex-col justify-center">
+            <DonutChart items={coCauXuLyDonItems} />
           </div>
         </div>
 
