@@ -192,11 +192,11 @@ const Sel = ({ className = "", children, ...props }: React.SelectHTMLAttributes<
       <select
         ref={ref}
         {...props}
-        className={`w-full h-[30px] px-2 ${hienX ? "pr-12" : "pr-7"} text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none ${className}`}
+        className={`w-full h-[30px] px-2 ${hienX && !props.disabled ? "pr-12" : "pr-7"} text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none disabled:bg-[#f5f5f5] disabled:text-[#888] disabled:cursor-not-allowed ${className}`}
       >
         {children}
       </select>
-      {hienX && <NutXoaChon onClick={xoa} right="right-6" size={13} />}
+      {hienX && !props.disabled && <NutXoaChon onClick={xoa} right="right-6" size={13} />}
       <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
     </div>
   );
@@ -2459,11 +2459,35 @@ const PopupChiTietKetQuaXuLy = ({ data, onClose }: { data: any, onClose: () => v
           <button onClick={onClose} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
         </div>
         <div className="px-6 py-4 space-y-4 text-[13px] text-[#333]">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="block text-[#666] mb-1">Nơi chuyển đến</span>
-              <span className="font-medium text-[#222]">{data.noiChuyenDen}</span>
+          {(data.date || data.actor || data.step) && (
+            <div className="grid grid-cols-3 gap-4 pb-3 border-b border-[#eee]">
+              <div>
+                <span className="block text-[#666] mb-1">Ngày chuyển đơn</span>
+                <span className="font-medium text-[#222]">{data.date || "—"}</span>
+              </div>
+              <div>
+                <span className="block text-[#666] mb-1">Người tạo</span>
+                <span className="font-medium text-[#222]">{data.actor || "—"}</span>
+              </div>
+              <div>
+                <span className="block text-[#666] mb-1">Thao tác</span>
+                <span className="font-medium text-[#222]">{data.step || "—"}</span>
+              </div>
             </div>
+          )}
+          {!data.noiChuyenDen && (
+            <div>
+              <span className="block text-[#666] mb-1">Nội dung</span>
+              <span className="font-medium text-[#222]">{data.note || "Không có thông tin chi tiết."}</span>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            {data.noiChuyenDen && (
+              <div>
+                <span className="block text-[#666] mb-1">Nơi chuyển đến</span>
+                <span className="font-medium text-[#222]">{data.noiChuyenDen}</span>
+              </div>
+            )}
             {data.noiChuyenDen === "Trả lại đơn" && (
               <>
                 <div>
@@ -4548,7 +4572,7 @@ interface DanhSachDonRow {
     nguoiTra?: string;
     ngayTra?: string;
   };
-  processingHistory?: { date: string; step: string; actor: string; note?: string }[];
+  processingHistory?: { date: string; step: string; actor: string; note?: string; rawData?: any }[];
   nguoiNhap: string;
   ngayNhap: string;
   gioNhap: string;
@@ -12539,15 +12563,41 @@ export default function App() {
   const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
   const editingRow = SAMPLE_ROWS.find(r => r.id === editingRowId) ?? null;
 
-  // Sửa đơn: "Nơi chuyển đến" mặc định lấy theo kết quả của lần nhập gần nhất —
-  // Trạng thái/thongTinChuyenDon đã lưu trên đơn, không bắt cán bộ chọn lại từ đầu.
+  // Sửa đơn: mục 5 lấy theo kết quả xử lý của lần nhập/sửa gần nhất — cả bộ
+  // trường (không chỉ "Nơi chuyển đến") đọc từ rawData của log lịch sử mới
+  // nhất, để mở popup "Sửa kết quả xử lý đơn" thấy ngay dữ liệu đã lưu thay vì
+  // trống trơn. Đơn chưa có log (hoặc log seed không có rawData) thì rơi về
+  // suy luận cũ từ giaiQuyet/thongTinChuyenDon.
   useEffect(() => {
     if (!editingRow) return;
+    const lastRaw = editingRow.processingHistory?.length
+      ? editingRow.processingHistory[editingRow.processingHistory.length - 1].rawData
+      : null;
+    if (lastRaw) {
+      setNoiChuyenDen(lastRaw.noiChuyenDen ?? "");
+      setDonViChuyenDen(lastRaw.donViChuyenDen ?? "");
+      setCaNhanChuyenDen(lastRaw.caNhanChuyenDen ?? "");
+      setTrangThaiDon(lastRaw.trangThaiDon ?? "");
+      setThuLyDon(lastRaw.thuLyDon ?? "");
+      setLyDoKhongDu(lastRaw.lyDoKhongDu ?? "");
+      setLyDoTraLai(lastRaw.lyDoTraLai ?? "");
+      setYeuCauTraLai(lastRaw.yeuCauTraLai ?? "");
+      setLyDoLuuTheoDoi(lastRaw.lyDoLuuTheoDoi ?? "");
+      setChanhAnHoacToaAn(lastRaw.chanhAnHoacToaAn ?? "Tòa án");
+      setVuTruong(lastRaw.vuTruong ?? "");
+      return;
+    }
     const nhan = editingRow.giaiQuyet?.nhan;
     if (nhan === "Trả lại đơn") setNoiChuyenDen("Trả lại đơn");
     else if (nhan === "Lưu theo dõi") setNoiChuyenDen("Lưu theo dõi");
     else if (editingRow.thongTinChuyenDon) setNoiChuyenDen(editingRow.thongTinChuyenDon);
   }, [editingRowId]);
+
+  // Sau khi đã lưu kết quả xử lý lần đầu (đúng 1 lần log), các trường mục 5
+  // hiện giá trị đã lưu nhưng khoá lại không cho gõ trực tiếp nữa — muốn sửa
+  // phải bấm "Sửa kết quả xử lý đơn" (mở popup riêng). Chưa nhập lần nào thì
+  // vẫn để mở cho gõ tự do như bình thường.
+  const chiXemKetQuaLanDau = !!editingRow?.processingHistory && editingRow.processingHistory.length === 1;
 
   const OCR_MOCK: Record<string, string> = {
     nguoiGui: "Nguyễn Văn An",
@@ -14022,12 +14072,15 @@ export default function App() {
 
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       {/* Nơi chuyển đến — gộp thay cho "Kết quả xử lý" trước đây, kèm
-                          luôn 2 giá trị Trả lại đơn / Lưu theo dõi vào chung một ô chọn. */}
-                      {(!editingRow?.processingHistory || editingRow.processingHistory.length === 0) && (
+                          luôn 2 giá trị Trả lại đơn / Lưu theo dõi vào chung một ô chọn.
+                          Lần đầu nhập (chưa có log hoặc mới có đúng 1 lần) vẫn hiện các
+                          trường này (đã điền sẵn giá trị đã lưu) — bảng Lịch sử chỉ thay
+                          thế chỗ này từ lần sửa thứ 2 trở đi. */}
+                      {(!editingRow?.processingHistory || editingRow.processingHistory.length <= 1) && (
                         <>
                           <div>
                             <Lbl>Nơi chuyển đến</Lbl>
-                        <Sel value={noiChuyenDen} onChange={(e) => {
+                        <Sel value={noiChuyenDen} disabled={chiXemKetQuaLanDau} onChange={(e) => {
                           setNoiChuyenDen(e.target.value);
                           setDonViChuyenDen("");
                           setCaNhanChuyenDen("");
@@ -14046,7 +14099,7 @@ export default function App() {
                         <>
                           <div>
                             <Lbl req>Lý do trả lại</Lbl>
-                            <Sel value={lyDoTraLai} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoTraLai(e.target.value)}>
+                            <Sel value={lyDoTraLai} disabled={chiXemKetQuaLanDau} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoTraLai(e.target.value)}>
                               <option value="">-- Chọn lý do --</option>
                               <option>Đơn không đủ điều kiện xử lý</option>
                               <option>Không thuộc thẩm quyền giải quyết</option>
@@ -14056,7 +14109,7 @@ export default function App() {
                           </div>
                           <div>
                             <Lbl>Yêu cầu</Lbl>
-                            <Inp placeholder="Nhập yêu cầu trả lại đơn..." value={yeuCauTraLai}
+                            <Inp placeholder="Nhập yêu cầu trả lại đơn..." value={yeuCauTraLai} disabled={chiXemKetQuaLanDau}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYeuCauTraLai(e.target.value)} />
                           </div>
                         </>
@@ -14067,8 +14120,8 @@ export default function App() {
                         <div className="col-span-2">
                           <Lbl req>Lý do lưu theo dõi</Lbl>
                           <textarea rows={2} placeholder="Nhập lý do lưu theo dõi đơn thư..."
-                            value={lyDoLuuTheoDoi} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
-                            className="w-full border border-[#ccc] rounded-[3px] px-2.5 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                            value={lyDoLuuTheoDoi} disabled={chiXemKetQuaLanDau} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
+                            className="w-full border border-[#ccc] rounded-[3px] px-2.5 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none disabled:bg-[#f5f5f5] disabled:text-[#888]" />
                         </div>
                       )}
 
@@ -14077,7 +14130,7 @@ export default function App() {
                         <>
                           <div>
                             <Lbl req>Đơn vị chuyển đến</Lbl>
-                            <Sel value={donViChuyenDen} onChange={(e) => {
+                            <Sel value={donViChuyenDen} disabled={chiXemKetQuaLanDau} onChange={(e) => {
                               setDonViChuyenDen(e.target.value);
                               setCaNhanChuyenDen("");
                             }}>
@@ -14099,7 +14152,7 @@ export default function App() {
                           {donViChuyenDen && (
                             <div>
                               <Lbl>Chuyển đến cá nhân</Lbl>
-                              <Sel value={caNhanChuyenDen} onChange={(e) => setCaNhanChuyenDen(e.target.value)}>
+                              <Sel value={caNhanChuyenDen} disabled={chiXemKetQuaLanDau} onChange={(e) => setCaNhanChuyenDen(e.target.value)}>
                                 <option value="">-- Chọn cá nhân --</option>
                                 <option>Vụ trưởng - {donViChuyenDen}</option>
                                 <option>Phó vụ trưởng - {donViChuyenDen}</option>
@@ -14118,6 +14171,7 @@ export default function App() {
                             <Inp
                               placeholder="Nhập hoặc tìm kiếm tòa án..."
                               value={donViChuyenDen}
+                              disabled={chiXemKetQuaLanDau}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDonViChuyenDen(e.target.value); setShowDonViChuyenDenDD(true); }}
                               onFocus={() => setShowDonViChuyenDenDD(true)}
                               onBlur={() => setTimeout(() => setShowDonViChuyenDenDD(false), 180)}
@@ -14145,6 +14199,7 @@ export default function App() {
                                 <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
                                   <input type="radio" name="chanhAnHoacToaAnOpt" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                                     checked={chanhAnHoacToaAn === opt}
+                                    disabled={chiXemKetQuaLanDau}
                                     onChange={() => setChanhAnHoacToaAn(opt)} />
                                   {opt}
                                 </label>
@@ -14160,6 +14215,7 @@ export default function App() {
                           <Lbl req>Đơn vị chuyển đến (Cơ quan/Đơn vị ngoài tòa án)</Lbl>
                           <Inp
                             value={donViChuyenDen}
+                            disabled={chiXemKetQuaLanDau}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDonViChuyenDen(e.target.value)}
                             placeholder="Nhập tên cơ quan/đơn vị ngoài tòa..."
                           />
@@ -14170,7 +14226,7 @@ export default function App() {
                         <>
                           <div>
                             <Lbl req>Trạng thái đơn</Lbl>
-                            <Sel value={trangThaiDon} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTrangThaiDon(e.target.value)}>
+                            <Sel value={trangThaiDon} disabled={chiXemKetQuaLanDau} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTrangThaiDon(e.target.value)}>
                               <option value="">-- Chọn --</option>
                               <option>Đơn đủ điều kiện</option>
                               <option>Đơn không đủ điều kiện</option>
@@ -14179,7 +14235,7 @@ export default function App() {
                           {hasGiamDocThamResult ? (
                             <div>
                               <Lbl req>Chọn vụ trưởng</Lbl>
-                              <Sel value={vuTruong} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setVuTruong(e.target.value)}>
+                              <Sel value={vuTruong} disabled={chiXemKetQuaLanDau} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setVuTruong(e.target.value)}>
                                 <option value="">-- Chọn vụ trưởng --</option>
                                 <option>Vụ trưởng Vụ Pháp chế và Quản lý khoa học</option>
                                 <option>Vụ trưởng Vụ Giám đốc kiểm tra về hình sự</option>
@@ -14191,7 +14247,7 @@ export default function App() {
                           ) : trangThaiDon !== "Đơn không đủ điều kiện" ? (
                             <div>
                               <Lbl req>Thụ lý đơn</Lbl>
-                              <Sel value={thuLyDon} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setThuLyDon(e.target.value)}>
+                              <Sel value={thuLyDon} disabled={chiXemKetQuaLanDau} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setThuLyDon(e.target.value)}>
                                 <option value="">-- Chọn --</option>
                                 <option>Thụ lý mới</option>
                                 <option>Đã thụ lý</option>
@@ -14204,7 +14260,7 @@ export default function App() {
                           ) : (
                             <div>
                               <Lbl req>Lý do không đủ điều kiện</Lbl>
-                              <Sel value={lyDoKhongDu} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoKhongDu(e.target.value)}>
+                              <Sel value={lyDoKhongDu} disabled={chiXemKetQuaLanDau} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLyDoKhongDu(e.target.value)}>
                                 <option value="">-- Chọn lý do --</option>
                                 <option>Thiếu Bản án/quyết định có hiệu lực pháp luật</option>
                                 <option>Thiếu thông tin căn cước công dân</option>
@@ -14216,19 +14272,19 @@ export default function App() {
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn không đủ điều kiện" && lyDoKhongDu === "Lý do khác" && (
                             <div className="col-span-2">
                               <Lbl req>Lý do khác</Lbl>
-                              <textarea rows={2} placeholder="Nhập lý do khác..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                              <textarea rows={2} placeholder="Nhập lý do khác..." disabled={chiXemKetQuaLanDau} className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none disabled:bg-[#f5f5f5] disabled:text-[#888]" />
                             </div>
                           )}
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (
                             <div>
                               <Lbl req>Số thụ lý</Lbl>
-                              <Inp placeholder="Nhập số thụ lý" />
+                              <Inp placeholder="Nhập số thụ lý" disabled={chiXemKetQuaLanDau} />
                             </div>
                           )}
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (
                             <div>
                               <Lbl req>Ngày thụ lý</Lbl>
-                              <Inp type="date" />
+                              <Inp type="date" disabled={chiXemKetQuaLanDau} />
                             </div>
                           )}
                         </>
@@ -14239,7 +14295,7 @@ export default function App() {
                           <div className="flex items-center gap-5 h-[30px]">
                             {[["bac3", "Thẩm phán bậc 3"], ["toicao", "Thẩm phán tối cao"]].map(([val, label]) => (
                               <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
-                                <input type="radio" name="thamQuyenDon" value={val} className="accent-[#8b1a1a]" />
+                                <input type="radio" name="thamQuyenDon" value={val} disabled={chiXemKetQuaLanDau} className="accent-[#8b1a1a]" />
                                 {label}
                               </label>
                             ))}
@@ -14252,8 +14308,9 @@ export default function App() {
                         </>
                       )}
 
-                      {/* Lịch sử — chỉ có khi Sửa đơn đã tồn tại và đã có log. */}
-                      {editingRow?.processingHistory && editingRow.processingHistory.length > 0 && (
+                      {/* Lịch sử — chỉ hiện từ lần sửa kết quả xử lý thứ 2 trở đi, khi đã
+                          có từ 2 lần log trở lên (log cả lần đầu lẫn các lần sửa sau). */}
+                      {editingRow?.processingHistory && editingRow.processingHistory.length > 1 && (
                         <div className="col-span-2 mt-1">
                           <Lbl>Lịch sử</Lbl>
                           <table className="w-full border-collapse text-[12px]">
@@ -14274,12 +14331,14 @@ export default function App() {
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.actor}</td>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.date}</td>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-center">
-                                    {item.rawData && (
-                                      <button type="button" onClick={() => setXemChiTietHistory(item.rawData)}
-                                        className="text-[#1a5a96] hover:underline font-medium text-[12px]">
-                                        Xem
-                                      </button>
-                                    )}
+                                    <button type="button" title="Xem chi tiết"
+                                      onClick={() => setXemChiTietHistory({
+                                        ...(item.rawData ?? {}),
+                                        date: item.date, actor: item.actor, step: item.step, note: item.note,
+                                      })}
+                                      className="text-[#1a5a96] hover:underline font-medium text-[12px]">
+                                      Xem chi tiết
+                                    </button>
                                   </td>
                                 </tr>
                               ))}
@@ -14801,8 +14860,7 @@ export default function App() {
               const newEntry = {
                 date: ngay,
                 step,
-                // Accessing currentRole via its outer scope dependency in App
-                actor: "Nguyễn Văn An", // Mocking actor since currentRole might be tricky to inject if PopupSuaKetQuaXuLyDon is outside App. Wait, PopupSuaKetQuaXuLyDon is outside App!
+                actor: nguoiTheoVaiTro(currentRole).nguoi,
                 note,
                 rawData: data
               };
