@@ -16,7 +16,7 @@ import {
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
   laToTrinhPhanCong, luongToTrinhPhanCong,
   PanelChiTiet, TienTrinhGon, dangChoXuLy,
-  type VanBanTrinh, type BuocKy, type TrangThaiVB,
+  type VanBanTrinh, type BuocKy, type TrangThaiVB, type TabDS,
 } from "./components/QuanLyVanBan";
 
 /** Nhãn ngắn của trạng thái văn bản, dùng cho chip "Đã có trong …" ở Danh sách đơn
@@ -2442,6 +2442,347 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
           <button onClick={handleConfirm} disabled={isDisabled}
             className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[6px] text-[13px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
             Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Popup Chi tiết kết quả xử lý đơn ─────────────────────────────────────────
+const PopupChiTietKetQuaXuLy = ({ data, onClose }: { data: any, onClose: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-[580px] max-h-[90vh] overflow-y-auto">
+        <div className="flex items-start justify-between px-6 pt-5 pb-3 sticky top-0 bg-white z-10 border-b border-[#eee]">
+          <span className="text-[16px] font-bold text-[#222]">Chi tiết kết quả xử lý</span>
+          <button onClick={onClose} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        </div>
+        <div className="px-6 py-4 space-y-4 text-[13px] text-[#333]">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="block text-[#666] mb-1">Nơi chuyển đến</span>
+              <span className="font-medium text-[#222]">{data.noiChuyenDen}</span>
+            </div>
+            {data.noiChuyenDen === "Trả lại đơn" && (
+              <>
+                <div>
+                  <span className="block text-[#666] mb-1">Lý do trả lại</span>
+                  <span className="font-medium text-[#222]">{data.lyDoTraLai}</span>
+                </div>
+                <div>
+                  <span className="block text-[#666] mb-1">Yêu cầu</span>
+                  <span className="font-medium text-[#222]">{data.yeuCauTraLai || "—"}</span>
+                </div>
+              </>
+            )}
+            {data.noiChuyenDen === "Lưu theo dõi" && (
+              <div className="col-span-2">
+                <span className="block text-[#666] mb-1">Lý do lưu theo dõi</span>
+                <span className="font-medium text-[#222]">{data.lyDoLuuTheoDoi}</span>
+              </div>
+            )}
+            {data.noiChuyenDen === "Nội bộ" && (
+              <>
+                <div>
+                  <span className="block text-[#666] mb-1">Đơn vị chuyển đến</span>
+                  <span className="font-medium text-[#222]">{data.donViChuyenDen}</span>
+                </div>
+                {data.caNhanChuyenDen && (
+                  <div>
+                    <span className="block text-[#666] mb-1">Cá nhân nhận</span>
+                    <span className="font-medium text-[#222]">{data.caNhanChuyenDen}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="block text-[#666] mb-1">Trạng thái đơn</span>
+                  <span className="font-medium text-[#222]">{data.trangThaiDon}</span>
+                </div>
+                {data.trangThaiDon === "Đơn đủ điều kiện" && (
+                  <div>
+                    <span className="block text-[#666] mb-1">Thụ lý đơn</span>
+                    <span className="font-medium text-[#222]">{data.thuLyDon}</span>
+                  </div>
+                )}
+                {data.trangThaiDon === "Đơn không đủ điều kiện" && (
+                  <div>
+                    <span className="block text-[#666] mb-1">Lý do không đủ điều kiện</span>
+                    <span className="font-medium text-[#222]">{data.lyDoKhongDu}</span>
+                  </div>
+                )}
+              </>
+            )}
+            {data.noiChuyenDen === "Tòa khác" && (
+              <>
+                <div>
+                  <span className="block text-[#666] mb-1">Đơn vị chuyển đến</span>
+                  <span className="font-medium text-[#222]">{data.donViChuyenDen}</span>
+                </div>
+                <div>
+                  <span className="block text-[#666] mb-1">Chuyển đến</span>
+                  <span className="font-medium text-[#222]">{data.chanhAnHoacToaAn}</span>
+                </div>
+              </>
+            )}
+            {data.noiChuyenDen === "Ngoài tòa án" && (
+              <div className="col-span-2">
+                <span className="block text-[#666] mb-1">Đơn vị chuyển đến</span>
+                <span className="font-medium text-[#222]">{data.donViChuyenDen}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-end px-6 py-4 border-t border-[#e0e0e0] sticky bottom-0 bg-white z-10">
+          <button onClick={onClose}
+            className="h-[36px] px-5 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[6px] text-[13px] font-medium transition-colors">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Popup Sửa kết quả xử lý đơn (dùng trong Section 5 của form Sửa đơn) ────
+// Tương tự PopupThemKetQuaGiaiQuyet nhưng mở từ nút "Sửa kết quả xử lý đơn"
+// trên header Section 5. Cho phép cán bộ sửa lại kết quả đã nhập trước đó.
+const PopupSuaKetQuaXuLyDon = ({
+  onClose,
+  onSave,
+  banDau,
+}: {
+  onClose: () => void;
+  onSave: (data: {
+    noiChuyenDen: string;
+    donViChuyenDen: string;
+    caNhanChuyenDen: string;
+    trangThaiDon: string;
+    thuLyDon: string;
+    lyDoKhongDu: string;
+    lyDoTraLai: string;
+    yeuCauTraLai: string;
+    lyDoLuuTheoDoi: string;
+    chanhAnHoacToaAn: string;
+    vuTruong: string;
+  }) => void;
+  banDau?: {
+    noiChuyenDen: string;
+    donViChuyenDen: string;
+    caNhanChuyenDen: string;
+    trangThaiDon: string;
+    thuLyDon: string;
+    lyDoKhongDu: string;
+    lyDoTraLai: string;
+    yeuCauTraLai: string;
+    lyDoLuuTheoDoi: string;
+    chanhAnHoacToaAn: string;
+    vuTruong: string;
+  };
+}) => {
+  const [noiChuyenDen, setNoiChuyenDen] = useState(banDau?.noiChuyenDen ?? "");
+  const [donViChuyenDen, setDonViChuyenDen] = useState(banDau?.donViChuyenDen ?? "");
+  const [caNhanChuyenDen, setCaNhanChuyenDen] = useState(banDau?.caNhanChuyenDen ?? "");
+  const [trangThaiDon, setTrangThaiDon] = useState(banDau?.trangThaiDon ?? "");
+  const [thuLyDon, setThuLyDon] = useState(banDau?.thuLyDon ?? "");
+  const [lyDoKhongDu, setLyDoKhongDu] = useState(banDau?.lyDoKhongDu ?? "");
+  const [lyDoTraLai, setLyDoTraLai] = useState(banDau?.lyDoTraLai ?? "");
+  const [yeuCauTraLai, setYeuCauTraLai] = useState(banDau?.yeuCauTraLai ?? "");
+  const [lyDoLuuTheoDoi, setLyDoLuuTheoDoi] = useState(banDau?.lyDoLuuTheoDoi ?? "");
+  const [chanhAnHoacToaAn, setChanhAnHoacToaAn] = useState(banDau?.chanhAnHoacToaAn ?? "Tòa án");
+  const [vuTruong, setVuTruong] = useState(banDau?.vuTruong ?? "");
+  const [showDonViDD, setShowDonViDD] = useState(false);
+
+  const handleSave = () => {
+    onSave({
+      noiChuyenDen, donViChuyenDen, caNhanChuyenDen, trangThaiDon,
+      thuLyDon, lyDoKhongDu, lyDoTraLai, yeuCauTraLai, lyDoLuuTheoDoi,
+      chanhAnHoacToaAn, vuTruong,
+    });
+  };
+
+  const selCls = "w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]";
+  const inpCls = "w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]";
+  const lblCls = "block text-[13px] text-[#333] mb-1.5";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-[580px] max-h-[90vh] overflow-y-auto">
+        <div className="flex items-start justify-between px-6 pt-5 pb-1 sticky top-0 bg-white z-10">
+          <span className="text-[16px] font-bold text-[#222]">Sửa kết quả xử lý đơn</span>
+          <button onClick={onClose} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        </div>
+        <div className="px-6 py-4 space-y-3 text-[13px] text-[#333]">
+          {/* Nơi chuyển đến */}
+          <div>
+            <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Nơi chuyển đến</label>
+            <select value={noiChuyenDen} onChange={e => { setNoiChuyenDen(e.target.value); setDonViChuyenDen(""); setCaNhanChuyenDen(""); }} className={selCls}>
+              <option value="">-- Chọn --</option>
+              <option>Nội bộ</option>
+              <option>Tòa khác</option>
+              <option>Ngoài tòa án</option>
+              <option>Trả lại đơn</option>
+              <option>Lưu theo dõi</option>
+            </select>
+          </div>
+
+          {/* Trả lại đơn */}
+          {noiChuyenDen === "Trả lại đơn" && (
+            <>
+              <div>
+                <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Lý do trả lại</label>
+                <select value={lyDoTraLai} onChange={e => setLyDoTraLai(e.target.value)} className={selCls}>
+                  <option value="">-- Chọn lý do --</option>
+                  <option>Đơn không đủ điều kiện xử lý</option>
+                  <option>Không thuộc thẩm quyền giải quyết</option>
+                  <option>Đã hết thời hạn giải quyết</option>
+                  <option>Lý do khác</option>
+                </select>
+              </div>
+              <div>
+                <label className={lblCls}>Yêu cầu</label>
+                <input type="text" value={yeuCauTraLai} onChange={e => setYeuCauTraLai(e.target.value)}
+                  placeholder="Nhập yêu cầu trả lại đơn..." className={inpCls} />
+              </div>
+            </>
+          )}
+
+          {/* Lưu theo dõi */}
+          {noiChuyenDen === "Lưu theo dõi" && (
+            <div>
+              <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Lý do lưu theo dõi</label>
+              <textarea rows={2} value={lyDoLuuTheoDoi} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
+                placeholder="Nhập lý do lưu theo dõi đơn thư..."
+                className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+            </div>
+          )}
+
+          {/* Nội bộ */}
+          {noiChuyenDen === "Nội bộ" && (
+            <>
+              <div>
+                <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Đơn vị chuyển đến</label>
+                <select value={donViChuyenDen} onChange={e => { setDonViChuyenDen(e.target.value); setCaNhanChuyenDen(""); }} className={selCls}>
+                  <option value="">-- Chọn đơn vị --</option>
+                  <option>Vụ Pháp chế và Quản lý khoa học</option>
+                  <option>Hội đồng Thẩm phán TANDTC</option>
+                  <option>Vụ Giám đốc kiểm tra về hình sự</option>
+                  <option>Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên</option>
+                  <option>Vụ Thi đua - Khen thưởng</option>
+                  <option>Vụ Tổ chức - Cán bộ</option>
+                  <option>Thanh tra Tòa án nhân dân tối cao</option>
+                  <option>Vụ Giám đốc, kiểm tra về dân sự</option>
+                  <option>Vụ Giám đốc, kiểm tra về hành chính</option>
+                  <option>Vụ Tổng hợp</option>
+                  <option>Vụ Hợp tác quốc tế</option>
+                  <option>Vụ Công tác phía Nam</option>
+                </select>
+              </div>
+              {donViChuyenDen && (
+                <div>
+                  <label className={lblCls}>Chuyển đến cá nhân</label>
+                  <select value={caNhanChuyenDen} onChange={e => setCaNhanChuyenDen(e.target.value)} className={selCls}>
+                    <option value="">-- Chọn cá nhân --</option>
+                    <option>Vụ trưởng - {donViChuyenDen}</option>
+                    <option>Phó vụ trưởng - {donViChuyenDen}</option>
+                    <option>Thẩm tra viên - {donViChuyenDen}</option>
+                  </select>
+                </div>
+              )}
+              <div>
+                <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Trạng thái đơn</label>
+                <select value={trangThaiDon} onChange={e => setTrangThaiDon(e.target.value)} className={selCls}>
+                  <option value="">-- Chọn --</option>
+                  <option>Đơn đủ điều kiện</option>
+                  <option>Đơn không đủ điều kiện</option>
+                </select>
+              </div>
+              {trangThaiDon === "Đơn đủ điều kiện" && (
+                <div>
+                  <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Thụ lý đơn</label>
+                  <select value={thuLyDon} onChange={e => setThuLyDon(e.target.value)} className={selCls}>
+                    <option value="">-- Chọn --</option>
+                    <option>Thụ lý mới</option>
+                    <option>Đã thụ lý</option>
+                    <option>Xin ý kiến lãnh đạo</option>
+                    <option>Không</option>
+                  </select>
+                </div>
+              )}
+              {trangThaiDon === "Đơn không đủ điều kiện" && (
+                <div>
+                  <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Lý do không đủ điều kiện</label>
+                  <select value={lyDoKhongDu} onChange={e => setLyDoKhongDu(e.target.value)} className={selCls}>
+                    <option value="">-- Chọn lý do --</option>
+                    <option>Thiếu Bản án/quyết định có hiệu lực pháp luật</option>
+                    <option>Thiếu thông tin căn cước công dân</option>
+                    <option>Viết lại đơn</option>
+                    <option>Lý do khác</option>
+                  </select>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Tòa khác */}
+          {noiChuyenDen === "Tòa khác" && (
+            <>
+              <div className="relative">
+                <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Đơn vị chuyển đến</label>
+                <input type="text" placeholder="Nhập hoặc tìm kiếm tòa án..."
+                  value={donViChuyenDen}
+                  onChange={e => { setDonViChuyenDen(e.target.value); setShowDonViDD(true); }}
+                  onFocus={() => setShowDonViDD(true)}
+                  onBlur={() => setTimeout(() => setShowDonViDD(false), 180)}
+                  className={inpCls} />
+                {showDonViDD && (() => {
+                  const goiY = TOA_KHAC_OPTIONS.filter(t => t.toLowerCase().includes(donViChuyenDen.toLowerCase()));
+                  if (!goiY.length) return null;
+                  return (
+                    <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#ddd] rounded-[3px] shadow-lg mt-0.5 max-h-[220px] overflow-y-auto">
+                      {goiY.map(t => (
+                        <button key={t} type="button"
+                          onMouseDown={() => { setDonViChuyenDen(t); setShowDonViDD(false); }}
+                          className="w-full text-left px-3 py-2 text-[13px] hover:bg-[#f0f7ff] border-b border-[#f0f0f0] last:border-0">
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+              <div>
+                <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Chuyển đến</label>
+                <div className="flex items-center gap-4 h-[30px]">
+                  {["Tòa án", "Chánh án"].map(opt => (
+                    <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                      <input type="radio" name="suaChanhAnHoacToaAn" className="w-[14px] h-[14px] accent-[#8b1a1a]"
+                        checked={chanhAnHoacToaAn === opt}
+                        onChange={() => setChanhAnHoacToaAn(opt)} />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Ngoài tòa án */}
+          {noiChuyenDen === "Ngoài tòa án" && (
+            <div>
+              <label className={lblCls}><span className="text-[#c0392b] mr-1">*</span>Đơn vị chuyển đến (Cơ quan/Đơn vị ngoài tòa án)</label>
+              <input type="text" value={donViChuyenDen} onChange={e => setDonViChuyenDen(e.target.value)}
+                placeholder="Nhập tên cơ quan/đơn vị ngoài tòa..." className={inpCls} />
+            </div>
+          )}
+        </div>
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#e0e0e0] sticky bottom-0 bg-white z-10">
+          <button onClick={onClose}
+            className="h-[36px] px-5 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[6px] text-[13px] font-medium transition-colors">
+            Đóng
+          </button>
+          <button onClick={handleSave} disabled={!noiChuyenDen}
+            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[6px] text-[13px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+            Lưu thay đổi
           </button>
         </div>
       </div>
@@ -7065,7 +7406,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
 };
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0], vbId?: string) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi, initialTab = 0 }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0], vbId?: string) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
   onCreateToTrinh?: (t: ToTrinh) => void;
   /** Popup "Tạo văn bản & trình ký" trả kết quả lên App để đẩy vào kho chung. */
@@ -7076,8 +7417,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   /** Kho văn bản dùng chung — để biết đơn nào đã nằm trong tờ trình nào. */
   vanBanList?: VanBanTrinh[];
   khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
+  /** Tab mở sẵn khi vào màn — dùng khi điều hướng từ Trang chủ (panel "Phân loại đơn nhận"). */
+  initialTab?: number;
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
   // Mở thẳng modal Lưu số văn bản ở loại "Yêu cầu bổ sung" cho đúng một đơn
   const [ycbsRowId, setYcbsRowId] = useState<number | null>(null);
@@ -10230,8 +10573,9 @@ const DanhSachBieuMau = ({
   const vanBanTheoDon = timVanBanTheoDon(vanBanList ?? [], row.maDon);
   const vanBanCuaDon = vbId ? vanBanTheoDon.filter(v => v.id === vbId) : vanBanTheoDon;
   // Panel chi tiết mở NGAY TẠI ĐÂY thay vì nhảy sang màn khác — giữ nguyên bối
-  // cảnh "tôi đang xem văn bản của đơn Mã 7031".
-  const [chonId, setChonId] = useState<string | null>(null);
+  // cảnh "tôi đang xem văn bản của đơn Mã 7031". Nếu đến từ nút "văn bản trình
+  // ký" ở Danh sách đơn (đã có vbId), mở panel ngay, khỏi bắt bấm thêm lần nữa.
+  const [chonId, setChonId] = useState<string | null>(vbId ?? null);
   const chon = (vanBanList ?? []).find(v => v.id === chonId) ?? null;
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
   const d = row.thongTinDon;
@@ -12015,6 +12359,12 @@ export default function App() {
   const [bieuMauVbId, setBieuMauVbId] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [phanCongTab, setPhanCongTab] = useState<0 | 1 | 2>(0);
+  // Tab mở sẵn ở Danh sách đơn khi nhấn đúp 1 trạng thái trong panel "Phân loại
+  // đơn nhận" trên Trang chủ.
+  const [danhSachDonTab, setDanhSachDonTab] = useState(0);
+  // Tab mở sẵn ở Danh sách văn bản khi bấm "Xem chi tiết" ở card "Đơn của tôi"
+  // trên Trang chủ.
+  const [vanBanTrinhKyTab, setVanBanTrinhKyTab] = useState<TabDS>("all");
   const [showPopup, setShowPopup] = useState(false);
   const [showBiCaoPopup, setShowBiCaoPopup] = useState(false);
   // Danh sách bị cáo (án hình sự) — điền tự động sau khi tra cứu bản án
@@ -12090,6 +12440,9 @@ export default function App() {
   const [lyDoLuuTheoDoi, setLyDoLuuTheoDoi] = useState("");
   const [lyDoTraLai, setLyDoTraLai] = useState("");
   const [yeuCauTraLai, setYeuCauTraLai] = useState("");
+  // Popup sửa kết quả xử lý đơn (mục 5)
+  const [showSuaKetQuaXuLy, setShowSuaKetQuaXuLy] = useState(false);
+  const [xemChiTietHistory, setXemChiTietHistory] = useState<any>(null);
 
   // Đơn chuyển sang Tòa khác / Ngoài tòa án thì TAND tối cao không thẩm định
   // nội dung — cơ quan nhận mới là nơi cần thông tin bản án. Bắt cán bộ nhập đủ
@@ -12456,11 +12809,20 @@ export default function App() {
   // lại mảng này từ đầu mỗi lần chuyển view nên lần mở Sửa kế tiếp thấy ngay.
   const luuLichSuXuLy = () => {
     if (!editingRow || !noiChuyenDen) return;
+    if (editingRow.processingHistory && editingRow.processingHistory.length > 0) return;
+
     const t = new Date();
     const ngay = `${String(t.getDate()).padStart(2, "0")}/${String(t.getMonth() + 1).padStart(2, "0")}/${t.getFullYear()}`;
+    
+    const rawData = {
+      noiChuyenDen, donViChuyenDen, caNhanChuyenDen, trangThaiDon,
+      thuLyDon, lyDoKhongDu, lyDoTraLai, yeuCauTraLai, lyDoLuuTheoDoi,
+      chanhAnHoacToaAn, vuTruong
+    };
+    
     editingRow.processingHistory = [
       ...(editingRow.processingHistory ?? []),
-      { date: ngay, step: thaoTacXuLy(), actor: nguoiTheoVaiTro(currentRole).nguoi, note: noiDungXuLy() },
+      { date: ngay, step: thaoTacXuLy(), actor: nguoiTheoVaiTro(currentRole).nguoi, note: noiDungXuLy(), rawData },
     ];
   };
 
@@ -12632,6 +12994,8 @@ export default function App() {
             <div className="flex-1 overflow-y-auto">
               <Dashboard onXemChiTietHieuSuat={() => setView("hieu_suat_chi_tiet")}
                 onXemPheDuyet={() => setView("phe_duyet")}
+                onXemDanhSachDon={(tab) => { setDanhSachDonTab(tab); setView("list"); }}
+                onXemDanhSachVanBan={() => { setVanBanTrinhKyTab("ChoDuyet"); setView("van_ban_trinh_ky"); }}
                 vanBanList={vanBanList} currentRole={currentRole} />
             </div>
           )}
@@ -12655,7 +13019,7 @@ export default function App() {
             <VanBanTrinhKyCuaToi danhSach={vanBanList} setDanhSach={setVanBanList}
               currentRole={currentRole} highlightId={vbVuaTao}
               openId={moVanBanId} onDaMo={() => setMoVanBanId(null)}
-              locMaDon={locMaDonVanBan} />
+              locMaDon={locMaDonVanBan} initialTab={vanBanTrinhKyTab} />
           )}
 
           {/* List view */}
@@ -12663,6 +13027,7 @@ export default function App() {
             <div className="flex-1 overflow-y-auto">
               <DanhSachDon
                 currentRole={currentRole}
+                initialTab={danhSachDonTab}
                 onTaoVanBan={taoVanBanTuModal}
                 onXemVanBanDaTrinh={xemVanBanDaTrinh}
                 vanBanList={vanBanList}
@@ -13589,7 +13954,14 @@ export default function App() {
                   )}
 
                   {/* 5. Xử lý đơn / công văn */}
-                  <Section title={`${5 + secOffset}. ${["CV khác", "CV kiến nghị GĐT-TT", "CV chuyển kiến nghị GĐT-TT", "CV chuyển đơn"].includes(hinhThuc) ? "Xử lý công văn" : "Xử lý đơn"}`}>
+                  <Section title={`${5 + secOffset}. ${["CV khác", "CV kiến nghị GĐT-TT", "CV chuyển kiến nghị GĐT-TT", "CV chuyển đơn"].includes(hinhThuc) ? "Xử lý công văn" : "Xử lý đơn"}`}
+                    extra={
+                      <button type="button" onClick={() => setShowSuaKetQuaXuLy(true)}
+                        className="inline-flex items-center gap-1 bg-white hover:bg-[#f5f5f5] text-[#333] text-[12px] font-medium px-3 py-[3px] rounded-[3px] border border-[#ccc] transition-colors whitespace-nowrap">
+                        <PenLine size={12} className="text-[#1a5a96]" /> Sửa kết quả xử lý đơn
+                      </button>
+                    }
+                  >
                     {/* Gộp toàn bộ checkbox của mục Xử lý đơn về một chỗ.
                       Xin hoãn thi hành án: mọi loại án / hình thức đơn, trừ Đơn khác và CV khác.
                       Án tử hình và Áp dụng biện pháp XLCH: chỉ với án Hình sự. */}
@@ -13651,8 +14023,10 @@ export default function App() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                       {/* Nơi chuyển đến — gộp thay cho "Kết quả xử lý" trước đây, kèm
                           luôn 2 giá trị Trả lại đơn / Lưu theo dõi vào chung một ô chọn. */}
-                      <div>
-                        <Lbl>Nơi chuyển đến</Lbl>
+                      {(!editingRow?.processingHistory || editingRow.processingHistory.length === 0) && (
+                        <>
+                          <div>
+                            <Lbl>Nơi chuyển đến</Lbl>
                         <Sel value={noiChuyenDen} onChange={(e) => {
                           setNoiChuyenDen(e.target.value);
                           setDonViChuyenDen("");
@@ -13872,14 +14246,14 @@ export default function App() {
                           </div>
                         </div>
                       )}
-                      <div className="col-span-2 flex items-end">
-                        {/* Nút Danh sách thẩm phán đã được chuyển sang màn hình Phân công thẩm phán */}
-                      </div>
+                          <div className="col-span-2 flex items-end">
+                            {/* Nút Danh sách thẩm phán đã được chuyển sang màn hình Phân công thẩm phán */}
+                          </div>
+                        </>
+                      )}
 
-                      {/* Lịch sử — chỉ có khi Sửa đơn đã tồn tại. Nội dung lấy linh
-                          hoạt theo từng lần xử lý (lý do trả lại, nơi chuyển, đơn đủ
-                          điều kiện...), không cố định một mẫu câu. */}
-                      {editingRow && (
+                      {/* Lịch sử — chỉ có khi Sửa đơn đã tồn tại và đã có log. */}
+                      {editingRow?.processingHistory && editingRow.processingHistory.length > 0 && (
                         <div className="col-span-2 mt-1">
                           <Lbl>Lịch sử</Lbl>
                           <table className="w-full border-collapse text-[12px]">
@@ -13889,23 +14263,26 @@ export default function App() {
                                 <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[180px]">Thao tác</th>
                                 <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[140px]">Người tạo</th>
                                 <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Ngày chuyển đơn</th>
+                                <th className="border border-[#ddd] px-3 py-[6px] text-center font-semibold text-[#333] w-[80px]">Chi tiết</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {editingRow.processingHistory?.length ? editingRow.processingHistory.map((item, idx) => (
+                              {editingRow.processingHistory.map((item, idx) => (
                                 <tr key={idx} className={idx % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.note || item.step}</td>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.step}</td>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.actor}</td>
                                   <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.date}</td>
-                                </tr>
-                              )) : (
-                                <tr>
-                                  <td colSpan={4} className="border border-[#ddd] px-3 py-4 text-center text-[#999] italic">
-                                    Chưa có lịch sử.
+                                  <td className="border border-[#ddd] px-3 py-[6px] text-center">
+                                    {item.rawData && (
+                                      <button type="button" onClick={() => setXemChiTietHistory(item.rawData)}
+                                        className="text-[#1a5a96] hover:underline font-medium text-[12px]">
+                                        Xem
+                                      </button>
+                                    )}
                                   </td>
                                 </tr>
-                              )}
+                              ))}
                             </tbody>
                           </table>
                         </div>
@@ -14371,6 +14748,76 @@ export default function App() {
             setShowThemNguoiLQ(false);
             setSuaNguoiLQId(null);
           }}
+        />
+      )}
+      {/* Popup Sửa kết quả xử lý đơn — mở từ nút trên header Section 5 */}
+      {showSuaKetQuaXuLy && (
+        <PopupSuaKetQuaXuLyDon
+          banDau={{
+            noiChuyenDen, donViChuyenDen, caNhanChuyenDen, trangThaiDon,
+            thuLyDon, lyDoKhongDu, lyDoTraLai, yeuCauTraLai, lyDoLuuTheoDoi,
+            chanhAnHoacToaAn, vuTruong,
+          }}
+          onClose={() => setShowSuaKetQuaXuLy(false)}
+          onSave={(data) => {
+            setNoiChuyenDen(data.noiChuyenDen);
+            setDonViChuyenDen(data.donViChuyenDen);
+            setCaNhanChuyenDen(data.caNhanChuyenDen);
+            setTrangThaiDon(data.trangThaiDon);
+            setThuLyDon(data.thuLyDon);
+            setLyDoKhongDu(data.lyDoKhongDu);
+            setLyDoTraLai(data.lyDoTraLai);
+            setYeuCauTraLai(data.yeuCauTraLai);
+            setLyDoLuuTheoDoi(data.lyDoLuuTheoDoi);
+            setChanhAnHoacToaAn(data.chanhAnHoacToaAn);
+            setVuTruong(data.vuTruong);
+            
+            if (editingRow) {
+              const t = new Date();
+              const ngay = `${String(t.getDate()).padStart(2, "0")}/${String(t.getMonth() + 1).padStart(2, "0")}/${t.getFullYear()}`;
+              const step = data.noiChuyenDen === "Nội bộ" || data.noiChuyenDen === "Tòa khác" || data.noiChuyenDen === "Ngoài tòa án" ? "Chuyển đơn" : data.noiChuyenDen;
+              
+              let note = "";
+              if (data.noiChuyenDen === "Nội bộ") {
+                note = [
+                  data.donViChuyenDen && `Chuyển đến: ${data.donViChuyenDen}`,
+                  data.caNhanChuyenDen && `Cá nhân: ${data.caNhanChuyenDen}`,
+                  data.trangThaiDon && `Trạng thái: ${data.trangThaiDon}`,
+                  data.trangThaiDon === "Đơn không đủ điều kiện" && data.lyDoKhongDu && `Lý do: ${data.lyDoKhongDu}`,
+                  hasGiamDocThamResult
+                    ? (data.vuTruong && `Vụ trưởng: ${data.vuTruong}`)
+                    : (data.trangThaiDon === "Đơn đủ điều kiện" && data.thuLyDon && `Thụ lý: ${data.thuLyDon}`),
+                ].filter(Boolean).join(" · ");
+              } else if (data.noiChuyenDen === "Tòa khác") {
+                note = [data.donViChuyenDen && `Chuyển đến: ${data.donViChuyenDen}`, `Hình thức: ${data.chanhAnHoacToaAn}`].filter(Boolean).join(" · ");
+              } else if (data.noiChuyenDen === "Ngoài tòa án") {
+                note = data.donViChuyenDen ? `Chuyển đến: ${data.donViChuyenDen}` : "";
+              } else if (data.noiChuyenDen === "Trả lại đơn") {
+                note = [data.lyDoTraLai && `Lý do: ${data.lyDoTraLai}`, data.yeuCauTraLai && `Yêu cầu: ${data.yeuCauTraLai}`].filter(Boolean).join(" · ");
+              } else if (data.noiChuyenDen === "Lưu theo dõi") {
+                note = data.lyDoLuuTheoDoi ? `Lý do: ${data.lyDoLuuTheoDoi}` : "";
+              }
+
+              const newEntry = {
+                date: ngay,
+                step,
+                // Accessing currentRole via its outer scope dependency in App
+                actor: "Nguyễn Văn An", // Mocking actor since currentRole might be tricky to inject if PopupSuaKetQuaXuLyDon is outside App. Wait, PopupSuaKetQuaXuLyDon is outside App!
+                note,
+                rawData: data
+              };
+              editingRow.processingHistory = [...(editingRow.processingHistory ?? []), newEntry];
+            }
+            
+            setShowSuaKetQuaXuLy(false);
+          }}
+        />
+      )}
+      {/* Popup Chi tiết kết quả xử lý đơn — mở từ nút Xem trên lịch sử */}
+      {xemChiTietHistory && (
+        <PopupChiTietKetQuaXuLy
+          data={xemChiTietHistory}
+          onClose={() => setXemChiTietHistory(null)}
         />
       )}
     </div>

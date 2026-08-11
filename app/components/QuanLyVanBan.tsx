@@ -1524,9 +1524,9 @@ const CotThaoTac = ({ vb, nguoiDung, onMo }: { vb: VanBanTrinh; nguoiDung: strin
 };
 
 // ─── Màn "Danh sách văn bản" ──────────────────────────────────────────
-type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaBanHanh";
+export type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaBanHanh";
 
-export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon }: {
+export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, initialTab = "all" }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
@@ -1537,8 +1537,10 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   onDaMo?: () => void;
   /** Lọc sẵn theo mã đơn — dùng khi sang màn từ nút "Xem văn bản đã trình". */
   locMaDon?: string | null;
+  /** Tab mở sẵn khi vào màn — dùng khi điều hướng từ Trang chủ (card "Đơn của tôi"). */
+  initialTab?: TabDS;
 }) => {
-  const [tab, setTab] = useState<TabDS>("all");
+  const [tab, setTab] = useState<TabDS>(initialTab);
   const [tim, setTim] = useState("");
   const [chonId, setChonId] = useState<string | null>(null);
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
@@ -2381,6 +2383,9 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
   const laNguoiGiu = nguoiDangGiu(vb)?.nguoi === nguoiDung;
   const buoc = vb.luongKy[vb.buocHienTai];
 
+  // Trưởng phòng chỉ thấy 2 nút (Phê duyệt + Từ chối); các cấp cao hơn thấy đủ 5 nút.
+  const laTruongPhong = chucVu === "Trưởng phòng";
+
   // Ý kiến của người ở bước trước — cái mà lãnh đạo đang phải cho ý kiến tiếp
   const yKienTruoc = [...vb.lichSu].reverse().find(m => m.yKien?.trim());
 
@@ -2462,74 +2467,54 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           {tab === "ykien" ? (
             <>
               <div className="border border-[#e5e5e5] rounded-[6px] overflow-hidden">
-                <div onClick={() => setMoThongTin(m => !m)}
-                  className="px-4 py-3 cursor-pointer hover:bg-[#fafafa] transition-colors">
-                  <div className="flex items-center gap-1.5 text-[14px] font-semibold text-[#1d2e4f]">
-                    {moThongTin ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                    {vb.loaiVanBan} - Số {vb.soVanBan ?? "— chưa số —"}
-                  </div>
-                  <div className="text-[12px] text-[#888] mt-0.5 ml-5">
-                    TLM: {vb.id.replace(/\D/g, "") || "—"} · Ngày TL: {vb.ngayCapSo ?? "—"}
-                  </div>
+                {/* Nút Xem diễn biến — luôn hiển thị, không kèm nội dung ý kiến đề xuất */}
+                <div className="px-4 py-3 flex items-center justify-end">
+                  <button onClick={() => setXemDienBien(v => !v)}
+                    className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline">
+                    <History size={12} /> Xem diễn biến
+                  </button>
                 </div>
 
-                {moThongTin && (
-                  <div className="px-4 pb-4 space-y-3">
-                    {/* Ý kiến của bước trước */}
-                    {yKienTruoc && (
-                      <div className="rounded-[4px] bg-[#eaf4ff] border border-[#c5d8f8] px-3 py-2.5">
-                        <div className="flex items-start gap-2">
-                          <div className="text-[13px] font-semibold text-[#1a5a96] leading-snug">
-                            Ý kiến đề xuất <span className="font-normal text-[#666]">|</span> {yKienTruoc.chucVu} - {yKienTruoc.nguoi}
-                          </div>
-                          <button onClick={() => setXemDienBien(v => !v)}
-                            className="ml-auto flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline flex-shrink-0">
-                            <History size={12} /> Xem diễn biến
-                          </button>
+                {xemDienBien && (
+                  <div className="px-4 pb-3 space-y-1.5">
+                    <div className="rounded-[4px] bg-[#eaf4ff] border border-[#c5d8f8] px-3 py-2.5 space-y-1.5">
+                      {vb.lichSu.map((m, i) => (
+                        <div key={i} className="text-[12px] text-[#555] leading-snug">
+                          <span className="text-[#888]">{m.thoiGian}</span> · <b>{m.nguoi}</b> ({m.chucVu}) — {HANH_DONG_NHAN[m.hanhDong]}
+                          {m.yKien && <span className="italic"> : {m.yKien}</span>}
                         </div>
-                        <div className="text-[13px] text-[#333] mt-1 leading-relaxed">{yKienTruoc.yKien}</div>
-                        {xemDienBien && (
-                          <div className="mt-2.5 pt-2.5 border-t border-[#c5d8f8] space-y-1.5">
-                            {vb.lichSu.map((m, i) => (
-                              <div key={i} className="text-[12px] text-[#555] leading-snug">
-                                <span className="text-[#888]">{m.thoiGian}</span> · <b>{m.nguoi}</b> ({m.chucVu}) — {HANH_DONG_NHAN[m.hanhDong]}
-                                {m.yKien && <span className="italic"> : {m.yKien}</span>}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Ô ý kiến lãnh đạo */}
-                    <div className="border border-[#e5e5e5] rounded-[4px]">
-                      <div className="flex items-center px-3 py-2 border-b border-[#eee]">
-                        <span className="text-[13px] text-[#555]">Ý kiến lãnh đạo</span>
-                        <button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
-                          className="ml-auto text-[#888] hover:text-[#333]"><RotateCcw size={13} /></button>
-                      </div>
-                      <div className="p-3">
-                        {/* Không đánh dấu bắt buộc cố định: trình ký thì để trống
-                            được, chỉ TỪ CHỐI mới bắt buộc nêu lý do. */}
-                        <label className="block text-[13px] text-[#333] mb-1.5">
-                          Nội dung đề xuất
-                          <span className="text-[#888] font-normal"> (bắt buộc khi từ chối)</span>
-                        </label>
-                        <textarea value={yKien} maxLength={MAX} rows={4}
-                          onChange={e => setYKien(e.target.value)}
-                          placeholder="Nhập nội dung đề xuất…"
-                          className={`w-full border rounded-[4px] px-2.5 py-2 text-[13px] leading-relaxed resize-none focus:outline-none
-                            ${thieuLyDoTuChoi ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`} />
-                        <div className="flex items-center mt-1">
-                          {thieuLyDoTuChoi && (
-                            <span className="text-[12px] text-[#c0392b]">Từ chối phải nêu lý do, tối thiểu 10 ký tự.</span>
-                          )}
-                          <span className="ml-auto text-[12px] text-[#999]">{yKien.length} / {MAX}</span>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 )}
+
+                {/* Ô ý kiến lãnh đạo */}
+                <div className="px-4 pb-4 space-y-3">
+                  <div className="border border-[#e5e5e5] rounded-[4px]">
+                    <div className="flex items-center px-3 py-2 border-b border-[#eee]">
+                      <span className="text-[13px] text-[#555]">Ý kiến lãnh đạo</span>
+                      <button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
+                        className="ml-auto text-[#888] hover:text-[#333]"><RotateCcw size={13} /></button>
+                    </div>
+                    <div className="p-3">
+                      <label className="block text-[13px] text-[#333] mb-1.5">
+                        Nội dung đề xuất
+                        <span className="text-[#888] font-normal"> (bắt buộc khi từ chối)</span>
+                      </label>
+                      <textarea value={yKien} maxLength={MAX} rows={4}
+                        onChange={e => setYKien(e.target.value)}
+                        placeholder="Nhập nội dung đề xuất…"
+                        className={`w-full border rounded-[4px] px-2.5 py-2 text-[13px] leading-relaxed resize-none focus:outline-none
+                          ${thieuLyDoTuChoi ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`} />
+                      <div className="flex items-center mt-1">
+                        {thieuLyDoTuChoi && (
+                          <span className="text-[12px] text-[#c0392b]">Từ chối phải nêu lý do, tối thiểu 10 ký tự.</span>
+                        )}
+                        <span className="ml-auto text-[12px] text-[#999]">{yKien.length} / {MAX}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Đề xuất trình tiếp */}
@@ -2555,34 +2540,66 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                 )}
 
                 <div className="flex items-center justify-end gap-2 px-4 pb-4">
-                  <button onClick={() => setSuaWord(s => !s)}
-                    className={`h-[36px] px-3.5 border rounded-[4px] text-[13px] transition-colors ${suaWord
-                      ? "border-[#1a5a96] bg-[#eaf4ff] text-[#1a5a96] font-medium"
-                      : "border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]"}`}>
-                    {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
-                  </button>
-                  <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
-                    className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
-                    Lưu
-                  </button>
-                  {laNguoiGiu && (
+                  {/* Trưởng phòng: 4 nút (Chỉnh sửa Word, Lưu, Phê duyệt, Từ chối) */}
+                  {laTruongPhong ? (
                     <>
-                      {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
-                      <button onClick={tuChoi}
-                        title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
-                        className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
-                        <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
+                      <button onClick={() => setSuaWord(s => !s)}
+                        className={`h-[36px] px-3.5 border rounded-[4px] text-[13px] transition-colors ${suaWord
+                          ? "border-[#1a5a96] bg-[#eaf4ff] text-[#1a5a96] font-medium"
+                          : "border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]"}`}>
+                        {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
                       </button>
-                      {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
-                      <button onClick={() => luuVaKy(false)}
-                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
-                        Lưu và ký
+                      <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
+                        className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
+                        Lưu
                       </button>
-                      <button onClick={() => luuVaKy(true)}
-                        title="Ký logic — xác nhận trên hệ thống, không dùng chứng thư số"
-                        className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
-                        Lưu và ký logic
+                      {laNguoiGiu && (
+                        <>
+                          <button onClick={tuChoi}
+                            title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
+                            className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
+                            <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
+                          </button>
+                          <button onClick={() => luuVaKy(false)}
+                            className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
+                            <span className="inline-flex items-center gap-1.5"><Check size={14} /> Phê duyệt</span>
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    /* Phó/Chánh VP, Lãnh đạo Tòa, Chánh án/Phó Chánh án: đủ 5 nút */
+                    <>
+                      <button onClick={() => setSuaWord(s => !s)}
+                        className={`h-[36px] px-3.5 border rounded-[4px] text-[13px] transition-colors ${suaWord
+                          ? "border-[#1a5a96] bg-[#eaf4ff] text-[#1a5a96] font-medium"
+                          : "border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]"}`}>
+                        {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
                       </button>
+                      <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
+                        className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
+                        Lưu
+                      </button>
+                      {laNguoiGiu && (
+                        <>
+                          {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
+                          <button onClick={tuChoi}
+                            title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
+                            className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
+                            <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
+                          </button>
+                          {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
+                          <button onClick={() => luuVaKy(false)}
+                            className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
+                            Lưu và ký
+                          </button>
+                          <button onClick={() => luuVaKy(true)}
+                            title="Ký logic — xác nhận trên hệ thống, không dùng chứng thư số"
+                            className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
+                            Lưu và ký logic
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
