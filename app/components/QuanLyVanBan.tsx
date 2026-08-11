@@ -1276,10 +1276,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClo
       </>
     );
     if (!laNguoiGiu) return (
-      <>
-        <BtnNeutral onClick={onClose}><Printer size={13} /> Xem bản in</BtnNeutral>
-        <BtnNeutral onClick={onClose}>Đóng</BtnNeutral>
-      </>
+      <BtnNeutral onClick={onClose}>Đóng</BtnNeutral>
     );
     switch (vb.trangThai) {
       case "Nhap": return (
@@ -1296,12 +1293,9 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClo
         </>
       );
       case "BiTraLai": return (
-        <>
-          <BtnNeutral onClick={onClose}><Printer size={13} /> Xem bản in</BtnNeutral>
-          <BtnPrimary onClick={() => xong(apSuaVaTrinhLai(vb, nguoiDung, chucVu, noiDung))}>
-            <Pencil size={13} /> Sửa &amp; trình lại
-          </BtnPrimary>
-        </>
+        <BtnPrimary onClick={() => xong(apSuaVaTrinhLai(vb, nguoiDung, chucVu, noiDung))}>
+          <Pencil size={13} /> Sửa &amp; trình lại
+        </BtnPrimary>
       );
       case "ChoDuyet": return (
         <>
@@ -1480,6 +1474,9 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClo
               <div className="mr-auto text-[11px] text-[#888] italic">
                 Vòng {vb.vongTrinh} vẫn giữ trong hồ sơ — không xoá, không gạch ngang.
               </div>
+            )}
+            {tab === "banin" && !daKhoa && (
+              <BtnPrimary onClick={onClose}><Printer size={13} /> In văn bản</BtnPrimary>
             )}
             {hanhDong()}
           </div>

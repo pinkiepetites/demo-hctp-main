@@ -643,7 +643,7 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
         <div className="text-[17px] font-bold text-[#1b5e20] mt-3">Trình duyệt thành công</div>
         <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
           Hồ sơ đã gửi tới <b>{nguoiDuyet.split(" - ")[0] || "người duyệt"}</b>.<br />
-          Đóng hộp thoại này để sang màn <b>Văn bản trình ký của tôi</b> theo dõi tiến độ.
+          Xem tiến độ tại màn <b>Văn bản trình ký của tôi</b> bất cứ lúc nào.
         </div>
       </div>
 
@@ -684,6 +684,42 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
         <button onClick={onDong}
           className="px-6 py-2 text-[13px] font-semibold text-white bg-[#1d2e4f] hover:bg-[#15223a] rounded-[4px] transition-colors">
           Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Popup báo trình duyệt không thành công. `lyDo` nêu nguyên nhân cụ thể
+// (ví dụ "Không có văn bản hợp lệ để trình duyệt") khi biết được; để trống
+// thì chỉ hiện thông báo lỗi hệ thống chung chung.
+const PopupTrinhDuyetLoi = ({ lyDo, onDong, onThuLai }: { lyDo?: string; onDong: () => void; onThuLai: () => void }) => (
+  <div className="fixed inset-0 z-[210] bg-black/50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-[8px] shadow-2xl w-[480px] overflow-hidden">
+      <div className="px-6 pt-7 pb-4 text-center">
+        <div className="w-14 h-14 rounded-full bg-[#fdecea] border-2 border-[#e57373] flex items-center justify-center mx-auto">
+          <X size={28} className="text-[#c0392b]" strokeWidth={3} />
+        </div>
+        <div className="text-[17px] font-bold text-[#8b1a1a] mt-3">Trình duyệt không thành công</div>
+        <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
+          Hệ thống không thể gửi hồ sơ đi duyệt. Văn bản chưa được tạo.
+        </div>
+      </div>
+
+      {lyDo && (
+        <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-[#8b1a1a]">
+          <span className="font-semibold">Lý do: </span>{lyDo}
+        </div>
+      )}
+
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+        <button onClick={onDong}
+          className="px-5 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f5f5f5] transition-colors">
+          Đóng
+        </button>
+        <button onClick={onThuLai}
+          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-[#8b1a1a] hover:bg-[#7a1717] rounded-[4px] transition-colors">
+          <Send size={14} /> Thử lại
         </button>
       </div>
     </div>
@@ -816,17 +852,25 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   // Các vụ (đơn vị giải quyết) có trong đợt này
   const danhSachVu = [...new Set(rows.map((r: any) => r.thongTinDon?.donViGiaiQuyet || "Chưa xác định"))];
 
-  // "Danh sách thụ lý mới" tách mỗi vụ 1 bản; loại khác 1 bản chung.
+  // "Danh sách thụ lý mới" tách mỗi vụ 1 bản; "Giấy xác nhận" tách mỗi mã đơn
+  // 1 bản (đúng với cách văn bản được tạo — mỗi đơn có 1 Giấy xác nhận riêng);
+  // loại khác 1 bản chung.
   const tabDiKem = vanBanDiKem.flatMap(v =>
     v === "Danh sách thụ lý mới"
-      ? danhSachVu.map(vu => ({ loai: v, vu, ten: `${v} - ${vu}` }))
-      : [{ loai: v, vu: null as string | null, ten: v }]);
+      ? danhSachVu.map(vu => ({ loai: v, vu, ten: `${v} - ${vu}`, row: undefined as any }))
+      : v === "Giấy xác nhận"
+        ? rows.map((r: any) => ({ loai: v, vu: null as string | null, ten: `${v} - ${r.maDon || r.nguoiGui || "Đơn"}`, row: r }))
+        : [{ loai: v, vu: null as string | null, ten: v, row: undefined as any }]);
 
   // Yêu cầu bổ sung tách sẵn 2 biểu mẫu: gửi đương sự và gửi trại giam
   const laYeuCauBoSung = loaiVanBan === "Yêu cầu bổ sung";
+  // Giấy xác nhận là loại chính: mỗi mã đơn 1 bản, giống hệt cách tabDiKem tách ở trên
+  const laGiayXacNhanChinh = loaiVanBan === "Giấy xác nhận" && !laToTrinhPhanCong;
   const tabChinh = laYeuCauBoSung
     ? ["Thông báo yêu cầu bổ sung với đương sự", "Thông báo yêu cầu bổ sung với trại giam"]
-    : [loaiVanBan];
+    : laGiayXacNhanChinh
+      ? rows.map((r: any) => `${loaiVanBan} - ${r.maDon || r.nguoiGui || "Đơn"}`)
+      : [loaiVanBan];
 
   const danhSachTab = [
     ...tabChinh,
@@ -1066,9 +1110,6 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   );
 };
 
-// Loại văn bản cấp theo TỪNG ĐƠN (mỗi đơn 1 tờ) thay vì gộp theo đơn vị.
-const CAP_THEO_TUNG_DON = new Set(["Giấy xác nhận", "Yêu cầu bổ sung"]);
-
 // Dựng 1 văn bản cho 1 đơn — không có tầng "Danh sách đơn" vì chỉ có đúng 1 đơn.
 const dungVanBanTheoDon = (
   loaiVB: string,
@@ -1098,63 +1139,6 @@ const dungVanBanTheoDon = (
       originalData: row,
       khongCham: !chamValidation,
     }],
-  };
-};
-
-// Dựng 1 văn bản cho 1 đơn vị chuyển đến, 3 cấp:
-//   Văn bản → Danh sách đơn (mỗi thẩm phán 1 danh sách, tách theo hình thức
-//   phân công) → Đơn
-// chamValidation=false cho văn bản đi kèm: vẫn hiển thị đầy đủ thông tin đơn
-// nhưng không bị soi bằng luật của loại văn bản chính.
-const dungVanBanTheoDonVi = (
-  loaiVB: string,
-  donVi: string,
-  rows: any[],
-  idPrefix: string,
-  chamValidation: boolean,
-): DocNode => {
-  const tenGoc = `${loaiVB} - ${donVi}`;
-  const theoTP: Record<string, { tp: string; loai: string; rows: any[] }> = {};
-  rows.forEach(r => {
-    const tp = (r.thongTinDon?.thamPhan || "Chưa phân công").split(" (")[0];
-    const loai = r.loaiPhanCong === "chi-dinh" ? "chỉ định"
-      : r.loaiPhanCong === "ngau-nhien" ? "ngẫu nhiên" : "";
-    (theoTP[`${tp}|${loai}`] ||= { tp, loai, rows: [] }).rows.push(r);
-  });
-
-  const hauToSo = hauToSoCua(loaiVB);
-
-  return {
-    id: idPrefix,
-    name: `${tenGoc} - (Số -/2026/${hauToSo})`,
-    tenGoc,
-    hauToSo,
-    type: loaiVB,
-    date: "30/07/2026",
-    isExpanded: true,
-    coTheLaySo: true,
-    khongCham: !chamValidation,
-    children: Object.values(theoTP).map((g, i) => ({
-      id: `${idPrefix}-ds${i}`,
-      name: `Danh sách đơn - Thẩm phán ${g.tp}${g.loai ? ` (phân công ${g.loai})` : ""}`,
-      type: "Danh sách",
-      date: "30/07/2026",
-      // Thu gọn mặc định: mở popup là thấy ngay có bao nhiêu văn bản sẽ tạo,
-      // không bị hàng chục dòng đơn đẩy phần cấu hình ra khỏi tầm mắt.
-      // Cần xem chi tiết thì bấm mũi tên để xổ.
-      isExpanded: false,
-      khongCham: !chamValidation,
-      children: g.rows.map((r, j) => ({
-        id: `${idPrefix}-ds${i}-${r.id}`,
-        sttHienThi: j + 1,
-        name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
-        type: "Đơn",
-        date: r.ngayNhap || "30/07/2026",
-        isExpanded: false,
-        originalData: r,
-        khongCham: !chamValidation,
-      })),
-    })),
   };
 };
 
@@ -1625,6 +1609,9 @@ const DocumentTreeRow = ({
 
 // --- Main Component ---
 export default function DocumentNumberingModal({ isOpen, onClose, currentRole, selectedRows, loaiVanBanMacDinh, onTrinhDuyet, onXemVanBanDaTrinh, donTrung }: DocumentNumberingModalProps) {
+  // Đổi thành true để demo nhánh "Trình duyệt không thành công".
+  const TRINH_DUYET_DEMO_FAIL = false;
+
   // Ăn theo Loại văn bản đang chọn ngoài màn Danh sách đơn.
   // So khớp không phân biệt hoa thường vì hai danh mục viết hoa khác nhau.
   const loaiKhoiTao =
@@ -1655,6 +1642,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const [lyDoTheoDon, setLyDoTheoDon] = useState<Record<string, { chon: string; khac: string }>>({});
   const [daTrinhDuyet, setDaTrinhDuyet] = useState(false);
   const [chanTrinhDuyet, setChanTrinhDuyet] = useState(false);
+  // null = ẩn popup lỗi; chuỗi rỗng = lỗi hệ thống chung; chuỗi khác = lý do cụ thể.
+  const [loiTrinhDuyet, setLoiTrinhDuyet] = useState<string | null>(null);
   const [showBieuMau, setShowBieuMau] = useState(false);
   const [vanBanDiKem, setVanBanDiKem] = useState<string[]>([]);
   // Người duyệt / người ký chọn riêng theo từng đơn trên bảng
@@ -1681,11 +1670,12 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     v => !v.chon || (v.chon === "Lý do khác" && !v.khac.trim()));
   const thieuNguoiDuyetKy = !nguoiDuyet || !nguoiKy || thieuLyDoYCBS;
   
-  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
-  //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
-  //                    → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
-  //                    → Đơn
-  //   Loại trong CAP_THEO_TUNG_DON: mỗi đơn 1 văn bản, bỏ tầng Danh sách đơn.
+  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản, luôn 2 tầng
+  // (Văn bản → Đơn), không còn tầng "Danh sách đơn" ở giữa.
+  //   "Tờ trình phân công thẩm phán": TẤT CẢ đơn được chọn gộp vào 1 tờ trình,
+  //   đơn để thẳng dưới tờ trình.
+  //   Mọi loại khác: mỗi đơn 1 văn bản riêng (ví dụ: Giấy xác nhận cơ quan
+  //   chuyển đơn → Mã đơn).
   useEffect(() => {
     if (!isOpen) return;
 
@@ -1694,21 +1684,11 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
     const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
       if (loaiVB === "Tờ trình phân công thẩm phán") {
-        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất
+        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất, đơn để thẳng
+        // dưới tờ trình — bỏ tầng "Danh sách đơn" theo đơn vị/thẩm phán/hình
+        // thức phân công.
         const tenGoc = `${loaiVB} chung`;
         const hauToSo = hauToSoCua(loaiVB);
-
-        // Tách các danh sách đơn theo: đơn vị gửi đến (donViGiaiQuyet/donViGui), thẩm phán (thamPhan), hình thức phân công (loaiPhanCong)
-        // Nếu có 1 trong 3 điều kiện này khác đi, bắt buộc phải tách thành 1 danh sách mới
-        const nhomDanhSach: Record<string, { donVi: string; tp: string; loai: string; rows: any[] }> = {};
-        selectedRows.forEach(r => {
-          const dv = r.thongTinDon?.donViGiaiQuyet || r.thongTinDon?.donViGui || "Chưa xác định";
-          const tp = (r.thongTinDon?.thamPhan || "Chưa phân công").split(" (")[0];
-          const loai = r.loaiPhanCong === "chi-dinh" ? "chỉ định"
-            : r.loaiPhanCong === "ngau-nhien" ? "ngẫu nhiên" : "chưa rõ";
-          const key = `${dv}|${tp}|${loai}`;
-          (nhomDanhSach[key] ||= { donVi: dv, tp, loai, rows: [] }).rows.push(r);
-        });
 
         const toTrinhNode: DocNode = {
           id: `${tienTo}-${n++}`,
@@ -1720,36 +1700,20 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
           isExpanded: true,
           coTheLaySo: true,
           khongCham: !cham,
-          children: Object.values(nhomDanhSach).map((g, i) => ({
-            id: `${tienTo}-ds-${i}`,
-            name: `Danh sách đơn - ${g.donVi} - Thẩm phán ${g.tp} (${g.loai})`,
-            type: "Danh sách",
-            date: "30/07/2026",
-            isExpanded: false,   // thu gọn mặc định — xem lý do ở nhánh trên
+          children: selectedRows.map((r, j) => ({
+            id: `${tienTo}-${r.id}`,
+            sttHienThi: j + 1,
+            name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
+            type: "Đơn",
+            date: r.ngayNhap || "30/07/2026",
+            isExpanded: false,
+            originalData: r,
             khongCham: !cham,
-            children: g.rows.map((r, j) => ({
-              id: `${tienTo}-ds-${i}-${r.id}`,
-              sttHienThi: j + 1,
-              name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
-              type: "Đơn",
-              date: r.ngayNhap || "30/07/2026",
-              isExpanded: false,
-              originalData: r,
-              khongCham: !cham,
-            })),
           })),
         };
         nodes.push(toTrinhNode);
-      } else if (CAP_THEO_TUNG_DON.has(loaiVB)) {
-        selectedRows.forEach(r => nodes.push(dungVanBanTheoDon(loaiVB, r, `${tienTo}-${n++}`, cham)));
       } else {
-        const theoDonVi: Record<string, any[]> = {};
-        selectedRows.forEach(row => {
-          const dv = row.thongTinDon?.donViGiaiQuyet || "Chưa xác định";
-          (theoDonVi[dv] ||= []).push(row);
-        });
-        Object.entries(theoDonVi).forEach(([donVi, rowsDV]) =>
-          nodes.push(dungVanBanTheoDonVi(loaiVB, donVi, rowsDV, `${tienTo}-${n++}`, cham)));
+        selectedRows.forEach(r => nodes.push(dungVanBanTheoDon(loaiVB, r, `${tienTo}-${n++}`, cham)));
       }
     };
 
@@ -1897,7 +1861,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   <select
                     value={f.value}
                     onChange={e => f.set(e.target.value)}
-                    className={oNhapCls(!!f.value)}
+                    className={oNhapCls()}
                   >
                     <option value="" disabled hidden>{f.placeholder}</option>
                     {f.options.map(o => <option key={o} className="text-[#222]">{o}</option>)}
@@ -2143,6 +2107,16 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 onClick={() => {
                   // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
                   if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
+                  // Không còn văn bản nào hợp lệ để trình (toàn bộ đã bị loại) —
+                  // chặn trước khi gọi onTrinhDuyet, tránh tạo văn bản rỗng.
+                  const soVanBanHopLe = treeData.filter(n => n.isValid !== false).length;
+                  if (soVanBanHopLe === 0) {
+                    setLoiTrinhDuyet("Không có văn bản hợp lệ để trình duyệt.");
+                    return;
+                  }
+                  // Nhánh demo lỗi hệ thống khi gửi hồ sơ — không đẩy văn bản
+                  // vào kho, cán bộ có thể bấm "Thử lại".
+                  if (TRINH_DUYET_DEMO_FAIL) { setLoiTrinhDuyet(""); return; }
                   // Đường ra của popup: đẩy văn bản vào kho dùng chung.
                   // Trước kia chỗ này chỉ setDaTrinhDuyet(true) rồi hết —
                   // popup là ngõ cụt, tạo xong không màn nào thấy.
@@ -2188,6 +2162,13 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             setChanTrinhDuyet(false);
           }}
           onDong={() => setChanTrinhDuyet(false)}
+        />
+      )}
+      {loiTrinhDuyet !== null && (
+        <PopupTrinhDuyetLoi
+          lyDo={loiTrinhDuyet || undefined}
+          onDong={() => setLoiTrinhDuyet(null)}
+          onThuLai={() => setLoiTrinhDuyet(null)}
         />
       )}
       {daTrinhDuyet && (

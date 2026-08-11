@@ -7065,14 +7065,11 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
 };
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onDongPopupVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0]) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0], vbId?: string) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
   onCreateToTrinh?: (t: ToTrinh) => void;
   /** Popup "Tạo văn bản & trình ký" trả kết quả lên App để đẩy vào kho chung. */
   onTaoVanBan?: (kq: KetQuaTrinhDuyet) => void;
-  /** Popup đóng hẳn (sau khi người dùng xem xong hộp thoại "Trình duyệt thành công").
-   *  Điều hướng sang màn theo dõi xảy ra ở đây, không phải lúc bấm Trình duyệt. */
-  onDongPopupVanBan?: () => void;
   /** Bấm "Xem văn bản đã trình" — sang màn Danh sách văn bản, lọc theo mã đơn
    *  (chuỗi rỗng nghĩa là trình nhiều đơn, không lọc theo mã nào). */
   onXemVanBanDaTrinh?: (maDon: string) => void;
@@ -8002,7 +7999,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             <table className="w-full table-fixed border-collapse text-[12px]">
               <thead>
                 <tr className="bg-[#f5f5f5]">
-                  <th className="border border-[#ddd] px-2 py-[9px] text-center font-semibold text-[#333] w-[5%]">
+                  <th className="border border-[#ddd] px-2 py-[9px] text-center font-semibold text-[#333] w-[3%]">
                     <div className="flex items-center justify-center gap-1.5">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={filteredRows.length > 0 && selectedRows.length === filteredRows.length}
@@ -8012,11 +8009,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </th>
                   {/* Cột người gửi ôm thêm Hình thức đơn + thông tin công văn nên
                       cần rộng hơn; cột Thông tin đơn nhẹ đi thì thu lại. */}
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[27%]">Thông tin người gửi / đơn vị gửi</th>
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[21%]">Thông tin đơn</th>
+                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[32%]">Thông tin người gửi / đơn vị gửi</th>
+                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[26%]">Thông tin đơn</th>
                   {khangNghi && <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[20%]">Đơn vị giải quyết</th>}
                   {!khangNghi && (
-                    <th className="border border-[#ddd] px-3 py-[9px] text-center font-semibold text-[#333] w-[8%]">
+                    <th className="border border-[#ddd] px-3 py-[9px] text-center font-semibold text-[#333] w-[5%]">
                       <div>Số đơn</div>
                       {filteredRows.length > 0 && (
                         <div className="font-normal text-[#666]">({tongSoDon})</div>
@@ -8024,7 +8021,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     </th>
                   )}
                   <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[19%]">Thông tin giải quyết</th>
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[15%]">Người nhập / Sửa</th>
+                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[10%]">Người nhập / Sửa</th>
                   <th className="border border-[#ddd] px-1 py-[9px] text-center font-semibold text-[#333] w-[5%]">Thao tác</th>
                 </tr>
               </thead>
@@ -8061,7 +8058,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   return (
                     <tr key={row.id} className={`align-top ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
                       {/* STT */}
-                      <td className="border border-[#ddd] px-2 py-2 text-center">
+                      <td className="border border-[#ddd] px-2 py-2.5 text-center align-top">
                         <div className="flex items-center justify-center gap-1.5">
                           <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                             checked={selectedRows.includes(row.id)}
@@ -8072,7 +8069,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Người gửi */}
-                      <td className="border border-[#ddd] px-3 py-2.5">
+                      <td className="border border-[#ddd] px-3 py-2.5 align-top">
                         {(() => {
                           const diaChi = khangNghi ? donViKhangNghi(row.id).diaChi : row.diaChi;
                           const ngayTrenDon = row.ngayTrenDon || d.ngayCV;
@@ -8154,7 +8151,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Thông tin đơn */}
-                      <td className="border border-[#ddd] px-3 py-2.5">
+                      <td className="border border-[#ddd] px-3 py-2.5 align-top">
                         <div className="space-y-[5px] leading-[1.5] text-[12px]">
                           {/* Số BA/QĐ — ngày — tòa gộp một dòng. Không tách "Ngày" thành
                               nhãn riêng nữa vì bên dưới còn dòng bản án gốc, hai dòng cùng
@@ -8224,7 +8221,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
                       {/* Đơn vị giải quyết — cột riêng của màn Hồ sơ kháng nghị */}
                       {khangNghi && (
-                        <td className="border border-[#ddd] px-3 py-2.5">
+                        <td className="border border-[#ddd] px-3 py-2.5 align-top">
                           {d.donViGiaiQuyet && <div className="text-[12px] text-[#333] leading-[1.5]">{vietTatTAND(d.donViGiaiQuyet)}</div>}
                           <div className="text-[11px] text-[#666] mt-1 leading-[1.5]">
                             <span className="text-[#888]">Nơi nhận kèm: </span>{vietTatTAND(donViKhangNghi(row.id).noiNhan)}
@@ -8234,22 +8231,22 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
                       {/* Số đơn */}
                       {!khangNghi && (
-                        <td className="border border-[#ddd] px-2 py-2.5 text-center font-medium">{row.soDon || ""}</td>
+                        <td className="border border-[#ddd] px-2 py-2.5 text-center font-medium align-top">{row.soDon || ""}</td>
                       )}
 
 
                       {/* Thông tin giải quyết — chỉ chữ, không tô nền màu, để mắt
                           không bị các pill kéo sự chú ý khỏi nội dung xung quanh. */}
-                      <td className="border border-[#ddd] px-3 py-2.5 leading-[1.5]">
+                      <td className="border border-[#ddd] px-3 py-2.5 leading-[1.5] align-top">
                         {khangNghi ? (() => {
                           const kn = ketQuaKhangNghi(row.id);
                           return (
                             <>
-                              <span className="text-[11px] font-semibold text-[#333]">
+                              <span className="text-[12px] font-semibold text-[#333]">
                                 {kn.trangThai}
                               </span>
                               {kn.ketQua && (
-                                <div className="text-[11px] text-[#333] mt-1 leading-snug">
+                                <div className="text-[12px] text-[#333] mt-1 leading-snug">
                                   <span className="text-[#888]">Kết quả: </span>{kn.ketQua}
                                 </div>
                               )}
@@ -8257,17 +8254,17 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           );
                         })() : (<>
                         {row.traLai ? (
-                          <span className="text-[11px] font-semibold text-[#333]">
+                          <span className="text-[12px] font-semibold text-[#333]">
                             {row.traLai.status === "pendingApproval" ? "Trả lại - chờ TP duyệt" : "Đã trả lại HCTP"}
                           </span>
                         ) : autoMergeMap[row.id] ? (
-                          <span className="text-[11px] font-semibold text-[#333]">
+                          <span className="text-[12px] font-semibold text-[#333]">
                             {autoMergeMap[row.id]}
                           </span>
                         ) : row.waitingForProcessing ? (
                           <span
                             onClick={() => onEditRow?.(row.id)}
-                            className="text-[11px] font-semibold text-[#333] cursor-pointer hover:underline"
+                            className="text-[12px] font-semibold text-[#333] cursor-pointer hover:underline"
                           >
                             Chờ xử lý
                           </span>
@@ -8276,39 +8273,39 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                              nhãn — nếu chỉ ghi Thụ lý mới thì cán bộ sẽ đem đi phân công
                              lại, trong khi hồ sơ đã ở tay thẩm phán của đơn liên quan. */
                           <>
-                            <span className="text-[11px] font-semibold text-[#333]"
+                            <span className="text-[12px] font-semibold text-[#333]"
                               title={`Cùng bản án với đơn ${trungTP.maDon.trim()} — đơn đó đã phân công thẩm phán và đã chuyển vụ`}>
                               Thụ lý mới trùng TP
                             </span>
                             {g.stl && (
-                              <div className="text-[11px] text-[#333] mt-1">
+                              <div className="text-[12px] text-[#333] mt-1">
                                 <span className="text-[#888]">Số thụ lý: </span>{g.stl}
                               </div>
                             )}
                             {g.ngayThuLy && (
-                              <div className="text-[11px] text-[#333]">
+                              <div className="text-[12px] text-[#333]">
                                 <span className="text-[#888]">Ngày thụ lý: </span>{g.ngayThuLy}
                               </div>
                             )}
                           </>
                         ) : g.nhan ? (
                           <>
-                            <span className="text-[11px] font-semibold text-[#333]">
+                            <span className="text-[12px] font-semibold text-[#333]">
                               {g.nhan}
                             </span>
                             {g.nhan === "Thụ lý mới" && g.stl && (
-                              <div className="text-[11px] text-[#333] mt-1">
+                              <div className="text-[12px] text-[#333] mt-1">
                                 <span className="text-[#888]">Số thụ lý: </span>{g.stl}
                               </div>
                             )}
                             {g.nhan === "Thụ lý mới" && g.ngayThuLy && (
-                              <div className="text-[11px] text-[#333]">
+                              <div className="text-[12px] text-[#333]">
                                 <span className="text-[#888]">Ngày thụ lý: </span>{g.ngayThuLy}
                               </div>
                             )}
                           </>
                         ) : (
-                          <span className="text-[11px] font-medium text-[#888]">
+                          <span className="text-[12px] font-medium text-[#888]">
                             Chưa có
                           </span>
                         )}
@@ -8316,7 +8313,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             dưới trạng thái, nếu không nhìn bảng sẽ thấy mấy đơn
                             giống hệt nhau mà không biết vì sao. */}
                         {row.trungVoiDon && (
-                          <div className="text-[11px] text-[#b45309] mt-1 leading-snug">
+                          <div className="text-[12px] text-[#b45309] mt-1 leading-snug">
                             Trùng với đơn <b className="font-medium">{row.trungVoiDon}</b>
                           </div>
                         )}
@@ -8324,7 +8321,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             Để ngoài chuỗi pill ở trên nên dù đơn còn dính nhãn khác
                             (đã ghép, chờ xử lý...) thì lời nhắc này vẫn hiện. */}
                         {trungTP && (
-                          <div className="text-[11px] text-[#b45309] mt-1 leading-snug">
+                          <div className="text-[12px] text-[#b45309] mt-1 leading-snug">
                             Trùng TP với đơn <b className="font-medium">{trungTP.maDon.trim()}</b>
                             {trungTP.thongTinDon?.thamPhan && (
                               <> · {vietTatChucDanhTP(thamPhanGon(vietTatTAND(trungTP.thongTinDon.thamPhan)))}</>
@@ -8358,20 +8355,16 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                   Văn bản trình ký ({dsVB.length})
                                 </div>
                                 {dsVB.map(vb => (
-                                  <button key={vb.id} type="button" title={`${vb.loaiVanBan} · ${TRANG_THAI_NHAN[vb.trangThai]}`}
-                                    onClick={(e) => { e.stopPropagation(); onBieuMau?.(row); }}
+                                  <button key={vb.id} type="button" title={`${vb.soVanBan ? vb.soVanBan + " — " : ""}${vb.loaiVanBan} · ${TRANG_THAI_NHAN[vb.trangThai]}`}
+                                    onClick={(e) => { e.stopPropagation(); onBieuMau?.(row, vb.id); }}
                                     className="group w-full text-left flex items-start gap-1.5 hover:bg-[#f4f8fd] rounded-[3px] px-1 -mx-1 py-0.5 transition-colors">
                                     <span className={`w-[7px] h-[7px] rounded-full flex-shrink-0 mt-[5px] ${CHAM_TRANG_THAI[vb.trangThai]}`} />
                                     <span className="min-w-0 flex-1 leading-snug">
                                       <span className="text-[11px] font-medium text-[#1d2e4f] group-hover:text-[#1a5a96]">
+                                        {vb.soVanBan && <span className="font-mono">{vb.soVanBan} </span>}
                                         {vb.loaiVanBan}
                                       </span>
                                       <span className="text-[10px] text-[#888]"> · {TRANG_THAI_NHAN[vb.trangThai]}</span>
-                                      {/* Số văn bản đã bỏ khỏi cột — cột hẹp mà chuỗi
-                                          "544/2026/TB-TANDTC-VP" thì dài, đọc lướt bảng
-                                          không dùng tới. Bấm vào dòng vẫn mở được văn bản.
-                                          Chỉ còn giữ lời nhắc khi văn bản CHƯA có số, vì
-                                          đó là việc còn dở chứ không phải một con số. */}
                                       {!vb.soVanBan && (
                                         <span className="text-[10px] text-[#b45309]"> · chưa cấp số</span>
                                       )}
@@ -8586,7 +8579,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Thao tác */}
-                      <td className="border border-[#ddd] px-2 py-2 text-center">
+                      <td className="border border-[#ddd] px-2 py-2.5 text-center align-top">
                         <div className="relative inline-block">
                           <button
                             onClick={(e) => { e.stopPropagation(); setOpenMenu(openMenu === row.id ? null : row.id); }}
@@ -9007,10 +9000,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             const ds = filteredRows.filter(r => selectedRows.includes(r.id));
             const dsTrinh = ds.length > 0 ? ds : filteredRows;
             setShowNumberingModal(null);
-            onDongPopupVanBan?.();
             onXemVanBanDaTrinh?.(dsTrinh.length === 1 ? dsTrinh[0].maDon.trim() : "");
           }}
-          onClose={() => { setShowNumberingModal(null); onDongPopupVanBan?.(); }}
+          onClose={() => setShowNumberingModal(null)}
           // Một đơn có thể lọt vào nhiều văn bản; lấy bản có số làm đại diện
           // (cụ thể hơn cho người dùng), kèm số lượng còn lại nếu có.
           donTrung={donTrungMap}
@@ -9031,10 +9023,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             onTrinhDuyet={(kq) => onTaoVanBan?.(kq)}
             onXemVanBanDaTrinh={() => {
               setYcbsRowId(null);
-              onDongPopupVanBan?.();
               onXemVanBanDaTrinh?.(donYcbs.maDon.trim());
             }}
-            onClose={() => { setYcbsRowId(null); onDongPopupVanBan?.(); }}
+            onClose={() => setYcbsRowId(null)}
             donTrung={donTrungMap}
           />
         );
@@ -10222,7 +10213,7 @@ Nơi nhận:
 
 // ─── Danh sách biểu mẫu đơn ──────────────────────────────────────────────────
 const DanhSachBieuMau = ({
-  row, onBack, vanBanList, setVanBanList, currentRole = "can-bo",
+  row, onBack, vanBanList, setVanBanList, currentRole = "can-bo", vbId,
 }: {
   row: typeof SAMPLE_ROWS[0];
   onBack: () => void;
@@ -10232,8 +10223,12 @@ const DanhSachBieuMau = ({
   vanBanList?: VanBanTrinh[];
   setVanBanList?: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole?: string;
+  /** Văn bản cụ thể được bấm ở màn Danh sách đơn — chỉ hiện đúng dòng này,
+   *  không hiện cả kho văn bản của đơn. */
+  vbId?: string | null;
 }) => {
-  const vanBanCuaDon = timVanBanTheoDon(vanBanList ?? [], row.maDon);
+  const vanBanTheoDon = timVanBanTheoDon(vanBanList ?? [], row.maDon);
+  const vanBanCuaDon = vbId ? vanBanTheoDon.filter(v => v.id === vbId) : vanBanTheoDon;
   // Panel chi tiết mở NGAY TẠI ĐÂY thay vì nhảy sang màn khác — giữ nguyên bối
   // cảnh "tôi đang xem văn bản của đơn Mã 7031".
   const [chonId, setChonId] = useState<string | null>(null);
@@ -10388,7 +10383,7 @@ const DanhSachBieuMau = ({
           </table>
           {/* Pagination */}
           <div className="flex items-center justify-end px-4 py-2.5 border-t border-[#eee] text-[12px] text-[#666] gap-2">
-            <span>Hiển thị 1-3 / 3</span>
+            <span>Hiển thị {vanBanCuaDon.length ? `1-${vanBanCuaDon.length}` : "0"} / {vanBanCuaDon.length}</span>
             <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee]">‹</button>
             <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#8b1a1a] rounded bg-[#8b1a1a] text-white">1</button>
             <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee]">›</button>
@@ -11979,26 +11974,17 @@ export default function App() {
     const daTrinh = luongKy.length ? apTrinhDuyet(vb, nguoiTao, "Cán bộ", kq.yKienTrinh) : vb;
     setVanBanList(ds => [daTrinh, ...ds]);
     setVbVuaTao(daTrinh.id);
-    setChoDieuHuongVanBan(true);
     addNotification(`Đã trình ${daTrinh.soVanBan ?? "văn bản"} — đang chờ ${luongKy[0]?.nguoi ?? "duyệt"}`);
-  };
-  /** Chỉ điều hướng SAU KHI người dùng đóng hộp thoại "Trình duyệt thành công",
-   *  để họ kịp đọc xác nhận thay vì bị nhảy màn ngay. */
-  const [choDieuHuongVanBan, setChoDieuHuongVanBan] = useState(false);
-  const dongPopupVanBan = () => {
-    if (!choDieuHuongVanBan) return;
-    setChoDieuHuongVanBan(false);
-    setView("van_ban_trinh_ky");
   };
   /** Từ Danh sách đơn bấm chip "Đã có trong 545/…" → mở thẳng panel văn bản đó. */
   const [moVanBanId, setMoVanBanId] = useState<string | null>(null);
   const moVanBan = (id: string) => { setMoVanBanId(id); setView("van_ban_trinh_ky"); };
 
-  /** Bấm "Xem văn bản đã trình" ở popup Trình duyệt thành công. */
+  /** Bấm "Xem văn bản đã trình" ở popup Trình duyệt thành công — nút "Đóng" của
+   *  popup không điều hướng, cán bộ ở lại Danh sách đơn. */
   const [locMaDonVanBan, setLocMaDonVanBan] = useState<string | null>(null);
   const xemVanBanDaTrinh = (maDon: string) => {
     setLocMaDonVanBan(maDon || null);
-    setChoDieuHuongVanBan(false);
     setView("van_ban_trinh_ky");
   };
 
@@ -12023,6 +12009,10 @@ export default function App() {
   }, []);
 
   const [bieuMauRow, setBieuMauRow] = useState<typeof SAMPLE_ROWS[0] | null>(null);
+  // Dòng "Văn bản trình ký" cụ thể mà cán bộ bấm vào ở màn Danh sách đơn —
+  // màn Danh sách biểu mẫu chỉ hiện đúng dòng này, không hiện cả kho văn bản
+  // của đơn.
+  const [bieuMauVbId, setBieuMauVbId] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
   const [phanCongTab, setPhanCongTab] = useState<0 | 1 | 2>(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -12674,7 +12664,6 @@ export default function App() {
               <DanhSachDon
                 currentRole={currentRole}
                 onTaoVanBan={taoVanBanTuModal}
-                onDongPopupVanBan={dongPopupVanBan}
                 onXemVanBanDaTrinh={xemVanBanDaTrinh}
                 vanBanList={vanBanList}
                 onThemMoi={() => {
@@ -12690,7 +12679,7 @@ export default function App() {
                   setOcrFields(new Set());
                   setShowUploadPopup(true);
                 }}
-                onBieuMau={(r) => { setBieuMauRow(r); setView("bieumau"); }}
+                onBieuMau={(r, vbId) => { setBieuMauRow(r); setBieuMauVbId(vbId ?? null); setView("bieumau"); }}
                 onWordEditor={() => setView("wordeditor")}
                 onEditRow={(id) => { setEditingRowId(id); setView("form"); }}
                 isTruongPhong={false}
@@ -12716,7 +12705,8 @@ export default function App() {
           {/* Biểu mẫu view */}
           {view === "bieumau" && bieuMauRow && (
             <div className="flex-1 overflow-y-auto">
-              <DanhSachBieuMau row={bieuMauRow} onBack={() => setView("list")}
+              <DanhSachBieuMau row={bieuMauRow} vbId={bieuMauVbId}
+                onBack={() => { setView("list"); setBieuMauVbId(null); }}
                 vanBanList={vanBanList} setVanBanList={setVanBanList} currentRole={currentRole} />
             </div>
           )}
