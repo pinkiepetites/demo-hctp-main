@@ -14,9 +14,28 @@ import {
   Hourglass,
   ChevronDown,
   Info,
-  X
+  X,
+  Send,
+  Inbox,
+  Mail,
+  Globe,
+  UserCheck,
+  Scale,
+  FileQuestion,
 } from "lucide-react";
-import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh } from "./components/QuanLyVanBan";
+import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, TRANG_THAI_META, type VanBanTrinh, type TrangThaiVB } from "./components/QuanLyVanBan";
+
+// Màu cho từng trạng thái văn bản trong dải phân bố — khớp tinh thần màu chữ của
+// TRANG_THAI_META (Danh sách văn bản) để hai màn dùng chung một ngôn ngữ màu.
+const VB_STATUS_COLOR: Record<TrangThaiVB, string> = {
+  Nhap: "#94a3b8",
+  ChoDuyet: "#1a73e8",
+  ChoKy: "#f57f17",
+  ChoButPhe: "#6d28d9",
+  BiTraLai: "#8b1a1a",
+  DaBanHanh: "#1a5a96",
+  DaHuy: "#999999",
+};
 
 const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string }) => (
   <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
@@ -328,6 +347,43 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     { label: "Kinh doanh - Thương mại", percent: 10, color: "bg-[#9b59b6]" },
   ];
 
+  // Phân bố văn bản theo trạng thái — tính thẳng từ kho vanBanList thật (cùng dữ
+  // liệu với màn Danh sách văn bản), không phải số ảo như khối KPI đơn ở trên.
+  const VB_STATUS_ORDER: TrangThaiVB[] = ["ChoDuyet", "ChoKy", "ChoButPhe", "BiTraLai", "Nhap", "DaBanHanh", "DaHuy"];
+  const tongVanBan = vanBanList.length;
+  const vbByStatus = VB_STATUS_ORDER.map(tt => ({
+    tt, count: vanBanList.filter(v => v.trangThai === tt).length, ...TRANG_THAI_META[tt],
+  }));
+  const vanBanGanDay = vanBanList.slice(0, 5);
+
+  // Đơn theo hình thức tiếp nhận — số liệu ảo, cộng đúng bằng "Tổng số đơn nhận"
+  // kỳ Tuần này (27) để nhất quán với khối KPI phía trên.
+  const hinhThucTiepNhan = [
+    { label: "Trực tiếp", value: 12, icon: <UserCheck size={13} />, color: "#3b82f6" },
+    { label: "Bưu điện", value: 9, icon: <Mail size={13} />, color: "#f59e0b" },
+    { label: "Trực tuyến", value: 6, icon: <Globe size={13} />, color: "#22c55e" },
+  ];
+  const maxHinhThuc = Math.max(...hinhThucTiepNhan.map(h => h.value));
+
+  // Các nhóm hồ sơ cần chú ý khác — dựa theo đúng các trường của Danh sách đơn
+  // (laKhangNghi, choYKienLD, ycbsSo) chưa có mặt ở khối KPI/cảnh báo phía trên.
+  const hoSoCanChuYKhac = [
+    { label: "Hồ sơ kháng nghị đang xử lý", value: 3, icon: <Scale size={13} />, color: "#8b5cf6" },
+    { label: "Chờ ý kiến lãnh đạo", value: 2, icon: <FileQuestion size={13} />, color: "#e67e22" },
+    { label: "Yêu cầu bổ sung chưa phản hồi", value: 4, icon: <Send size={13} />, color: "#0ea5e9" },
+  ];
+
+  // Danh sách "Cần chú ý / Quá hạn" — thay cho 5 dòng giả trước đây, nay lấy đúng
+  // vốn từ vựng trạng thái của Danh sách đơn (thoiHieu, choYKienLD, ycbsSo, traLai)
+  // và điều hướng đúng tab tương ứng khi bấm vào (giống panel "Phân loại đơn nhận").
+  const canhBaoDon: { maDon: string; nguoiGui: string; label: string; chiTiet: string; tab: number; badge: string; color: string }[] = [
+    { maDon: "Mã 7030", nguoiGui: "Nguyễn Văn Quyền", label: "Hết thời hiệu kháng nghị", chiTiet: "Quá 5 năm kể từ ngày bản án có hiệu lực", tab: 4, badge: "Quá hạn", color: "#ef4444" },
+    { maDon: "Mã 7021", nguoiGui: "Phạm Thị Ngọc", label: "Chờ ý kiến lãnh đạo", chiTiet: "Đã chờ kết luận 6 ngày", tab: 0, badge: "6 ngày", color: "#e67e22" },
+    { maDon: "Mã 7018", nguoiGui: "Trần Văn Bình", label: "Yêu cầu bổ sung chưa phản hồi", chiTiet: "Quá hạn phản hồi 10 ngày", tab: 5, badge: "Quá hạn 10 ngày", color: "#0ea5e9" },
+    { maDon: "Mã 7012", nguoiGui: "Hoàng Minh Tú", label: "Trả lại đơn — chờ duyệt", chiTiet: "Đang chờ Trưởng phòng duyệt trả lại", tab: 6, badge: "Chờ duyệt", color: "#2980b9" },
+    { maDon: "Mã 7009", nguoiGui: "Lê Thị Hạnh", label: "Hết thời hiệu kháng nghị", chiTiet: "Quá 3 năm kể từ ngày bản án có hiệu lực", tab: 4, badge: "Quá hạn", color: "#ef4444" },
+  ];
+
   return (
     <div className="p-5 space-y-5 bg-[#f4f7f9] min-h-full font-sans">
       {/* Filters */}
@@ -636,19 +692,20 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               <BellRing size={18} className="text-[#ef4444]" />
               Cần chú ý / Quá hạn
             </h3>
-            <span className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-2 py-0.5 rounded-full">{kpi.overdue} đơn</span>
+            <span className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-2 py-0.5 rounded-full">{canhBaoDon.length} hồ sơ</span>
           </div>
           <div className="flex-1 p-3 overflow-y-auto space-y-2">
-            {[1, 2, 3, 4, 5].map((_, i) => (
-              <div key={i} className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#ef4444]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
+            {canhBaoDon.map((item, i) => (
+              <div key={i} onClick={() => onXemDanhSachDon?.(item.tab)}
+                className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#ef4444]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
                 <div className="flex items-start justify-between mb-1.5">
-                  <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#ef4444] transition-colors">Đơn: 102{i}/2026</span>
-                  <span className="text-[11px] font-semibold text-[#ef4444] bg-[#fee2e2] px-1.5 py-0.5 rounded-[3px]">Quá hạn {i+1} ngày</span>
+                  <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#ef4444] transition-colors">Đơn: {item.maDon}</span>
+                  <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-[3px] whitespace-nowrap" style={{ color: item.color, backgroundColor: `${item.color}1a` }}>{item.badge}</span>
                 </div>
-                <p className="text-[12px] text-[#64748b] line-clamp-1 mb-2">Yêu cầu GĐT bản án dân sự số 45...</p>
+                <p className="text-[12px] text-[#64748b] line-clamp-1 mb-2">{item.label} — {item.chiTiet}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-[11px] text-[#475569] font-medium">
-                    <Users size={12} className="text-[#94a3b8]" /> Nguyễn Văn {['An', 'Bình', 'Cường', 'Dũng', 'Em'][i]}
+                    <Users size={12} className="text-[#94a3b8]" /> {item.nguoiGui}
                   </div>
                   <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-[#ef4444] transition-colors" />
                 </div>
@@ -656,7 +713,89 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
             ))}
           </div>
           <div className="p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-            <button className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">Xem tất cả cảnh báo</button>
+            <button onClick={() => onXemDanhSachDon?.(0)} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">Xem tất cả cảnh báo</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 2.5: Văn bản trình ký (dữ liệu thật từ vanBanList) & Hình thức tiếp nhận đơn */}
+      <div className="grid grid-cols-3 gap-5">
+        {/* Văn bản trình ký */}
+        <div className="col-span-2 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
+          <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
+            <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
+              <Send size={18} className="text-[#3b82f6]" />
+              Văn bản trình ký
+            </h3>
+            <button onClick={onXemDanhSachVanBan} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
+              Xem tất cả <ArrowRight size={11} />
+            </button>
+          </div>
+
+          <div className="p-5">
+            <div className="flex items-center gap-0.5 h-[10px] rounded-full overflow-hidden mb-3 bg-[#f1f5f9]">
+              {vbByStatus.filter(s => s.count > 0).map(s => (
+                <div key={s.tt} title={`${s.nhan}: ${s.count}`} className="h-full transition-all duration-700"
+                  style={{ width: `${(s.count / (tongVanBan || 1)) * 100}%`, backgroundColor: VB_STATUS_COLOR[s.tt] }} />
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-4">
+              {vbByStatus.map(s => (
+                <div key={s.tt} className="flex items-center gap-1.5 text-[12px] font-medium text-[#475569]">
+                  <span className="w-2.5 h-2.5 rounded-[2px] flex-shrink-0" style={{ backgroundColor: VB_STATUS_COLOR[s.tt] }}></span>
+                  {s.nhan} <span className="font-bold text-[#0f172a]">{s.count}</span>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-[11px] font-semibold text-[#94a3b8] uppercase tracking-wide mb-2">Gần đây</p>
+            <div className="space-y-0.5">
+              {vanBanGanDay.length === 0 && <p className="text-[12px] text-[#94a3b8] py-3">Chưa có văn bản nào.</p>}
+              {vanBanGanDay.map(vb => {
+                const giu = nguoiDangGiu(vb);
+                const meta = TRANG_THAI_META[vb.trangThai];
+                return (
+                  <div key={vb.id} className="flex items-center justify-between gap-3 py-2 border-t border-[#f8fafc] first:border-0">
+                    <div className="min-w-0">
+                      <p className="text-[12.5px] font-semibold text-[#1e293b] truncate">{vb.trichYeu}</p>
+                      <p className="text-[11px] text-[#94a3b8] truncate">{vb.loaiVanBan} · {giu ? `Đang ở ${giu.nguoi}` : "Đã hoàn tất"}</p>
+                    </div>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${meta.cls}`}>{meta.nhan}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Hình thức tiếp nhận đơn + hồ sơ cần chú ý khác */}
+        <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
+          <div className="px-5 py-4 border-b border-[#f1f5f9]">
+            <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
+              <Inbox size={18} className="text-[#8b1a1a]" />
+              Hình thức tiếp nhận đơn
+            </h3>
+          </div>
+          <div className="p-5 space-y-4">
+            {hinhThucTiepNhan.map(h => (
+              <div key={h.label}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="flex items-center gap-1.5 text-[13px] font-semibold text-[#334155]">{h.icon} {h.label}</span>
+                  <span className="text-[13px] font-bold text-[#0f172a]">{h.value}</span>
+                </div>
+                <div className="w-full h-[7px] bg-[#f1f5f9] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${(h.value / maxHinhThuc) * 100}%`, backgroundColor: h.color }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-3.5 bg-[#f8fafc] border-t border-[#f1f5f9] rounded-b-[8px] space-y-2">
+            {hoSoCanChuYKhac.map(s => (
+              <div key={s.label} className="flex items-center justify-between text-[12px]">
+                <span className="flex items-center gap-1.5 font-medium text-[#475569]">{s.icon} {s.label}</span>
+                <span className="font-bold" style={{ color: s.color }}>{s.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

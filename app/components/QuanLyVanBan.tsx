@@ -332,7 +332,7 @@ export const taoTuModal = (input: {
 };
 
 // ─── Token trạng thái ────────────────────────────────────────────────────────
-const TRANG_THAI_META: Record<TrangThaiVB, { nhan: string; cls: string; icon: string }> = {
+export const TRANG_THAI_META: Record<TrangThaiVB, { nhan: string; cls: string; icon: string }> = {
   Nhap:      { nhan: "Nháp",        cls: "bg-[#f5f5f5] text-[#666] border-[#ddd]",       icon: "📝" },
   ChoDuyet:  { nhan: "Chờ duyệt",   cls: "bg-[#e8f4ff] text-[#1a73e8] border-[#a9c9f4]", icon: "⏳" },
   ChoKy:     { nhan: "Chờ ký",      cls: "bg-[#fff8e1] text-[#f57f17] border-[#ffe082]", icon: "✍️" },
