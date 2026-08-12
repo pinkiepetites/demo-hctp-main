@@ -142,21 +142,20 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     { key: "Thụ lý mới", color: "#3b82f6" },
     { key: "Chưa đủ điều kiện", color: "#eab308" },
     { key: "Trả lại", color: "#f97316" },
-    { key: "Không thẩm quyền", color: "#06b6d4" },
-    { key: "Chuyển Toà án khác", color: "#8b5cf6" },
+    { key: "Lưu theo dõi", color: "#06b6d4" },
   ];
   // Kết quả xử lý theo Loại án — ma trận Loại án × Kết quả cho kỳ "Tuần này";
   // các kỳ khác co giãn theo cùng hệ số nhân với officerData bên dưới để nhất
   // quán trong toàn Dashboard.
   const LOAI_AN_KET_QUA_TUAN: Record<typeof LOAI_AN_SO_SANH[number], Record<string, number>> = {
-    "Hình sự": { "Đơn trùng": 3, "Thụ lý mới": 2, "Chưa đủ điều kiện": 1, "Trả lại": 1, "Không thẩm quyền": 1, "Chuyển Toà án khác": 0 },
-    "Dân sự": { "Đơn trùng": 2, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Không thẩm quyền": 0, "Chuyển Toà án khác": 1 },
-    "Hành chính": { "Đơn trùng": 1, "Thụ lý mới": 1, "Chưa đủ điều kiện": 1, "Trả lại": 0, "Không thẩm quyền": 0, "Chuyển Toà án khác": 0 },
-    "Kinh doanh thương mại": { "Đơn trùng": 0, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 1, "Không thẩm quyền": 0, "Chuyển Toà án khác": 0 },
-    "Hôn nhân gia đình": { "Đơn trùng": 1, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Không thẩm quyền": 0, "Chuyển Toà án khác": 0 },
-    "Lao động": { "Đơn trùng": 0, "Thụ lý mới": 0, "Chưa đủ điều kiện": 1, "Trả lại": 0, "Không thẩm quyền": 0, "Chuyển Toà án khác": 0 },
-    "Sở hữu trí tuệ": { "Đơn trùng": 0, "Thụ lý mới": 0, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Không thẩm quyền": 1, "Chuyển Toà án khác": 0 },
-    "Phá sản": { "Đơn trùng": 0, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Không thẩm quyền": 0, "Chuyển Toà án khác": 0 },
+    "Hình sự": { "Đơn trùng": 3, "Thụ lý mới": 2, "Chưa đủ điều kiện": 1, "Trả lại": 1, "Lưu theo dõi": 1 },
+    "Dân sự": { "Đơn trùng": 2, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Lưu theo dõi": 1 },
+    "Hành chính": { "Đơn trùng": 1, "Thụ lý mới": 1, "Chưa đủ điều kiện": 1, "Trả lại": 0, "Lưu theo dõi": 0 },
+    "Kinh doanh thương mại": { "Đơn trùng": 0, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 1, "Lưu theo dõi": 0 },
+    "Hôn nhân gia đình": { "Đơn trùng": 1, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Lưu theo dõi": 0 },
+    "Lao động": { "Đơn trùng": 0, "Thụ lý mới": 0, "Chưa đủ điều kiện": 1, "Trả lại": 0, "Lưu theo dõi": 0 },
+    "Sở hữu trí tuệ": { "Đơn trùng": 0, "Thụ lý mới": 0, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Lưu theo dõi": 1 },
+    "Phá sản": { "Đơn trùng": 0, "Thụ lý mới": 1, "Chưa đủ điều kiện": 0, "Trả lại": 0, "Lưu theo dõi": 0 },
   };
   const soSanhMult = chartPeriod === "day" ? 0.1 : chartPeriod === "month" ? 4 : chartPeriod === "year" ? 40 : chartPeriod === "custom" ? 0.5 : 1;
   const loaiAnKetQua = LOAI_AN_SO_SANH.map(loaiAn => ({
