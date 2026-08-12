@@ -1,6 +1,4 @@
-import {
-  CalendarDays, CalendarCheck, ClipboardList, BarChart3, ArrowLeft, Lock,
-} from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";
 
 type TrangThaiCanBo = {
@@ -34,25 +32,6 @@ const tong = (rows: TrangThaiCanBo[], key: keyof Omit<TrangThaiCanBo, "name" | "
   rows.reduce((s, r) => s + r[key], 0);
 
 const fmtTB = (soDon: number) => (soDon / SO_NGAY_LAM_VIEC_TRONG_KY).toFixed(2);
-
-const KPICard = ({ title, value, unit, icon, colorClass, bgColorClass, trend }: {
-  title: string; value: string; unit: string; icon: React.ReactNode;
-  colorClass: string; bgColorClass: string; trend: string;
-}) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow duration-300">
-    <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center flex-shrink-0 ${bgColorClass} ${colorClass}`}>
-      {icon}
-    </div>
-    <div>
-      <p className="text-[13px] text-[#666] font-medium mb-1.5 leading-snug">{title}</p>
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
-        <span className="text-[12px] text-[#888] font-medium">{unit}</span>
-      </div>
-      <div className="text-[12px] font-semibold text-[#27ae60] mt-1.5">{trend}</div>
-    </div>
-  </div>
-);
 
 export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", onBack }: {
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
@@ -90,38 +69,6 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", onBack }:
             <Lock size={12} /> Bạn chỉ xem được dữ liệu xử lý đơn của chính mình
           </div>
         )}
-      </div>
-
-      {/* 4 cards */}
-      <div className="grid grid-cols-4 gap-5">
-        <KPICard
-          title="Tổng số đơn xử lý trong ngày hôm nay"
-          value={String(tHomNay)} unit="đơn"
-          trend="+2 so với ngày hôm qua"
-          icon={<CalendarDays size={24} />}
-          bgColorClass="bg-[#eff6ff]" colorClass="text-[#3b82f6]"
-        />
-        <KPICard
-          title="Tổng số đơn xử lý trong tháng hiện tại"
-          value={String(tThangNay)} unit="đơn"
-          trend="+6 so với tháng trước"
-          icon={<CalendarCheck size={24} />}
-          bgColorClass="bg-[#f0fdf4]" colorClass="text-[#22c55e]"
-        />
-        <KPICard
-          title="Tổng số đơn xử lý theo kỳ"
-          value={String(tKyNay)} unit="đơn"
-          trend="+3 so với kỳ trước"
-          icon={<ClipboardList size={24} />}
-          bgColorClass="bg-[#f5f3ff]" colorClass="text-[#8b5cf6]"
-        />
-        <KPICard
-          title="Trung bình số đơn xử lý mỗi ngày (làm việc) trong kỳ"
-          value={fmtTB(tKyNay)} unit="đơn/ngày"
-          trend="+0.18 so với kỳ trước"
-          icon={<BarChart3 size={24} />}
-          bgColorClass="bg-[#fff7ed]" colorClass="text-[#f97316]"
-        />
       </div>
 
       {/* Bảng 1: theo thời gian */}
