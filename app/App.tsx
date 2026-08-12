@@ -9,6 +9,7 @@ import {
   AlertCircle, Bell, FilePlus, Loader2, Ban, Inbox, ArrowLeft, History as HistoryIcon
 } from "lucide-react";
 import Dashboard from "./Dashboard";
+import { daGiaiQuyetXong, laQuaHan, soNgayQuaHan, type BoLocTuTrangChu } from "./ChiSoTrangChu";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
 import {
@@ -105,13 +106,12 @@ export const MAU_KET_LUAN_LD: Record<string, string> = {
 // Danh sách tòa án cho trường "Đơn vị chuyển đến" khi Nơi chuyển đến = Tòa khác —
 // gồm cả tòa thường lẫn tòa án quân sự.
 const TOA_KHAC_OPTIONS = [
-  "TAND cấp cao tại Hà Nội",
-  "TAND cấp cao tại Đà Nẵng",
-  "TAND cấp cao tại TP. Hồ Chí Minh",
-  "TAND Thành phố Hà Nội",
+  "TAND tối cao",
   "TAND Thành phố Hồ Chí Minh",
+  "TAND Thành phố Hải Phòng",
   "TAND Tỉnh Bắc Ninh",
   "TAND Tỉnh Vĩnh Phúc",
+  "TAND Tỉnh Nghệ An",
   "Tòa án quân sự trung ương",
   "Tòa án quân sự quân khu 1",
   "Tòa án quân sự quân khu 2",
@@ -360,36 +360,34 @@ const DON_VI_GUI_NHOM: { nhom: string; items: string[] }[] = [
 // Đơn vị gửi TRONG NGÀNH — tòa án các cấp và cơ quan thuộc hệ thống TAND.
 const DON_VI_TRONG_NGANH: { nhom: string; items: string[] }[] = [
   {
-    nhom: "Tòa án nhân dân tối cao",
+    nhom: "Tòa án nhân dân thành phố Hà Nội",
     items: [
-      "Văn phòng Tòa án nhân dân tối cao",
-      "Vụ Giám đốc kiểm tra về hình sự",
-      "Vụ Giám đốc kiểm tra về dân sự",
-      "Vụ Giám đốc kiểm tra về hành chính",
-      "Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động",
-      "Vụ Pháp chế và Quản lý khoa học",
-      "Ban Thanh tra Tòa án nhân dân tối cao",
+      "Văn phòng Tòa án nhân dân thành phố Hà Nội",
+      "Tòa Hình sự",
+      "Tòa Dân sự",
+      "Tòa Hành chính",
+      "Tòa Kinh tế",
+      "Phòng Kiểm tra nghiệp vụ và Thi hành án",
+      "Thanh tra Tòa án nhân dân thành phố Hà Nội",
     ],
   },
   {
-    nhom: "Tòa án nhân dân cấp cao",
+    nhom: "Tòa án nhân dân khu vực trực thuộc",
     items: [
-      "Tòa án nhân dân cấp cao tại Hà Nội",
-      "Tòa án nhân dân cấp cao tại Đà Nẵng",
-      "Tòa án nhân dân cấp cao tại TP. Hồ Chí Minh",
+      "Tòa án nhân dân khu vực 1 - Hà Nội",
+      "Tòa án nhân dân khu vực 2 - Hà Nội",
+      "Tòa án nhân dân khu vực 3 - Hà Nội",
+      "Tòa án nhân dân khu vực 4 - Hà Nội",
+      "Tòa án nhân dân khu vực 5 - Hà Nội",
+      "Tòa án nhân dân khu vực 6 - Hà Nội",
     ],
   },
   {
-    nhom: "Tòa án nhân dân cấp tỉnh",
+    nhom: "Tòa án nhân dân khác",
     items: [
-      "Tòa án nhân dân tỉnh Bắc Ninh",
-      "Tòa án nhân dân tỉnh Bắc Giang",
-      "Tòa án nhân dân tỉnh Lạng Sơn",
-      "Tòa án nhân dân tỉnh Hà Nam",
-      "Tòa án nhân dân tỉnh Vĩnh Phúc",
-      "Tòa án nhân dân TP. Hà Nội",
-      "Tòa án nhân dân TP. Hồ Chí Minh",
-      "Tòa án nhân dân TP. Đà Nẵng",
+      "Tòa án nhân dân tối cao",
+      "Tòa án nhân dân Thành phố Hồ Chí Minh",
+      "Tòa án nhân dân Tỉnh Bắc Ninh",
     ],
   },
 ];
@@ -448,9 +446,8 @@ const DON_VI_CO_QUAN_NHA_NUOC: { nhom: string; items: string[] }[] = [
     nhom: "Chủ tịch nước và cơ quan tư pháp",
     items: [
       "Văn phòng Chủ tịch nước",
-      "Viện kiểm sát nhân dân tối cao",
-      "Viện kiểm sát nhân dân cấp cao",
-      "Viện kiểm sát nhân dân cấp tỉnh",
+      "Viện kiểm sát nhân dân thành phố Hà Nội",
+      "Viện kiểm sát nhân dân khu vực",
       "Cơ quan điều tra",
       "Cơ quan thi hành án dân sự",
     ],
@@ -829,15 +826,15 @@ const NGUOI_BAN_AN: NguoiGoiY[] = [
   { ten: "Nguyễn Văn An", tuCach: "Bị cáo", cccd: "031085001234", gioiTinh: "Nam", ngaySinh: "1985-03-12", sdt: "0912345678",
     tinh: "Hà Nội", quanHuyen: "Đống Đa", phuongXa: "Phường Đống Đa", diaChi: "Số 12, ngõ 45, phố Chùa Bộc" },
   { ten: "Trần Thị Bình", tuCach: "Bị hại", cccd: "079090005678", gioiTinh: "Nữ", ngaySinh: "1990-07-25", sdt: "0987654321",
-    tinh: "TP. Hồ Chí Minh", quanHuyen: "Quận 1", phuongXa: "Phường Bến Nghé", diaChi: "Số 88, đường Lê Lợi" },
+    tinh: "Hà Nội", quanHuyen: "Hoàn Kiếm", phuongXa: "Phường Hàng Trống", diaChi: "Số 88, phố Lê Thái Tổ" },
   { ten: "Lê Văn Cường", tuCach: "Người kháng cáo", cccd: "026078009012", gioiTinh: "Nam", ngaySinh: "1978-11-05", sdt: "0901234567",
-    tinh: "Đà Nẵng", quanHuyen: "Ngũ Hành Sơn", phuongXa: "Phường Mỹ An", diaChi: "Số 25, đường Ngũ Hành Sơn" },
+    tinh: "Hà Nội", quanHuyen: "Thanh Xuân", phuongXa: "Phường Khương Đình", diaChi: "Số 25, đường Nguyễn Trãi" },
 ];
 
 // Dữ liệu con người (mock - gợi ý sau bản án)
 const NGUOI_CON_NGUOI: NguoiGoiY[] = [
   { ten: "Phạm Thị Dung", cccd: "040088003456", gioiTinh: "Nữ", ngaySinh: "1988-05-18", sdt: "0978123456",
-    tinh: "Bắc Ninh", quanHuyen: "TP. Bắc Ninh", phuongXa: "Phường Võ Cường", diaChi: "Số 7, đường Lý Thái Tổ" },
+    tinh: "Hà Nội", quanHuyen: "Ba Đình", phuongXa: "Phường Giảng Võ", diaChi: "Số 7, phố Giảng Võ" },
   { ten: "Hoàng Văn Em", cccd: "001075007890", gioiTinh: "Nam", ngaySinh: "1975-09-30", sdt: "0965432109",
     tinh: "Hà Nội", quanHuyen: "Hoàn Kiếm", phuongXa: "Phường Hàng Bài", diaChi: "Số 15, phố Ngô Quyền" },
   { ten: "Vũ Thị Phương", cccd: "036092001122", gioiTinh: "Nữ", ngaySinh: "1992-01-15", sdt: "0943211234",
@@ -914,20 +911,20 @@ const NGUOI_THEO_LOAI_AN: Record<string, BoNguoiThamGia> = {
   },
   "Dân sự": {
     quanHe: "Tranh chấp quyền sử dụng đất",
-    nguyenDon: [{ hoTen: "Nguyễn Văn An", namSinh: "1965", diaChi: "Phường Võ Cường, Tỉnh Bắc Ninh" }],
+    nguyenDon: [{ hoTen: "Nguyễn Văn An", namSinh: "1965", diaChi: "Phường Cửa Nam, Thành phố Hà Nội" }],
     biDon: [{ hoTen: "Trần Thị Bình", namSinh: "1970", diaChi: "Phường Đại Phúc, Tỉnh Bắc Ninh" }],
-    lienQuan: [{ hoTen: "Nguyễn Thị Phương", namSinh: "1990", diaChi: "Phường Võ Cường, Tỉnh Bắc Ninh" }],
+    lienQuan: [{ hoTen: "Nguyễn Thị Phương", namSinh: "1990", diaChi: "Phường Cửa Nam, Thành phố Hà Nội" }],
   },
   "Hành chính": {
     quanHe: "Khiếu kiện quyết định hành chính về quản lý đất đai",
-    nguyenDon: [{ hoTen: "Nguyễn Văn An", namSinh: "1965", diaChi: "Phường Võ Cường, Tỉnh Bắc Ninh" }],
-    biDon: [{ hoTen: "UBND tỉnh Bắc Ninh", namSinh: "—", diaChi: "Số 1, đường Lý Thái Tổ, Tỉnh Bắc Ninh" }],
-    lienQuan: [{ hoTen: "Sở Tài nguyên và Môi trường tỉnh Bắc Ninh", namSinh: "—", diaChi: "Đường Lý Thái Tổ, Tỉnh Bắc Ninh" }],
+    nguyenDon: [{ hoTen: "Nguyễn Văn An", namSinh: "1965", diaChi: "Phường Cửa Nam, Thành phố Hà Nội" }],
+    biDon: [{ hoTen: "UBND Thành phố Hà Nội", namSinh: "—", diaChi: "Số 12, phố Lê Lai, Phường Hoàn Kiếm, Thành phố Hà Nội" }],
+    lienQuan: [{ hoTen: "Sở Nông nghiệp và Môi trường Thành phố Hà Nội", namSinh: "—", diaChi: "Số 38, phố Tô Hiệu, Phường Cầu Giấy, Thành phố Hà Nội" }],
   },
   "Kinh doanh thương mại": {
     quanHe: "Tranh chấp hợp đồng mua bán hàng hóa",
-    nguyenDon: [{ hoTen: "Công ty TNHH Minh Đức", namSinh: "—", diaChi: "Số 18 Nguyễn Huệ, Thành phố Đà Nẵng" }],
-    biDon: [{ hoTen: "Công ty CP Xây dựng Thăng Long", namSinh: "—", diaChi: "Quận Cầu Giấy, Thành phố Hà Nội" }],
+    nguyenDon: [{ hoTen: "Công ty TNHH Minh Đức", namSinh: "—", diaChi: "Số 18, phố Hàng Bông, Phường Hoàn Kiếm, Thành phố Hà Nội" }],
+    biDon: [{ hoTen: "Công ty CP Xây dựng Thăng Long", namSinh: "—", diaChi: "Phường Cầu Giấy, Thành phố Hà Nội" }],
   },
   "Hôn nhân gia đình": {
     quanHe: "Ly hôn, chia tài sản chung",
@@ -2177,16 +2174,16 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
 interface GhepRow { id: number; maDon: string; nguoiGui: string; ngayNhap: string; trangThai: string; soBA?: string; ngayBA?: string; toaBA?: string; nguoiNhap?: string; cuaToi?: boolean; yeuCauBosung?: { soTB: string; ngayGui: string }[]; }
 
 const GHEP_CANDIDATES: GhepRow[] = [
-  { id: 1000, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 1000, maDon: "7025", nguoiGui: "Nguyễn Thị Hoa", ngayNhap: "18/07/2026", trangThai: "Thụ lý mới", soBA: "15/2023/DS-ST", ngayBA: "12/03/2023", toaBA: "TAND khu vực 4 - Hà Nội", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
   {
-    id: 1001, maDon: "7022", nguoiGui: "Tòa án nhân dân tỉnh Vĩnh Phúc", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", nguoiNhap: "Trần Văn B", cuaToi: false,
+    id: 1001, maDon: "7022", nguoiGui: "Tòa án nhân dân khu vực 4 - Hà Nội", ngayNhap: "15/07/2026", trangThai: "Chưa đủ điều kiện", soBA: "08/2022/HS-ST", ngayBA: "20/06/2022", toaBA: "TAND khu vực 4 - Hà Nội", nguoiNhap: "Trần Văn B", cuaToi: false,
     yeuCauBosung: [
       { soTB: "TB-01", ngayGui: "16/07/2026" },
       { soTB: "TB-02", ngayGui: "18/07/2026" },
     ],
   },
-  { id: 1002, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", nguoiNhap: "Lê Thị C", cuaToi: false },
-  { id: 1003, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
+  { id: 1002, maDon: "7019", nguoiGui: "Trần Văn Bình", ngayNhap: "12/07/2026", trangThai: "Đã thụ lý", soBA: "33/2024/KDTM-ST", ngayBA: "15/11/2024", toaBA: "TAND khu vực 1 - Hà Nội", nguoiNhap: "Lê Thị C", cuaToi: false },
+  { id: 1003, maDon: "7015", nguoiGui: "Công ty TNHH Minh Đức", ngayNhap: "08/07/2026", trangThai: "Thụ lý mới", soBA: "21/2021/LĐ-ST", ngayBA: "05/09/2021", toaBA: "TAND khu vực 5 - Hà Nội", nguoiNhap: "Nguyễn Minh An", cuaToi: true },
 ];
 
 const VALID_GHEP_STATUSES = ["Thụ lý mới", "Đã thụ lý", "Chưa đủ điều kiện"];
@@ -2659,12 +2656,14 @@ const OcrStatusBadge = ({ status, className = "" }: { status: OcrStatus; classNa
 // ─── Popup Thêm thông báo trả lời đơn ────────────────────────────────────────
 const TOA_AN_OPTIONS = [
   "TAND tối cao",
-  "TAND cấp cao tại Hà Nội",
-  "TAND cấp cao tại Đà Nẵng",
-  "TAND cấp cao tại TP. Hồ Chí Minh",
-  "TAND tỉnh Bắc Ninh",
-  "TAND TP. Hà Nội",
-  "TAND TP. Hồ Chí Minh",
+  "TAND thành phố Hà Nội",
+  "TAND khu vực 1 - Hà Nội",
+  "TAND khu vực 2 - Hà Nội",
+  "TAND khu vực 3 - Hà Nội",
+  "TAND khu vực 4 - Hà Nội",
+  "TAND khu vực 5 - Hà Nội",
+  "TAND khu vực 6 - Hà Nội",
+  "TAND Thành phố Hồ Chí Minh",
 ];
 
 // ─── Popup Thêm bản án / quyết định liên quan ────────────────────────────────
@@ -2685,13 +2684,14 @@ const LOAI_BA_QD_OPTIONS = ["Bản án", "Quyết định", "Công văn", "Thôn
 const GIAI_DOAN_OPTIONS = ["Sơ thẩm", "Phúc thẩm", "Giám đốc thẩm", "Tái thẩm"];
 const TOA_RA_BA_OPTIONS = [
   "TAND tối cao",
-  "TAND cấp cao tại Hà Nội",
-  "TAND cấp cao tại Đà Nẵng",
-  "TAND cấp cao tại TP. Hồ Chí Minh",
-  "TAND tỉnh Bắc Ninh",
-  "TAND TP. Hà Nội",
-  "TAND TP. Hồ Chí Minh",
-  "TAND tỉnh Nghệ An",
+  "TAND thành phố Hà Nội",
+  "TAND khu vực 1 - Hà Nội",
+  "TAND khu vực 2 - Hà Nội",
+  "TAND khu vực 3 - Hà Nội",
+  "TAND khu vực 4 - Hà Nội",
+  "TAND khu vực 5 - Hà Nội",
+  "TAND khu vực 6 - Hà Nội",
+  "TAND Thành phố Hồ Chí Minh",
 ];
 
 const PopupThemBanAn = ({ onDong, onThem, banDau }: {
@@ -2755,7 +2755,7 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
             <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Số bản án / quyết định</label>
               <input value={f.soBA} onChange={e => dat("soBA")(e.target.value)}
-                placeholder="VD: 15/2023/HC-PT" className={o(!f.soBA.trim())} />
+                placeholder="VD: 15/2023/HC-ST" className={o(!f.soBA.trim())} />
             </div>
             <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Ngày ra bản án</label>
@@ -4278,14 +4278,14 @@ const namSinh = (ngay?: string) => (ngay ?? "").split("/").pop() ?? "";
 
 const DON_VI_KHANG_NGHI = [
   {
-    ten: "Chánh án Tòa án nhân dân tối cao",
+    ten: "Chánh án Tòa án nhân dân thành phố Hà Nội",
     diaChi: "Số 48 Lý Thường Kiệt, Phường Hoàn Kiếm, TP. Hà Nội",
-    noiNhan: "Viện kiểm sát nhân dân tối cao",
+    noiNhan: "Viện kiểm sát nhân dân thành phố Hà Nội",
   },
   {
-    ten: "Viện trưởng Viện kiểm sát nhân dân tối cao",
+    ten: "Viện trưởng Viện kiểm sát nhân dân thành phố Hà Nội",
     diaChi: "Số 9 Phạm Văn Bạch, Phường Yên Hòa, TP. Hà Nội",
-    noiNhan: "Tòa án nhân dân tối cao",
+    noiNhan: "Tòa án nhân dân thành phố Hà Nội",
   },
 ];
 
@@ -4293,21 +4293,21 @@ const DON_VI_KHANG_NGHI = [
 const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 1,
-    nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh",
-    diaChi: "Số 15, đường Lý Thái Tổ, Phường Phương Sơn, Tỉnh Bắc Ninh",
+    nguoiGui: "Tòa án nhân dân khu vực 4 - Hà Nội",
+    diaChi: "Số 15, đường Lý Thái Tổ, Phường Hoàn Kiếm, Thành phố Hà Nội",
     maDon: " Mã 7031",
     loaiHinhThuc: "Công văn kiến nghị",
     loaiHinhThucColor: "#e67e22",
     toTrinhStatus: "trinh_lanh_dao",
     thongTinDon: {
-      soBaqd: "BA_2107", ngay: "21/07/2026", toaXetXu: "TAND tỉnh Bắc Ninh",
+      soBaqd: "BA_2107", ngay: "21/07/2026", toaXetXu: "TAND khu vực 4 - Hà Nội",
       thuTuc: "Giám đốc thẩm",
       hinhThuc: "CV Kiến nghị GĐT, TT",
       soCV: "2107", ngayCV: "21/07/2026",
       loaiCV: "Công văn kiến nghị",
-      donViGui: "Tòa án nhân dân tỉnh Bắc Ninh",
-      thamPhan: "Nguyễn Văn Hiền (Thẩm phán TAND bậc 3) (TT-TANDTC-VP) (54682577 TANDTC-TB 21/07/2026)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
+      donViGui: "Tòa án nhân dân khu vực 4 - Hà Nội",
+      thamPhan: "Nguyễn Văn Hiền (Thẩm phán) (TT-TAHN-VP) (54682577 TAHN-TB 21/07/2026)",
+      donViGiaiQuyet: "Tòa Dân sự (Số: 545 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
@@ -4319,7 +4319,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682571", ngayThuLy: "21/07/2026", coVanBan: true },
     processingHistory: [
       { date: "21/07/2026", step: "Tiếp nhận hồ sơ", actor: "HCTP - Phòng tiếp nhận", note: "Đã kiểm tra tính hợp lệ" },
-      { date: "22/07/2026", step: "Chuyển Vụ Giám đốc kiểm tra và dân sự", actor: "HCTP", note: "Gửi hồ sơ kèm danh sách công văn" },
+      { date: "22/07/2026", step: "Chuyển Tòa Dân sự", actor: "HCTP", note: "Gửi hồ sơ kèm danh sách công văn" },
     ],
     isPhanCong: true, loaiPhanCong: "chi-dinh",
     thongTinChuyenDon: "Nội bộ",
@@ -4329,18 +4329,18 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 2,
     nguoiGui: "Nguyễn Văn Quyền",
-    diaChi: "Số 27, ngõ 5, đường Ngô Gia Tự, Phường Tiền An, Thành phố Bắc Ninh",
+    diaChi: "Số 27, ngõ 5, đường Ngô Gia Tự, Phường Long Biên, Thành phố Hà Nội",
     maDon: "Mã 7030",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "207", ngay: "21/07/2026", toaXetXu: "TAND TP. Bắc Ninh",
+      soBaqd: "207", ngay: "21/07/2026", toaXetXu: "TAND khu vực 4 - Hà Nội",
       thuTuc: "Giám đốc thẩm",
       hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "2107", ngayCV: "21/07/2026",
       loaiCV: "Đơn đề nghị GĐT/TT",
       donViGui: "Nguyễn Văn Quyền",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
       donViGiaiQuyet: "Chưa quyết",
     },
     daNhan: true,
@@ -4357,20 +4357,20 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   },
   {
     id: 3,
-    nguoiGui: "Tòa án nhân dân cấp cao tại Thành phố Hồ Chí Minh",
-    diaChi: "Số 262, đường Trần Phú, Phường Hoàn Kiếm, Thành phố Hà Nội",
+    nguoiGui: "Tòa án nhân dân khu vực 2 - Hà Nội",
+    diaChi: "Số 262, đường Trần Phú, Phường Ba Đình, Thành phố Hà Nội",
     maDon: "Mã 7029",
     loaiHinhThuc: "Công văn kiến nghị",
     loaiHinhThucColor: "#e67e22",
     thongTinDon: {
-      soBaqd: "917", ngay: "21/07/2026", toaXetXu: "TAND cấp cao tại TP. HCM",
+      soBaqd: "917", ngay: "21/07/2026", toaXetXu: "TAND khu vực 2 - Hà Nội",
       thuTuc: "Tái thẩm",
       hinhThuc: "CV Kiến nghị GĐT, TT",
       soCV: "2107_1433", ngayCV: "21/07/2026",
       loaiCV: "Vụ việc giám sát Quốc hội",
-      donViGui: "Tòa án nhân dân cấp cao tại Thành phố Hồ Chí Minh",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
+      donViGui: "Tòa án nhân dân khu vực 2 - Hà Nội",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Dân sự (Số: 545 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
@@ -4383,26 +4383,26 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   },
   // ── Ca "Thụ lý mới trùng TP" ─────────────────────────────────────────────
   // Đơn vừa nhập, chọn Thụ lý mới, chưa có thẩm phán và chưa chuyển. Nhưng bản
-  // án (917 · 21/07/2026 · TAND cấp cao tại TP. HCM) trùng đúng đơn Mã 7029 ở
+  // án (917 · 21/07/2026 · TAND khu vực 2 - Hà Nội) trùng đúng đơn Mã 7029 ở
   // ngay trên — đơn đó đã Thụ lý mới, đã phân công TP và đã chuyển vụ. Cột
   // Thông tin giải quyết vì thế phải ra "Thụ lý mới trùng TP".
   {
     id: 30,
     nguoiGui: "Trần Thị Mai Lan",
-    diaChi: "Số 45, đường Nguyễn Trãi, Phường Bến Thành, Thành phố Hồ Chí Minh",
+    diaChi: "Số 45, đường Nguyễn Trãi, Phường Thanh Xuân, Thành phố Hà Nội",
     maDon: "Mã 7048",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
       // Cùng bản án với Mã 7029 ⇒ hai đơn là "đơn liên quan" của nhau
-      soBaqd: "917", ngay: "21/07/2026", toaXetXu: "TAND cấp cao tại TP. HCM",
+      soBaqd: "917", ngay: "21/07/2026", toaXetXu: "TAND khu vực 2 - Hà Nội",
       thuTuc: "Tái thẩm",
       hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "",
       donViGui: "Trần Thị Mai Lan",
       // Chưa phân công TP, không có "(Số: ...)" ⇒ chưa chuyển
       thamPhan: "",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true,
     soDon: 1,
@@ -4417,19 +4417,19 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 4,
     nguoiGui: "Lê Thị Mai",
-    diaChi: "Số 200, đường Lý Thường Kiệt, Phường 14, Quận 10, Thành phố Hồ Chí Minh",
+    diaChi: "Số 200, đường Lý Thường Kiệt, Phường Cửa Nam, Thành phố Hà Nội",
     maDon: "Mã 7028",
     loaiHinhThuc: "Đơn khiếu nại",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "33/2024/KDTM-PT", ngay: "15/11/2024", toaXetXu: "TAND cấp cao tại Hà Nội",
+      soBaqd: "33/2024/KDTM-ST", ngay: "15/11/2024", toaXetXu: "TAND khu vực 1 - Hà Nội",
       thuTuc: "Giám đốc thẩm + Tái thẩm",
       hinhThuc: "Đơn khiếu nại tố cáo trong tố tụng",
       soCV: "1201", ngayCV: "10/11/2024",
       loaiCV: "Đơn khiếu nại tố cáo trong tố tụng",
       donViGui: "Lê Thị Mai",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc kiểm tra và hình sự (Số: 1730 - 21/07/2026)",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Hình sự (Số: 1730 - 21/07/2026)",
     },
     daNhan: false,
     soDon: 1,
@@ -4444,19 +4444,19 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     /* TH2: cán bộ B - đang chờ xác nhận ghép với đơn 7031 của cán bộ A */
     id: 5,
     nguoiGui: "Nguyễn Thị Hoa",
-    diaChi: "Số 88, phố Bạch Mai, Phường Bạch Mai, Quận Hai Bà Trưng, Thành phố Hà Nội",
+    diaChi: "Số 88, phố Bạch Mai, Phường Hai Bà Trưng, Thành phố Hà Nội",
     maDon: "Mã 7027",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "15/2023/DS-PT", ngay: "12/03/2023", toaXetXu: "TAND tỉnh Bắc Ninh",
+      soBaqd: "15/2023/DS-ST", ngay: "12/03/2023", toaXetXu: "TAND khu vực 4 - Hà Nội",
       thuTuc: "Giám đốc thẩm",
       hinhThuc: "Đơn đề nghị GĐT/TT",
       soCV: "", ngayCV: "12/03/2023",
       loaiCV: "Đơn đề nghị GĐT/TT",
       donViGui: "Nguyễn Thị Hoa",
-      thamPhan: "Trần Văn Bình (Thẩm phán TAND bậc 2)",
-      donViGiaiQuyet: "Vụ Giám đốc kiểm tra và hình sự (Số: 1730 - 21/07/2026)",
+      thamPhan: "Lê Minh Tuấn (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Hình sự (Số: 1730 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
@@ -4473,12 +4473,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     /* TH1: cùng cán bộ - đã ghép ngay với đơn 7029 */
     id: 6,
     nguoiGui: "Trần Văn Bình",
-    diaChi: "Số 45, đường Nguyễn Du, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
+    diaChi: "Số 45, phố Nguyễn Du, Phường Hai Bà Trưng, Thành phố Hà Nội",
     maDon: "Mã 7026",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "08/2022/HS-PT", ngay: "20/06/2022", toaXetXu: "TAND tỉnh Vĩnh Phúc",
+      soBaqd: "08/2022/HS-ST", ngay: "20/06/2022", toaXetXu: "TAND khu vực 4 - Hà Nội",
       thuTuc: "Tái thẩm",
       hinhThuc: "Đơn đề nghị GĐT/TT",
       soCV: "", ngayCV: "20/06/2022",
@@ -4496,8 +4496,8 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   },
   {
     id: 7,
-    nguoiGui: "Văn thư Tòa án nhân dân tỉnh Bắc Ninh",
-    diaChi: "Số 1, đường Hai Bà Trưng, Phường Suối Hoa, Thành phố Bắc Ninh",
+    nguoiGui: "Văn thư Tòa án nhân dân khu vực 4 - Hà Nội",
+    diaChi: "Số 1, đường Hai Bà Trưng, Phường Cửa Nam, Thành phố Hà Nội",
     maDon: "Mã 7024",
     loaiHinhThuc: "Đơn hành chính",
     waitingForProcessing: true,
@@ -4526,9 +4526,9 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   },
   {
     id: 8,
-    nguoiGui: "Văn thư Tòa án nhân dân tỉnh Hà Nội",
+    nguoiGui: "Văn thư Tòa án nhân dân thành phố Hà Nội",
     waitingForProcessing: true,
-    diaChi: "Số 2, phố Hàng Bài, Phường Tràng Tiền, Quận Hoàn Kiếm, Thành phố Hà Nội",
+    diaChi: "Số 2, phố Hàng Bài, Phường Hoàn Kiếm, Thành phố Hà Nội",
     maDon: "Mã 7023",
     loaiHinhThuc: "Đơn khiếu nại",
     loaiHinhThucColor: "#8b1a1a",
@@ -4558,19 +4558,19 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     /* MOCK: thẩm phán nhiều đơn - đơn 2/3 của Nguyễn Như Thắng trong cùng Vụ dân sự */
     id: 9,
     nguoiGui: "Hoàng Minh Tú",
-    diaChi: "Số 173, phố Tây Sơn, Phường Quang Trung, Quận Đống Đa, Thành phố Hà Nội",
+    diaChi: "Số 173, phố Tây Sơn, Phường Đống Đa, Thành phố Hà Nội",
     maDon: "Mã 7022",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "112/2026/DS-GDT", ngay: "10/07/2026", toaXetXu: "TAND tỉnh Phú Thọ",
+      soBaqd: "112/2026/DS-ST", ngay: "10/07/2026", toaXetXu: "TAND khu vực 2 - Hà Nội",
       thuTuc: "Giám đốc thẩm",
       hinhThuc: "Đơn đề nghị GĐT/TT",
       soCV: "1001", ngayCV: "10/07/2026",
       loaiCV: "Đơn đề nghị GĐT/TT",
       donViGui: "Hoàng Minh Tú",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Dân sự (Số: 545 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
@@ -4585,19 +4585,19 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     /* MOCK: thẩm phán nhiều đơn - đơn 3/3 của Nguyễn Như Thắng trong cùng Vụ dân sự */
     id: 10,
     nguoiGui: "Phạm Thị Ngọc",
-    diaChi: "Thôn Đông Dư Thượng, Xã Đông Dư, Huyện Gia Lâm, Thành phố Hà Nội",
+    diaChi: "Thôn Đông Dư Thượng, Xã Gia Lâm, Thành phố Hà Nội",
     maDon: "Mã 7021",
     loaiHinhThuc: "Công văn kiến nghị",
     loaiHinhThucColor: "#e67e22",
     thongTinDon: {
-      soBaqd: "89/2025/HS-GDT", ngay: "05/06/2025", toaXetXu: "TAND cấp cao tại Hà Nội",
+      soBaqd: "89/2025/HS-ST", ngay: "05/06/2025", toaXetXu: "TAND khu vực 1 - Hà Nội",
       thuTuc: "Giám đốc thẩm",
       hinhThuc: "CV Kiến nghị GĐT, TT",
       soCV: "2255", ngayCV: "05/06/2025",
       loaiCV: "Công văn kiến nghị",
       donViGui: "Phạm Thị Ngọc",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự (Số: 545 - 21/07/2026)",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Dân sự (Số: 545 - 21/07/2026)",
     },
     daNhan: true,
     soDon: 1,
@@ -4613,12 +4613,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 11,
     nguoiGui: "Lê Thị Mai",
-    diaChi: "Số 34, ngõ 20, phố Cát Linh, Phường Cát Linh, Quận Đống Đa, Thành phố Hà Nội",
+    diaChi: "Số 34, ngõ 20, phố Cát Linh, Phường Đống Đa, Thành phố Hà Nội",
     maDon: "Mã 7032",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "312", ngay: "05/03/2026", toaXetXu: "TAND TP. Hà Nội",
+      soBaqd: "312", ngay: "05/03/2026", toaXetXu: "TAND khu vực 1 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Lê Thị Mai",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4632,12 +4632,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 12,
     nguoiGui: "Công ty CP Xây dựng Thăng Long",
-    diaChi: "Số 9, ngách 12/3, phố Trần Đăng Ninh, Phường Dịch Vọng, Quận Cầu Giấy, Thành phố Hà Nội",
+    diaChi: "Số 9, ngách 12/3, phố Trần Đăng Ninh, Phường Cầu Giấy, Thành phố Hà Nội",
     maDon: "Mã 7033",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "88/2025/KDTM-PT", ngay: "18/09/2025", toaXetXu: "TAND cấp cao tại Hà Nội",
+      soBaqd: "88/2025/KDTM-ST", ngay: "18/09/2025", toaXetXu: "TAND khu vực 1 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Công ty CP Xây dựng Thăng Long",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4651,15 +4651,15 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 13,
     nguoiGui: "Trần Quốc Hùng",
-    diaChi: "Số 120, đại lộ Lê Lợi, Phường Lê Lợi, Thành phố Thanh Hóa, Tỉnh Thanh Hóa",
+    diaChi: "Số 120, đường Giải Phóng, Phường Phương Liệt, Thành phố Hà Nội",
     maDon: "Mã 7034",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "45/2024/HS-PT", ngay: "12/12/2024", toaXetXu: "TAND tỉnh Thanh Hóa",
+      soBaqd: "45/2024/HS-ST", ngay: "12/12/2024", toaXetXu: "TAND khu vực 3 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Trần Quốc Hùng",
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)", donViGiaiQuyet: "Vụ Giám đốc kiểm tra về hình sự",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)", donViGiaiQuyet: "Tòa Hình sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: "Đã thụ lý", color: "#1a5a96", stl: "54682600", coVanBan: true },
@@ -4670,12 +4670,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 14,
     nguoiGui: "Phạm Thị Hồng",
-    diaChi: "Số 56, đường Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+    diaChi: "Số 56, phố Ngô Quyền, Phường Hoàn Kiếm, Thành phố Hà Nội",
     maDon: "Mã 7035",
     loaiHinhThuc: "Đơn khiếu nại",
     loaiHinhThucColor: "#c0392b",
     thongTinDon: {
-      soBaqd: "17/2023/DS-ST", ngay: "03/04/2023", toaXetXu: "TAND TP. Đà Nẵng",
+      soBaqd: "17/2023/DS-ST", ngay: "03/04/2023", toaXetXu: "TAND khu vực 3 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn khiếu nại tố cáo trong tố tụng",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Phạm Thị Hồng",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4688,17 +4688,17 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   },
   {
     id: 15,
-    nguoiGui: "Tòa án nhân dân tỉnh Nghệ An",
-    diaChi: "Số 3, đường Nguyễn Thị Minh Khai, Phường Hưng Bình, Thành phố Vinh, Tỉnh Nghệ An",
+    nguoiGui: "Tòa án nhân dân khu vực 5 - Hà Nội",
+    diaChi: "Số 3, đường Nguyễn Thái Học, Phường Ba Đình, Thành phố Hà Nội",
     maDon: "Mã 7036",
     loaiHinhThuc: "Công văn kiến nghị",
     loaiHinhThucColor: "#e67e22",
     thongTinDon: {
-      soBaqd: "BA_0902", ngay: "09/02/2024", toaXetXu: "TAND tỉnh Nghệ An",
+      soBaqd: "BA_0902", ngay: "09/02/2024", toaXetXu: "TAND khu vực 5 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "CV Kiến nghị GĐT, TT",
       soCV: "0902", ngayCV: "09/02/2024", loaiCV: "Công văn kiến nghị",
-      donViGui: "Tòa án nhân dân tỉnh Nghệ An",
-      thamPhan: "", donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGui: "Tòa án nhân dân khu vực 5 - Hà Nội",
+      thamPhan: "", donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Nội bộ",
     giaiQuyet: { nhan: "Trả lại đơn", color: "#2980b9", stl: "", coVanBan: false, nguoiTra: "Nguyễn Hảo", ngayTra: "14/02/2024" },
@@ -4709,18 +4709,18 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 16,
     nguoiGui: "Hoàng Văn Thịnh",
-    diaChi: "Số 41, đường Nguyễn Huệ, Phường Vĩnh Ninh, Quận Thuận Hóa, Thành phố Huế",
+    diaChi: "Số 41, đường Nguyễn Trãi, Phường Thanh Xuân, Thành phố Hà Nội",
     maDon: "Mã 7037",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "62/2021/LĐ-PT", ngay: "22/08/2021", toaXetXu: "TAND TP. Huế",
+      soBaqd: "62/2021/LĐ-ST", ngay: "22/08/2021", toaXetXu: "TAND khu vực 5 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Hoàng Văn Thịnh",
       // Đã phân công thẩm phán nhưng CHƯA chuyển vụ — mẫu cho luật
       // "Tờ trình phân công Thẩm phán" (không có "(Số: ...)" = chưa chuyển)
-      thamPhan: "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      thamPhan: "Nguyễn Như Thắng (Thẩm phán)",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: "54682602", ngayThuLy: "25/08/2021", coVanBan: true },
@@ -4736,12 +4736,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 17,
     nguoiGui: "Nguyễn Thị Bích Ngọc",
-    diaChi: "Số 78, đường Hai Bà Trưng, Phường Tân Định, Quận 1, Thành phố Hồ Chí Minh",
+    diaChi: "Số 78, phố Hai Bà Trưng, Phường Hoàn Kiếm, Thành phố Hà Nội",
     maDon: "Mã 7038",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "104/2020/HN-PT", ngay: "14/05/2020", toaXetXu: "TAND cấp cao tại TP. HCM",
+      soBaqd: "104/2020/HN-ST", ngay: "14/05/2020", toaXetXu: "TAND khu vực 2 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Nguyễn Thị Bích Ngọc",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4755,12 +4755,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 18,
     nguoiGui: "Đỗ Minh Khang",
-    diaChi: "Số 15, đường Hùng Vương, Phường 2, Thành phố Tân An, Tỉnh Long An",
+    diaChi: "Số 15, đường Hoàng Quốc Việt, Phường Nghĩa Đô, Thành phố Hà Nội",
     maDon: "Mã 7039",
     loaiHinhThuc: "Đơn hành chính",
     loaiHinhThucColor: "#16a085",
     thongTinDon: {
-      soBaqd: "29/2026/HC-ST", ngay: "11/01/2026", toaXetXu: "TAND tỉnh Long An",
+      soBaqd: "29/2026/HC-ST", ngay: "11/01/2026", toaXetXu: "TAND khu vực 6 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Đỗ Minh Khang",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4774,12 +4774,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 19,
     nguoiGui: "Vũ Đình Nam",
-    diaChi: "Số 18, đường Nguyễn Huệ, Phường Hải Châu 1, Quận Hải Châu, Thành phố Đà Nẵng",
+    diaChi: "Số 18, phố Hàng Bông, Phường Hoàn Kiếm, Thành phố Hà Nội",
     maDon: "Mã 7040",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "77/2025/DS-PT", ngay: "30/06/2025", toaXetXu: "TAND cấp cao tại Đà Nẵng",
+      soBaqd: "77/2025/DS-ST", ngay: "30/06/2025", toaXetXu: "TAND khu vực 3 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Vũ Đình Nam",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4793,12 +4793,12 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 20,
     nguoiGui: "Bùi Thanh Sơn",
-    diaChi: "Số 62, đường Lạch Tray, Phường Đằng Giang, Quận Ngô Quyền, Thành phố Hải Phòng",
+    diaChi: "Số 62, đường Nguyễn Văn Cừ, Phường Long Biên, Thành phố Hà Nội",
     maDon: "Mã 7041",
     loaiHinhThuc: "Đơn khiếu nại",
     loaiHinhThucColor: "#c0392b",
     thongTinDon: {
-      soBaqd: "51/2022/HS-ST", ngay: "07/10/2022", toaXetXu: "TAND TP. Hải Phòng",
+      soBaqd: "51/2022/HS-ST", ngay: "07/10/2022", toaXetXu: "TAND khu vực 6 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn khiếu nại tố cáo trong tố tụng",
       soCV: "", ngayCV: "", loaiCV: "", donViGui: "Bùi Thanh Sơn",
       thamPhan: "", donViGiaiQuyet: "",
@@ -4815,16 +4815,16 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 21,
     nguoiGui: "Đỗ Tất Đạt",
-    diaChi: "Số 210, đường Trần Phú, Phường Hải Châu 1, Quận Hải Châu, Thành phố Đà Nẵng",
+    diaChi: "Số 210, đường Trần Phú, Phường Ba Đình, Thành phố Hà Nội",
     maDon: "Mã 4984",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 7 - Đà Nẵng",
+      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 3 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "31", ngayCV: "05/06/2026", loaiCV: "Công văn chuyển đơn",
       donViGui: "Đỗ Tất Đạt", thamPhan: "Đỗ Tất Thống",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
@@ -4835,16 +4835,16 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 22,
     nguoiGui: "Đỗ Tất Đạt",
-    diaChi: "Số 77, đường Lê Duẩn, Phường Thạch Thang, Quận Hải Châu, Thành phố Đà Nẵng",
+    diaChi: "Số 77, đường Lê Duẩn, Phường Cửa Nam, Thành phố Hà Nội",
     maDon: "Mã 4985",
     loaiHinhThuc: "Đơn báo phát hiện vi phạm PL",
     loaiHinhThucColor: "#e67e22",
     thongTinDon: {
-      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 7 - Đà Nẵng",
+      soBaqd: "HKTT_0506_05", ngay: "04/06/2026", toaXetXu: "TAND khu vực 3 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn báo phát hiện vi phạm PL",
       soCV: "31", ngayCV: "05/06/2026", loaiCV: "Công văn chuyển đơn",
       donViGui: "Đỗ Tất Đạt", thamPhan: "Đỗ Tất Thống",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Bưu điện",
     giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
@@ -4855,16 +4855,16 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   {
     id: 23,
     nguoiGui: "Phạm Văn Tú",
-    diaChi: "Số 30, đường Lê Công Thanh, Phường Châu Sơn, Thành phố Phủ Lý, Tỉnh Hà Nam",
+    diaChi: "Số 30, đường Quang Trung, Phường Hà Đông, Thành phố Hà Nội",
     maDon: "Mã 5012",
     loaiHinhThuc: "Đơn đề nghị",
     loaiHinhThucColor: "#8b1a1a",
     thongTinDon: {
-      soBaqd: "HKTT_1006_01", ngay: "08/06/2026", toaXetXu: "TAND tỉnh Hà Nam",
+      soBaqd: "HKTT_1006_01", ngay: "08/06/2026", toaXetXu: "TAND khu vực 5 - Hà Nội",
       thuTuc: "Giám đốc thẩm", hinhThuc: "Đơn đề nghị GĐT, TT",
       soCV: "44", ngayCV: "10/06/2026", loaiCV: "Công văn chuyển đơn",
-      donViGui: "Phạm Văn Tú", thamPhan: "Lê Thị Hoa",
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGui: "Phạm Văn Tú", thamPhan: "Vũ Thị Hạnh",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: "Trực tiếp",
     giaiQuyet: { nhan: CHO_Y_KIEN_LD, color: MAU_KET_LUAN_LD[CHO_Y_KIEN_LD], stl: "", coVanBan: false },
@@ -4878,24 +4878,24 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   // không kèm "(Số: ...)"). Trải trên 3 thẩm phán để màn Lưu số văn bản gom
   // nhóm theo thẩm phán có dữ liệu thật mà chạy.
   ...([
-    ["Mã 7042", "Nguyễn Thị Hồng Nhung", "Phường Kim Liên, Quận Đống Đa, Thành phố Hà Nội",
-      "41/2024/DS-PT", "18/03/2024", "TAND TP. Hà Nội", "Dân sự",
-      "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)", "Trực tiếp", "chi-dinh", true],
+    ["Mã 7042", "Nguyễn Thị Hồng Nhung", "Phường Kim Liên, Thành phố Hà Nội",
+      "41/2024/DS-ST", "18/03/2024", "TAND khu vực 1 - Hà Nội", "Dân sự",
+      "Nguyễn Như Thắng (Thẩm phán)", "Trực tiếp", "chi-dinh", true],
     ["Mã 7043", "Trần Đình Khoa", "Thôn Trung, xã Tân Ước, Thành phố Hà Nội",
-      "18/2023/HS-PT", "04/09/2023", "TAND TP. Hà Nội", "Hình sự",
-      "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)", "Bưu điện", "chi-dinh", true],
+      "18/2023/HS-ST", "04/09/2023", "TAND khu vực 1 - Hà Nội", "Hình sự",
+      "Nguyễn Như Thắng (Thẩm phán)", "Bưu điện", "chi-dinh", true],
     ["Mã 7044", "Công ty TNHH Đại Nam Phát", "Lô B2, KCN Tiên Sơn, Tỉnh Bắc Ninh",
-      "27/2024/KDTM-PT", "12/05/2024", "TAND tỉnh Bắc Ninh", "Kinh doanh thương mại",
-      "Đỗ Tất Thống (Thẩm phán TAND bậc 3)", "Trực tuyến", "ngau-nhien", true],
+      "27/2024/KDTM-ST", "12/05/2024", "TAND khu vực 4 - Hà Nội", "Kinh doanh thương mại",
+      "Đỗ Tất Thống (Thẩm phán)", "Trực tuyến", "ngau-nhien", true],
     ["Mã 7045", "Lê Thị Kim Chi", "Số 88, đường Trần Phú, Thành phố Đà Nẵng",
-      "09/2023/HNGĐ-PT", "21/06/2023", "TAND TP. Đà Nẵng", "Hôn nhân gia đình",
-      "Đỗ Tất Thống (Thẩm phán TAND bậc 3)", "Tiếp công dân", "ngau-nhien", true],
+      "09/2023/HNGĐ-ST", "21/06/2023", "TAND khu vực 3 - Hà Nội", "Hôn nhân gia đình",
+      "Đỗ Tất Thống (Thẩm phán)", "Tiếp công dân", "ngau-nhien", true],
     ["Mã 7046", "Phan Văn Lợi", "Ấp 3, xã Long Hòa, Thành phố Cần Thơ",
-      "33/2022/LĐ-PT", "15/11/2022", "TAND TP. Cần Thơ", "Lao động",
-      "Lê Thị Hoa (Thẩm phán TAND bậc 3)", "Bưu điện", "ngau-nhien", true],
+      "33/2022/LĐ-ST", "15/11/2022", "TAND TP. Cần Thơ", "Lao động",
+      "Lê Thị Hoa (Thẩm phán)", "Bưu điện", "ngau-nhien", true],
     ["Mã 7047", "Hoàng Thị Vân Anh", "Số 21, phố Nguyễn Du, Tỉnh Nghệ An",
-      "56/2024/HC-PT", "02/07/2024", "TAND tỉnh Nghệ An", "Hành chính",
-      "Lê Thị Hoa (Thẩm phán TAND bậc 3)", "Trực tiếp", "chi-dinh", true],
+      "56/2024/HC-ST", "02/07/2024", "TAND khu vực 5 - Hà Nội", "Hành chính",
+      "Lê Thị Hoa (Thẩm phán)", "Trực tiếp", "chi-dinh", true],
   ] as const).map(([maDon, nguoiGui, diaChi, soBaqd, ngay, toaXetXu, loaiAn, thamPhan, htNhan, loaiPC, cuaToi], i) => ({
     id: 24 + i,
     nguoiGui, diaChi, maDon,
@@ -4907,7 +4907,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       soCV: "", ngayCV: "", loaiCV: "", donViGui: nguoiGui,
       thamPhan,
       // KHÔNG có "(Số: ...)" ⇒ chưa chuyển sang vụ chuyên môn
-      donViGiaiQuyet: "Vụ Giám đốc, kiểm tra và dân sự",
+      donViGiaiQuyet: "Tòa Dân sự",
     },
     daNhan: true, soDon: 1, hinhThucTiepNhan: htNhan,
     giaiQuyet: { nhan: "Thụ lý mới", color: "#27ae60", stl: `5468270${i}`, ngayThuLy: `${10 + i}/07/2026`, coVanBan: false },
@@ -4921,10 +4921,10 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
   // ── Hồ sơ kháng nghị — trước ở màn riêng, nay nằm chung Danh sách đơn ──
   // Người "gửi" là người ra quyết định kháng nghị, không phải công dân nộp đơn.
   ...([
-    ["HSKN 8801", "QĐKN-2026/12", "18/05/2026", "45/2024/HS-PT", "10/09/2024", "TAND cấp cao tại Hà Nội", "Hình sự", 0, "Đã xét xử", "Hủy bản án, quyết định có hiệu lực pháp luật để xét xử lại theo thủ tục sơ thẩm"],
-    ["HSKN 8802", "QĐKN-2026/15", "02/06/2026", "23/2023/DS-PT", "14/07/2023", "TAND cấp cao tại TP. Hồ Chí Minh", "Dân sự", 1, "Đã xét xử", "Sửa một phần bản án, quyết định của Tòa án đã có hiệu lực pháp luật"],
-    ["HSKN 8803", "QĐKN-2026/19", "21/06/2026", "07/2025/KDTM-PT", "03/02/2025", "TAND cấp cao tại Đà Nẵng", "Kinh doanh thương mại", 0, "Đang xét xử", ""],
-    ["HSKN 8804", "QĐKN-2026/24", "09/07/2026", "31/2024/HC-PT", "28/11/2024", "TAND cấp cao tại Hà Nội", "Hành chính", 1, "Đang xét xử", ""],
+    ["HSKN 8801", "QĐKN-2026/12", "18/05/2026", "45/2024/HS-ST", "10/09/2024", "TAND khu vực 1 - Hà Nội", "Hình sự", 0, "Đã xét xử", "Hủy bản án, quyết định có hiệu lực pháp luật để xét xử lại theo thủ tục sơ thẩm"],
+    ["HSKN 8802", "QĐKN-2026/15", "02/06/2026", "23/2023/DS-ST", "14/07/2023", "TAND khu vực 2 - Hà Nội", "Dân sự", 1, "Đã xét xử", "Sửa một phần bản án, quyết định của Tòa án đã có hiệu lực pháp luật"],
+    ["HSKN 8803", "QĐKN-2026/19", "21/06/2026", "07/2025/KDTM-ST", "03/02/2025", "TAND khu vực 3 - Hà Nội", "Kinh doanh thương mại", 0, "Đang xét xử", ""],
+    ["HSKN 8804", "QĐKN-2026/24", "09/07/2026", "31/2024/HC-ST", "28/11/2024", "TAND khu vực 1 - Hà Nội", "Hành chính", 1, "Đang xét xử", ""],
   ] as const).map(([maDon, soQD, ngayQD, soBaqd, ngayBA, toaXetXu, loaiAn, iDV, ttKN, kqKN], i) => {
     const dv = DON_VI_KHANG_NGHI[iDV as number];
     return {
@@ -4937,8 +4937,8 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
         thuTuc: "Giám đốc thẩm", hinhThuc: "Hồ sơ kháng nghị",
         soCV: soQD, ngayCV: ngayQD, loaiCV: "Quyết định kháng nghị",
         donViGui: dv.ten,
-        thamPhan: i % 2 === 0 ? "Đỗ Tất Thống (Thẩm phán TAND bậc 3)" : "Lê Thị Hoa (Thẩm phán TAND bậc 3)",
-        donViGiaiQuyet: `Vụ Giám đốc, kiểm tra và dân sự (Số: ${560 + i} - ${ngayQD})`,
+        thamPhan: i % 2 === 0 ? "Đỗ Tất Thống (Thẩm phán)" : "Lê Thị Hoa (Thẩm phán)",
+        donViGiaiQuyet: `Tòa Dân sự (Số: ${560 + i} - ${ngayQD})`,
       },
       daNhan: true, soDon: 1, hinhThucTiepNhan: "Nội bộ",
       giaiQuyet: { nhan: "Đã thụ lý", color: "#1a5a96", stl: `5468280${i}`, coVanBan: false },
@@ -5036,22 +5036,11 @@ const ngayDuyetToTrinh = (ds: VanBanTrinh[], maDon?: string): string | undefined
 };
 
 // Thẩm phán lưu kèm nhiều nhóm ngoặc: (chức danh) (mã đơn vị) (số văn bản – ngày).
-// Cột chỉ cần tên + chức danh; từ nhóm ngoặc thứ hai trở đi là số văn bản, bỏ đi.
-const thamPhanGon = (v?: string) => {
-  const t = (v ?? "").trim();
-  const m = /^([^()]*\([^()]*\))/.exec(t);
-  return (m ? m[1] : t.split("(")[0]).trim();
-};
-
-// Chức danh trong ngoặc viết tắt cho vừa cột:
-//   (Thẩm phán TAND bậc 3) → (TPB3)
-//   (Thẩm phán bậc 2)      → (TPB2)
-//   (Thẩm phán TANDTC)     → (TP TANDTC)
-// Chỉ áp trong ngoặc — nhãn "Thẩm phán:" và tên người vẫn giữ nguyên.
-const vietTatChucDanhTP = (v?: string) =>
-  (v ?? "")
-    .replace(/\(\s*Thẩm phán(?:\s+TAND)?\s+bậc\s*(\d+)\s*\)/gi, "(TPB$1)")
-    .replace(/\(\s*Thẩm phán\b/gi, "(TP");
+// Cột chỉ cần TÊN thẩm phán. Bỏ hẳn mọi nhóm ngoặc phía sau: nhóm đầu là chức
+// danh, các nhóm sau là số văn bản. Ở TAND cấp tỉnh, ai đứng ở ô này cũng là
+// Thẩm phán nên "(Thẩm phán)" — trước đây viết tắt thành "(TP)" — không phân
+// biệt được gì, chỉ chiếm chỗ. Cùng quy ước với màn Phân công thẩm phán.
+const thamPhanGon = (v?: string) => (v ?? "").split("(")[0].trim();
 
 const norm = (v: unknown) => String(v ?? "").toLowerCase().trim();
 const contains = (haystack: unknown, needle: string) => norm(haystack).includes(norm(needle));
@@ -5314,7 +5303,8 @@ const hashId = (n: number) => {
   return (h ^ (h >>> 16)) >>> 0;
 };
 
-// Quyết định kháng nghị GĐT/TT chỉ do Chánh án TANDTC hoặc Viện trưởng VKSNDTC
+// Ở TAND cấp tỉnh, quyết định kháng nghị GĐT/TT với bản án của TAND khu vực do
+// Chánh án TAND thành phố Hà Nội hoặc Viện trưởng VKSND thành phố Hà Nội
 // ra và gửi kèm hồ sơ vụ án → cột "người gửi" của màn Hồ sơ kháng nghị lấy theo
 // 2 chức danh này (kèm nơi nhận chéo giữa hai cơ quan).
 const donViKhangNghi = (id: number) => DON_VI_KHANG_NGHI[hashId(id * 104729 + 11) % DON_VI_KHANG_NGHI.length];
@@ -5428,7 +5418,7 @@ const tienDoTrinhKy = (row: DanhSachDonRow): TienDoTrinhKy => {
   return {
     ketQua: key === "cho-ky" ? `Chờ ${ld.chucDanh} ký` : kq.nhan,
     cls: kq.cls,
-    soVanBan: key === "phat-hanh" ? `${1200 + (h % 800)}/TANDTC-VP` : undefined,
+    soVanBan: key === "phat-hanh" ? `${1200 + (h % 800)}/TAHN-VP` : undefined,
     buocs,
   };
 };
@@ -5550,10 +5540,10 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
       ]
     },
     {
-      id: 3, maDon: "5012", cvChuyen: "44 - 10/06/2026", thuLyMoi: "2330012", thamPhan: "Lê Thị Hoa",
+      id: 3, maDon: "5012", cvChuyen: "44 - 10/06/2026", thuLyMoi: "2330012", thamPhan: "Vũ Thị Hạnh",
       hinhThuc: "Đơn đề nghị GĐT/TT", nhan: ["Án chỉ đạo"],
       nguoiKhieuNai: "Phạm Văn Tú", biCao: "Hoàng Thị Minh", ndd: "Nguyễn Quốc Bảo",
-      soBA: "HKTT_1006_01", ngayBA: "08/06/2026", toaBA: "Tòa án nhân dân tỉnh Hà Nam",
+      soBA: "HKTT_1006_01", ngayBA: "08/06/2026", toaBA: "Tòa án nhân dân khu vực 5 - Hà Nội",
       capXetXu: "Phúc thẩm",
       yKien: [{ ketQua: "Không thụ lý", nguoi: "Nguyễn Thị Bình", chucVu: "Vụ trưởng", ngayDuyet: "12/07/2026" }]
     },
@@ -5612,7 +5602,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
       id: 3, maDon: "4943", cvChuyen: "12 - 04/06/2026", thuLyMoi: "2329144", thamPhan: "Đỗ Tất Thống",
       hinhThuc: "Đơn khiếu nại tư pháp tố tụng", nhan: ["Án chỉ đạo"],
       biCao: "Vũ Hoa Hào", ndd: "Phạm Hoàng Anh",
-      soBA: "99", ngayBA: "02/06/2026", toaBA: "Tòa án nhân dân tỉnh Bắc Ninh", capXetXu: "Sơ thẩm",
+      soBA: "99", ngayBA: "02/06/2026", toaBA: "Tòa án nhân dân khu vực 4 - Hà Nội", capXetXu: "Sơ thẩm",
       ...VU_AN_681, thaoTacVuAn: ["chuyen", "huyghep"],
       nhanTra: { nguoiTra: "Trần Quốc Hành", ngayTra: "08/6/2026" }
     },
@@ -5639,8 +5629,8 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 2, maVanThuDen: "4943 - 04/06/2026", soHSKN: "4984 - 04/06/2026", thuLyXetXu: "2329144",
       thamPhan: "Đỗ Tất Thống", hinhThuc: "Hồ sơ kháng nghị", nhan: [],
-      nguoiKhieuNai: "Đỗ Tất Đạt", biCao: "Vũ Hoa Hào", nguoiKhangNghi: "TANDTC",
-      soBA: "99", toaBA: "Tòa án nhân dân tỉnh Bắc Ninh", capXetXu: "Sơ thẩm",
+      nguoiKhieuNai: "Đỗ Tất Đạt", biCao: "Vũ Hoa Hào", nguoiKhangNghi: "TAND thành phố Hà Nội",
+      soBA: "99", toaBA: "Tòa án nhân dân khu vực 4 - Hà Nội", capXetXu: "Sơ thẩm",
       thaoTacVuAn: ["them"], nhanTra: { nguoiThaoTac: "Nguyễn Hảo", ngayThaoTac: "10/6/2026" }
     },
     {
@@ -5674,7 +5664,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
       id: 4, maDon: "5102", cvChuyen: "63 - 20/07/2026", thuLyMoi: "2331002", thamPhan: "Đỗ Tất Thống",
       hinhThuc: "Đơn đề nghị GĐT/TT", nhan: [],
       nguoiKhieuNai: "Nguyễn Văn Đức", biCao: "Trần Quang Minh", ndd: "Lê Thị Lan",
-      soBA: "HKTT_2007_02", ngayBA: "18/07/2026", toaBA: "Tòa án nhân dân tỉnh Đồng Nai",
+      soBA: "HKTT_2007_02", ngayBA: "18/07/2026", toaBA: "Tòa án nhân dân khu vực 6 - Hà Nội",
       capXetXu: "Phúc thẩm", maHS: "HSTH-2026-004201", maVuAn: "VA26-004201",
       tenVuAn: "Vụ án TRẦN QUANG MINH – Tội giết người", trangThaiHS: "Đang giải quyết GĐT,TT"
     },
@@ -5686,7 +5676,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
       id: 1, maDon: "5016", cvChuyen: "47 - 14/06/2026", thuLyMoi: "2330016", thamPhan: "Cao Thị Mai",
       hinhThuc: "Đơn báo phát hiện vi phạm PL", nhan: [],
       nguoiKhieuNai: "Vũ Thanh Tùng", biCao: "Đỗ Hữu Bình", ndd: "Hoàng Mỹ Linh",
-      soBA: "HKTT_1406_05", ngayBA: "12/06/2026", toaBA: "Tòa án nhân dân tỉnh Vĩnh Long",
+      soBA: "HKTT_1406_05", ngayBA: "12/06/2026", toaBA: "Tòa án nhân dân khu vực 3 - Hà Nội",
       capXetXu: "Sơ thẩm", maVuAn: "VA26-003105",
       tenVuAn: "Vụ án ĐỖ HỮU BÌNH - Tội vi phạm quy định về điều khiển phương tiện",
       tbgq: { so: "TBTLĐ SỐ QĐ -NGÀY QĐ", ttv: "Nguyễn Văn An", tp: "Đào Văn Nam" },
@@ -6034,8 +6024,10 @@ const NhanDonTLVuAn = () => {
 };
 
 // ─── Cấu hình TTV báo cáo (module Quản lý án GĐT/TT) ─────────────────────────
+// "Thẩm phán bậc 1/bậc 2" gộp lại thành một chức danh "Thẩm phán": chỉ có một
+// loại thẩm phán. Ngạch thẩm tra viên vẫn giữ 3 mức vì đó là ngạch khác.
 const CHUC_DANH = [
-  "Thư ký Tòa án", "Thẩm phán bậc 1", "Thẩm phán bậc 2",
+  "Thư ký Tòa án", "Thẩm phán",
   "Thẩm tra viên", "Thẩm tra viên chính", "Thẩm tra viên cao cấp",
 ];
 const NGHIEP_VU_TTV = ["Giải quyết án", "Xử lý nghiệp vụ"];
@@ -6060,8 +6052,8 @@ interface CanBoTTV {
 const CAN_BO_TTV: CanBoTTV[] = [
   ["Bùi Nguyễn Khánh (TK)", "Thư ký Tòa án", "Giải quyết án", 0],
   ["Bùi Quang Huy (TK)", "Thư ký Tòa án", "Giải quyết án", 1],
-  ["Bùi Thị Vân Anh (TP)", "Thẩm phán bậc 1", "Xử lý nghiệp vụ", 1],
-  ["Bùi Việt Anh (TP)", "Thẩm phán bậc 2", "Giải quyết án", 1],
+  ["Bùi Thị Vân Anh (TP)", "Thẩm phán", "Xử lý nghiệp vụ", 1],
+  ["Bùi Việt Anh (TP)", "Thẩm phán", "Giải quyết án", 1],
   ["Chi Thị Đức (TK)", "Thẩm tra viên", "Giải quyết án", 1],
   ["Chu Thị Thoam (TP)", "Thẩm tra viên", "Giải quyết án", 1],
   ["Chị Thị Nhụng (TTV)", "Thẩm tra viên", "Giải quyết án", 1],
@@ -6072,7 +6064,7 @@ const CAN_BO_TTV: CanBoTTV[] = [
   ["Hoàng Thanh Thủy (TK)", "Thẩm tra viên", "Giải quyết án", 1],
   ["Lê Minh Quân (TTV)", "Thẩm tra viên chính", "Xử lý nghiệp vụ", 0],
   ["Lê Thị Bích Ngọc (TK)", "Thư ký Tòa án", "Giải quyết án", 2],
-  ["Nguyễn Đức Toàn (TP)", "Thẩm phán bậc 2", "Giải quyết án", 0],
+  ["Nguyễn Đức Toàn (TP)", "Thẩm phán", "Giải quyết án", 0],
   ["Phạm Thu Hà (TTV)", "Thẩm tra viên", "Xử lý nghiệp vụ", -1],
   ["Trần Quang Vinh (TTV)", "Thẩm tra viên cao cấp", "Giải quyết án", 2],
   ["Vũ Thị Lan Anh (TK)", "Thư ký Tòa án", "Giải quyết án", 1],
@@ -6270,7 +6262,7 @@ const PopupInCauHinhTTV = ({ rows, onDong }: { rows: CanBoTTV[]; onDong: () => v
         <div id="khu-vuc-in-ttv" className="flex-1 overflow-auto bg-[#e9ecef] p-5">
           <div className="bg-white mx-auto p-8 shadow-sm" style={{ maxWidth: 900 }}>
             <div className="text-center mb-4">
-              <div className="text-[12px] uppercase tracking-wide text-[#333]">Tòa án nhân dân tối cao</div>
+              <div className="text-[12px] uppercase tracking-wide text-[#333]">Tòa án nhân dân thành phố Hà Nội</div>
               <div className="text-[17px] font-bold uppercase mt-1 text-[#111]">Danh sách cấu hình TTV báo cáo</div>
               <div className="text-[12px] text-[#555] mt-1">Ngày in: {homNay}</div>
             </div>
@@ -6310,21 +6302,14 @@ const PopupInCauHinhTTV = ({ rows, onDong }: { rows: CanBoTTV[]; onDong: () => v
 };
 
 // ─── Cấu hình phân công Thẩm phán ────────────────────────────────────────────
-// Màn này CHỈ khai báo 3 dữ kiện của thẩm phán: cấp bậc, đơn vị công tác,
-// chức vụ. Việc áp tiêu chí phân công tự động theo dự thảo —
-//   1. TPB3 là Vụ trưởng Vụ GĐ,KT        → = 1/5 mức chuẩn TPB3 của Vụ
-//   2. TPB3 là Phó Vụ trưởng Vụ GĐ,KT    → = 1/3 mức chuẩn TPB3 của Vụ
-//   3. TPB3 giữ chức vụ quản lý ngoài Vụ → ≥ 12 VB đề nghị/năm (sàn tối thiểu)
-// — do BACKEND xử lý, vì cần đếm VB đề nghị toàn hệ thống và phải chạy trong
-// transaction lúc phân công. FE không tính, không hiển thị định mức suy ra.
-const VU_GD_KT = "Vụ Giám đốc, kiểm tra";
-
-const TP_BAC_3 = "Thẩm phán bậc 3";
-const TP_TOI_CAO = "Thẩm phán tối cao";
-
-// Chức danh chỉ nhận 1 trong 2 giá trị trên; giá trị khác (kể cả rỗng) đều
-// hiển thị "-" thay vì in nguyên văn ra bảng.
-const hienChucDanh = (chucDanh: string) => chucDanh === TP_BAC_3 || chucDanh === TP_TOI_CAO ? chucDanh : "-";
+// Bối cảnh TAND cấp tỉnh (TAND thành phố Hà Nội): CHỈ CÓ MỘT loại thẩm phán —
+// không phân bậc 3 / tối cao — nên màn này không còn khai báo cấp bậc, chỉ còn
+// 2 dữ kiện: đơn vị công tác và chức vụ.
+// Định mức phân công (mức chuẩn theo đơn vị, giảm trừ cho người giữ chức vụ
+// quản lý, sàn tối thiểu/năm) do BACKEND xử lý, vì cần đếm VB đề nghị toàn đơn
+// vị và phải chạy trong transaction lúc phân công. FE không tính, không hiển
+// thị định mức suy ra.
+const PHONG_KTNV = "Phòng Kiểm tra nghiệp vụ và Thi hành án";
 
 const LOAI_NGHI = ["Phép năm", "Nghỉ ốm", "Thai sản", "Đi công tác", "Biệt phái", "Khác"];
 
@@ -6338,7 +6323,6 @@ const XU_LY_VU_DANG_CAM: Record<string, string> = {
 interface ThamPhanCauHinh {
   id: number;
   hoTen: string;
-  chucDanh: string;
   donVi: string;
   chucVu: string;
   // Có nằm trong diện được phân công đơn hay không. Thẩm phán vẫn trong danh
@@ -6363,29 +6347,28 @@ interface NghiPhepRow {
   // đăng ký xong là kỳ nghỉ có hiệu lực ngay.
 }
 
-// [họ tên, chức danh, đơn vị, chức vụ, đã nhận trong năm, tổng lũy kế, tham gia giải quyết đơn]
+// [họ tên, đơn vị, chức vụ, đã nhận trong năm, tổng lũy kế, tham gia giải quyết đơn]
 const THAM_PHAN_CAU_HINH: ThamPhanCauHinh[] = [
-  // TPB3 của Vụ GĐ,KT — nhóm này sinh ra "mức chuẩn"
-  ["Nguyễn Thị Lan", TP_BAC_3, VU_GD_KT, "Vụ trưởng", 6, 148, true],
-  ["Trần Văn Hùng", TP_BAC_3, VU_GD_KT, "Phó Vụ trưởng", 11, 203, true],
-  ["Trần Thị Hương", TP_BAC_3, VU_GD_KT, "Phó Vụ trưởng", 8, 96, true],
-  ["Lê Thị Mai", TP_BAC_3, VU_GD_KT, "",29, 312, true],
-  ["Hoàng Thị Thu", TP_BAC_3, VU_GD_KT, "",31, 175, true],
-  ["Đỗ Thị Kim Oanh", TP_BAC_3, VU_GD_KT, "",27, 264, true],
-  ["Nguyễn Như Thắng", TP_BAC_3, VU_GD_KT, "",33, 341, true],
-  // TPB3 giữ chức vụ quản lý ngoài Vụ GĐ,KT — Chánh Văn phòng thiên về điều
-  // hành, không nằm trong diện nhận đơn nên bỏ tích.
-  ["Phạm Văn Đức", TP_BAC_3, "Văn phòng TANDTC", "Chánh Văn phòng", 9, 87, false],
-  ["Lê Minh Tuấn", TP_BAC_3, "Tòa Hình sự", "Phó Chánh án", 14, 129, true],
-  // TPB3 ngoài Vụ, không giữ chức vụ — dự thảo chưa quy định
-  ["Vũ Thị Hạnh", TP_BAC_3, "Tòa Dân sự", "",18, 156, true],
-  ["Nguyễn Văn Hiền", TP_BAC_3, "Tòa Kinh tế", "",21, 198, true],
-  // Chức danh khác — tiêu chí không áp dụng
-  ["Đỗ Tất Thống", TP_TOI_CAO, VU_GD_KT, "",25, 287, true],
-].map(([hoTen, chucDanh, donVi, chucVu, daNhan, tongDaNhan, thamGiaGiaiQuyet], i) => ({
+  // Thẩm phán của Phòng KTNV & THA — đơn vị tham mưu giải quyết đơn đề nghị
+  // GĐT/TT, nhóm này sinh ra "mức chuẩn"
+  ["Nguyễn Thị Lan", PHONG_KTNV, "Trưởng phòng", 6, 148, true],
+  ["Trần Văn Hùng", PHONG_KTNV, "Phó Trưởng phòng", 11, 203, true],
+  ["Trần Thị Hương", PHONG_KTNV, "Phó Trưởng phòng", 8, 96, true],
+  ["Lê Thị Mai", PHONG_KTNV, "",29, 312, true],
+  ["Hoàng Thị Thu", PHONG_KTNV, "",31, 175, true],
+  ["Đỗ Thị Kim Oanh", PHONG_KTNV, "",27, 264, true],
+  ["Nguyễn Như Thắng", PHONG_KTNV, "",33, 341, true],
+  // Giữ chức vụ quản lý ngoài Phòng KTNV — Chánh Văn phòng thiên về điều hành,
+  // không nằm trong diện nhận đơn nên bỏ tích.
+  ["Phạm Văn Đức", "Văn phòng", "Chánh Văn phòng", 9, 87, false],
+  ["Lê Minh Tuấn", "Tòa Hình sự", "Phó Chánh án", 14, 129, true],
+  // Thẩm phán các tòa chuyên trách, không giữ chức vụ
+  ["Vũ Thị Hạnh", "Tòa Dân sự", "",18, 156, true],
+  ["Nguyễn Văn Hiền", "Tòa Kinh tế", "",21, 198, true],
+  ["Đỗ Tất Thống", "Tòa Hành chính", "Chánh tòa",25, 287, true],
+].map(([hoTen, donVi, chucVu, daNhan, tongDaNhan, thamGiaGiaiQuyet], i) => ({
   id: i + 1,
   hoTen: hoTen as string,
-  chucDanh: chucDanh as string,
   donVi: donVi as string,
   chucVu: chucVu as string,
   thamGiaGiaiQuyet: thamGiaGiaiQuyet as boolean,
@@ -6396,7 +6379,7 @@ const THAM_PHAN_CAU_HINH: ThamPhanCauHinh[] = [
 const NGHI_PHEP_MAU: NghiPhepRow[] = [
   { id: 1, thamPhan: "Lê Minh Tuấn", loai: "Biệt phái", tuNgay: "01/07/2026", denNgay: "31/12/2026",
     xuLy: "chuyen-giao", chuyenCho: "Trần Văn Hùng", vuDangCam: 3,
-    lyDo: "Biệt phái công tác tại TAND cấp cao Đà Nẵng" },
+    lyDo: "Biệt phái công tác tại TAND khu vực 5 - Hà Nội" },
   { id: 2, thamPhan: "Trần Thị Hương", loai: "Thai sản", tuNgay: "15/08/2026", denNgay: "15/02/2027",
     xuLy: "tra-ve", chuyenCho: "", vuDangCam: 4,
     lyDo: "Nghỉ chế độ thai sản 6 tháng" },
@@ -6422,12 +6405,11 @@ const CauHinhPhanCongTP = () => {
   const [rows, setRows] = useState<ThamPhanCauHinh[]>(THAM_PHAN_CAU_HINH);
   const [nghiPhep, setNghiPhep] = useState<NghiPhepRow[]>(NGHI_PHEP_MAU);
   const [fHoTen, setFHoTen] = useState("");
-  const [fChucDanh, setFChucDanh] = useState("");
   const [fDonVi, setFDonVi] = useState("");
   const [fChucVu, setFChucVu] = useState("");
   const [fNhanPC, setFNhanPC] = useState("");
   const [fTinhTrang, setFTinhTrang] = useState("");
-  const LOC_RONG = { hoTen: "", chucDanh: "", donVi: "", chucVu: "", nhanPC: "", tinhTrang: "" };
+  const LOC_RONG = { hoTen: "", donVi: "", chucVu: "", nhanPC: "", tinhTrang: "" };
   const [loc, setLoc] = useState(LOC_RONG);
   const [thongBao, setThongBao] = useState("");
   const [themNghi, setThemNghi] = useState(false);
@@ -6442,10 +6424,9 @@ const CauHinhPhanCongTP = () => {
   // Các ô lọc chỉ liệt kê giá trị ĐANG CÓ trong bảng, không đổ từ danh mục tĩnh.
   // Danh mục tĩnh có những mục chưa thẩm phán nào mang (Chánh án, Phó Chánh Văn
   // phòng, Vụ Pháp chế...) — chọn phải là bảng trắng trơn mà không rõ vì sao.
-  const { chucDanhOptions, chucVuOptions, donViOptions } = useMemo(() => {
+  const { chucVuOptions, donViOptions } = useMemo(() => {
     const uniq = (ds: string[]) => [...new Set(ds)].sort((a, b) => a.localeCompare(b, "vi"));
     return {
-      chucDanhOptions: uniq(rows.map(r => r.chucDanh)),
       chucVuOptions: uniq(rows.map(r => r.chucVu)),
       donViOptions: uniq(rows.map(r => r.donVi)),
     };
@@ -6453,7 +6434,6 @@ const CauHinhPhanCongTP = () => {
 
   const dsHienThi = useMemo(() => rows.filter(r =>
     (!loc.hoTen || contains(r.hoTen, loc.hoTen)) &&
-    (!loc.chucDanh || r.chucDanh === loc.chucDanh) &&
     (!loc.chucVu || r.chucVu === loc.chucVu) &&
     (!loc.donVi || r.donVi === loc.donVi) &&
     (!loc.nhanPC || (loc.nhanPC === "co") === r.thamGiaGiaiQuyet) &&
@@ -6509,17 +6489,8 @@ const CauHinhPhanCongTP = () => {
                 <FInp value={fHoTen} onChange={e => setFHoTen(e.target.value)}
                   placeholder="Nhập họ và tên thẩm phán" className="h-[34px]" />
               </div>
-              <div className="flex-1 min-w-[130px]">
-                <FLbl>Chức danh</FLbl>
-                <div className="relative">
-                  <select value={fChucDanh} onChange={e => setFChucDanh(e.target.value)}
-                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
-                    <option value="">- Tất cả -</option>
-                    {chucDanhOptions.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-                </div>
-              </div>
+              {/* Bỏ ô lọc "Chức danh": cấp tỉnh chỉ có một loại thẩm phán nên ô
+                  này chỉ còn đúng một lựa chọn, lọc hay không đều ra cùng danh sách. */}
               <div className="flex-1 min-w-[130px]">
                 <FLbl>Chức vụ</FLbl>
                 <div className="relative">
@@ -6570,14 +6541,14 @@ const CauHinhPhanCongTP = () => {
               </div>
               <div className="flex items-end gap-2 flex-shrink-0">
                 <button onClick={() => setLoc({
-                  hoTen: fHoTen, chucDanh: fChucDanh, donVi: fDonVi,
+                  hoTen: fHoTen, donVi: fDonVi,
                   chucVu: fChucVu, nhanPC: fNhanPC, tinhTrang: fTinhTrang,
                 })}
                   className="flex items-center gap-1.5 h-[34px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[4px] text-[12px] font-medium transition-colors flex-shrink-0">
                   <Search size={13} /> Tìm kiếm
                 </button>
                 <button onClick={() => {
-                  setFHoTen(""); setFChucDanh(""); setFDonVi("");
+                  setFHoTen(""); setFDonVi("");
                   setFChucVu(""); setFNhanPC(""); setFTinhTrang("");
                   setLoc(LOC_RONG);
                 }}
@@ -6598,18 +6569,18 @@ const CauHinhPhanCongTP = () => {
               </div>
             )}
 
-            {/* Bảng khai báo — chỉ 3 dữ kiện, backend tự áp tiêu chí và tính định mức */}
+            {/* Bảng khai báo — chỉ 2 dữ kiện, backend tự áp tiêu chí và tính định mức */}
             <div className="mt-3 border-t border-[#e5e5e5] overflow-x-auto">
               <table className="w-full border-collapse text-[13px] min-w-[1120px]">
                 <thead>
                   <tr className="border-b border-[#e5e5e5]">
                     <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[46px]">STT</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[200px]">Họ và tên</th>
-                    {/* Chức danh và Chức vụ đứng cạnh nhau: hai thứ hay bị đọc
-                        nhầm là một, để liền thì so ngay được. */}
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[200px]">Chức danh</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[200px]">Chức vụ</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[240px]">Đơn vị công tác</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[220px]">Họ và tên</th>
+                    {/* Không còn cột "Chức danh": mọi người trong bảng đều cùng
+                        một ngạch thẩm phán, cột chỉ lặp lại một giá trị. Chức vụ
+                        (Trưởng phòng, Phó Chánh án…) mới là thứ phân biệt. */}
+                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[210px]">Chức vụ</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[300px]">Đơn vị công tác</th>
                     <th className="px-3 py-2.5 text-center font-semibold text-[#333] w-[110px]"
                       title="Thẩm phán có nằm trong diện được phân công đơn hay không">
                       Nhận phân công
@@ -6623,7 +6594,7 @@ const CauHinhPhanCongTP = () => {
                 </thead>
                 <tbody>
                   {dsHienThi.length === 0 && (
-                    <tr><td colSpan={8} className="px-3 py-10 text-center text-[#888]">Không có thẩm phán nào khớp điều kiện.</td></tr>
+                    <tr><td colSpan={7} className="px-3 py-10 text-center text-[#888]">Không có thẩm phán nào khớp điều kiện.</td></tr>
                   )}
                   {dsHienThi.map((r, i) => {
                     const nghi = dangNghi(r.hoTen, nghiPhep, homNay);
@@ -6631,7 +6602,6 @@ const CauHinhPhanCongTP = () => {
                       <tr key={r.id} className="border-b border-[#eee] hover:bg-[#fafbfc] transition-colors">
                         <td className="px-3 py-2 text-[#555] align-top">{i + 1}</td>
                         <td className="px-3 py-2 font-medium text-[#222] align-top">{r.hoTen}</td>
-                        <td className="px-3 py-2 align-top text-[#222]">{hienChucDanh(r.chucDanh)}</td>
                         <td className="px-3 py-2 align-top text-[#222]">{r.chucVu || "-"}</td>
                         <td className="px-3 py-2 align-top text-[#222]">{r.donVi || "-"}</td>
                         {/* Ô cao 32px cho thẳng hàng với các ô select cùng dòng */}
@@ -6908,7 +6878,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                 mẫu khác trong hệ thống, không dùng tiêu đề canh giữa kiểu web. */}
             <div className="grid grid-cols-2 text-[#111] mb-5">
               <div className="text-center">
-                <div className="text-[13px]">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                <div className="text-[13px]">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</div>
                 <div className="text-[13px] font-bold mt-1.5">VĂN PHÒNG</div>
                 <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
               </div>
@@ -7005,7 +6975,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                         )}
                         {d.loaiCV && <div><Nhan>Loại CV: </Nhan>{d.loaiCV}</div>}
                         {d.thamPhan && (
-                          <div><Nhan>Thẩm phán: </Nhan>{vietTatChucDanhTP(thamPhanGon(vietTatTAND(d.thamPhan)))}</div>
+                          <div><Nhan>Thẩm phán: </Nhan>{(thamPhanGon(vietTatTAND(d.thamPhan)))}</div>
                         )}
                         {d.donViGiaiQuyet && <div><Nhan>Đã chuyển: </Nhan>{vietTatTAND(d.donViGiaiQuyet)}</div>}
                       </td>
@@ -7065,7 +7035,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
 };
 
 // ─── DanhSachDon screen ───────────────────────────────────────────────────────
-const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0], vbId?: string) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
+const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPhong, currentRole = "can-bo", onCreateToTrinh, onTaoVanBan, onXemVanBanDaTrinh, vanBanList, khangNghi, boLocTrangChu, onXoaBoLocTrangChu }: { onThemMoi: () => void; onBieuMau?: (row: typeof SAMPLE_ROWS[0], vbId?: string) => void; onWordEditor?: () => void; onEditRow?: (id: number) => void; isTruongPhong?: boolean;
   currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
   onCreateToTrinh?: (t: ToTrinh) => void;
   /** Popup "Tạo văn bản & trình ký" trả kết quả lên App để đẩy vào kho chung. */
@@ -7076,6 +7046,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   /** Kho văn bản dùng chung — để biết đơn nào đã nằm trong tờ trình nào. */
   vanBanList?: VanBanTrinh[];
   khangNghi?: boolean;   // dùng lại nguyên màn Danh sách đơn cho Hồ sơ kháng nghị
+  /** Bộ lọc do người dùng bấm từ khối chỉ số ở Trang chủ. Hiện thành chip có nút ✕
+   *  ngay dưới tabs, để không bao giờ có điều kiện lọc chạy ngầm mà không nhìn thấy. */
+  boLocTrangChu?: BoLocTuTrangChu | null;
+  onXoaBoLocTrangChu?: () => void;
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [showNumberingModal, setShowNumberingModal] = useState<number | null>(null);
@@ -7086,6 +7060,15 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
   const OFFICERS = ["Nguyễn Văn An", "Trần Thị Bình", "Lê Thị Hà", "Phạm Văn Đức", "Hoàng Thị Thu"];
   const [rows, setRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+
+  // Mốc "hôm nay" chốt một lần cho cả màn, để đếm quá hạn không nhảy giữa các lần render.
+  const homNayQuaHan = useMemo(() => new Date(), []);
+
+  // Vào màn từ Trang chủ thì luôn đứng ở tab Tổng số — nếu không, bộ lọc của thẻ
+  // vừa bấm sẽ bị giao thêm với tab cũ và ra ít đơn hơn con số hiển thị trên thẻ.
+  useEffect(() => {
+    if (boLocTrangChu) setActiveTab(0);
+  }, [boLocTrangChu]);
 
   // Mã đơn → mô tả văn bản đang chứa nó. Đưa thẳng vào hệ thống "đơn không hợp lệ"
   // của popup lấy số thay vì dựng một cảnh báo song song với con số riêng.
@@ -7337,6 +7320,18 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     const d = r.thongTinDon ?? ({} as DanhSachDonRow["thongTinDon"]);
     const trangThai = r.giaiQuyet?.nhan ?? "";
 
+    // Bộ lọc đến từ khối chỉ số Trang chủ — dùng đúng hàm phân loại mà Trang chủ
+    // dùng để đếm, nên số trên thẻ luôn bằng số dòng mở ra ở đây. Hồ sơ kháng nghị
+    // bị loại cùng một cách với Trang chủ, nếu không số sẽ lệch ngay khi bấm.
+    if (boLocTrangChu && r.laKhangNghi) return false;
+    if (boLocTrangChu?.tienDo === "da-xong" && !daGiaiQuyetXong(r)) return false;
+    if (boLocTrangChu?.tienDo === "chua-xong" && daGiaiQuyetXong(r)) return false;
+    if (boLocTrangChu?.tienDo === "qua-han" && !laQuaHan(r, homNayQuaHan)) return false;
+    if (boLocTrangChu?.trangThai && trangThai !== boLocTrangChu.trangThai) return false;
+    // Phạm vi "Của tôi" trên Trang chủ — không áp ở đây thì bấm một con số của
+    // riêng mình lại mở ra danh sách của cả phòng.
+    if (boLocTrangChu?.nguoiNhap && r.nguoiNhap !== boLocTrangChu.nguoiNhap) return false;
+
     // Chọn Loại văn bản là lọc luôn theo điều kiện hợp lệ của loại đó — cùng
     // một luật với màn Lưu số văn bản, nên vào modal không còn đơn bị gạch đỏ.
     if (chiDon && r.laKhangNghi) return false;
@@ -7376,7 +7371,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     return true;
   }), [rowsLD, chiDon, loaiVanBan, fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA,
     fNgayNhapFrom, fNgayNhapTo, fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap,
-    fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai]);
+    fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai, boLocTrangChu, homNayQuaHan]);
 
   const filteredRows = useMemo(
     () => rowsByFilters.filter(TAB_MATCH[activeTab] ?? (() => true)),
@@ -7533,6 +7528,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             </div>
           )}
 
+          {/* Chip bộ lọc đến từ Trang chủ — luôn nhìn thấy được và luôn xóa được,
+              để không có điều kiện lọc nào chạy ngầm sau khi nhảy màn. */}
+          {boLocTrangChu && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-[#fff8e6] border-b border-[#f0d9a0] text-[12px] text-[#7a5b00]">
+              <Home size={13} className="flex-shrink-0" />
+              <span>Đang lọc từ Trang chủ:</span>
+              <span className="inline-flex items-center gap-1.5 bg-white border border-[#e0c274] rounded-full pl-2.5 pr-1 py-0.5 font-semibold text-[#8b1a1a]">
+                {boLocTrangChu.nhan}
+                <button
+                  type="button"
+                  onClick={onXoaBoLocTrangChu}
+                  title="Bỏ lọc, xem toàn bộ danh sách"
+                  className="w-[16px] h-[16px] rounded-full flex items-center justify-center hover:bg-[#f3e3c0] transition-colors"
+                >
+                  <X size={11} />
+                </button>
+              </span>
+              <span className="text-[#a08340]">— {filteredRows.length} đơn</span>
+            </div>
+          )}
+
           {/* "Đơn của tôi" filter notice */}
           {!khangNghi && activeTab === 1 && (
             <div className="flex items-center gap-2 px-3 py-2 bg-[#eef1f5] border-b border-[#ddd] text-[12px] text-[#1d2e4f]">
@@ -7671,19 +7687,15 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         <TDate value={ui("nhanDonTu")} onChange={setUi("nhanDonTu")} />
                       </TRow>
 
+                      {/* Bỏ ô chọn bậc thẩm phán đứng trước tên — chỉ còn một loại
+                          thẩm phán nên chọn tên là đủ. */}
                       <TRow label="Thẩm phán">
-                        <div className="grid grid-cols-[112px_1fr] gap-1.5">
-                          <TSel value={ui("bacTP")} onChange={e => setUi("bacTP")(e.target.value)}>
-                            <option>Thẩm phán bậc 3</option>
-                            <option>Thẩm phán TANDTC</option>
-                          </TSel>
-                          <TSel value={ui("tenTP")} onChange={e => setUi("tenTP")(e.target.value)}>
-                            <option value="">--- Chọn ---</option>
-                            <option>Nguyễn Thế Lệ - 20/10/1966</option>
-                            <option>Ngô Hồng Phúc - 05/02/1970</option>
-                            <option>Nguyễn Như Thắng - 18/07/1973</option>
-                          </TSel>
-                        </div>
+                        <TSel value={ui("tenTP")} onChange={e => setUi("tenTP")(e.target.value)}>
+                          <option value="">--- Chọn ---</option>
+                          <option>Nguyễn Thế Lệ - 20/10/1966</option>
+                          <option>Ngô Hồng Phúc - 05/02/1970</option>
+                          <option>Nguyễn Như Thắng - 18/07/1973</option>
+                        </TSel>
                       </TRow>
                       <TRow label="Lãnh đạo chỉ đạo?">
                         <TSel value={ui("lanhDaoChiDao")} onChange={e => setUi("lanhDaoChiDao")(e.target.value)}>
@@ -7720,10 +7732,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       <TRow label="Chuyển đến" bold>
                         <TSel value={fDonVi} onChange={e => setFDonVi(e.target.value)}>
                           <option value="">--- Tất cả ---</option>
-                          <option>Vụ Pháp chế và Quản lý khoa học</option>
-                          <option>Vụ Giám đốc kiểm tra về hình sự</option>
-                          <option>Vụ Giám đốc kiểm tra về dân sự</option>
-                          <option>Vụ Giám đốc kiểm tra về hành chính</option>
+                          <option>Phòng Kiểm tra nghiệp vụ và Thi hành án</option>
+                          <option>Tòa Hình sự</option>
+                          <option>Tòa Dân sự</option>
+                          <option>Tòa Hành chính</option>
                         </TSel>
                       </TRow>
 
@@ -8181,7 +8193,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           )}
                           {/* Nhãn giữ nguyên "Thẩm phán"; chỉ chức danh trong ngoặc
                               rút thành "TP" cho vừa cột. */}
-                          {d.thamPhan && <div><span className="text-[#666]">Thẩm phán: </span><span className="font-semibold text-[#333]">{vietTatChucDanhTP(thamPhanGon(vietTatTAND(d.thamPhan)))}</span></div>}
+                          {d.thamPhan && <div><span className="text-[#666]">Thẩm phán: </span><span className="font-semibold text-[#333]">{(thamPhanGon(vietTatTAND(d.thamPhan)))}</span></div>}
                           {/* Ở màn Hồ sơ kháng nghị, đơn vị giải quyết tách thành cột riêng.
                               Có "(Số: ...)" nghĩa là đã chuyển sang vụ chuyên môn.
                               Đơn đã trả lại thì không còn "chưa chuyển/đã chuyển" nữa —
@@ -8324,7 +8336,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           <div className="text-[12px] text-[#b45309] mt-1 leading-snug">
                             Trùng TP với đơn <b className="font-medium">{trungTP.maDon.trim()}</b>
                             {trungTP.thongTinDon?.thamPhan && (
-                              <> · {vietTatChucDanhTP(thamPhanGon(vietTatTAND(trungTP.thongTinDon.thamPhan)))}</>
+                              <> · {(thamPhanGon(vietTatTAND(trungTP.thongTinDon.thamPhan)))}</>
                             )}
                           </div>
                         )}
@@ -9255,29 +9267,29 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
 
   const BIEU_MAU_PER_ROW: Record<number, { ten: string; so: string }[]> = {
     1: [
-      { ten: "Thông báo phân công Thẩm phán", so: "54682577/2026/TANDTC-TB" },
-      { ten: "Tờ trình thụ lý lại", so: "107/2026/TTr-TANDTC-VP" },
+      { ten: "Thông báo phân công Thẩm phán", so: "54682577/2026/TAHN-TB" },
+      { ten: "Tờ trình thụ lý lại", so: "107/2026/TTr-TAHN-VP" },
     ],
     2: [
-      { ten: "Công văn gửi nội bộ", so: "545/2026/TANDTC-VP" },
+      { ten: "Công văn gửi nội bộ", so: "545/2026/TAHN-VP" },
     ],
     3: [
-      { ten: "Thông báo phân công Thẩm phán", so: "54682578/2026/TANDTC-TB" },
-      { ten: "Tờ trình xét xử GĐT", so: "108/2026/TTr-TANDTC-VP" },
+      { ten: "Thông báo phân công Thẩm phán", so: "54682578/2026/TAHN-TB" },
+      { ten: "Tờ trình xét xử GĐT", so: "108/2026/TTr-TAHN-VP" },
     ],
     4: [
-      { ten: "Công văn chuyển tòa khác", so: "546/2026/TANDTC-VP" },
+      { ten: "Công văn chuyển tòa khác", so: "546/2026/TAHN-VP" },
     ],
     5: [
-      { ten: "Trả lại đơn", so: "201/2026/TANDTC-VP" },
+      { ten: "Trả lại đơn", so: "201/2026/TAHN-VP" },
     ],
     6: [
-      { ten: "Giấy xác nhận", so: "301/2026/TANDTC-GXN" },
+      { ten: "Giấy xác nhận", so: "301/2026/TAHN-GXN" },
     ],
   };
 
   const getSoCongVan = (rowId: number, idx: number) =>
-    `${String(54682570 + rowId * 3 + idx).slice(-5)}/2026/TANDTC-CV`;
+    `${String(54682570 + rowId * 3 + idx).slice(-5)}/2026/TAHN-CV`;
 
   const CONG_VAN_OPTIONS = [
     "Thông báo phân công Thẩm phán",
@@ -9838,7 +9850,7 @@ const PrototypeGhepDon = () => {
 
   const renderARows = () => (
     <>
-      <ProtoRow maDon="7031" nguoiGui="Tòa án nhân dân tỉnh Bắc Ninh"
+      <ProtoRow maDon="7031" nguoiGui="Tòa án nhân dân khu vực 4 - Hà Nội"
         ngayNhap="21/07/2026" trangThai="Thụ lý mới" trangThaiColor="#e67e22" showAction
         extra={
           aDonMerged ? (
@@ -9904,7 +9916,7 @@ const PrototypeGhepDon = () => {
         </div>
         <div className="px-3 pt-2 pb-1 bg-[#f9f9f9] border-b border-[#eee]">
           <p className="text-[11px] text-[#555] mb-0.5">Đơn chính</p>
-          <p className="text-[12px] font-semibold text-[#1d2e4f]">Mã 7031 — Tòa án nhân dân tỉnh Bắc Ninh</p>
+          <p className="text-[12px] font-semibold text-[#1d2e4f]">Mã 7031 — Tòa án nhân dân khu vực 4 - Hà Nội</p>
         </div>
         <div className="px-3 py-2.5">
           <p className="text-[11px] text-[#555] mb-1.5">Chọn đơn để ghép vào (chưa đủ điều kiện, chưa được ghép):</p>
@@ -9921,7 +9933,7 @@ const PrototypeGhepDon = () => {
             <tbody>
               {[
                 { id: "7025", nguoi: "Nguyễn Thị Hoa", ngay: "18/07", checked: true },
-                { id: "7022", nguoi: "TAND tỉnh Vĩnh Phúc", ngay: "15/07", checked: false },
+                { id: "7022", nguoi: "TAND khu vực 4 - Hà Nội", ngay: "15/07", checked: false },
                 { id: "7019", nguoi: "Trần Văn Bình", ngay: "12/07", checked: false },
               ].map((r, i) => (
                 <tr key={i} className={r.checked ? "bg-[#fdeaea]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
@@ -9964,7 +9976,7 @@ const PrototypeGhepDon = () => {
           <div className="border border-[#ddd] rounded p-2 bg-[#f0f7ff]">
             <p className="text-[11px] text-[#888] mb-0.5">Đơn chính</p>
             <span className="font-semibold text-[#1d2e4f]">Mã 7031</span>
-            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân tỉnh Bắc Ninh</span>
+            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
           </div>
           <div className="border border-[#ddd] rounded p-2 bg-white">
             <p className="text-[11px] text-[#888] mb-0.5">Đơn được ghép vào</p>
@@ -9996,7 +10008,7 @@ const PrototypeGhepDon = () => {
           <div className="border border-[#ddd] rounded p-2 bg-[#f0f7ff]">
             <p className="text-[11px] text-[#888] mb-0.5">Đơn chính (Cán bộ A)</p>
             <span className="font-semibold text-[#1d2e4f]">Mã 7031</span>
-            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân tỉnh Bắc Ninh</span>
+            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
             <div className="mt-0.5"><span className="px-1.5 py-[1px] rounded text-[9px] font-medium bg-[#e67e22] text-white">Thụ lý mới</span></div>
           </div>
           <div className="border border-[#2980b9] rounded p-2 bg-[#f0f7ff]">
@@ -10131,8 +10143,8 @@ const WordEditor = ({ onBack }: { onBack: () => void }) => {
 Độc lập - Tự do - Hạnh phúc
 ───────────────────────────────
 
-TÒA ÁN NHÂN DÂN TỐI CAO
-Số: ____/2026/TANDTC-VP
+TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI
+Số: ____/2026/TAND-HN
 
 THÔNG BÁO
 Về việc phân công Thẩm phán xem xét đơn đề nghị giám đốc thẩm, tái thẩm
@@ -10140,9 +10152,9 @@ Về việc phân công Thẩm phán xem xét đơn đề nghị giám đốc th
 Kính gửi: ...
 
 Căn cứ Bộ luật Tố tụng dân sự năm 2015;
-Căn cứ Luật Tổ chức Tòa án nhân dân năm 2014;
+Căn cứ Luật Tổ chức Tòa án nhân dân năm 2024;
 
-Tòa án nhân dân tối cao thông báo phân công Thẩm phán như sau:
+Tòa án nhân dân thành phố Hà Nội thông báo phân công Thẩm phán như sau:
 
 1. Thẩm phán được phân công: ...
 2. Nhiệm vụ: Xem xét đơn đề nghị giám đốc thẩm số ...
@@ -10408,47 +10420,62 @@ const LOAI_AN_OPTIONS = [
   "Hôn nhân gia đình", "Lao động", "Sở hữu trí tuệ", "Phá sản",
 ];
 
+// Bối cảnh dữ liệu: TAND thành phố Hà Nội (tòa cấp tỉnh).
+//  · toaBA là tòa ĐÃ RA bản án bị đề nghị → luôn là TAND khu vực trực thuộc,
+//    vì cấp tỉnh chỉ GĐT/TT bản án, quyết định đã có hiệu lực của TAND khu vực.
+//  · Ký hiệu bản án là -ST: TAND khu vực xét xử sơ thẩm; bản án phúc thẩm là
+//    của chính TAND TP Hà Nội, GĐT thuộc TANDTC nên không xuất hiện ở màn này.
+//  · Địa chỉ theo mô hình 2 cấp (phường/xã + thành phố), không còn quận/huyện.
+// TODO nghiệp vụ: số hiệu các TAND khu vực của Hà Nội đang đặt 1–6 cho demo,
+// cần đối chiếu nghị quyết thành lập TAND khu vực để ghi đúng tên.
 const PHANCONG_SAMPLE: {
   id: number; soThuLy: string; ngayThuLy: string; nguoiDungDon: string; diaChi: string;
-  soBA: string; ngayBA: string; toaBA: string; loaiAn: string; hinhThuc: string; thamPhan: string; capGiaiQuyet: "toicao" | "bac3";
+  soBA: string; ngayBA: string; toaBA: string; loaiAn: string; hinhThuc: string; thamPhan: string;
   /** Số tờ trình phân công đã lập cho đơn này. Có giá trị = thẩm phán đã được
    *  chốt trong văn bản trình ký, cán bộ không tự đổi ở màn này được nữa. */
   toTrinh?: string;
 }[] = [
-    { id: 1, soThuLy: "01/2026/GĐT-HS", ngayThuLy: "05/07/2026", nguoiDungDon: "Nguyễn Văn An", diaChi: "Số 12 Lê Duẩn, Hà Nội", soBA: "15/2023/HS-PT", ngayBA: "12/03/2023", toaBA: "TAND tỉnh Bắc Ninh", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "", capGiaiQuyet: "bac3" },
-    { id: 2, soThuLy: "02/2026/GĐT-DS", ngayThuLy: "08/07/2026", nguoiDungDon: "Trần Thị Bình", diaChi: "45 Trần Hưng Đạo, TP.HCM", soBA: "08/2022/DS-PT", ngayBA: "20/06/2022", toaBA: "TAND tỉnh Vĩnh Phúc", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan", capGiaiQuyet: "toicao", toTrinh: "TTr-118/2026" },
-    { id: 3, soThuLy: "03/2026/GĐT-KDTM", ngayThuLy: "10/07/2026", nguoiDungDon: "Công ty TNHH Minh Đức", diaChi: "18 Nguyễn Huệ, Đà Nẵng", soBA: "33/2024/KDTM-PT", ngayBA: "15/11/2024", toaBA: "TAND cấp cao tại HN", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng", capGiaiQuyet: "toicao", toTrinh: "TTr-119/2026" },
-    { id: 4, soThuLy: "04/2026/TT-HC", ngayThuLy: "14/07/2026", nguoiDungDon: "Lê Văn Cường", diaChi: "72 Đinh Tiên Hoàng, Huế", soBA: "21/2021/HC-PT", ngayBA: "05/09/2021", toaBA: "TAND tỉnh Hà Nam", loaiAn: "Hành chính", hinhThuc: "Đề nghị TT", thamPhan: "Trần Văn Hùng", capGiaiQuyet: "bac3" },
-    { id: 5, soThuLy: "05/2026/GĐT-LĐ", ngayThuLy: "16/07/2026", nguoiDungDon: "Phạm Thị Dung", diaChi: "33 Bà Triệu, Hải Phòng", soBA: "07/2023/LĐ-PT", ngayBA: "18/04/2023", toaBA: "TAND tỉnh Quảng Ninh", loaiAn: "Lao động", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng", capGiaiQuyet: "toicao" },
-    { id: 6, soThuLy: "06/2026/GĐT-DS", ngayThuLy: "18/07/2026", nguoiDungDon: "Hoàng Văn Thái", diaChi: "20 Cầu Giấy, Hà Nội", soBA: "45/2024/DS-PT", ngayBA: "10/01/2025", toaBA: "TAND TP Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "", capGiaiQuyet: "toicao" },
-    { id: 7, soThuLy: "07/2026/TT-HS", ngayThuLy: "19/07/2026", nguoiDungDon: "Lê Thị Hồng", diaChi: "150 Nguyễn Trãi, TP.HCM", soBA: "12/2023/HS-PT", ngayBA: "22/08/2023", toaBA: "TAND TP HCM", loaiAn: "Hình sự", hinhThuc: "Đề nghị TT", thamPhan: "", capGiaiQuyet: "bac3" },
-    { id: 8, soThuLy: "08/2026/GĐT-HNGĐ", ngayThuLy: "21/07/2026", nguoiDungDon: "Đinh Tuấn Tài", diaChi: "55 Láng Hạ, Hà Nội", soBA: "09/2023/HNGĐ-PT", ngayBA: "05/05/2023", toaBA: "TAND tỉnh Thái Bình", loaiAn: "Hôn nhân gia đình", hinhThuc: "Đề nghị GĐT", thamPhan: "Lê Thị Mai", capGiaiQuyet: "bac3", toTrinh: "TTr-124/2026" },
-    { id: 9, soThuLy: "09/2026/TT-KDTM", ngayThuLy: "22/07/2026", nguoiDungDon: "Công ty Cổ phần Alpha", diaChi: "Tòa nhà Bitexco, TP.HCM", soBA: "56/2024/KDTM-PT", ngayBA: "11/12/2024", toaBA: "TAND cấp cao tại TP.HCM", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị TT", thamPhan: "", capGiaiQuyet: "toicao" },
-    { id: 10, soThuLy: "10/2026/GĐT-HC", ngayThuLy: "23/07/2026", nguoiDungDon: "Vũ Trọng Phụng", diaChi: "Số 8 Tràng Thi, Hà Nội", soBA: "19/2021/HC-PT", ngayBA: "15/07/2021", toaBA: "TAND tỉnh Hải Dương", loaiAn: "Hành chính", hinhThuc: "Đề nghị GĐT", thamPhan: "Phạm Văn Đức", capGiaiQuyet: "bac3" },
-    { id: 11, soThuLy: "11/2026/GĐT-DS", ngayThuLy: "24/07/2026", nguoiDungDon: "Bùi Thị Yến", diaChi: "KĐT Times City, Hà Nội", soBA: "22/2022/DS-PT", ngayBA: "09/09/2022", toaBA: "TAND tỉnh Nam Định", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "", capGiaiQuyet: "toicao" },
-    { id: 12, soThuLy: "12/2026/TT-LĐ", ngayThuLy: "25/07/2026", nguoiDungDon: "Trương Quang Sáng", diaChi: "KCN Sóng Thần, Bình Dương", soBA: "04/2024/LĐ-PT", ngayBA: "20/02/2024", toaBA: "TAND tỉnh Bình Dương", loaiAn: "Lao động", hinhThuc: "Đề nghị TT", thamPhan: "Hoàng Thị Thu", capGiaiQuyet: "toicao" },
-    { id: 13, soThuLy: "13/2026/GĐT-HS", ngayThuLy: "26/07/2026", nguoiDungDon: "Nguyễn Hải Long", diaChi: "Thôn 4, xã Hòa Tiến, Đắk Lắk", soBA: "31/2023/HS-PT", ngayBA: "17/10/2023", toaBA: "TAND tỉnh Đắk Lắk", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "", capGiaiQuyet: "bac3" },
-    { id: 14, soThuLy: "14/2026/TT-DS", ngayThuLy: "27/07/2026", nguoiDungDon: "Lý Mỹ Châu", diaChi: "Chợ Nổi, Cần Thơ", soBA: "11/2021/DS-PT", ngayBA: "03/04/2021", toaBA: "TAND TP Cần Thơ", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan", capGiaiQuyet: "bac3" },
-    { id: 15, soThuLy: "15/2026/GĐT-KDTM", ngayThuLy: "28/07/2026", nguoiDungDon: "Ngân hàng Thương mại ABC", diaChi: "Quận 1, TP.HCM", soBA: "77/2024/KDTM-PT", ngayBA: "05/01/2025", toaBA: "TAND cấp cao tại TP.HCM", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "", capGiaiQuyet: "toicao" },
+    { id: 1, soThuLy: "01/2026/GĐT-HS", ngayThuLy: "05/07/2026", nguoiDungDon: "Nguyễn Văn An", diaChi: "Số 12 Lê Duẩn, phường Cửa Nam, TP Hà Nội", soBA: "15/2023/HS-ST", ngayBA: "12/03/2023", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
+    { id: 2, soThuLy: "02/2026/GĐT-DS", ngayThuLy: "08/07/2026", nguoiDungDon: "Trần Thị Bình", diaChi: "Số 45 Trần Hưng Đạo, phường Hoàn Kiếm, TP Hà Nội", soBA: "08/2022/DS-ST", ngayBA: "20/06/2022", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan", toTrinh: "TTr-118/2026" },
+    { id: 3, soThuLy: "03/2026/GĐT-KDTM", ngayThuLy: "10/07/2026", nguoiDungDon: "Công ty TNHH Minh Đức", diaChi: "Số 18 Duy Tân, phường Cầu Giấy, TP Hà Nội", soBA: "33/2024/KDTM-ST", ngayBA: "15/11/2024", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng", toTrinh: "TTr-119/2026" },
+    { id: 4, soThuLy: "04/2026/TT-HC", ngayThuLy: "14/07/2026", nguoiDungDon: "Lê Văn Cường", diaChi: "Số 72 Quang Trung, phường Hà Đông, TP Hà Nội", soBA: "21/2021/HC-ST", ngayBA: "05/09/2021", toaBA: "TAND khu vực 5 - Hà Nội", loaiAn: "Hành chính", hinhThuc: "Đề nghị TT", thamPhan: "Trần Văn Hùng" },
+    { id: 5, soThuLy: "05/2026/GĐT-LĐ", ngayThuLy: "16/07/2026", nguoiDungDon: "Phạm Thị Dung", diaChi: "Số 33 Bà Triệu, phường Hai Bà Trưng, TP Hà Nội", soBA: "07/2023/LĐ-ST", ngayBA: "18/04/2023", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Lao động", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng" },
+    { id: 6, soThuLy: "06/2026/GĐT-DS", ngayThuLy: "18/07/2026", nguoiDungDon: "Hoàng Văn Thái", diaChi: "Số 20 Trần Thái Tông, phường Cầu Giấy, TP Hà Nội", soBA: "45/2024/DS-ST", ngayBA: "10/01/2025", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
+    { id: 7, soThuLy: "07/2026/TT-HS", ngayThuLy: "19/07/2026", nguoiDungDon: "Lê Thị Hồng", diaChi: "Số 150 Nguyễn Trãi, phường Thanh Xuân, TP Hà Nội", soBA: "12/2023/HS-ST", ngayBA: "22/08/2023", toaBA: "TAND khu vực 4 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị TT", thamPhan: "" },
+    { id: 8, soThuLy: "08/2026/GĐT-HNGĐ", ngayThuLy: "21/07/2026", nguoiDungDon: "Đinh Tuấn Tài", diaChi: "Số 55 Láng Hạ, phường Láng, TP Hà Nội", soBA: "09/2023/HNGĐ-ST", ngayBA: "05/05/2023", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Hôn nhân gia đình", hinhThuc: "Đề nghị GĐT", thamPhan: "Lê Thị Mai", toTrinh: "TTr-124/2026" },
+    { id: 9, soThuLy: "09/2026/TT-KDTM", ngayThuLy: "22/07/2026", nguoiDungDon: "Công ty Cổ phần Alpha", diaChi: "Tòa nhà Discovery, phường Cầu Giấy, TP Hà Nội", soBA: "56/2024/KDTM-ST", ngayBA: "11/12/2024", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị TT", thamPhan: "" },
+    { id: 10, soThuLy: "10/2026/GĐT-HC", ngayThuLy: "23/07/2026", nguoiDungDon: "Vũ Trọng Phụng", diaChi: "Số 8 Tràng Thi, phường Hoàn Kiếm, TP Hà Nội", soBA: "19/2021/HC-ST", ngayBA: "15/07/2021", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Hành chính", hinhThuc: "Đề nghị GĐT", thamPhan: "Phạm Văn Đức" },
+    { id: 11, soThuLy: "11/2026/GĐT-DS", ngayThuLy: "24/07/2026", nguoiDungDon: "Bùi Thị Yến", diaChi: "KĐT Times City, phường Vĩnh Tuy, TP Hà Nội", soBA: "22/2022/DS-ST", ngayBA: "09/09/2022", toaBA: "TAND khu vực 4 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
+    { id: 12, soThuLy: "12/2026/TT-LĐ", ngayThuLy: "25/07/2026", nguoiDungDon: "Trương Quang Sáng", diaChi: "KCN Quang Minh, xã Quang Minh, TP Hà Nội", soBA: "04/2024/LĐ-ST", ngayBA: "20/02/2024", toaBA: "TAND khu vực 6 - Hà Nội", loaiAn: "Lao động", hinhThuc: "Đề nghị TT", thamPhan: "Hoàng Thị Thu" },
+    { id: 13, soThuLy: "13/2026/GĐT-HS", ngayThuLy: "26/07/2026", nguoiDungDon: "Nguyễn Hải Long", diaChi: "Thôn Đoài, xã Đông Anh, TP Hà Nội", soBA: "31/2023/HS-ST", ngayBA: "17/10/2023", toaBA: "TAND khu vực 6 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
+    { id: 14, soThuLy: "14/2026/TT-DS", ngayThuLy: "27/07/2026", nguoiDungDon: "Lý Mỹ Châu", diaChi: "Số 27 Ngô Quyền, phường Sơn Tây, TP Hà Nội", soBA: "11/2021/DS-ST", ngayBA: "03/04/2021", toaBA: "TAND khu vực 5 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan" },
+    { id: 15, soThuLy: "15/2026/GĐT-KDTM", ngayThuLy: "28/07/2026", nguoiDungDon: "Ngân hàng Thương mại ABC", diaChi: "Số 194 Trần Quang Khải, phường Hoàn Kiếm, TP Hà Nội", soBA: "77/2024/KDTM-ST", ngayBA: "05/01/2025", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
   ];
 
 const THAM_PHAN_OPTIONS = [
   "Nguyễn Thị Lan", "Trần Văn Hùng", "Lê Thị Mai", "Phạm Văn Đức", "Hoàng Thị Thu",
 ];
 
+// Chỉ có MỘT loại thẩm phán — không phân biệt thẩm phán bậc 3 / thẩm phán tối
+// cao, nên màn này không còn bộ lọc cấp thẩm phán và cũng không lọc đơn theo
+// cấp giải quyết nữa.
+// Việc phân công cũng chỉ có MỘT hình thức: chỉ định. Vì vậy màn còn 2 tab —
+// danh sách chờ chỉ định và kết quả đã phân công — thay cho 3 tab cũ.
 const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "can-bo" }: {
-  initialTab?: 0 | 1 | 2; onOpenThamPhanPopup?: () => void; currentRole?: string;
+  initialTab?: 0 | 1; onOpenThamPhanPopup?: () => void; currentRole?: string;
 }) => {
-  const [tab, setTab] = useState<0 | 1 | 2>(initialTab);
+  const [tab, setTab] = useState<0 | 1>(initialTab);
   // Người duyệt tờ trình phân công là Trưởng phòng — bước "duyet" đầu tiên của
   // luongToTrinhPhanCong(). Chỉ vai trò này mới được đổi thẩm phán sau khi đơn
   // đã nằm trong tờ trình; các vai trò còn lại chỉ xem.
   const laNguoiDuyetToTrinh = currentRole === "truong-phong";
   const [showLyDoPopup, setShowLyDoPopup] = useState<{ show: boolean, thamPhan: string }>({ show: false, thamPhan: "" });
   const [lyDoChiDinh, setLyDoChiDinh] = useState("");
-  const [capTP, setCapTP] = useState<"tatca" | "toicao" | "bac3">("tatca");
   const [loaiAnFilter, setLoaiAnFilter] = useState<string[]>([]);
   const [hinhThucFilter, setHinhThucFilter] = useState("");
+  // Lọc theo TÒA ĐÃ RA BẢN ÁN/QĐ bị đề nghị, không phải tòa đang giải quyết đơn:
+  // tòa giải quyết luôn là chính TAND tỉnh đang đăng nhập nên không có gì để chọn.
+  const [toaBAFilter, setToaBAFilter] = useState("");
   const [rows, setRows] = useState(PHANCONG_SAMPLE);
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editFormMap, setEditFormMap] = useState<Record<number, { ngaySua: string; lyDo: string }>>({});
@@ -10475,37 +10502,16 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
   const toggleLoaiAn = (v: string) =>
     setLoaiAnFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
 
+  // Danh mục tòa lấy thẳng từ dữ liệu đơn — đổi địa bàn chỉ cần sửa dữ liệu,
+  // không phải sửa thêm một danh sách cứng ở chỗ khác rồi lệch nhau.
+  const toaBAOptions = Array.from(new Set(rows.map(r => r.toaBA))).sort((a, b) => a.localeCompare(b, "vi"));
+
   const filtered = rows.filter(r => {
-    if (capTP !== "tatca" && r.capGiaiQuyet !== capTP) return false;
     if (loaiAnFilter.length > 0 && !loaiAnFilter.includes(r.loaiAn)) return false;
     if (hinhThucFilter && !r.hinhThuc.includes(hinhThucFilter)) return false;
-    if (tab === 0) return !assignMap[r.id];
-    if (tab === 1) return !assignMap[r.id];
-    return !!assignMap[r.id];
+    if (toaBAFilter && r.toaBA !== toaBAFilter) return false;
+    return tab === 0 ? !assignMap[r.id] : !!assignMap[r.id];
   });
-
-  const handleRandomAssign = () => {
-    if (filtered.length === 0) return;
-    const newAssign = { ...assignMap };
-    filtered.forEach(r => {
-      const randomTP = THAM_PHAN_OPTIONS[Math.floor(Math.random() * THAM_PHAN_OPTIONS.length)];
-      newAssign[r.id] = randomTP;
-    });
-    setAssignMap(newAssign);
-    // triggerNoti("Đã phân công ngẫu nhiên cho tất cả đơn trong danh sách."); // TriggerNoti is not imported directly, it's global or passed? Wait, triggerNoti is defined in App.tsx globally?
-  };
-
-  const handleBulkAssign = (tp: string) => {
-    if (!tp) return;
-    if (selectedRows.length === 0) {
-      alert("Vui lòng chọn ít nhất một đơn để phân công.");
-      return;
-    }
-    const newAssign = { ...assignMap };
-    selectedRows.forEach(id => newAssign[id] = tp);
-    setAssignMap(newAssign);
-    setSelectedRows([]);
-  };
 
   const toggleSelectRow = (id: number) => {
     setSelectedRows(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
@@ -10519,12 +10525,18 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
     }
   };
 
-  const tabs = ["DS chưa phân công ngẫu nhiên", "DS chưa phân công chỉ định", "Quản lý kết quả phân công"];
-
   // Tồn đọng chưa phân công — đếm trên TOÀN BỘ danh sách, không theo bộ lọc.
   // Đây là con số "còn bao nhiêu việc phải làm", bộ lọc chỉ là cách nhìn tạm
   // thời nên không được làm nó nhỏ đi. Phần đang hiển thị nói riêng ở vế sau.
   const soChuaPhanCong = rows.filter(r => !assignMap[r.id]).length;
+  const soDaPhanCong = rows.length - soChuaPhanCong;
+
+  // Chỉ còn 1 hình thức phân công nên tên tab bỏ chữ "chỉ định"/"ngẫu nhiên":
+  // cán bộ chỉ cần biết đơn đang ở bước nào.
+  const tabs: { label: string; count: number }[] = [
+    { label: "Chờ phân công", count: soChuaPhanCong },
+    { label: "Đã phân công", count: soDaPhanCong },
+  ];
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -10532,15 +10544,19 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
       <div className="bg-white rounded-[4px] border border-[#ddd] overflow-hidden">
         <div className="flex border-b border-[#ddd]">
           {tabs.map((t, i) => (
-            <button key={i} onClick={() => { setTab(i as 0 | 1 | 2); setSelectedRows([]); }}
-              className={`px-4 py-[9px] text-[13px] font-medium transition-colors border-b-2 -mb-px
+            <button key={i} onClick={() => { setTab(i as 0 | 1); setSelectedRows([]); setEditingRow(null); }}
+              className={`flex items-center gap-1.5 px-4 py-[9px] text-[13px] font-medium transition-colors border-b-2 -mb-px
                 ${tab === i ? "border-[#8b1a1a] text-[#8b1a1a] bg-white" : "border-transparent text-[#666] hover:text-[#333] bg-[#fafafa]"}`}>
-              {t}
+              {t.label}
+              <span className={`inline-flex items-center justify-center min-w-[18px] h-[17px] px-1 rounded-full text-[10px] font-semibold
+                ${tab === i ? "bg-[#8b1a1a] text-white" : "bg-[#e5e5e5] text-[#666]"}`}>
+                {t.count}
+              </span>
             </button>
           ))}
-          {/* Nhắc tồn đọng — chỉ ở 2 tab chưa phân công, vì đó là nơi cán bộ
-              đang xử lý việc này. Tab Quản lý kết quả không cần. */}
-          {tab !== 2 && (
+          {/* Nhắc tồn đọng — chỉ ở tab Chờ phân công, vì đó là nơi cán bộ đang
+              xử lý việc này. Tab Đã phân công không cần. */}
+          {tab === 0 && (
             <div className="ml-auto flex items-center pr-4">
               {soChuaPhanCong > 0 ? (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-[3px] text-[11px] font-medium bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
@@ -10562,31 +10578,23 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
           )}
         </div>
 
-        {/* Bộ lọc — DÙNG CHUNG cho cả 3 tab. Trước đây chỉ tab Quản lý kết quả
-            mới có đủ ô lọc, hai tab chưa phân công chỉ có mỗi radio Cấp thẩm
-            phán; cùng một danh sách đơn mà mỗi tab lọc được một kiểu thì cán bộ
-            phải nhảy sang tab khác mới tìm được đơn cần phân công. */}
+        {/* Bộ lọc — DÙNG CHUNG cho cả 2 tab, để cán bộ lọc kiểu gì cũng ra cùng
+            một cách nhìn dù đang ở tab nào. Bộ lọc "Cấp thẩm phán" đã bỏ vì chỉ
+            còn một loại thẩm phán. */}
         <div className="p-4 space-y-3">
-            {/* Cấp thẩm phán */}
-            <div className="flex items-center gap-5">
-              {[["tatca", "Tất cả"], ["toicao", "Thẩm phán tối cao"], ["bac3", "Thẩm phán bậc 3"]].map(([val, label]) => (
-                <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px]">
-                  <input type="radio" name="capTP" className="accent-[#8b1a1a]"
-                    checked={capTP === val} onChange={() => setCapTP(val as "tatca" | "toicao" | "bac3")} />
-                  <span className={capTP === val ? "font-semibold text-[#8b1a1a]" : "text-[#444]"}>{label}</span>
-                </label>
-              ))}
-            </div>
-
             {/* Row 1: Tên tòa, Ngày nhập, Hình thức, Người nhập */}
             <div className="grid grid-cols-4 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-[#555] mb-1">Tên tòa án</label>
+                {/* TAND cấp tỉnh giám đốc thẩm/tái thẩm bản án, quyết định đã có
+                    hiệu lực của TAND khu vực, nên ô này lọc theo tòa ĐÃ RA bản án
+                    bị đề nghị — trước đây là danh sách TANDTC/TAND cấp cao và
+                    cũng chưa nối vào bộ lọc. */}
+                <label className="block text-[11px] font-medium text-[#555] mb-1">Tòa án ra bản án/QĐ</label>
                 <div className="relative">
-                  <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
-                    <option>Tòa án nhân dân tối cao</option>
-                    <option>TAND cấp cao tại HN</option>
-                    <option>TAND cấp cao tại TP.HCM</option>
+                  <select value={toaBAFilter} onChange={e => setToaBAFilter(e.target.value)}
+                    className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <option value="">Tất cả tòa án</option>
+                    {toaBAOptions.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                   <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
                 </div>
@@ -10642,70 +10650,72 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
 
       {/* Table */}
       <div className="bg-white rounded-[4px] border border-[#ddd] overflow-hidden">
-        <div className="px-4 py-[9px] border-b border-[#ddd] flex items-center justify-between">
-          <span className="text-[13px] font-semibold text-[#1d2e4f]">Danh sách phân công</span>
-          {tab === 0 && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
-              >
-                <Users size={12} />
-                <span className="leading-none">Danh sách thẩm phán</span>
-              </button>
-              <button onClick={() => { handleRandomAssign(); alert("Đã phân công ngẫu nhiên thành công!"); }} className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
-                <Users size={12} /> Phân công ngẫu nhiên
-              </button>
-            </div>
-          )}
-          {tab === 1 && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
-              >
-                <Users size={12} />
-                <span className="leading-none">Danh sách thẩm phán</span>
-              </button>
-              <span className="text-[12px] font-medium text-[#555]">Chỉ định cho:</span>
-              <div className="relative w-[180px]">
-                <select
-                  value=""
-                  onChange={(e) => { if (e.target.value) setShowLyDoPopup({ show: true, thamPhan: e.target.value }); e.target.value = ""; }}
-                  className="w-full h-[28px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]"
-                >
-                  <option value="">-- Chọn thẩm phán --</option>
-                  {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{tp}</option>)}
-                </select>
-                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-              </div>
-            </div>
-          )}
-          {tab === 2 && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-                className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
-              >
-                <Users size={12} />
-                <span className="leading-none">Danh sách thẩm phán</span>
-              </button>
+        {/* Thanh thao tác — nút "Danh sách thẩm phán" dùng chung cho cả 2 tab
+            nên chỉ khai báo một lần; phần bên phải mới đổi theo tab. */}
+        <div className="px-4 py-[9px] border-b border-[#ddd] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[13px] font-semibold text-[#1d2e4f]">
+              {tab === 0 ? "Danh sách chờ phân công" : "Kết quả phân công"}
+            </span>
+            {/* Số đơn đang chọn nằm ngay cạnh tiêu đề — trước đây cán bộ chọn
+                thẩm phán xong mới biết mình chưa tick đơn nào. */}
+            {tab === 0 && selectedRows.length > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-2 py-[2px] rounded-[3px] text-[11px] font-medium bg-[#e8f0fe] text-[#1a5a96] border border-[#c5d8f8]">
+                Đã chọn {selectedRows.length} đơn
+                <button onClick={() => setSelectedRows([])}
+                  className="text-[#1a5a96]/70 hover:text-[#1a5a96]" title="Bỏ chọn tất cả">
+                  <X size={11} />
+                </button>
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
+              className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
+            >
+              <Users size={12} />
+              <span className="leading-none">Danh sách thẩm phán</span>
+            </button>
+            {tab === 0 ? (
+              <>
+                <span className="text-[12px] font-medium text-[#555]">Chỉ định cho:</span>
+                <div className="relative w-[210px]">
+                  <select
+                    value=""
+                    disabled={selectedRows.length === 0}
+                    title={selectedRows.length === 0 ? "Tích chọn đơn trong bảng trước khi chỉ định" : undefined}
+                    onChange={(e) => { if (e.target.value) setShowLyDoPopup({ show: true, thamPhan: e.target.value }); e.target.value = ""; }}
+                    className={`w-full h-[28px] px-2 pr-6 text-[12px] border rounded-[3px] appearance-none focus:outline-none
+                      ${selectedRows.length === 0
+                        ? "border-[#ddd] bg-[#f5f5f5] text-[#999] cursor-not-allowed"
+                        : "border-[#ccc] bg-white focus:border-[#1a73e8]"}`}
+                  >
+                    <option value="">-- Chọn thẩm phán --</option>
+                    {/* Kèm số đơn đang giữ để không dồn việc vào một người. */}
+                    {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
+                  </select>
+                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                </div>
+              </>
+            ) : (
               <button className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                 <Search size={12} />
                 <span className="leading-none">Tìm kiếm</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[12px]">
             <thead>
               <tr className="bg-[#f5f5f5]">
-                {tab === 1 && (
+                {tab === 0 && (
                   <th className="border border-[#ddd] px-2 py-[6px] text-center w-[30px]">
                     <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                       checked={selectedRows.length === filtered.length && filtered.length > 0}
                       onChange={toggleSelectAll}
+                      title="Chọn tất cả đơn đang hiển thị"
                     />
                   </th>
                 )}
@@ -10722,11 +10732,14 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={tab === 1 ? 9 : 8} className="border border-[#ddd] px-4 py-10 text-center text-[#999]">Không có dữ liệu</td>
+                  <td colSpan={tab === 0 ? 9 : 8} className="border border-[#ddd] px-4 py-10 text-center text-[#999]">
+                    {tab === 0 ? "Không còn đơn nào chờ phân công" : "Chưa có đơn nào được phân công"}
+                  </td>
                 </tr>
               ) : filtered.map((row, i) => (
-                <tr key={row.id} className={`align-top ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                  {tab === 1 && (
+                <tr key={row.id}
+                  className={`align-top ${selectedRows.includes(row.id) ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
+                  {tab === 0 && (
                     <td className="border border-[#ddd] px-2 py-2 text-center">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={selectedRows.includes(row.id)}
@@ -10745,7 +10758,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                     <div className="space-y-[2px] leading-snug">
                       <div><span className="text-[#888]">Số BA: </span><span className="font-medium">{row.soBA}</span></div>
                       <div><span className="text-[#888]">Ngày: </span><span>{row.ngayBA}</span></div>
-                      <div><span className="text-[#888]">Tòa xx: </span><span>{row.toaBA}</span></div>
+                      <div><span className="text-[#888]">Tòa xét xử: </span><span>{row.toaBA}</span></div>
                     </div>
                   </td>
                   <td className="border border-[#ddd] px-3 py-2">
@@ -10753,7 +10766,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                   </td>
                   <td className="border border-[#ddd] px-3 py-2 text-[#555]">{row.hinhThuc}</td>
                   <td className="border border-[#ddd] px-3 py-2">
-                    {tab === 2 ? (
+                    {tab === 1 ? (
                       /* Đơn đã có tờ trình: thẩm phán đã được chốt trong văn bản
                          trình ký. Sửa ở đây sẽ khiến hồ sơ và tờ trình đã trình
                          nói hai chuyện khác nhau, nên khóa lại — trừ người duyệt
@@ -10785,7 +10798,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                                 onChange={e => setAssignMap(p => ({ ...p, [row.id]: e.target.value }))}
                                 className="w-full h-[26px] px-2 pr-6 text-[11px] border border-[#1a73e8] rounded-[3px] bg-white appearance-none focus:outline-none">
                                 <option value="">-- Chọn thẩm phán --</option>
-                                {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{tp}</option>)}
+                                {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
                               </select>
                               <ChevronDown size={9} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
                             </div>
@@ -10854,7 +10867,11 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                         </div>
                       )
                     ) : (
-                      <span className="text-[#999]">—</span>
+                      /* Tab Chờ phân công: nói rõ "chưa phân công" thay vì một
+                         gạch ngang trống, để không bị đọc nhầm là thiếu dữ liệu. */
+                      <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-[#f2f2f2] text-[#888] border border-[#e0e0e0]">
+                        Chưa phân công
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -10864,9 +10881,8 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
         </div>
       </div>
 
-      {/* Lý do phân công chỉ định — BẮT BUỘC.
-          Phân công chỉ định không qua bốc thăm ngẫu nhiên nên phải ghi rõ căn cứ,
-          nếu không hồ sơ không giải trình được vì sao chọn đúng thẩm phán đó.
+      {/* Lý do phân công — BẮT BUỘC. Thẩm phán do người có thẩm quyền chỉ định
+          nên hồ sơ phải ghi rõ căn cứ chọn đúng người đó.
           State showLyDoPopup đã có sẵn từ trước nhưng popup chưa bao giờ được
           render — chọn thẩm phán xong không có gì hiện ra. */}
       {showLyDoPopup.show && (
@@ -10875,15 +10891,23 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
           <div className="bg-white rounded-[6px] w-[520px] overflow-hidden shadow-2xl"
             onClick={e => e.stopPropagation()}>
             <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex items-center justify-between">
-              <div className="text-[15px] font-bold">Lý do phân công chỉ định</div>
+              <div className="text-[15px] font-bold">Lý do phân công thẩm phán</div>
               <button onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}
                 className="text-white/70 hover:text-white"><X size={16} /></button>
             </div>
 
             <div className="p-4">
               <div className="text-[12px] leading-relaxed mb-3.5">
-                <span className="text-[#666]">Chỉ định cho: </span>
-                <b className="text-[#333]">{showLyDoPopup.thamPhan}</b><br />
+                <span className="text-[#666]">Phân công cho: </span>
+                <b className="text-[#333]">{showLyDoPopup.thamPhan}</b>
+                {/* Cảnh báo dồn việc — người ký cần thấy trước khi xác nhận, chứ
+                    không phải sau khi đơn đã sang tay thẩm phán. */}
+                {hasHighLoad(showLyDoPopup.thamPhan) && (
+                  <span className="ml-1.5 inline-flex items-center gap-1 px-1.5 py-[1px] rounded-[3px] text-[10px] font-medium bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
+                    <AlertCircle size={10} /> đang giữ {assignmentCounts[showLyDoPopup.thamPhan]} đơn
+                  </span>
+                )}
+                <br />
                 <span className="text-[#666]">Áp dụng cho: </span>
                 <b className="text-[#333]">
                   {selectedRows.length > 0 ? `${selectedRows.length} vụ án đã chọn` : "chưa chọn vụ án nào"}
@@ -10906,7 +10930,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
 
               <div className="mt-3.5 bg-[#fef3e2] border border-[#fcd48a] text-[#b45309] rounded-[4px] px-3 py-2 text-[12px] leading-relaxed flex gap-2">
                 <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
-                <div>Phân công chỉ định không qua bốc thăm ngẫu nhiên — lý do sẽ được lưu vào hồ sơ vụ án.</div>
+                <div>Thẩm phán do người có thẩm quyền chỉ định — lý do sẽ được lưu vào hồ sơ vụ án.</div>
               </div>
             </div>
 
@@ -11183,22 +11207,24 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
 };
 
 // ─── Popup Danh sách Thẩm phán ────────────────────────────────────────────────
+// Vụ việc mẫu đặt trong địa bàn TP Hà Nội và ở tầm thẩm quyền của TAND khu vực
+// (bản án sơ thẩm đã có hiệu lực), khớp với phạm vi GĐT/TT của tòa cấp tỉnh.
 const THAM_PHAN_DATA = [
   {
-    id: 1, hoTen: "Nguyễn Thị Lan", bac: "Thẩm phán TANDTC", donang: [
-      { maVu: "15/2024/GĐT-HS", loai: "Hình sự", tenVu: "Nguyễn Văn An — kháng nghị bản án 12/2022/HS-PT" },
-      { maVu: "08/2024/GĐT-DS", loai: "Dân sự", tenVu: "Trần Thị Bình kiện tranh chấp đất đai" },
-      { maVu: "21/2024/GĐT-HC", loai: "Hành chính", tenVu: "Lê Văn Cường kiện UBND tỉnh Vĩnh Phúc" },
+    id: 1, hoTen: "Nguyễn Thị Lan", donang: [
+      { maVu: "15/2024/GĐT-HS", loai: "Hình sự", tenVu: "Nguyễn Văn An — kháng nghị bản án 12/2022/HS-ST" },
+      { maVu: "08/2024/GĐT-DS", loai: "Dân sự", tenVu: "Trần Thị Bình — tranh chấp đất đai tại phường Vĩnh Tuy" },
+      { maVu: "21/2024/GĐT-HC", loai: "Hành chính", tenVu: "Lê Văn Cường kiện UBND phường Hà Đông" },
     ]
   },
   {
-    id: 2, hoTen: "Phạm Văn Đức", bac: "Thẩm phán TANDTC", donang: [
+    id: 2, hoTen: "Phạm Văn Đức", donang: [
       { maVu: "03/2024/GĐT-KDTM", loai: "KDTM", tenVu: "Công ty Minh Đức kiện đối tác vi phạm hợp đồng" },
       { maVu: "19/2024/GĐT-HS", loai: "Hình sự", tenVu: "Hoàng Văn Em — đề nghị giám đốc thẩm" },
     ]
   },
   {
-    id: 3, hoTen: "Trần Thị Hương", bac: "Thẩm phán TANDTC", donang: [
+    id: 3, hoTen: "Trần Thị Hương", donang: [
       { maVu: "07/2024/GĐT-DS", loai: "Dân sự", tenVu: "Nguyễn Thị Phương — tranh chấp thừa kế" },
       { maVu: "11/2024/GĐT-HN", loai: "Hôn nhân GĐ", tenVu: "Vũ Văn Giang xin ly hôn, chia tài sản" },
       { maVu: "25/2024/GĐT-HS", loai: "Hình sự", tenVu: "Đinh Thị Hoa — kêu oan án tử hình" },
@@ -11206,12 +11232,12 @@ const THAM_PHAN_DATA = [
     ]
   },
   {
-    id: 4, hoTen: "Lê Minh Tuấn", bac: "Thẩm phán bậc 3", donang: [
+    id: 4, hoTen: "Lê Minh Tuấn", donang: [
       { maVu: "02/2024/GĐT-HC", loai: "Hành chính", tenVu: "Trương Văn Inh kiện UBND huyện Gia Lâm" },
     ]
   },
   {
-    id: 5, hoTen: "Đỗ Thị Kim Oanh", bac: "Thẩm phán bậc 3", donang: [
+    id: 5, hoTen: "Đỗ Thị Kim Oanh", donang: [
       { maVu: "14/2024/GĐT-DS", loai: "Dân sự", tenVu: "Bùi Văn Khoa — tranh chấp hợp đồng vay" },
       { maVu: "22/2024/GĐT-KDTM", loai: "KDTM", tenVu: "Doanh nghiệp Long Phát kiện đối tác" },
     ]
@@ -11277,8 +11303,9 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
           <table className="w-full text-[12px] border-collapse">
             <thead className="sticky top-0 z-10">
               <tr className="bg-[#f5f5f5] border-b border-[#ddd]">
-                <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0] w-[180px]">Thẩm phán</th>
-                <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0] w-[120px]">Bậc</th>
+                {/* Không còn cột "Bậc": chỉ có một loại thẩm phán nên bậc không
+                    còn là tiêu chí để chọn người phân công. */}
+                <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0] w-[200px]">Thẩm phán</th>
                 <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0]">Vụ việc đang giải quyết</th>
                 <th className="px-4 py-[8px] text-center font-semibold text-[#333] w-[90px]">Tổng số đơn</th>
               </tr>
@@ -11288,9 +11315,6 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
                 <tr key={tp.id} className={idx % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
                   <td className="px-4 py-3 border-r border-[#e8e8e8] align-top">
                     <div className="font-medium text-[#1d2e4f]">{tp.hoTen}</div>
-                  </td>
-                  <td className="px-4 py-3 border-r border-[#e8e8e8] align-top">
-                    <span className="inline-block px-2 py-[3px] rounded-sm text-[10px] font-medium bg-[#eef1f5] text-[#1d2e4f] border border-[#c5cfe0]">{tp.bac}</span>
                   </td>
                   <td className="px-4 py-3 border-r border-[#e8e8e8] align-top">
                     <div className="space-y-1.5">
@@ -11315,7 +11339,7 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={4} className="text-center text-[#aaa] italic py-8">Không tìm thấy thẩm phán phù hợp</td></tr>
+                <tr><td colSpan={3} className="text-center text-[#aaa] italic py-8">Không tìm thấy thẩm phán phù hợp</td></tr>
               )}
             </tbody>
           </table>
@@ -11392,7 +11416,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                       <div className="p-3 bg-white flex items-center justify-between border-b border-[#eee]">
                         <div className="flex flex-col">
                           <span className="text-[13px] font-bold text-[#1d2e4f] flex items-center gap-1">
-                            <ChevronDown size={14} /> Tờ trình phân công thẩm phán - Số 112/2026/TTr-TANDTC-VP
+                            <ChevronDown size={14} /> Tờ trình phân công thẩm phán - Số 112/2026/TTr-TAND-HN
                           </span>
                           <span className="text-[11px] text-[#666] ml-4.5">TLM: 5467614 - Ngày TL: 18/06/2026</span>
                         </div>
@@ -11516,7 +11540,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                   <div className="border border-[#e2e8f0] rounded-[6px] p-4 bg-white shadow-sm flex flex-col flex-1">
                     <div className="text-[12px] font-bold text-[#1d2e4f] mb-2 uppercase tracking-wider">Cấu trúc tài liệu trình ký</div>
                     <div className="text-[11px] text-[#666] mb-3 italic">
-                      Lưu ý: Một tờ trình bao gồm nhiều danh sách đơn đề xuất. Mỗi Thẩm phán thuộc một Vụ Giám đốc kiểm tra cấu thành một danh sách riêng biệt.
+                      Lưu ý: Một tờ trình bao gồm nhiều danh sách đơn đề xuất. Mỗi Thẩm phán cấu thành một danh sách riêng biệt.
                     </div>
 
                     <div className="border border-[#eee] rounded-[4px] bg-white overflow-hidden text-[12px] flex-1">
@@ -11531,7 +11555,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                           </button>
                           <FileText size={15} className="text-[#8b1a1a] mr-2 flex-shrink-0" />
                           <div className="flex flex-col">
-                            <span className="font-bold text-[#1d2e4f]">{docType} phân công TP - Số 112/2026/TTr-TANDTC-VP</span>
+                            <span className="font-bold text-[#1d2e4f]">{docType} phân công TP - Số 112/2026/TTr-TAND-HN</span>
                             <span className="text-[9px] text-[#666]">Số lượng: 3 Danh sách | 4 Đơn trình duyệt</span>
                           </div>
                         </div>
@@ -11549,7 +11573,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                               <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
                               <div className="flex flex-col">
                                 <span className="font-semibold text-[#333]">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Dân sự)</span>
-                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Bắc Ninh</span>
+                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND khu vực 4 - Hà Nội</span>
                               </div>
 
                             </div>
@@ -11676,9 +11700,9 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                   <div className="text-center w-[160px]">
-                    <div className="text-[10px] font-normal uppercase">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                    <div className="text-[10px] font-normal uppercase">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</div>
                     <div className="text-[10px] font-bold uppercase underline decoration-solid underline-offset-4">VĂN PHÒNG</div>
-                    <div className="text-[9px] mt-2">Số: /TTr-TANDTC-VP</div>
+                    <div className="text-[9px] mt-2">Số: /TTr-TAND-HN</div>
                   </div>
                   <div className="text-center w-[250px]">
                     <div className="text-[10px] font-bold uppercase">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
@@ -11697,19 +11721,19 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
 
                 {/* Recipient */}
                 <div className="mb-4">
-                  <span className="font-bold">Kính trình:</span> Đồng chí Chánh án Tòa án nhân dân tối cao
+                  <span className="font-bold">Kính trình:</span> Đồng chí Chánh án Tòa án nhân dân thành phố Hà Nội
                 </div>
 
                 {/* Body */}
                 <div className="space-y-3 text-justify text-[10.5px]">
                   <p>
-                    Văn phòng Tòa án nhân dân tối cao nhận và thụ lý các đơn đề nghị, kiến nghị, thông báo của công dân, tổ chức gửi Tòa án nhân dân tối cao để đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm và dự kiến phân công các Thẩm phán Tòa án nhân dân giải quyết đơn
+                    Văn phòng Tòa án nhân dân thành phố Hà Nội nhận và thụ lý các đơn đề nghị, kiến nghị, thông báo của công dân, tổ chức gửi Tòa án nhân dân thành phố Hà Nội để đề nghị xem xét lại bản án, quyết định đã có hiệu lực pháp luật của Tòa án nhân dân khu vực theo trình tự giám đốc thẩm, tái thẩm và dự kiến phân công các Thẩm phán giải quyết đơn
                   </p>
                   <p>
                     Sau khi xem xét các đơn đề nghị, kiến nghị theo thủ tục giám đốc thẩm, Văn phòng nhận thấy các đơn đề nghị, kiến nghị nêu trên đã đủ điều kiện thụ lý theo quy định. Căn cứ vào kết quả phân công khách quan theo tổ Thẩm phán chuyên sâu; số lượng vụ án mà các Thẩm phán đang xem xét giải quyết; các vụ án có cùng nguyên đơn, bị đơn; có cùng người khởi kiện, người bị kiện.
                   </p>
                   <p>
-                    Văn phòng Tòa án nhân dân tối cao báo cáo và kính đề nghị đồng chí Chánh án Tòa án nhân dân tối cao giải quyết (có danh sách kèm theo).
+                    Văn phòng Tòa án nhân dân thành phố Hà Nội báo cáo và kính đề nghị đồng chí Chánh án Tòa án nhân dân thành phố Hà Nội giải quyết (có danh sách kèm theo).
                   </p>
                   <p className="italic">Kính trình Đồng chí./.</p>
                 </div>
@@ -11735,7 +11759,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="text-center">
-                    <div className="text-[8px] uppercase">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+                    <div className="text-[8px] uppercase">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</div>
                     <div className="text-[8.5px] font-bold uppercase underline underline-offset-2">VĂN PHÒNG</div>
                   </div>
                   <div className="text-center">
@@ -11753,7 +11777,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                     và phân công Thẩm phán {selectedNodeId === "danh-sach-3" ? "Nguyễn Văn C" : "Bùi Ngọc Lâm"} theo dõi, giải quyết
                   </div>
                   <div className="text-[8.5px] italic text-[#444]">
-                    (Kèm theo tờ trình số 112/TTr-TANDTC-VP ngày 27/01/2026 của Văn phòng Tòa án nhân dân tối cao)
+                    (Kèm theo tờ trình số 112/TTr-TAND-HN ngày 27/01/2026 của Văn phòng Tòa án nhân dân thành phố Hà Nội)
                   </div>
                 </div>
 
@@ -11786,12 +11810,12 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                             <td className="border border-black p-1 text-center">07</td>
                             <td className="border border-black p-1 text-center">27/01/2026</td>
                             <td className="border border-black p-1">
-                              Bùi Phương Thảo (Do TAND tỉnh Bắc Ninh chuyển đến theo Công văn số 11111 ngày 26/01/2026)
+                              Bùi Phương Thảo (Do TAND khu vực 4 - Hà Nội chuyển đến theo Công văn số 11111 ngày 26/01/2026)
                             </td>
                             <td className="border border-black p-1">Chi tiết Người đứng đơn CTH0123, TP. Bắc Ninh, tỉnh Bắc Ninh</td>
                             <td className="border border-black p-1 text-center">27012026_01_DS</td>
                             <td className="border border-black p-1 text-center">27/01/2026</td>
-                            <td className="border border-black p-1">Tòa án nhân dân tỉnh Bắc Ninh</td>
+                            <td className="border border-black p-1">Tòa án nhân dân khu vực 4 - Hà Nội</td>
                             <td className="border border-black p-1 text-center">1</td>
                             <td className="border border-black p-1 font-medium">Bùi Ngọc Lâm</td>
                             <td className="border border-black p-1">Lưu ý kiểm tra kỹ tài liệu đính kèm</td>
@@ -11818,7 +11842,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                           <td className="border border-black p-1 text-center">09</td>
                           <td className="border border-black p-1 text-center">29/01/2026</td>
                           <td className="border border-black p-1">
-                            Trần Thị B (Chuyển đơn từ Viện kiểm sát nhân dân tối cao theo Công văn 2222)
+                            Trần Thị B (Chuyển đơn từ Viện kiểm sát nhân dân thành phố Hà Nội theo Công văn 2222)
                           </td>
                           <td className="border border-black p-1">Ấp Lộc Bình, huyện Lộc Bình, tỉnh Lạng Sơn</td>
                           <td className="border border-black p-1 text-center">29012026_03_HS</td>
@@ -11839,7 +11863,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                           <td className="border border-black p-1">Xã Dĩnh Kế, thành phố Bắc Giang, tỉnh Bắc Giang</td>
                           <td className="border border-black p-1 text-center">30012026_04_HC</td>
                           <td className="border border-black p-1 text-center">25/01/2026</td>
-                          <td className="border border-black p-1">Tòa án nhân dân tỉnh Bắc Giang</td>
+                          <td className="border border-black p-1">Tòa án nhân dân khu vực 6 - Hà Nội</td>
                           <td className="border border-black p-1 text-center">1</td>
                           <td className="border border-black p-1 font-medium">Nguyễn Văn C</td>
                           <td className="border border-black p-1">Khiếu nại QĐHC của UBND tỉnh</td>
@@ -11879,18 +11903,18 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                   <div className="text-[11px] font-bold uppercase tracking-wider">THEO THỦ TỤC GIÁM ĐỐC THẨM</div>
                   <div className="text-[10px] italic">
                     Đối với Bản án số: {
-                      selectedNodeId === "don-7031" ? "120/2026/DS-PT ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh" :
-                        selectedNodeId === "don-7032" ? "134/2026/HC-PT ngày 15-02-2026 của Tòa án nhân dân tỉnh Bắc Giang" :
-                          selectedNodeId === "don-7033" ? "88/2026/HS-PT ngày 10-01-2026 của Tòa án nhân dân tỉnh Lạng Sơn" :
-                            "412/2026/DS-PT ngày 18-02-2026 của Tòa án nhân dân tỉnh Bắc Ninh"
+                      selectedNodeId === "don-7031" ? "120/2026/DS-ST ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh" :
+                        selectedNodeId === "don-7032" ? "134/2026/HC-ST ngày 15-02-2026 của Tòa án nhân dân khu vực 6 - Hà Nội" :
+                          selectedNodeId === "don-7033" ? "88/2026/HS-ST ngày 10-01-2026 của Tòa án nhân dân khu vực 2 - Hà Nội" :
+                            "412/2026/DS-ST ngày 18-02-2026 của Tòa án nhân dân khu vực 4 - Hà Nội"
                     }.
                   </div>
                 </div>
 
                 {/* Recipient */}
                 <div className="mb-4 pl-4 space-y-1 text-[10.5px]">
-                  <div><span className="font-bold italic">Kính gửi:</span> - Chánh án Tòa án nhân dân tối cao.</div>
-                  <div className="pl-13">- Viện trưởng Viện kiểm sát nhân dân tối cao.</div>
+                  <div><span className="font-bold italic">Kính gửi:</span> - Chánh án Tòa án nhân dân thành phố Hà Nội.</div>
+                  <div className="pl-13">- Viện trưởng Viện kiểm sát nhân dân thành phố Hà Nội.</div>
                 </div>
 
                 {/* Body details */}
@@ -11907,10 +11931,10 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                     Là người khởi kiện trong vụ án <span className="italic">“Yêu cầu tuyên bố hợp đồng chuyển nhượng quyền sử dụng đất vô hiệu”</span>.
                   </p>
                   <p>
-                    Nay tôi làm đơn này yêu cầu Chánh án Tòa án nhân dân tối cao; Viện trưởng Viện kiểm sát nhân dân tối cao xem xét lại Bản án sơ thẩm và bản án phúc thẩm:
+                    Nay tôi làm đơn này yêu cầu Chánh án Tòa án nhân dân thành phố Hà Nội; Viện trưởng Viện kiểm sát nhân dân thành phố Hà Nội xem xét lại Bản án sơ thẩm và bản án phúc thẩm:
                   </p>
                   <p>
-                    + Bản án phúc thẩm số: 120/2026/DS-PT ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh và bản án sơ thẩm số: 122/2025/DS-ST ngày 22-9-2025 của Tòa án nhân dân khu vực 11-Tây Ninh với những nội dung và nhận định như sau:
+                    + Bản án phúc thẩm số: 120/2026/DS-ST ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh và bản án sơ thẩm số: 122/2025/DS-ST ngày 22-9-2025 của Tòa án nhân dân khu vực 11-Tây Ninh với những nội dung và nhận định như sau:
                   </p>
 
                   <div className="border-t border-[#eee] pt-2 mt-4">
@@ -11935,6 +11959,15 @@ export default function App() {
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
   const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet">(donChiTietTabMoi ? "form" : "list");
+
+  // Nguồn số liệu của Trang chủ. Bỏ hồ sơ kháng nghị vì đó không phải "đơn" —
+  // để trong tập đếm thì Tổng số đơn bị thổi từ 23 lên 34. Màn Danh sách đơn cũng
+  // loại đúng nhóm này khi mở từ Trang chủ, nên hai bên luôn ra cùng một con số.
+  const DON_CHO_TRANG_CHU = useMemo(() => SAMPLE_ROWS.filter(r => !r.laKhangNghi), []);
+
+  // Bộ lọc người dùng chọn ở khối chỉ số Trang chủ, mang sang màn Danh sách đơn.
+  const [boLocTrangChu, setBoLocTrangChu] = useState<BoLocTuTrangChu | null>(null);
+  const moDanhSachTuTrangChu = (loc: BoLocTuTrangChu) => { setBoLocTrangChu(loc); setView("list"); };
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
@@ -12014,7 +12047,8 @@ export default function App() {
   // của đơn.
   const [bieuMauVbId, setBieuMauVbId] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
-  const [phanCongTab, setPhanCongTab] = useState<0 | 1 | 2>(0);
+  // 0 = Chờ phân công, 1 = Đã phân công (màn phân công thẩm phán chỉ còn 2 tab)
+  const [phanCongTab, setPhanCongTab] = useState<0 | 1>(0);
   const [showPopup, setShowPopup] = useState(false);
   const [showBiCaoPopup, setShowBiCaoPopup] = useState(false);
   // Danh sách bị cáo (án hình sự) — điền tự động sau khi tra cứu bản án
@@ -12091,7 +12125,7 @@ export default function App() {
   const [lyDoTraLai, setLyDoTraLai] = useState("");
   const [yeuCauTraLai, setYeuCauTraLai] = useState("");
 
-  // Đơn chuyển sang Tòa khác / Ngoài tòa án thì TAND tối cao không thẩm định
+  // Đơn chuyển sang Tòa khác / Ngoài tòa án thì TAND thành phố Hà Nội không thẩm định
   // nội dung — cơ quan nhận mới là nơi cần thông tin bản án. Bắt cán bộ nhập đủ
   // ở đây chỉ tạo dữ liệu chép tay không ai dùng, nên bỏ dấu bắt buộc.
   // Ô vẫn hiện và vẫn nhập được nếu cán bộ có sẵn thông tin.
@@ -12106,8 +12140,8 @@ export default function App() {
   const [deNghiKetQua, setDeNghiKetQua] = useState<number | null>(null);
   // Kết quả giải quyết liên quan — thêm qua popup
   const [thongBaoTraLoi, setThongBaoTraLoi] = useState<{ id: number; loaiKQ: string; soTB: string; ngayTB: string; toaAn: string }[]>([
-    { id: 9001, loaiKQ: "Thông báo trả lời đơn", soTB: "142/TB-TANDTC", ngayTB: "15/09/2024", toaAn: "Tòa án nhân dân cấp cao tại Hà Nội" },
-    { id: 9002, loaiKQ: "Thông báo VKS đang giải quyết", soTB: "87/TB-VKSTC", ngayTB: "03/12/2024", toaAn: "Viện kiểm sát nhân dân tối cao" },
+    { id: 9001, loaiKQ: "Thông báo trả lời đơn", soTB: "142/TB-TAHN", ngayTB: "15/09/2024", toaAn: "Tòa án nhân dân khu vực 1 - Hà Nội" },
+    { id: 9002, loaiKQ: "Thông báo VKS đang giải quyết", soTB: "87/TB-VKSHN", ngayTB: "03/12/2024", toaAn: "Viện kiểm sát nhân dân thành phố Hà Nội" },
   ]);
   const [showThemTB, setShowThemTB] = useState(false);
   // Đơn liên quan thêm tay — gộp chung với kết quả tra cứu để hiện ra bảng ngoài
@@ -12202,7 +12236,7 @@ export default function App() {
     loaiQDBa: "Bản án",
     soBA: "15/2021/HC-ST",
     ngayBA: "2021-05-10",
-    toaXetXu: "TAND tỉnh Bắc Ninh",
+    toaXetXu: "TAND khu vực 4 - Hà Nội",
     capXetXu: "Sơ thẩm",
     loaiAn: "Hành chính",
     quanHe: "Tranh chấp hành chính về đất đai",
@@ -12291,10 +12325,10 @@ export default function App() {
   };
 
   const BA_SEARCH_RESULTS_GOC = [
-    { id: 1, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Bản án", giaiDoan: "Sơ thẩm", soBA: "15/2021/HC-ST", ngayBA: "10/05/2021", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: false, nguon: "QLA" },
-    { id: 2, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Bản án", giaiDoan: "Phúc thẩm", soBA: "15/2023/HC-PT", ngayBA: "12/03/2023", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: true, nguon: "Kho số hóa" },
-    { id: 3, vuAn: "Nguyễn Văn An và cộng sự — tranh chấp đất đai", loai: "Bản án", giaiDoan: "Phúc thẩm", soBA: "15/2023/HC-PT", ngayBA: "12/03/2023", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: true, nguon: "Thêm mới" },
-    { id: 4, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Quyết định", giaiDoan: "Giám đốc thẩm", soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: true, nguon: "QLA" },
+    { id: 1, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Bản án", giaiDoan: "Sơ thẩm", soBA: "15/2021/HC-ST", ngayBA: "10/05/2021", toaAn: "TAND khu vực 4 - Hà Nội", isDuplicate: false, nguon: "QLA" },
+    { id: 2, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Bản án", giaiDoan: "Phúc thẩm", soBA: "15/2023/HC-ST", ngayBA: "12/03/2023", toaAn: "TAND khu vực 4 - Hà Nội", isDuplicate: true, nguon: "Kho số hóa" },
+    { id: 3, vuAn: "Nguyễn Văn An và cộng sự — tranh chấp đất đai", loai: "Bản án", giaiDoan: "Phúc thẩm", soBA: "15/2023/HC-ST", ngayBA: "12/03/2023", toaAn: "TAND khu vực 4 - Hà Nội", isDuplicate: true, nguon: "Thêm mới" },
+    { id: 4, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Quyết định", giaiDoan: "Giám đốc thẩm", soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024", toaAn: "TAND khu vực 4 - Hà Nội", isDuplicate: true, nguon: "QLA" },
   ];
 
   // Bảng = kết quả tra cứu (sau khi bấm Tra cứu) + các bản án thêm tay.
@@ -12310,8 +12344,8 @@ export default function App() {
     {
       id: 1,
       maDon: "Mã 6512", ngayNhan: "15/06/2023",
-      nguoiGui: "Nguyễn Văn An", diaChi: "Phường Võ Cường, Tỉnh Bắc Ninh",
-      soBA: "15/2023/HC-PT", ngayBA: "12/03/2023",
+      nguoiGui: "Nguyễn Văn An", diaChi: "Phường Cửa Nam, Thành phố Hà Nội",
+      soBA: "15/2023/HC-ST", ngayBA: "12/03/2023",
       hinhThuc: "Đơn đề nghị GĐT/TT", thuTuc: "Giám đốc thẩm",
       trangThai: "Đã thụ lý", color: "#27ae60", stl: "54682310",
       nguoiNhap: "Vũ Văn Yên", ngayNhap: "15/06/2023",
@@ -12319,8 +12353,8 @@ export default function App() {
     {
       id: 2,
       maDon: "Mã 6874", ngayNhan: "02/11/2023",
-      nguoiGui: "Nguyễn Văn An", diaChi: "Phường Võ Cường, Tỉnh Bắc Ninh",
-      soBA: "15/2023/HC-PT", ngayBA: "12/03/2023",
+      nguoiGui: "Nguyễn Văn An", diaChi: "Phường Cửa Nam, Thành phố Hà Nội",
+      soBA: "15/2023/HC-ST", ngayBA: "12/03/2023",
       hinhThuc: "Đơn đề nghị GĐT/TT", thuTuc: "Giám đốc thẩm",
       trangThai: "Chưa đủ điều kiện", color: "#e67e22", stl: "",
       nguoiNhap: "Phùng Trâm Anh", ngayNhap: "02/11/2023",
@@ -12337,7 +12371,7 @@ export default function App() {
     {
       id: 3,
       maDon: "Mã 7105", ngayNhan: "20/01/2024",
-      nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", diaChi: "Phường Phương Sơn, Tỉnh Bắc Ninh",
+      nguoiGui: "Tòa án nhân dân khu vực 4 - Hà Nội", diaChi: "Phường Phương Sơn, Tỉnh Bắc Ninh",
       soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024",
       hinhThuc: "CV Kiến nghị GĐT, TT", thuTuc: "Giám đốc thẩm",
       trangThai: "Thụ lý mới", color: "#2980b9", stl: "54682455", ngayThuLy: "22/01/2024",
@@ -12474,7 +12508,7 @@ export default function App() {
             <Menu size={16} />
           </div>
           <div>
-            <div className="text-[10px] text-white/70 leading-none">TÒA ÁN NHÂN DÂN TỐI CAO</div>
+            <div className="text-[10px] text-white/70 leading-none">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</div>
             <div className="text-[12px] font-bold leading-none">HỆ THỐNG QUẢN LÝ ÁN</div>
           </div>
         </div>
@@ -12632,14 +12666,17 @@ export default function App() {
             <div className="flex-1 overflow-y-auto">
               <Dashboard onXemChiTietHieuSuat={() => setView("hieu_suat_chi_tiet")}
                 onXemPheDuyet={() => setView("phe_duyet")}
-                vanBanList={vanBanList} currentRole={currentRole} />
+                vanBanList={vanBanList} currentRole={currentRole}
+                donList={DON_CHO_TRANG_CHU} onMoDanhSachDon={moDanhSachTuTrangChu}
+                onMoDanhSachVanBan={() => setView("van_ban_trinh_ky")} />
             </div>
           )}
 
           {/* Hiệu suất cán bộ kỳ này — Xem chi tiết */}
           {view === "hieu_suat_chi_tiet" && (
             <div className="flex-1 overflow-y-auto">
-              <HieuSuatCanBoChiTiet currentRole={currentRole} onBack={() => setView("home")} />
+              <HieuSuatCanBoChiTiet currentRole={currentRole} donList={DON_CHO_TRANG_CHU}
+                onBack={() => setView("home")} />
             </div>
           )}
 
@@ -12666,6 +12703,8 @@ export default function App() {
                 onTaoVanBan={taoVanBanTuModal}
                 onXemVanBanDaTrinh={xemVanBanDaTrinh}
                 vanBanList={vanBanList}
+                boLocTrangChu={boLocTrangChu}
+                onXoaBoLocTrangChu={() => setBoLocTrangChu(null)}
                 onThemMoi={() => {
                   setEditingRowId(null);
                   setView("form");
@@ -13708,15 +13747,15 @@ export default function App() {
                               setCaNhanChuyenDen("");
                             }}>
                               <option value="">-- Chọn đơn vị --</option>
-                              <option>Vụ Pháp chế và Quản lý khoa học</option>
-                              <option>Hội đồng Thẩm phán TANDTC</option>
-                              <option>Vụ Giám đốc kiểm tra về hình sự</option>
-                              <option>Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên</option>
+                              <option>Phòng Kiểm tra nghiệp vụ và Thi hành án</option>
+                              <option>Ủy ban Thẩm phán TAND thành phố Hà Nội</option>
+                              <option>Tòa Hình sự</option>
+                              <option>Tòa Kinh tế</option>
                               <option>Vụ Thi đua - Khen thưởng</option>
                               <option>Vụ Tổ chức - Cán bộ</option>
-                              <option>Thanh tra Tòa án nhân dân tối cao</option>
-                              <option>Vụ Giám đốc, kiểm tra về dân sự</option>
-                              <option>Vụ Giám đốc, kiểm tra về hành chính</option>
+                              <option>Thanh tra Tòa án nhân dân thành phố Hà Nội</option>
+                              <option>Tòa Dân sự</option>
+                              <option>Tòa Hành chính</option>
                               <option>Vụ Tổng hợp</option>
                               <option>Vụ Hợp tác quốc tế</option>
                               <option>Vụ Công tác phía Nam</option>
@@ -13807,11 +13846,11 @@ export default function App() {
                               <Lbl req>Chọn vụ trưởng</Lbl>
                               <Sel value={vuTruong} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setVuTruong(e.target.value)}>
                                 <option value="">-- Chọn vụ trưởng --</option>
-                                <option>Vụ trưởng Vụ Pháp chế và Quản lý khoa học</option>
-                                <option>Vụ trưởng Vụ Giám đốc kiểm tra về hình sự</option>
-                                <option>Vụ trưởng Vụ Giám đốc kiểm tra về dân sự</option>
-                                <option>Vụ trưởng Vụ Giám đốc kiểm tra về hành chính</option>
-                                <option>Vụ trưởng Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên</option>
+                                <option>Vụ trưởng Phòng Kiểm tra nghiệp vụ và Thi hành án</option>
+                                <option>Vụ trưởng Tòa Hình sự</option>
+                                <option>Chánh tòa Tòa Dân sự</option>
+                                <option>Vụ trưởng Tòa Hành chính</option>
+                                <option>Vụ trưởng Tòa Kinh tế</option>
                               </Sel>
                             </div>
                           ) : trangThaiDon !== "Đơn không đủ điều kiện" ? (
@@ -13859,19 +13898,9 @@ export default function App() {
                           )}
                         </>
                       )}
-                      {hinhThuc !== "CV khác" && hinhThuc !== "Đơn khác" && (
-                        <div className="col-span-2">
-                          <Lbl>Thẩm quyền đơn</Lbl>
-                          <div className="flex items-center gap-5 h-[30px]">
-                            {[["bac3", "Thẩm phán bậc 3"], ["toicao", "Thẩm phán tối cao"]].map(([val, label]) => (
-                              <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
-                                <input type="radio" name="thamQuyenDon" value={val} className="accent-[#8b1a1a]" />
-                                {label}
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      {/* Bỏ khối "Thẩm quyền đơn": hai lựa chọn của nó là hai bậc
+                          thẩm phán, mà cấp tỉnh chỉ có một loại thẩm phán nên
+                          không còn gì để chọn. */}
                       <div className="col-span-2 flex items-end">
                         {/* Nút Danh sách thẩm phán đã được chuyển sang màn hình Phân công thẩm phán */}
                       </div>
@@ -14136,7 +14165,7 @@ export default function App() {
                     </div>
 
                     <div className="text-[11px] space-y-3 leading-relaxed">
-                      <p>Kính gửi: <span className="font-semibold">TÒA ÁN NHÂN DÂN TỐI CAO</span></p>
+                      <p>Kính gửi: <span className="font-semibold">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</span></p>
                       <div className="flex gap-2">
                         <span className="whitespace-nowrap">Họ và tên:</span>
                         <span className="flex-1 border-b border-dotted border-[#999]">&nbsp;</span>
