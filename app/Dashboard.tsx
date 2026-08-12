@@ -1,8 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
   FileText,
-  CheckCircle,
-  Clock,
   AlertCircle,
   BarChart3,
   Users,
@@ -22,6 +20,7 @@ import {
   UserCheck,
   Scale,
   FileQuestion,
+  ListChecks,
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, TRANG_THAI_META, type VanBanTrinh, type TrangThaiVB } from "./components/QuanLyVanBan";
 
@@ -36,23 +35,6 @@ const VB_STATUS_COLOR: Record<TrangThaiVB, string> = {
   DaBanHanh: "#1a5a96",
   DaHuy: "#999999",
 };
-
-const KPICard = ({ title, value, icon, colorClass, bgColorClass, trend }: { title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string }) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
-    <div>
-      <p className="text-[13px] text-[#666] font-medium mb-1.5">{title}</p>
-      <div className="flex items-baseline gap-2.5">
-        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
-        <span className={`text-[12px] font-semibold flex items-center gap-0.5 ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#f39c12]')}`}>
-          {trend}
-        </span>
-      </div>
-    </div>
-    <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center ${bgColorClass} ${colorClass} group-hover:scale-110 transition-transform duration-300`}>
-      {icon}
-    </div>
-  </div>
-);
 
 // Biến thể của KPICard có nút "Xem chi tiết" ở góc phải — dùng cho 2 card
 // duyệt tài liệu, dẫn thẳng sang màn Phê duyệt đề xuất.
@@ -83,6 +65,57 @@ const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, on
     </div>
   </div>
 );
+
+type KPITone = "urgent" | "warning" | "info" | "success";
+
+const KPI_TONE_STYLE: Record<KPITone, { icon: string; iconBg: string; desc: string; border: string }> = {
+  urgent: { icon: "text-[#ef4444]", iconBg: "bg-[#fef2f2]", desc: "text-[#c0392b]", border: "border-[#fecaca]" },
+  warning: { icon: "text-[#f97316]", iconBg: "bg-[#fff7ed]", desc: "text-[#e67e22]", border: "border-[#eee]" },
+  info: { icon: "text-[#3b82f6]", iconBg: "bg-[#eff6ff]", desc: "text-[#475569]", border: "border-[#eee]" },
+  success: { icon: "text-[#16a34a]", iconBg: "bg-[#f0fdf4]", desc: "text-[#16a34a]", border: "border-[#eee]" },
+};
+
+// Card KPI dành riêng cho khối "việc của tôi" (4 card đầu Trang chủ) — khác
+// KPICard/KPICardCoLink ở chỗ: toàn bộ card là 1 vùng bấm được (thay vì chỉ nút
+// "Xem chi tiết" nhỏ ở góc), có "tone" để phân biệt mức độ cần chú ý (đỏ = quá
+// hạn cần xử lý ngay, cam = đang chờ, xanh dương = thông tin, xanh lá = đã hết
+// việc tồn đọng), và chấm nhấp nháy để cán bộ nhận ra ngay việc cần ưu tiên.
+const KPIActionCard = ({ title, value, description, icon, tone, onAction, pulse }: {
+  title: string; value: string; description: string; icon: React.ReactNode; tone: KPITone;
+  onAction?: () => void; pulse?: boolean;
+}) => {
+  const s = KPI_TONE_STYLE[tone];
+  return (
+    <div
+      onClick={onAction}
+      className={`relative bg-white rounded-[8px] border ${s.border} p-5 shadow-sm hover:shadow-md transition-all duration-300 group ${onAction ? "cursor-pointer" : "cursor-default"}`}
+    >
+      {pulse && (
+        <span className="absolute top-4 right-4 flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef4444] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef4444]"></span>
+        </span>
+      )}
+      <div className="flex items-start justify-between gap-2 mb-1.5">
+        <p className="text-[13px] text-[#666] font-medium">{title}</p>
+        {onAction && (
+          <span className="text-[#3b82f6] text-[11px] font-medium flex items-center gap-0.5 flex-shrink-0">
+            Xem chi tiết <ArrowRight size={11} />
+          </span>
+        )}
+      </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
+          <p className={`text-[12px] font-semibold mt-1.5 ${s.desc}`}>{description}</p>
+        </div>
+        <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center flex-shrink-0 ${s.iconBg} ${s.icon} group-hover:scale-110 transition-transform duration-300`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Màu cho từng trạng thái trong panel "Phân loại đơn nhận" — tab tương ứng khớp
 // đúng thứ tự tab của màn Danh sách đơn (0 Tổng số, 2 Đơn Thụ lý, 3 Chưa đủ điều
@@ -123,6 +156,7 @@ const TongDonNhanCard = ({ title, value, trend, phanLoai, onXemDanhSachDon }: {
         <div>
           <p className="text-[13px] text-[#666] font-medium mb-1.5 flex items-center gap-1.5">
             {title}
+            <span className="text-[10px] font-semibold text-[#94a3b8] bg-[#f1f5f9] border border-[#e2e8f0] rounded-full px-1.5 py-[1px]">Toàn phòng</span>
             <ChevronDown size={14} className={`text-[#94a3b8] transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           </p>
           <div className="flex items-baseline gap-2.5">
@@ -269,6 +303,19 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
 
   const kpi = getKPIData();
   const phanLoaiDonNhan = { ...PHAN_LOAI_RAW[chartPeriod], chuaGiaiQuyet: Number(kpi.unresolved) };
+
+  // Số liệu ảo CỦA RIÊNG cán bộ đang đăng nhập — phần việc thuộc trách nhiệm
+  // cá nhân, khác với 4 chỉ số tổng phòng ở trên. dangThuLy là đơn đã nhận
+  // phân công và đang xử lý; quaHan là phần đơn quá hạn CỦA CHÍNH cán bộ này
+  // (một phần nhỏ trong tổng "Đơn quá hạn giải quyết" của cả phòng).
+  const CA_NHAN_RAW: Record<"day" | "week" | "month" | "year" | "custom", { dangThuLy: number; quaHan: number }> = {
+    day: { dangThuLy: 2, quaHan: 1 },
+    week: { dangThuLy: 6, quaHan: 1 },
+    month: { dangThuLy: 48, quaHan: 6 },
+    year: { dangThuLy: 520, quaHan: 60 },
+    custom: { dangThuLy: 18, quaHan: 3 },
+  };
+  const caNhan = CA_NHAN_RAW[chartPeriod];
 
   // Màu theo Vụ GĐKT — dùng chung cho biểu đồ cột chồng và phần chú giải.
   const GDKT_COLORS = {
@@ -442,59 +489,47 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
         </div>
       </div>
 
-      {/* 1. KPIs */}
+      {/* 1. KPIs — ưu tiên góc nhìn của cán bộ (việc của TÔI trước, số liệu cả
+          phòng ở cuối) thay vì 4 số báo cáo phòng ban xếp ngang hàng như trước. */}
       <div>
         <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
           <Calendar size={18} className="text-[#8b1a1a]" />
           Tình hình xử lý đơn {getPeriodLabel()}
         </h2>
         <div className="grid grid-cols-4 gap-5 items-start">
+          <KPIActionCard
+            title="Quá hạn — ưu tiên xử lý"
+            value={String(caNhan.quaHan)}
+            description={caNhan.quaHan > 0 ? "Cần xử lý ngay hôm nay" : "Không có đơn quá hạn"}
+            icon={caNhan.quaHan > 0 ? <AlertCircle size={24} /> : <FileCheck size={24} />}
+            tone={caNhan.quaHan > 0 ? "urgent" : "success"}
+            pulse={caNhan.quaHan > 0}
+            onAction={() => onXemDanhSachDon?.(4)}
+          />
+          <KPIActionCard
+            title="Chờ tôi xử lý"
+            value={String(soTaiLieuCanDuyet)}
+            description={soTaiLieuCanDuyet > 0 ? (hienThiTheDuyet ? "Đang chờ bạn duyệt/ký" : "Cần hoàn thiện & trình") : "Không có việc tồn đọng"}
+            icon={soTaiLieuCanDuyet > 0 ? <Hourglass size={24} /> : <FileCheck size={24} />}
+            tone={soTaiLieuCanDuyet > 0 ? "warning" : "success"}
+            onAction={hienThiTheDuyet ? onXemPheDuyet : onXemDanhSachVanBan}
+          />
+          <KPIActionCard
+            title="Đang thụ lý (của tôi)"
+            value={String(caNhan.dangThuLy)}
+            description="Đang trong quá trình xử lý"
+            icon={<ListChecks size={24} />}
+            tone="info"
+            onAction={() => onXemDanhSachDon?.(2)}
+          />
           <TongDonNhanCard
-            title="Tổng số đơn nhận"
+            title="Đơn mới nhận"
             value={kpi.total}
             trend={kpi.t1}
             phanLoai={phanLoaiDonNhan}
             onXemDanhSachDon={onXemDanhSachDon}
           />
-          <KPICard
-            title="Đã giải quyết"
-            value={kpi.processed}
-            trend={kpi.t2}
-            icon={<CheckCircle size={24} />}
-            bgColorClass="bg-[#f0fdf4]"
-            colorClass="text-[#22c55e]"
-          />
-          <KPICard
-            title="Chưa giải quyết"
-            value={kpi.unresolved}
-            trend={kpi.t3}
-            icon={<Clock size={24} />}
-            bgColorClass="bg-[#fefce8]"
-            colorClass="text-[#eab308]"
-          />
-          <KPICard
-            title="Đơn quá hạn giải quyết"
-            value={kpi.overdue}
-            trend={kpi.t4}
-            icon={<AlertCircle size={24} />}
-            bgColorClass="bg-[#fef2f2]"
-            colorClass="text-[#ef4444]"
-          />
         </div>
-      </div>
-
-      {/* Đơn của tôi — số văn bản đang chờ cán bộ hiện tại duyệt, bấm "Xem chi
-          tiết" sang thẳng màn Danh sách văn bản (mở sẵn tab "Chờ duyệt"). */}
-      <div className="grid grid-cols-4 gap-5">
-        <KPICardCoLink
-          title="Đơn của tôi"
-          value="3"
-          trend="Chờ duyệt"
-          icon={<Hourglass size={24} />}
-          bgColorClass="bg-[#fff7ed]"
-          colorClass="text-[#f97316]"
-          onXemChiTiet={onXemDanhSachVanBan}
-        />
       </div>
 
       {/* Duyệt tài liệu — chỉ Trưởng phòng / Phó Chánh án-Chánh án / Lãnh đạo Tòa */}
