@@ -414,18 +414,18 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
             </div>
           </div>
 
-          {/* Văn bản tôi đã trả lại, chưa thấy sửa */}
+          {/* Đơn trả lại, chưa thấy sửa */}
           <div className="border border-[#eee] rounded-[8px] flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#f1f5f9]">
               <h3 className="text-[13.5px] font-bold text-[#0f172a] flex items-center gap-2">
                 <RotateCcw size={16} className="text-[#e67e22]" />
-                Văn bản tôi đã trả lại, chưa thấy sửa
+                Đơn trả lại, chưa thấy sửa
               </h3>
               <span className="bg-[#ffedd5] text-[#c2610a] text-[11px] font-bold px-2 py-0.5 rounded-full">{vanBanTraLai.length}</span>
             </div>
             <div className="p-3 space-y-2 flex-1">
               {vanBanTraLai.length === 0 && (
-                <p className="text-[12px] text-[#94a3b8] py-6 text-center">Không có văn bản nào đang chờ sửa lại.</p>
+                <p className="text-[12px] text-[#94a3b8] py-6 text-center">Không có đơn nào đang chờ sửa lại.</p>
               )}
               {vanBanTraLai.slice(0, 3).map(({ vb, traLaiBoi, soNgay }) => (
                 <div key={vb.id} onClick={() => onXemDanhSachVanBan?.("BiTraLai")}
@@ -495,17 +495,21 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
 
           <div className="flex-1"></div>
 
+          {/* Lọc theo Cán bộ — chỉ vai trò quản lý; Cán bộ chỉ xem dữ liệu của
+              chính mình nên không cần lọc theo người khác. */}
+          {laVaiTroQuanLy && (
           <div className="flex items-center gap-2.5">
             <label className="text-[13px] font-medium text-[#475569]">Lọc theo Cán bộ:</label>
-            <select 
-              value={filterOfficer} 
-              onChange={e => setFilterOfficer(e.target.value)} 
+            <select
+              value={filterOfficer}
+              onChange={e => setFilterOfficer(e.target.value)}
               className="h-[32px] px-3 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] bg-white min-w-[220px] text-[#1e293b] cursor-pointer"
             >
               <option value="all">Tất cả cán bộ</option>
               {officerData.map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
             </select>
           </div>
+          )}
         </div>
       </div>
 

@@ -4566,6 +4566,14 @@ const THOI_HIEU: Record<ThoiHieuKey, { nhan: string; cls: string }> = {
   },
 };
 
+// Nhãn rút gọn cho radio "Thời hiệu giải quyết" ở form Thêm mới/Sửa đơn
+const THOI_HIEU_FORM_OPTIONS: { value: ThoiHieuKey; label: string }[] = [
+  { value: "trong-han-1-nam", label: "1 năm" },
+  { value: "qua-3-nam", label: "3 năm" },
+  { value: "qua-5-nam", label: "5 năm" },
+  { value: "khong-xac-dinh", label: "Không xác định thời hiệu" },
+];
+
 interface DanhSachDonRow {
   id: number;
   nguoiGui: string;
@@ -12670,6 +12678,7 @@ export default function App() {
     ngayBA: donChiTietTabMoi?.ngayBA ? donChiTietTabMoi.ngayBA.split("/").reverse().join("-") : "",
     toaBA: "",
     capXetXu: "",
+    thoiHieuGiaiQuyet: "" as ThoiHieuKey | "",
   });
   const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
   const editingRow = SAMPLE_ROWS.find(r => r.id === editingRowId) ?? null;
@@ -13594,39 +13603,38 @@ export default function App() {
 
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
-                            <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" />
-                            Không xác định thời hiệu giải quyết
-                          </label>
-                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
-                            <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" />
-                            Trong hạn giải quyết 1 năm
-                          </label>
-                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
-                            <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" />
-                            Án quá thời hiệu 3 năm
-                          </label>
-                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
-                            <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]" />
-                            Án quá thời hiệu 5 năm
-                          </label>
-                          {loaiAnForm === "Hình sự" && (
-                            <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
-                              <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
-                                checked={xulychuynhuong} onChange={e => {
-                                  setXulychuynhuong(e.target.checked);
-                                  if (e.target.checked) {
-                                    setAnTuHinh(false);
-                                    setXinGiamAnTuHinh(false);
-                                    setKeuOanAnTuHinh(false);
-                                    setXinThiHanhAnSom(false);
-                                  }
-                                }} />
-                              Áp dụng biện pháp XLCH
-                            </label>
-                          )}
+                        <div className="border border-[#ddd] rounded-[3px] px-3 py-2.5">
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <span className="w-[6px] h-[6px] rounded-full bg-[#8b1a1a] flex-shrink-0" />
+                            <span className="text-[13px] font-semibold text-[#222]">Thông tin</span>
+                          </div>
+                          <Lbl>Thời hiệu giải quyết</Lbl>
+                          <div className="flex items-center gap-6 flex-wrap">
+                            {THOI_HIEU_FORM_OPTIONS.map(opt => (
+                              <label key={opt.value} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                                <input type="radio" name="thoiHieuGiaiQuyetForm" className="w-[15px] h-[15px] accent-[#8b1a1a]"
+                                  checked={baForm.thoiHieuGiaiQuyet === opt.value}
+                                  onChange={() => setBaForm(p => ({ ...p, thoiHieuGiaiQuyet: opt.value }))} />
+                                {opt.label}
+                              </label>
+                            ))}
+                          </div>
                         </div>
+                        {loaiAnForm === "Hình sự" && (
+                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                            <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
+                              checked={xulychuynhuong} onChange={e => {
+                                setXulychuynhuong(e.target.checked);
+                                if (e.target.checked) {
+                                  setAnTuHinh(false);
+                                  setXinGiamAnTuHinh(false);
+                                  setKeuOanAnTuHinh(false);
+                                  setXinThiHanhAnSom(false);
+                                }
+                              }} />
+                            Áp dụng biện pháp XLCH
+                          </label>
+                        )}
 
                         <div>
                           <div className="flex items-center justify-between mb-2">
@@ -13706,12 +13714,13 @@ export default function App() {
                                           <ActionBtn icon={<PenLine size={14} />} color="blue" title="Sửa trên form Thông tin bản án"
                                             onClick={() => {
                                               setLoaiQDBa(r.loai);
-                                              setBaForm({
+                                              setBaForm(p => ({
+                                                ...p,
                                                 soBA: r.soBA,
                                                 ngayBA: r.ngayBA.split("/").reverse().join("-"),
                                                 toaBA: r.toaAn,
                                                 capXetXu: r.giaiDoan
-                                              });
+                                              }));
                                             }} />
                                         ) : null}
                                         {r.nguon === "Thêm mới" && (

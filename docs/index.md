@@ -25,3 +25,9 @@ Tài liệu đặc tả các màn hình của hệ thống. Mỗi màn một fil
 | Mã | Màn hình | Tài liệu | Trạng thái |
 |---|---|---|---|
 | MH-09 | Phê duyệt đề xuất | — | Chưa viết |
+
+## Trang chủ
+
+| Mã | Màn hình | Tài liệu | Trạng thái |
+|---|---|---|---|
+| MH-10 | Trang chủ (Dashboard) | [man-hinh-trang-chu.md](man-hinh-trang-chu.md) | ✅ Đã viết |
