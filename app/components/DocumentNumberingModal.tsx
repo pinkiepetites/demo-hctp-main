@@ -1669,7 +1669,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const thieuLyDoYCBS = laYCBS && Object.values(lyDoTheoDon).some(
     v => !v.chon || (v.chon === "Lý do khác" && !v.khac.trim()));
   const thieuNguoiDuyetKy = !nguoiDuyet || !nguoiKy || thieuLyDoYCBS;
-  
+  // Không còn văn bản nào hợp lệ để trình (toàn bộ đã bị loại) — disable nút
+  // Trình duyệt luôn, thay vì để cán bộ bấm rồi mới báo lỗi.
+  const khongCoVanBanHopLe = treeData.filter(n => n.isValid !== false).length === 0;
+
   // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản, luôn 2 tầng
   // (Văn bản → Đơn), không còn tầng "Danh sách đơn" ở giữa.
   //   "Tờ trình phân công thẩm phán": TẤT CẢ đơn được chọn gộp vào 1 tờ trình,
@@ -2107,13 +2110,6 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 onClick={() => {
                   // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
                   if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
-                  // Không còn văn bản nào hợp lệ để trình (toàn bộ đã bị loại) —
-                  // chặn trước khi gọi onTrinhDuyet, tránh tạo văn bản rỗng.
-                  const soVanBanHopLe = treeData.filter(n => n.isValid !== false).length;
-                  if (soVanBanHopLe === 0) {
-                    setLoiTrinhDuyet("Không có văn bản hợp lệ để trình duyệt.");
-                    return;
-                  }
                   // Nhánh demo lỗi hệ thống khi gửi hồ sơ — không đẩy văn bản
                   // vào kho, cán bộ có thể bấm "Thử lại".
                   if (TRINH_DUYET_DEMO_FAIL) { setLoiTrinhDuyet(""); return; }
@@ -2139,12 +2135,14 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   });
                   setDaTrinhDuyet(true);
                 }}
-                disabled={thieuNguoiDuyetKy}
-                title={thieuLyDoYCBS
+                disabled={thieuNguoiDuyetKy || khongCoVanBanHopLe}
+                title={khongCoVanBanHopLe
+                  ? "Không có văn bản hợp lệ để trình duyệt"
+                  : thieuLyDoYCBS
                   ? "Vui lòng chọn Lý do yêu cầu bổ sung"
                   : thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
-                  thieuNguoiDuyetKy ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
+                  thieuNguoiDuyetKy || khongCoVanBanHopLe ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
                 <Send size={15} /> Trình duyệt
               </button>
             )}
