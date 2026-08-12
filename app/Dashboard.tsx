@@ -23,19 +23,7 @@ import {
   Gavel,
   HelpCircle,
 } from "lucide-react";
-import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, TRANG_THAI_META, type VanBanTrinh, type TrangThaiVB, type TabDS } from "./components/QuanLyVanBan";
-
-// Màu cho từng trạng thái văn bản trong dải phân bố — khớp tinh thần màu chữ của
-// TRANG_THAI_META (Danh sách văn bản) để hai màn dùng chung một ngôn ngữ màu.
-const VB_STATUS_COLOR: Record<TrangThaiVB, string> = {
-  Nhap: "#94a3b8",
-  ChoDuyet: "#1a73e8",
-  ChoKy: "#f57f17",
-  ChoButPhe: "#6d28d9",
-  BiTraLai: "#8b1a1a",
-  DaBanHanh: "#1a5a96",
-  DaHuy: "#999999",
-};
+import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh, type TabDS } from "./components/QuanLyVanBan";
 
 // Biến thể của KPICard có nút "Xem chi tiết" ở góc phải — dùng cho 2 card
 // duyệt tài liệu, dẫn thẳng sang màn Phê duyệt đề xuất.
@@ -255,15 +243,6 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     { label: "Kinh doanh - Thương mại", percent: 10, color: "bg-[#9b59b6]" },
   ];
 
-  // Phân bố văn bản theo trạng thái — tính thẳng từ kho vanBanList thật (cùng dữ
-  // liệu với màn Danh sách văn bản), không phải số ảo như khối KPI đơn ở trên.
-  const VB_STATUS_ORDER: TrangThaiVB[] = ["ChoDuyet", "ChoKy", "ChoButPhe", "BiTraLai", "Nhap", "DaBanHanh", "DaHuy"];
-  const tongVanBan = vanBanList.length;
-  const vbByStatus = VB_STATUS_ORDER.map(tt => ({
-    tt, count: vanBanList.filter(v => v.trangThai === tt).length, ...TRANG_THAI_META[tt],
-  }));
-  const vanBanGanDay = vanBanList.slice(0, 5);
-
   // Đơn theo hình thức tiếp nhận — số liệu ảo, cộng đúng bằng "Tổng số đơn nhận"
   // kỳ Tuần này (27) để nhất quán với khối KPI phía trên.
   const hinhThucTiepNhan = [
@@ -452,66 +431,6 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
         </div>
       </div>
       )}
-
-      {/* Filters */}
-      <div className="flex items-center justify-between bg-white p-3.5 rounded-[8px] border border-[#e2e8f0] shadow-sm mb-5">
-        <div className="flex items-center gap-5 flex-wrap w-full">
-          <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
-            {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
-              const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
-              return (
-                <button
-                  key={period}
-                  onClick={() => setChartPeriod(period)}
-                  className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
-                >
-                  {labels[idx]}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="w-px h-6 bg-[#cbd5e1]"></div>
-
-          {chartPeriod === "custom" && (
-            <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
-              <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
-              <input 
-                type="date" 
-                value={customStartDate} 
-                onChange={e => setCustomStartDate(e.target.value)} 
-                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]" 
-              />
-              <span className="text-[#94a3b8]">-</span>
-              <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
-              <input 
-                type="date" 
-                value={customEndDate} 
-                onChange={e => setCustomEndDate(e.target.value)} 
-                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]" 
-              />
-            </div>
-          )}
-
-          <div className="flex-1"></div>
-
-          {/* Lọc theo Cán bộ — chỉ vai trò quản lý; Cán bộ chỉ xem dữ liệu của
-              chính mình nên không cần lọc theo người khác. */}
-          {laVaiTroQuanLy && (
-          <div className="flex items-center gap-2.5">
-            <label className="text-[13px] font-medium text-[#475569]">Lọc theo Cán bộ:</label>
-            <select
-              value={filterOfficer}
-              onChange={e => setFilterOfficer(e.target.value)}
-              className="h-[32px] px-3 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] bg-white min-w-[220px] text-[#1e293b] cursor-pointer"
-            >
-              <option value="all">Tất cả cán bộ</option>
-              {officerData.map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
-            </select>
-          </div>
-          )}
-        </div>
-      </div>
 
       {/* 1. Hiện trạng đơn (Cán bộ) / Thống kê đơn nhận (vai trò quản lý) — đếm
           trực tiếp trên danh sách đơn tại thời điểm hiện tại, thay cho khối
@@ -709,6 +628,68 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
         </div>
       )}
 
+      {/* Filters — đặt ngay trên 2 biểu đồ dùng chartPeriod/filterOfficer bên dưới
+          (So sánh số đơn theo loại án & kết quả, Kết quả xử lý đơn) thay vì trên
+          cùng trang, vì "Hiện trạng đơn" (Cán bộ) không phụ thuộc kỳ lọc này. */}
+      <div className="flex items-center justify-between bg-white p-3.5 rounded-[8px] border border-[#e2e8f0] shadow-sm mb-5">
+        <div className="flex items-center gap-5 flex-wrap w-full">
+          <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
+            {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
+              const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
+              return (
+                <button
+                  key={period}
+                  onClick={() => setChartPeriod(period)}
+                  className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
+                >
+                  {labels[idx]}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="w-px h-6 bg-[#cbd5e1]"></div>
+
+          {chartPeriod === "custom" && (
+            <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
+              <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={e => setCustomStartDate(e.target.value)}
+                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
+              />
+              <span className="text-[#94a3b8]">-</span>
+              <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
+              <input
+                type="date"
+                value={customEndDate}
+                onChange={e => setCustomEndDate(e.target.value)}
+                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
+              />
+            </div>
+          )}
+
+          <div className="flex-1"></div>
+
+          {/* Lọc theo Cán bộ — chỉ vai trò quản lý; Cán bộ chỉ xem dữ liệu của
+              chính mình nên không cần lọc theo người khác. */}
+          {laVaiTroQuanLy && (
+          <div className="flex items-center gap-2.5">
+            <label className="text-[13px] font-medium text-[#475569]">Lọc theo Cán bộ:</label>
+            <select
+              value={filterOfficer}
+              onChange={e => setFilterOfficer(e.target.value)}
+              className="h-[32px] px-3 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] bg-white min-w-[220px] text-[#1e293b] cursor-pointer"
+            >
+              <option value="all">Tất cả cán bộ</option>
+              {officerData.map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
+            </select>
+          </div>
+          )}
+        </div>
+      </div>
+
       {/* ROW 2: So sánh số đơn theo loại án & kết quả — thay biểu đồ Vụ GĐKT theo
           ngày (đã có ở "Hiện trạng đơn"/"Đơn theo cán bộ") bằng góc nhìn loại án ×
           kết quả xử lý; panel bên phải xếp hạng kết quả nay thay "Cần chú ý / Quá
@@ -825,60 +806,13 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
         </div>
       </div>
 
-      {/* ROW 2.5: Văn bản trình ký (dữ liệu thật từ vanBanList) — hiện với mọi
-          vai trò; Cán bộ xem full width (không có "Hình thức tiếp nhận đơn" đi
-          kèm), các vai trò quản lý xem chung 1 hàng lưới với card đó. */}
-      <div className={laVaiTroQuanLy ? "grid grid-cols-3 gap-5" : ""}>
-        {/* Văn bản trình ký */}
-        <div className={`${laVaiTroQuanLy ? "col-span-2" : ""} bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow`}>
-          <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
-            <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
-              <Send size={18} className="text-[#3b82f6]" />
-              Văn bản trình ký
-            </h3>
-            <button onClick={() => onXemDanhSachVanBan?.()} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
-              Xem tất cả <ArrowRight size={11} />
-            </button>
-          </div>
-
-          <div className="p-5">
-            <div className="flex items-center gap-0.5 h-[10px] rounded-full overflow-hidden mb-3 bg-[#f1f5f9]">
-              {vbByStatus.filter(s => s.count > 0).map(s => (
-                <div key={s.tt} title={`${s.nhan}: ${s.count}`} className="h-full transition-all duration-700"
-                  style={{ width: `${(s.count / (tongVanBan || 1)) * 100}%`, backgroundColor: VB_STATUS_COLOR[s.tt] }} />
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-4">
-              {vbByStatus.map(s => (
-                <div key={s.tt} className="flex items-center gap-1.5 text-[12px] font-medium text-[#475569]">
-                  <span className="w-2.5 h-2.5 rounded-[2px] flex-shrink-0" style={{ backgroundColor: VB_STATUS_COLOR[s.tt] }}></span>
-                  {s.nhan} <span className="font-bold text-[#0f172a]">{s.count}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-[11px] font-semibold text-[#94a3b8] uppercase tracking-wide mb-2">Gần đây</p>
-            <div className="space-y-0.5">
-              {vanBanGanDay.length === 0 && <p className="text-[12px] text-[#94a3b8] py-3">Chưa có văn bản nào.</p>}
-              {vanBanGanDay.map(vb => {
-                const giu = nguoiDangGiu(vb);
-                const meta = TRANG_THAI_META[vb.trangThai];
-                return (
-                  <div key={vb.id} className="flex items-center justify-between gap-3 py-2 border-t border-[#f8fafc] first:border-0">
-                    <div className="min-w-0">
-                      <p className="text-[12.5px] font-semibold text-[#1e293b] truncate">{vb.trichYeu}</p>
-                      <p className="text-[11px] text-[#94a3b8] truncate">{vb.loaiVanBan} · {giu ? `Đang ở ${giu.nguoi}` : "Đã hoàn tất"}</p>
-                    </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${meta.cls}`}>{meta.nhan}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Hình thức tiếp nhận đơn + hồ sơ cần chú ý khác — chỉ vai trò quản lý */}
-        {laVaiTroQuanLy && (
+      {/* ROW 3: Hình thức tiếp nhận đơn + Cơ cấu loại hình án + Hiệu suất cán bộ
+          — gộp chung 1 hàng lưới 4 cột (thay vì 2 hàng riêng, hàng đầu chỉ có 1
+          thẻ 1/3 để trống 2/3 khoảng trắng) — chỉ vai trò quản lý (Trưởng phòng
+          trở lên). */}
+      {laVaiTroQuanLy && (
+      <div className="grid grid-cols-4 gap-5">
+        {/* Hình thức tiếp nhận đơn + hồ sơ cần chú ý khác */}
         <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-[#f1f5f9]">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
@@ -899,7 +833,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               </div>
             ))}
           </div>
-          <div className="p-3.5 bg-[#f8fafc] border-t border-[#f1f5f9] rounded-b-[8px] space-y-2">
+          <div className="p-3.5 bg-[#f8fafc] border-t border-[#f1f5f9] rounded-b-[8px] space-y-2 mt-auto">
             {hoSoCanChuYKhac.map(s => (
               <div key={s.label} className="flex items-center justify-between text-[12px]">
                 <span className="flex items-center gap-1.5 font-medium text-[#475569]">{s.icon} {s.label}</span>
@@ -908,12 +842,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
             ))}
           </div>
         </div>
-        )}
-      </div>
 
-      {/* ROW 3: Secondary widgets — chỉ vai trò quản lý (Trưởng phòng trở lên) */}
-      {laVaiTroQuanLy && (
-      <div className="grid grid-cols-3 gap-5">
         {/* Phân loại án */}
         <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-[#f1f5f9]">
@@ -930,8 +859,8 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                   <span className="text-[13px] font-bold text-[#0f172a]">{type.percent}%</span>
                 </div>
                 <div className="w-full h-[8px] bg-[#f1f5f9] rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${type.color} rounded-full transition-all duration-1000`} 
+                  <div
+                    className={`h-full ${type.color} rounded-full transition-all duration-1000`}
                     style={{ width: `${type.percent}%` }}
                   ></div>
                 </div>
