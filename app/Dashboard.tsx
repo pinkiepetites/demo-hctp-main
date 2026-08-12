@@ -7,13 +7,12 @@ import {
   PieChart,
   ArrowRight,
   FileCheck,
-  Send,
   Inbox,
   Mail,
   Globe,
   UserCheck,
+  Building2,
   Scale,
-  FileQuestion,
   ListChecks,
   RotateCcw,
   Clock,
@@ -237,30 +236,30 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   const officerData = getOfficerData();
   const displayedOfficers = filterOfficer === "all" ? officerData : officerData.filter(o => o.name === filterOfficer);
 
-  // Data for new "Loại án" widget
+  // Cơ cấu loại hình án — đủ 8 loại án, cùng thứ tự với LOAI_AN_SO_SANH để
+  // nhất quán với biểu đồ "So sánh số đơn theo loại án & kết quả" bên dưới.
   const caseTypes = [
-    { label: "Dân sự", percent: 45, color: "bg-[#3498db]" },
     { label: "Hình sự", percent: 30, color: "bg-[#e74c3c]" },
+    { label: "Dân sự", percent: 25, color: "bg-[#3498db]" },
     { label: "Hành chính", percent: 15, color: "bg-[#f39c12]" },
-    { label: "Kinh doanh - Thương mại", percent: 10, color: "bg-[#9b59b6]" },
+    { label: "Kinh doanh thương mại", percent: 10, color: "bg-[#9b59b6]" },
+    { label: "Hôn nhân gia đình", percent: 8, color: "bg-[#16a34a]" },
+    { label: "Lao động", percent: 6, color: "bg-[#06b6d4]" },
+    { label: "Sở hữu trí tuệ", percent: 4, color: "bg-[#ec4899]" },
+    { label: "Phá sản", percent: 2, color: "bg-[#64748b]" },
   ];
 
-  // Đơn theo hình thức tiếp nhận — số liệu ảo, cộng đúng bằng "Tổng số đơn nhận"
-  // kỳ Tuần này (27) để nhất quán với khối KPI phía trên.
+  // Đơn theo hình thức tiếp nhận — đủ 5 hình thức khớp dropdown "Hình thức
+  // nhận" ở màn Thêm mới đơn (App.tsx ~13330). Số liệu ảo, cộng đúng bằng
+  // "Tổng số đơn nhận" kỳ Tuần này (27) để nhất quán với khối KPI phía trên.
   const hinhThucTiepNhan = [
-    { label: "Trực tiếp", value: 12, icon: <UserCheck size={13} />, color: "#3b82f6" },
-    { label: "Bưu điện", value: 9, icon: <Mail size={13} />, color: "#f59e0b" },
-    { label: "Trực tuyến", value: 6, icon: <Globe size={13} />, color: "#22c55e" },
+    { label: "Bưu điện", value: 7, icon: <Mail size={13} />, color: "#f59e0b" },
+    { label: "Điện tử", value: 6, icon: <Globe size={13} />, color: "#22c55e" },
+    { label: "Trực tiếp", value: 8, icon: <UserCheck size={13} />, color: "#3b82f6" },
+    { label: "Nội bộ", value: 2, icon: <Building2 size={13} />, color: "#8b5cf6" },
+    { label: "Tiếp công dân", value: 4, icon: <Users size={13} />, color: "#06b6d4" },
   ];
   const maxHinhThuc = Math.max(...hinhThucTiepNhan.map(h => h.value));
-
-  // Các nhóm hồ sơ cần chú ý khác — dựa theo đúng các trường của Danh sách đơn
-  // (laKhangNghi, choYKienLD, ycbsSo) chưa có mặt ở khối KPI/cảnh báo phía trên.
-  const hoSoCanChuYKhac = [
-    { label: "Hồ sơ kháng nghị đang xử lý", value: 3, icon: <Scale size={13} />, color: "#8b5cf6" },
-    { label: "Chờ ý kiến lãnh đạo", value: 2, icon: <FileQuestion size={13} />, color: "#e67e22" },
-    { label: "Yêu cầu bổ sung chưa phản hồi", value: 4, icon: <Send size={13} />, color: "#0ea5e9" },
-  ];
 
   // Đơn quá hạn giải quyết — số liệu ảo, khớp đúng 10 đơn đã gắn cờ quaHanNam
   // trong SAMPLE_ROWS (Danh sách đơn) để khi bấm "Xem tất cả" sang tab Tổng số
@@ -814,7 +813,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
           trở lên). */}
       {laVaiTroQuanLy && (
       <div className="grid grid-cols-4 gap-5">
-        {/* Hình thức tiếp nhận đơn + hồ sơ cần chú ý khác */}
+        {/* Hình thức tiếp nhận đơn */}
         <div className="col-span-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
           <div className="px-5 py-4 border-b border-[#f1f5f9]">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
@@ -835,14 +834,6 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               </div>
             ))}
           </div>
-          <div className="p-3.5 bg-[#f8fafc] border-t border-[#f1f5f9] rounded-b-[8px] space-y-2 mt-auto">
-            {hoSoCanChuYKhac.map(s => (
-              <div key={s.label} className="flex items-center justify-between text-[12px]">
-                <span className="flex items-center gap-1.5 font-medium text-[#475569]">{s.icon} {s.label}</span>
-                <span className="font-bold" style={{ color: s.color }}>{s.value}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Phân loại án */}
@@ -853,14 +844,14 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               Cơ cấu loại hình án
             </h3>
           </div>
-          <div className="flex-1 p-5 flex flex-col justify-center space-y-5">
+          <div className="flex-1 p-5 flex flex-col justify-center space-y-3">
             {caseTypes.map((type, i) => (
               <div key={i}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-[#334155]">{type.label}</span>
-                  <span className="text-[13px] font-bold text-[#0f172a]">{type.percent}%</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[12.5px] font-semibold text-[#334155]">{type.label}</span>
+                  <span className="text-[12.5px] font-bold text-[#0f172a]">{type.percent}%</span>
                 </div>
-                <div className="w-full h-[8px] bg-[#f1f5f9] rounded-full overflow-hidden">
+                <div className="w-full h-[7px] bg-[#f1f5f9] rounded-full overflow-hidden">
                   <div
                     className={`h-full ${type.color} rounded-full transition-all duration-1000`}
                     style={{ width: `${type.percent}%` }}
