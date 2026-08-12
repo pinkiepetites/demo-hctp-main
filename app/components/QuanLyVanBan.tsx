@@ -1761,7 +1761,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
 // Bố cục theo đúng bản gốc (tabs Tất cả/Chờ duyệt/Đã duyệt/Từ chối, 3 nút thao
 // tác hàng loạt, cột Ý kiến lãnh đạo). Khác bản gốc ở chỗ dữ liệu lấy từ
 // vanBanList chứ không phải mảng ToTrinh riêng — nên tờ trình vừa tạo hiện ngay.
-type TabPD = "all" | "sap_den" | "cho_duyet" | "da_duyet" | "tu_choi";
+export type TabPD = "all" | "sap_den" | "cho_duyet" | "da_duyet" | "tu_choi";
 // Nhóm trạng thái để tô chip ở cột Trạng thái — KHÁC danh sách tab, vì
 // "Sắp đến lượt" là lát cắt theo người chứ không phải một trạng thái.
 type NhomPD = "cho_duyet" | "da_duyet" | "tu_choi";
@@ -1779,13 +1779,14 @@ const NHAN_NHOM: Record<NhomPD, { nhan: string; cls: string }> = {
   tu_choi: { nhan: "Từ chối", cls: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]" },
 };
 
-export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
+export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab = "cho_duyet" }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
+  initialTab?: TabPD;
 }) => {
   // Mở màn là vào thẳng việc cần làm, không phải "Tất cả" rồi tự lọc lại.
-  const [tab, setTab] = useState<TabPD>("cho_duyet");
+  const [tab, setTab] = useState<TabPD>(initialTab);
   const [chonId, setChonId] = useState<string | null>(null);
   const [tick, setTick] = useState<string[]>([]);
   const [hopThoaiTraLai, setHopThoaiTraLai] = useState(false);

@@ -7,7 +7,6 @@ import {
   PieChart,
   ArrowRight,
   FileCheck,
-  Hourglass,
   Send,
   Inbox,
   Mail,
@@ -21,7 +20,7 @@ import {
   CheckCircle2,
   FileText,
   Gavel,
-  HelpCircle,
+  Layers,
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh, type TabDS } from "./components/QuanLyVanBan";
 
@@ -79,7 +78,9 @@ const KPICardDon = ({ title, value, icon, colorClass, bgColorClass, trend }: {
 
 export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDanhSachDon, onXemDonQuaHan, onXemDanhSachVanBan, vanBanList = [], currentRole = "can-bo" }: {
   onXemChiTietHieuSuat?: () => void;
-  onXemPheDuyet?: () => void;
+  /** Bấm "Xem chi tiết" ở card "Tài liệu cần duyệt" / "Tài liệu đã duyệt" —
+   *  sang màn Phê duyệt và đề xuất, mở sẵn tab tương ứng. */
+  onXemPheDuyet?: (tab?: "cho_duyet" | "da_duyet") => void;
   /** Nhấn đúp vào 1 trạng thái trong panel "Phân loại đơn nhận" — đưa số thứ tự
    *  tab (theo tabs của Danh sách đơn) lên App để chuyển màn + chọn đúng tab. */
   onXemDanhSachDon?: (tab: number) => void;
@@ -101,7 +102,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   const { nguoi: nguoiDung } = nguoiTheoVaiTro(currentRole);
   const taiLieuChoDuyet = vanBanList.filter(v => dangChoXuLy(v.trangThai));
   const soTaiLieuCanDuyet = taiLieuChoDuyet.filter(v => nguoiDangGiu(v)?.nguoi === nguoiDung).length;
-  const soTaiLieuDangChoDuyet = taiLieuChoDuyet.length;
+  const soTaiLieuDaDuyet = vanBanList.filter(v => v.trangThai === "DaBanHanh").length;
 
   const [chartPeriod, setChartPeriod] = useState<"day" | "week" | "month" | "year" | "custom">("week");
   const [customStartDate, setCustomStartDate] = useState("");
@@ -136,7 +137,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     "Hôn nhân gia đình", "Lao động", "Sở hữu trí tuệ", "Phá sản",
   ] as const;
   // Loại án rút gọn cho khối "Thống kê đơn nhận {kỳ}" (khớp mockup 4 card).
-  const LOAI_AN_DON_NHAN = ["Hình sự", "Dân sự", "Chưa xác định"] as const;
+  // Card thứ 3 gộp mọi loại án còn lại (Hành chính, KD-TM, HN-GĐ, Lao động,
+  // SHTT, Phá sản...) nên đặt tên "Loại án khác" thay vì "Chưa xác định".
+  const LOAI_AN_DON_NHAN = ["Hình sự", "Dân sự", "Loại án khác"] as const;
   const KET_QUA_LIST: { key: string; color: string }[] = [
     { key: "Đơn trùng", color: "#e74c3c" },
     { key: "Thụ lý mới", color: "#3b82f6" },
@@ -169,12 +172,12 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   // Đơn nhận theo Loại án (khớp báo cáo Phòng HCTP: 27 đơn nhận trong tuần) —
   // nguồn cho khối "Thống kê đơn nhận {kỳ}" của các vai trò quản lý.
   const DON_NHAN_LOAI_AN_TUAN: Record<typeof LOAI_AN_DON_NHAN[number], number> = {
-    "Hình sự": 14, "Dân sự": 10, "Chưa xác định": 3,
+    "Hình sự": 14, "Dân sự": 10, "Loại án khác": 3,
   };
   const DON_NHAN_META: Record<typeof LOAI_AN_DON_NHAN[number], { icon: React.ReactNode; bg: string; color: string }> = {
     "Hình sự": { icon: <Gavel size={24} />, bg: "bg-[#eff6ff]", color: "text-[#3b82f6]" },
     "Dân sự": { icon: <Scale size={24} />, bg: "bg-[#f0fdf4]", color: "text-[#16a34a]" },
-    "Chưa xác định": { icon: <HelpCircle size={24} />, bg: "bg-[#f5f3ff]", color: "text-[#8b5cf6]" },
+    "Loại án khác": { icon: <Layers size={24} />, bg: "bg-[#f5f3ff]", color: "text-[#8b5cf6]" },
   };
   const donNhanLoaiAn = LOAI_AN_DON_NHAN.map(loaiAn => ({
     loaiAn, soLuong: Math.round(DON_NHAN_LOAI_AN_TUAN[loaiAn] * soSanhMult),
@@ -612,16 +615,16 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               icon={<FileCheck size={24} />}
               bgColorClass="bg-[#fef3e2]"
               colorClass="text-[#f39c12]"
-              onXemChiTiet={onXemPheDuyet}
+              onXemChiTiet={() => onXemPheDuyet?.("cho_duyet")}
             />
             <KPICardCoLink
-              title="Tài liệu đang chờ duyệt"
-              value={String(soTaiLieuDangChoDuyet)}
-              trend="Đã gửi, đang trong luồng duyệt"
-              icon={<Hourglass size={24} />}
-              bgColorClass="bg-[#e8f4ff]"
-              colorClass="text-[#1a73e8]"
-              onXemChiTiet={onXemPheDuyet}
+              title="Tài liệu đã duyệt"
+              value={String(soTaiLieuDaDuyet)}
+              trend="Đã hoàn tất luồng duyệt"
+              icon={<CheckCircle2 size={24} />}
+              bgColorClass="bg-[#e8f7ee]"
+              colorClass="text-[#1a7a45]"
+              onXemChiTiet={() => onXemPheDuyet?.("da_duyet")}
             />
           </div>
         </div>

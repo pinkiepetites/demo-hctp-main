@@ -16,7 +16,7 @@ import {
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
   laToTrinhPhanCong, luongToTrinhPhanCong,
   PanelChiTiet, TienTrinhGon, dangChoXuLy,
-  type VanBanTrinh, type BuocKy, type TrangThaiVB, type TabDS,
+  type VanBanTrinh, type BuocKy, type TrangThaiVB, type TabDS, type TabPD,
 } from "./components/QuanLyVanBan";
 
 /** Nhãn ngắn của trạng thái văn bản, dùng cho chip "Đã có trong …" ở Danh sách đơn
@@ -12508,6 +12508,9 @@ export default function App() {
   // Tab mở sẵn ở Danh sách văn bản khi bấm "Xem chi tiết" ở card "Đơn của tôi"
   // trên Trang chủ.
   const [vanBanTrinhKyTab, setVanBanTrinhKyTab] = useState<TabDS>("all");
+  // Tab mở sẵn ở màn Phê duyệt và đề xuất khi bấm "Xem chi tiết" ở card
+  // "Tài liệu cần duyệt" / "Tài liệu đã duyệt" trên Trang chủ.
+  const [pheDuyetTab, setPheDuyetTab] = useState<TabPD>("cho_duyet");
   const [showPopup, setShowPopup] = useState(false);
   const [showBiCaoPopup, setShowBiCaoPopup] = useState(false);
   // Danh sách bị cáo (án hình sự) — điền tự động sau khi tra cứu bản án
@@ -13163,7 +13166,7 @@ export default function App() {
           {view === "home" && (
             <div className="flex-1 overflow-y-auto">
               <Dashboard onXemChiTietHieuSuat={() => setView("hieu_suat_chi_tiet")}
-                onXemPheDuyet={() => setView("phe_duyet")}
+                onXemPheDuyet={(tab) => { setPheDuyetTab(tab ?? "cho_duyet"); setView("phe_duyet"); }}
                 onXemDanhSachDon={(tab) => { setDanhSachDonTab(tab); setDanhSachDonQuaHanOnly(false); setView("list"); }}
                 onXemDonQuaHan={() => { setDanhSachDonTab(0); setDanhSachDonQuaHanOnly(true); setView("list"); }}
                 onXemDanhSachVanBan={(tab) => { setVanBanTrinhKyTab(tab ?? "ChoDuyet"); setView("van_ban_trinh_ky"); }}
@@ -13180,7 +13183,7 @@ export default function App() {
 
           {/* Phê duyệt đề xuất view */}
           {view === "phe_duyet" && (
-            <PheDuyetDeXuat danhSach={vanBanList} setDanhSach={setVanBanList} currentRole={currentRole} />
+            <PheDuyetDeXuat danhSach={vanBanList} setDanhSach={setVanBanList} currentRole={currentRole} initialTab={pheDuyetTab} />
           )}
 
           {/* Danh sách văn bản — hàng đợi cá nhân của cán bộ (lọc mặc định: người tạo = tôi).
