@@ -8169,16 +8169,24 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         <option>Vụ Giám đốc kiểm tra về hành chính</option>
                       </TSel>
                     </TRow>
-                    <TRow label="Ngày chuyển đến">
-                      <TDate value={ui("chuyenDen")} onChange={setUi("chuyenDen")} />
+                    {/* Người nhập đứng cùng hàng với Nơi chuyển ↔ Chuyển đến —
+                        cả ba đều là thông tin định tuyến/người xử lý của đơn.
+                        Ngày chuyển đến đã xuống hàng 8 (cạnh Ngày chuyển từ). */}
+                    <TRow label="Người nhập">
+                      <TSel value={fNguoiNhap} onChange={e => setFNguoiNhap(e.target.value)}>
+                        <option value="">...chọn...</option>
+                        {nguoiNhapOptions.map(o => <option key={o}>{o}</option>)}
+                      </TSel>
                     </TRow>
 
                     {/* Hàng 8 */}
                     <TRow label="Ngày chuyển từ">
                       <TDate value={ui("chuyenTu")} onChange={setUi("chuyenTu")} />
                     </TRow>
-                    <TRow label="Đến ngày">
-                      <TDate value={ui("chuyenTuDen")} onChange={setUi("chuyenTuDen")} />
+                    {/* Ô "Đến ngày" (chuyenTuDen) đã ẩn — bộ Ngày chuyển dùng luôn
+                        Ngày chuyển đến làm mốc kết thúc. */}
+                    <TRow label="Ngày chuyển đến">
+                      <TDate value={ui("chuyenDen")} onChange={setUi("chuyenDen")} />
                     </TRow>
                     <TRow label="Người kháng nghị">
                       <TInp value={ui("nguoiKN")} onChange={e => setUi("nguoiKN")(e.target.value)} />
@@ -8218,14 +8226,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         <option value="">--Tất cả--</option>
                         <option>Thụ lý mới</option><option>Đã thụ lý</option>
                         <option>Chờ ý kiến Lãnh đạo</option><option>Không</option>
-                      </TSel>
-                    </TRow>
-
-                    {/* Hàng 11 */}
-                    <TRow label="Người nhập">
-                      <TSel value={fNguoiNhap} onChange={e => setFNguoiNhap(e.target.value)}>
-                        <option value="">...chọn...</option>
-                        {nguoiNhapOptions.map(o => <option key={o}>{o}</option>)}
                       </TSel>
                     </TRow>
                   </div>
