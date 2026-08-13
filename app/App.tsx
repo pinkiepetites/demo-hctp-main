@@ -5550,18 +5550,6 @@ const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectEleme
 const FLbl = ({ children }: { children: React.ReactNode }) => (
   <label className="block text-[12px] font-medium text-[#333] mb-[3px] whitespace-nowrap">{children}</label>
 );
-// Date range: "Từ ngày → Đến ngày" with calendar icon
-const FDateRange = ({ from, to, onFrom, onTo }: {
-  from?: string; to?: string; onFrom?: (v: string) => void; onTo?: (v: string) => void;
-}) => (
-  <div className="flex items-center gap-1">
-    <input type="date" value={from ?? ""} onChange={e => onFrom?.(e.target.value)}
-      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(from)}`} />
-    <span className="text-[#aaa] text-[11px] flex-shrink-0">→</span>
-    <input type="date" value={to ?? ""} onChange={e => onTo?.(e.target.value)}
-      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(to)}`} />
-  </div>
-);
 // Hình thức đơn — dùng chung cho ô lọc cơ bản, ô lọc nâng cao và form thêm mới
 const HINH_THUC_DON_NHOM: { label: string; items: string[]; danhSo?: boolean }[] = [
   {
@@ -7517,8 +7505,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
   // ── State bộ lọc cơ bản ──
   const [fKeyword, setFKeyword] = useState("");
-  const [fSoToTrinh, setFSoToTrinh] = useState("");
-  const [fMaDon, setFMaDon] = useState("");
   const [fNguoiGui, setFNguoiGui] = useState("");
   const [fSoBA, setFSoBA] = useState("");
   const [fToaBA, setFToaBA] = useState("");
@@ -7527,8 +7513,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   // ── State bộ lọc nâng cao ──
   const [fHinhThucNhan, setFHinhThucNhan] = useState("");
   const [fNguoiNhap, setFNguoiNhap] = useState("");
-  const [fNgayBAFrom, setFNgayBAFrom] = useState("");
-  const [fNgayBATo, setFNgayBATo] = useState("");
+  const [fNgayBA, setFNgayBA] = useState("");
   // Các ô ở panel nâng cao chưa có dữ liệu để lọc — gom 1 chỗ cho gọn
   const [advUI, setAdvUI] = useState<Record<string, string>>({});
   const ui = (k: string) => advUI[k] ?? "";
@@ -7765,8 +7750,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       if (!pool.some(v => contains(v, fKeyword))) return false;
     }
 
-    if (fSoToTrinh && !contains(r.giaiQuyet?.stl, fSoToTrinh) && !contains(d.soCV, fSoToTrinh)) return false;
-    if (fMaDon && !contains(r.maDon, fMaDon)) return false;
     if (fNguoiGui && !contains(r.nguoiGui, fNguoiGui)) return false;
     if (fSoBA && !contains(d.soBaqd, fSoBA)) return false;
     if (fToaBA && d.toaXetXu !== fToaBA) return false;
@@ -7781,16 +7764,16 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     if (fNguoiNhap && r.nguoiNhap !== fNguoiNhap) return false;
     if (fNoiChuyen && r.thongTinChuyenDon !== fNoiChuyen) return false;
     if (fThuLy && trangThai !== fThuLy) return false;
-    if (!inDateRange(d.ngay, fNgayBAFrom, fNgayBATo)) return false;
+    if (!inDateRange(d.ngay, fNgayBA, fNgayBA)) return false;
 
     // "Trạng thái đơn" là suy diễn: chưa đủ điều kiện vs còn lại
     if (fTrangThai === "Đơn không đủ điều kiện" && trangThai !== "Chưa đủ điều kiện") return false;
     if (fTrangThai === "Đơn đủ điều kiện" && trangThai === "Chưa đủ điều kiện") return false;
 
     return true;
-  }), [rowsLD, chiDon, loaiVanBan, fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA,
+  }), [rowsLD, chiDon, loaiVanBan, fKeyword, fNguoiGui, fSoBA, fToaBA,
     fNgayNhapFrom, fNgayNhapTo, fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap,
-    fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai, fQuaHanOnly]);
+    fNoiChuyen, fThuLy, fNgayBA, fTrangThai, fQuaHanOnly]);
 
   const filteredRows = useMemo(
     () => rowsByFilters.filter(TAB_MATCH[activeTab] ?? (() => true)),
@@ -7835,9 +7818,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     () => [...new Set(rows.map(r => r.nguoiNhap).filter(Boolean))].sort(),
     [rows]);
 
-  const soBoLocDangApp = [fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA,
+  const soBoLocDangApp = [fKeyword, fNguoiGui, fSoBA, fToaBA,
     fNgayNhapFrom, fNgayNhapTo, fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap,
-    fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai, loaiVanBan].filter(Boolean).length
+    fNoiChuyen, fThuLy, fNgayBA, fTrangThai, loaiVanBan].filter(Boolean).length
     + (chiDon ? 1 : 0) + (fQuaHanOnly ? 1 : 0);
 
   // Mô tả bộ lọc đang áp — in kèm lên đầu danh sách để biết bản in lấy theo gì
@@ -7852,13 +7835,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       activeTab > 0 ? `Nhóm đơn: ${tabs[activeTab]?.label ?? ""}` : "",
       fQuaHanOnly && "Chỉ hiện: Quá hạn giải quyết",
       fKeyword && `Từ khóa: ${fKeyword}`,
-      fSoToTrinh && `Số tờ trình / văn bản: ${fSoToTrinh}`,
-      fMaDon && `Mã đơn: ${fMaDon}`,
       fNguoiGui && `Người gửi: ${fNguoiGui}`,
       fSoBA && `Số BA/QĐ: ${fSoBA}`,
       fToaBA && `Tòa ra bản án: ${fToaBA}`,
       khoang("Ngày nhập", fNgayNhapFrom, fNgayNhapTo),
-      khoang("Ngày bản án", fNgayBAFrom, fNgayBATo),
+      fNgayBA && `Ngày bản án: ${fNgayBA}`,
       fHinhThuc && `Hình thức đơn: ${fHinhThuc}`,
       fHinhThucNhan && `Hình thức tiếp nhận: ${fHinhThucNhan}`,
       fLoaiAn && `Loại án: ${fLoaiAn}`,
@@ -7869,9 +7850,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       loaiVanBan && `Loại văn bản: ${loaiVanBan}`,
     ].filter(Boolean) as string[];
   },
-    [fKeyword, fSoToTrinh, fMaDon, fNguoiGui, fSoBA, fToaBA, fNgayNhapFrom, fNgayNhapTo,
+    [fKeyword, fNguoiGui, fSoBA, fToaBA, fNgayNhapFrom, fNgayNhapTo,
       fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap, fNoiChuyen, fThuLy,
-      fNgayBAFrom, fNgayBATo, fTrangThai, loaiVanBan, activeTab, tabs, fQuaHanOnly]);
+      fNgayBA, fTrangThai, loaiVanBan, activeTab, tabs, fQuaHanOnly]);
 
   // Tiêu đề bản in dựng từ bộ lọc. Tab quyết định phần lõi; loại án và trạng thái
   // nối thêm khi có. Bản in tách khỏi màn hình nên tiêu đề phải tự nói được
@@ -7899,11 +7880,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         : den ? `${nhan} đến ${den}` : "";
     const phan = [
       khoang("Ngày nhập", fNgayNhapFrom, fNgayNhapTo),
-      khoang("Ngày bản án", fNgayBAFrom, fNgayBATo),
+      fNgayBA && `Ngày bản án ${fNgayBA}`,
       selectedRows.length ? `${selectedRows.length} đơn được chọn` : "",
     ].filter(Boolean);
     return phan.join(" · ");
-  }, [fNgayNhapFrom, fNgayNhapTo, fNgayBAFrom, fNgayBATo, selectedRows]);
+  }, [fNgayNhapFrom, fNgayNhapTo, fNgayBA, selectedRows]);
 
   // In danh sách: ưu tiên các dòng đang tích, không tích thì lấy toàn bộ kết quả lọc
   const rowsDeIn = selectedRows.length
@@ -7911,18 +7892,23 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     : filteredRows;
 
   const xoaBoLoc = () => {
-    setFKeyword(""); setFSoToTrinh(""); setFMaDon(""); setFNguoiGui(""); setFSoBA("");
+    setFKeyword(""); setFNguoiGui(""); setFSoBA("");
     setFToaBA(""); setFNgayNhapFrom(""); setFNgayNhapTo(""); setFHinhThuc("");
     setFHinhThucNhan(""); setFLoaiAn(""); setFNguoiNhap(""); setFNoiChuyen("");
-    setFDonVi(""); setFThuLy(""); setFNgayBAFrom(""); setFNgayBATo(""); setFTrangThai("");
+    setFDonVi(""); setFThuLy(""); setFNgayBA(""); setFTrangThai("");
     setFAnTuHinhSelect(""); setLoaiVanBan(""); setAdvUI({}); setChiDon(false);
     setFQuaHanOnly(false);
   };
 
-  // Số điều kiện đang áp ở phần thu gọn — để người dùng biết có gì đang chạy ngầm
+  // Số điều kiện đang áp ở phần thu gọn — để người dùng biết có gì đang chạy ngầm.
+  // Ngày BA/QĐ, Địa chỉ gửi đơn/chi tiết, Trả lời đơn giờ đã hiện sẵn ở bộ lọc
+  // cơ bản nên không tính vào đây nữa — tính sẽ khiến badge báo "có điều kiện
+  // ẩn" dù người dùng đang nhìn thấy ngay trên màn hình.
+  const CAC_KHOA_DA_LEN_CO_BAN = new Set(["diaChiGui", "diaChiCT", "traLoiDon"]);
   const soDieuKienPhu = [fHinhThucNhan, fLoaiAn, fNguoiNhap, fNoiChuyen, fThuLy,
-    fNgayBAFrom, fNgayBATo, fTrangThai, fDonVi, fAnTuHinhSelect]
-    .concat(Object.values(advUI)).filter(Boolean).length;
+    fTrangThai, fDonVi, fAnTuHinhSelect]
+    .concat(Object.entries(advUI).filter(([k]) => !CAC_KHOA_DA_LEN_CO_BAN.has(k)).map(([, v]) => v))
+    .filter(Boolean).length;
 
   return (
     <div className="bg-[#eef1f5] min-h-full">
@@ -7961,36 +7947,80 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           {/* ── Filter section ── */}
           <div className="border-b border-[#ddd] px-3 pt-3 pb-2">
             <div className="space-y-2">
-              {/* Row 1 — luôn hiện, tối ưu tìm kiếm chung */}
-              <div className="grid grid-cols-6 gap-x-3 gap-y-3">
-                <div className="col-span-2"><FLbl>Từ khóa tìm kiếm chung</FLbl><FInp placeholder="Nhập bất kỳ thông tin nào (người gửi, nội dung...)" value={fKeyword} onChange={e => setFKeyword(e.target.value)} /></div>
-                <div><FLbl>Số tờ trình / Văn bản</FLbl><FInp placeholder="Nhập số tờ trình/văn bản" value={fSoToTrinh} onChange={e => setFSoToTrinh(e.target.value)} /></div>
-                <div><FLbl>Mã đơn / Số hiệu đơn</FLbl><FInp placeholder="Nhập mã đơn" value={fMaDon} onChange={e => setFMaDon(e.target.value)} /></div>
-                <div><FLbl>Hình thức đơn</FLbl><FSel value={fHinhThuc} onChange={(e: any) => setFHinhThuc(e.target.value)}><option value="">Tất cả hình thức</option>{optionsHinhThucDon()}</FSel></div>
-                <div><FLbl>Người gửi</FLbl><FInp placeholder="Nhập tên người gửi" value={fNguoiGui} onChange={e => setFNguoiGui(e.target.value)} /></div>
-              </div>
-
-              {/* Row 2 — luôn hiện */}
-              <div className="grid grid-cols-6 gap-x-3 items-end mt-3">
-                <div><FLbl>Số bản án/QĐ</FLbl><FInp placeholder="Nhập số bản án/QĐ" value={fSoBA} onChange={e => setFSoBA(e.target.value)} /></div>
-                <div><FLbl>Tòa ra bản án / quyết định</FLbl><FSel value={fToaBA} onChange={(e: any) => setFToaBA(e.target.value)}><option value="">Chọn tòa</option>{toaOptions.map(o => <option key={o} value={o}>{vietTatTAND(o)}</option>)}</FSel></div>
-                <div><FLbl>Ngày nhập</FLbl><FDateRange from={fNgayNhapFrom} to={fNgayNhapTo} onFrom={setFNgayNhapFrom} onTo={setFNgayNhapTo} /></div>
-                <div className="col-span-3 flex items-end h-[30px] gap-5">
-                  <label className="flex items-center gap-1.5 text-[12px] text-[#333] cursor-pointer whitespace-nowrap">
-                    <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
+              {/* Row 1 — luôn hiện, giữ từ khóa tìm kiếm chung + hình thức đơn.
+                  Nhãn bên trái ô nhập (TRow) như các hàng dưới, thay vì nhãn
+                  nằm trên. Không col-span để độ rộng khớp đúng cột Người gửi /
+                  Số BA/QĐ ở hàng dưới; cột 3 (thẳng hàng ô Hình thức đơn) giờ
+                  còn trống nên đặt 2 checkbox vào đây, cùng hàng luôn. */}
+              <div className="grid grid-cols-3 gap-x-7">
+                <TRow label="Từ khóa tìm kiếm chung">
+                  <TInp placeholder="Nhập bất kỳ thông tin nào (người gửi, nội dung...)" value={fKeyword} onChange={e => setFKeyword(e.target.value)} />
+                </TRow>
+                <TRow label="Hình thức đơn">
+                  <TSel value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)}>
+                    <option value="">Tất cả hình thức</option>{optionsHinhThucDon()}
+                  </TSel>
+                </TRow>
+                <div className="flex flex-col justify-center gap-1 min-h-[30px]">
+                  <label className="flex items-center gap-1.5 text-[11px] text-[#333] cursor-pointer whitespace-nowrap" title="Đơn đã giải quyết xong từ tòa Cấp cao">
+                    <input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a] flex-shrink-0"
                       checked={ui("daGiaiQuyetCapCao") === "1"}
                       onChange={e => setUi("daGiaiQuyetCapCao")(e.target.checked ? "1" : "")} />
-                    Đơn đã giải quyết xong từ tòa Cấp cao
+                    <span className="truncate">Đơn đã giải quyết xong từ tòa Cấp cao</span>
                   </label>
                   {/* Mặc định danh sách gồm CẢ đơn và hồ sơ kháng nghị; tích để
-                      chỉ còn đơn. */}
-                  <label className="flex items-center gap-1.5 text-[12px] text-[#333] cursor-pointer whitespace-nowrap">
-                    <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
+                      chỉ còn đơn. Rút gọn phần giải thích trong ngoặc thành
+                      tooltip (title) để không tràn khỏi cột — chữ đầy đủ vẫn
+                      xem được khi rê chuột. */}
+                  <label className="flex items-center gap-1.5 text-[11px] text-[#333] cursor-pointer whitespace-nowrap" title="Chỉ danh sách đơn (không tính hồ sơ kháng nghị)">
+                    <input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a] flex-shrink-0"
                       checked={chiDon} onChange={e => setChiDon(e.target.checked)} />
-                    Chỉ danh sách đơn
-                    <span className="text-[#888]">(không tính hồ sơ kháng nghị)</span>
+                    Chỉ danh sách đơn <span className="text-[#888]">(không tính...)</span>
                   </label>
                 </div>
+              </div>
+
+              {/* Row 2-4 — luôn hiện, bố cục 3 cột theo đúng bản mẫu; các trường
+                  này trước nằm trong khối "Điều kiện tìm kiếm khác" nay dời lên
+                  đây, không còn lặp lại ở dưới. Dùng TRow/TInp cỡ nhỏ (như panel
+                  nâng cao) thay vì FLbl/FInp cho gọn, đỡ chiếm chiều cao. */}
+              <div className="grid grid-cols-3 gap-x-7 gap-y-0 mt-2">
+                <TRow label="Người gửi">
+                  <TInp placeholder="Nhập tên người gửi" value={fNguoiGui} onChange={e => setFNguoiGui(e.target.value)} />
+                </TRow>
+                <TRow label="Số BA/QĐ">
+                  <TInp placeholder="Nhập số bản án/QĐ" value={fSoBA} onChange={e => setFSoBA(e.target.value)} />
+                </TRow>
+                <TRow label="Ngày BA/QĐ">
+                  <TDate value={fNgayBA} onChange={setFNgayBA} />
+                </TRow>
+
+                <TRow label="Tòa ra BA/QĐ">
+                  <TSel value={fToaBA} onChange={e => setFToaBA(e.target.value)}>
+                    <option value="">Chọn tòa</option>{toaOptions.map(o => <option key={o} value={o}>{vietTatTAND(o)}</option>)}
+                  </TSel>
+                </TRow>
+                <TRow label="Ngày nhập từ">
+                  <TDate value={fNgayNhapFrom} onChange={setFNgayNhapFrom} />
+                </TRow>
+                <TRow label="Đến ngày">
+                  <TDate value={fNgayNhapTo} onChange={setFNgayNhapTo} />
+                </TRow>
+
+                <TRow label="Địa chỉ gửi đơn">
+                  <ComboNhapChon value={ui("diaChiGui")} onChange={setUi("diaChiGui")}
+                    nhomGoiY={[{ nhom: "", items: TINH_TP }]}
+                    placeholder="Tìm hoặc chọn tỉnh/huyện" chiTrongDanhMuc />
+                </TRow>
+                <TRow label="Địa chỉ chi tiết">
+                  <TInp value={ui("diaChiCT")} onChange={e => setUi("diaChiCT")(e.target.value)} />
+                </TRow>
+                <TRow label="Trả lời đơn">
+                  <TSel value={ui("traLoiDon")} onChange={e => setUi("traLoiDon")(e.target.value)}>
+                    <option value="">--- Tất cả ---</option><option>Đã trả lời</option><option>Chưa trả lời</option>
+                    <option>Chưa xác định</option>
+                  </TSel>
+                </TRow>
               </div>
 
               {/* Các ô còn lại nối tiếp ngay bên dưới — cùng một khối tìm kiếm,
@@ -8007,235 +8037,197 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   )}
                 </button>
                   <div className={moNangCao ? "" : "hidden"}>
-                    {/* Các trường cùng định danh một đối tượng (bản án, thụ lý,
-                        công văn chuyển đến) gộp chung một dòng thành bộ, không
-                        để rời rạc ở các cột khác nhau như trước. */}
-                    <div className="space-y-2 pb-3 mb-2">
-                      <div className="grid grid-cols-2 gap-x-7">
-                        {/* Số BA/QĐ đã có ở bộ lọc cơ bản (Row 2) — bỏ để không lặp;
-                            "từ ngày" gộp cùng "đến ngày" (vốn tách rời ở dưới) thành
-                            một bộ khoảng ngày trọn vẹn, không để ô trống. */}
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Ngày BA/QĐ</span>
-                          <FDateRange from={fNgayBAFrom} to={fNgayBATo} onFrom={setFNgayBAFrom} onTo={setFNgayBATo} />
-                        </div>
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Ngày thụ lý</span>
-                          <FDateRange from={ui("thuLyTu")} to={ui("thuLyDen")} onFrom={setUi("thuLyTu")} onTo={setUi("thuLyDen")} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-7">
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Số thụ lý</span>
-                          <TInp value={ui("soThuLy")} onChange={e => setUi("soThuLy")(e.target.value)} />
-                        </div>
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Tên cơ quan chuyển đến</span>
-                          <TInp value={ui("coQuanChuyen")} onChange={e => setUi("coQuanChuyen")(e.target.value)} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-7">
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Số CV/PC đến</span>
-                          <TInp value={ui("soCVPC")} onChange={e => setUi("soCVPC")(e.target.value)} />
-                        </div>
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Ngày CV/PC</span>
-                          <TDate value={ui("ngayCVPC")} onChange={setUi("ngayCVPC")} />
-                        </div>
-                      </div>
-                    </div>
-
+                  {/* ── Lưới 3 cột, xếp theo HÀNG ──
+                      Thứ tự do nghiệp vụ chốt theo từng hàng ngang, nên khối này
+                      là một lưới chảy theo hàng: TRow thứ n rơi vào cột (n mod 3).
+                      Nhờ vậy các bộ trường đi liền nhau nằm chung một dòng —
+                      Nhận đơn từ ↔ Đến ngày, Ngày thụ lý từ ↔ Đến ngày ↔ Số thụ lý,
+                      Nơi chuyển ↔ Chuyển đến, Ngày chuyển từ ↔ Đến ngày.
+                      Số BA/QĐ, Ngày BA/QĐ, Địa chỉ gửi đơn / chi tiết, Trả lời đơn
+                      đã có ở bộ lọc cơ bản nên không lặp lại ở đây. */}
                   <div className="grid grid-cols-3 gap-x-7">
+                    {/* Hàng 1 */}
+                    <TRow label="Phạm vi tìm kiếm">
+                      <TSel value={ui("phamVi")} onChange={e => setUi("phamVi")(e.target.value)}>
+                        <option value="">Tất cả</option>
+                        <option>Đơn vị của tôi</option>
+                        <option>Toàn hệ thống</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Nhận đơn từ">
+                      <TDate value={ui("nhanDonTu")} onChange={setUi("nhanDonTu")} />
+                    </TRow>
+                    <TRow label="Đến ngày">
+                      <TDate value={ui("nhanDonDen")} onChange={setUi("nhanDonDen")} />
+                    </TRow>
 
-                    {/* ── Cột 1 + Cột 2 ──
-                        Gộp 2 cột này vào một lưới 2-cột chung (thay vì 2 <div>
-                        rời) để "Nơi chuyển" luôn nằm đúng hàng với "Chuyển đến"
-                        và các trường phía dưới nó, không lệch hàng theo kiểu
-                        canh lề tình cờ như trước. Ngày thụ lý và Tên cơ quan
-                        chuyển đơn đã gộp vào các bộ trường phía trên (cùng Số
-                        thụ lý / Số CV-PC / Ngày CV-PC). */}
-                    <div className="col-span-2 grid grid-cols-2 gap-x-7">
-                      <TRow label="Địa chỉ gửi đơn">
-                        <ComboNhapChon value={ui("diaChiGui")} onChange={setUi("diaChiGui")}
-                          nhomGoiY={[{ nhom: "", items: TINH_TP }]}
-                          placeholder="Tìm hoặc chọn tỉnh/huyện" chiTrongDanhMuc />
-                      </TRow>
-                      <TRow label="Địa chỉ chi tiết">
-                        <TInp value={ui("diaChiCT")} onChange={e => setUi("diaChiCT")(e.target.value)} />
-                      </TRow>
+                    {/* Hàng 2 */}
+                    <TRow label="Tên cơ quan chuyển đơn">
+                      <TInp value={ui("coQuanChuyen")} onChange={e => setUi("coQuanChuyen")(e.target.value)} />
+                    </TRow>
+                    <TRow label="Số CV/PC đến">
+                      <TInp value={ui("soCVPC")} onChange={e => setUi("soCVPC")(e.target.value)} />
+                    </TRow>
+                    <TRow label="Ngày CV/PC">
+                      <TDate value={ui("ngayCVPC")} onChange={setUi("ngayCVPC")} />
+                    </TRow>
 
-                      <TRow label="Hình thức nhận">
-                        <TSel value={fHinhThucNhan} onChange={e => setFHinhThucNhan(e.target.value)}>
-                          <option value="">--- Tất cả ---</option>
-                          <option>Bưu điện</option><option>Điện tử</option><option>Trực tiếp</option>
-                          <option>Trực tuyến</option><option>Nội bộ</option><option>Tiếp công dân</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Số CMND/CCCD">
-                        <TInp value={ui("cccd")} onChange={e => setUi("cccd")(e.target.value)} />
-                      </TRow>
+                    {/* Hàng 3 */}
+                    <TRow label="Ngày thụ lý từ">
+                      <TDate value={ui("thuLyTu")} onChange={setUi("thuLyTu")} />
+                    </TRow>
+                    <TRow label="Đến ngày">
+                      <TDate value={ui("thuLyDen")} onChange={setUi("thuLyDen")} />
+                    </TRow>
+                    <TRow label="Số thụ lý">
+                      <TInp value={ui("soThuLy")} onChange={e => setUi("soThuLy")(e.target.value)} />
+                    </TRow>
 
-                      <TRow label="Phạm vi tìm kiếm">
-                        <TSel value={ui("phamVi")} onChange={e => setUi("phamVi")(e.target.value)}>
-                          <option value="">Tất cả</option>
-                          <option>Đơn vị của tôi</option>
-                          <option>Toàn hệ thống</option>
+                    {/* Hàng 4 */}
+                    <TRow label="Loại công văn">
+                      <div className="grid grid-cols-[1fr_96px] gap-1.5">
+                        <TSel value={ui("loaiCongVan")} onChange={e => setUi("loaiCongVan")(e.target.value)}>
+                          <option value="">-- Chọn loại công văn --</option>
+                          {LOAI_CONG_VAN_LE.map(o => <option key={o}>{o}</option>)}
+                          {LOAI_CONG_VAN_NHOM.map(g => (
+                            <optgroup key={g.label} label={g.label}>
+                              {g.items.map(o => <option key={o}>{o}</option>)}
+                            </optgroup>
+                          ))}
                         </TSel>
-                      </TRow>
-                      <TRow label="Nhận đơn từ">
-                        <TDate value={ui("nhanDonTu")} onChange={setUi("nhanDonTu")} />
-                      </TRow>
+                        <TInp value={ui("soCVChuyenDen")} onChange={e => setUi("soCVChuyenDen")(e.target.value)}
+                          placeholder="Nhập số" />
+                      </div>
+                    </TRow>
+                    <TRow label="Hình thức nhận">
+                      <TSel value={fHinhThucNhan} onChange={e => setFHinhThucNhan(e.target.value)}>
+                        <option value="">--- Tất cả ---</option>
+                        <option>Bưu điện</option><option>Điện tử</option><option>Trực tiếp</option>
+                        <option>Trực tuyến</option><option>Nội bộ</option><option>Tiếp công dân</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Số CMND/CCCD">
+                      <TInp value={ui("cccd")} onChange={e => setUi("cccd")(e.target.value)} />
+                    </TRow>
 
-                      <TRow label="Thẩm phán">
-                        <div className="grid grid-cols-[112px_1fr] gap-1.5">
-                          <TSel value={ui("bacTP")} onChange={e => setUi("bacTP")(e.target.value)}>
-                            <option>Thẩm phán bậc 3</option>
-                            <option>Thẩm phán TANDTC</option>
-                          </TSel>
-                          <TSel value={ui("tenTP")} onChange={e => setUi("tenTP")(e.target.value)}>
-                            <option value="">--- Chọn ---</option>
-                            <option>Nguyễn Thế Lệ - 20/10/1966</option>
-                            <option>Ngô Hồng Phúc - 05/02/1970</option>
-                            <option>Nguyễn Như Thắng - 18/07/1973</option>
-                          </TSel>
-                        </div>
-                      </TRow>
-                      <TRow label="Lãnh đạo chỉ đạo?">
-                        <TSel value={ui("lanhDaoChiDao")} onChange={e => setUi("lanhDaoChiDao")(e.target.value)}>
-                          <option value="">---Tất cả---</option><option>Có</option><option>Không</option>
-                        </TSel>
-                      </TRow>
+                    {/* Hàng 5 */}
+                    <TRow label="Thủ tục giải quyết">
+                      <TSel value={ui("thuTuc")} onChange={e => setUi("thuTuc")(e.target.value)}>
+                        <option value="">--Tất cả--</option>
+                        <option>Giám đốc thẩm</option><option>Tái thẩm</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Trạng thái đơn">
+                      <TSel value={fTrangThai} onChange={e => setFTrangThai(e.target.value)}>
+                        <option value="">--- Tất cả ---</option>
+                        <option>Đơn đủ điều kiện</option><option>Đơn không đủ điều kiện</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Số QĐKN">
+                      <TInp value={ui("soQDKN")} onChange={e => setUi("soQDKN")(e.target.value)} />
+                    </TRow>
 
-                      {/* Ô trống — cân hàng vì cột phải còn "Loại công văn" chưa
-                          có ô tương ứng bên trái. */}
-                      <div />
-                      <TRow label="Loại công văn">
-                        <div className="grid grid-cols-[1fr_96px] gap-1.5">
-                          <TSel value={ui("loaiCongVan")} onChange={e => setUi("loaiCongVan")(e.target.value)}>
-                            <option value="">-- Chọn loại công văn --</option>
-                            {LOAI_CONG_VAN_LE.map(o => <option key={o}>{o}</option>)}
-                            {LOAI_CONG_VAN_NHOM.map(g => (
-                              <optgroup key={g.label} label={g.label}>
-                                {g.items.map(o => <option key={o}>{o}</option>)}
-                              </optgroup>
-                            ))}
-                          </TSel>
-                          <TInp value={ui("soCVChuyenDen")} onChange={e => setUi("soCVChuyenDen")(e.target.value)}
-                            placeholder="Nhập số" />
-                        </div>
-                      </TRow>
+                    {/* Hàng 6 */}
+                    <TRow label="Thẩm phán">
+                      <div className="grid grid-cols-[112px_1fr] gap-1.5">
+                        <TSel value={ui("bacTP")} onChange={e => setUi("bacTP")(e.target.value)}>
+                          <option>Thẩm phán bậc 3</option>
+                          <option>Thẩm phán TANDTC</option>
+                        </TSel>
+                        <TSel value={ui("tenTP")} onChange={e => setUi("tenTP")(e.target.value)}>
+                          <option value="">--- Chọn ---</option>
+                          <option>Nguyễn Thế Lệ - 20/10/1966</option>
+                          <option>Ngô Hồng Phúc - 05/02/1970</option>
+                          <option>Nguyễn Như Thắng - 18/07/1973</option>
+                        </TSel>
+                      </div>
+                    </TRow>
+                    <TRow label="Lãnh đạo chỉ đạo?">
+                      <TSel value={ui("lanhDaoChiDao")} onChange={e => setUi("lanhDaoChiDao")(e.target.value)}>
+                        <option value="">---Tất cả---</option><option>Có</option><option>Không</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Trại giam">
+                      <ComboNhapChon value={ui("traiGiam")} onChange={setUi("traiGiam")}
+                        nhomGoiY={[{ nhom: "", items: ["Không"] }, ...DON_VI_TRAI_GIAM]}
+                        placeholder="Tìm hoặc chọn trại giam" chiTrongDanhMuc />
+                    </TRow>
 
-                      {/* ── Từ đây, mỗi hàng là một bộ Nơi chuyển ↔ Chuyển đến ── */}
-                      <TRow label="Nơi chuyển" bold>
-                        <TSel value={fNoiChuyen} onChange={e => { setFNoiChuyen(e.target.value); setFDonVi(""); }}>
-                          <option value="">--- Tất cả ---</option>
-                          <option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Chuyển đến" bold>
-                        <TSel value={fDonVi} onChange={e => setFDonVi(e.target.value)}>
-                          <option value="">--- Tất cả ---</option>
-                          <option>Vụ Pháp chế và Quản lý khoa học</option>
-                          <option>Vụ Giám đốc kiểm tra về hình sự</option>
-                          <option>Vụ Giám đốc kiểm tra về dân sự</option>
-                          <option>Vụ Giám đốc kiểm tra về hành chính</option>
-                        </TSel>
-                      </TRow>
+                    {/* Hàng 7 */}
+                    <TRow label="Nơi chuyển" bold>
+                      <TSel value={fNoiChuyen} onChange={e => { setFNoiChuyen(e.target.value); setFDonVi(""); }}>
+                        <option value="">--- Tất cả ---</option>
+                        <option>Nội bộ</option><option>Tòa khác</option><option>Ngoài tòa án</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Chuyển đến" bold>
+                      <TSel value={fDonVi} onChange={e => setFDonVi(e.target.value)}>
+                        <option value="">--- Tất cả ---</option>
+                        <option>Vụ Pháp chế và Quản lý khoa học</option>
+                        <option>Vụ Giám đốc kiểm tra về hình sự</option>
+                        <option>Vụ Giám đốc kiểm tra về dân sự</option>
+                        <option>Vụ Giám đốc kiểm tra về hành chính</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Ngày chuyển đến">
+                      <TDate value={ui("chuyenDen")} onChange={setUi("chuyenDen")} />
+                    </TRow>
 
-                      <TRow label="Chuyển tới CA/TA?">
-                        <TSel value={ui("chuyenCATA")} onChange={e => setUi("chuyenCATA")(e.target.value)}>
-                          <option value="">--Tất cả--</option><option>Có</option><option>Không</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Loại án">
-                        <div className="grid grid-cols-2 gap-2">
-                          <TSel value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)}>
-                            <option value="">Tất cả</option>
-                            <option>Hình sự</option><option>Dân sự</option><option>Hành chính</option>
-                            <option>KDTM</option><option>HN-GĐ</option><option>Lao động</option>
-                          </TSel>
-                          <div>
-                            <span className="block text-[11px] text-[#666] mb-0.5">Thụ lý đơn</span>
-                            <TSel value={fThuLy} onChange={e => setFThuLy(e.target.value)}>
-                              <option value="">--Tất cả--</option>
-                              <option>Thụ lý mới</option><option>Đã thụ lý</option>
-                              <option>Chờ ý kiến Lãnh đạo</option><option>Không</option>
-                            </TSel>
-                          </div>
-                        </div>
-                      </TRow>
+                    {/* Hàng 8 */}
+                    <TRow label="Ngày chuyển từ">
+                      <TDate value={ui("chuyenTu")} onChange={setUi("chuyenTu")} />
+                    </TRow>
+                    <TRow label="Đến ngày">
+                      <TDate value={ui("chuyenTuDen")} onChange={setUi("chuyenTuDen")} />
+                    </TRow>
+                    <TRow label="Người kháng nghị">
+                      <TInp value={ui("nguoiKN")} onChange={e => setUi("nguoiKN")(e.target.value)} />
+                    </TRow>
 
-                      <TRow label="Ngày chuyển từ">
-                        <TDate value={ui("chuyenTu")} onChange={setUi("chuyenTu")} />
-                      </TRow>
-                      <TRow label="Thủ tục giải quyết">
-                        <TSel value={ui("thuTuc")} onChange={e => setUi("thuTuc")(e.target.value)}>
-                          <option value="">--Tất cả--</option>
-                          <option>Giám đốc thẩm</option><option>Tái thẩm</option>
-                        </TSel>
-                      </TRow>
+                    {/* Hàng 9 */}
+                    <TRow label="Án tử hình">
+                      <TSel value={fAnTuHinhSelect} onChange={e => setFAnTuHinhSelect(e.target.value)}>
+                        <option value="">--- Tất cả ---</option><option>Có</option><option>Không</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Trạng thái chuyển">
+                      <TSel value={ui("ttChuyen")} onChange={e => setUi("ttChuyen")(e.target.value)}>
+                        <option value="">--- Tất cả ---</option>
+                        <option>Chưa chuyển</option><option>Đã chuyển</option><option>Đã nhận</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Ngày QĐKN">
+                      <TDate value={ui("ngayQDKN")} onChange={setUi("ngayQDKN")} />
+                    </TRow>
 
-                      <TRow label="Án tử hình">
-                        <TSel value={fAnTuHinhSelect} onChange={e => setFAnTuHinhSelect(e.target.value)}>
-                          <option value="">--- Tất cả ---</option><option>Có</option><option>Không</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Người nhập">
-                        <TSel value={fNguoiNhap} onChange={e => setFNguoiNhap(e.target.value)}>
-                          <option value="">...chọn...</option>
-                          {nguoiNhapOptions.map(o => <option key={o}>{o}</option>)}
-                        </TSel>
-                      </TRow>
+                    {/* Hàng 10 */}
+                    <TRow label="Chuyển tới CA/TA?">
+                      <TSel value={ui("chuyenCATA")} onChange={e => setUi("chuyenCATA")(e.target.value)}>
+                        <option value="">--Tất cả--</option><option>Có</option><option>Không</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Loại án">
+                      <TSel value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)}>
+                        <option value="">Tất cả</option>
+                        <option>Hình sự</option><option>Dân sự</option><option>Hành chính</option>
+                        <option>KDTM</option><option>HN-GĐ</option><option>Lao động</option>
+                      </TSel>
+                    </TRow>
+                    <TRow label="Thụ lý đơn">
+                      <TSel value={fThuLy} onChange={e => setFThuLy(e.target.value)}>
+                        <option value="">--Tất cả--</option>
+                        <option>Thụ lý mới</option><option>Đã thụ lý</option>
+                        <option>Chờ ý kiến Lãnh đạo</option><option>Không</option>
+                      </TSel>
+                    </TRow>
 
-                      <TRow label="Trạng thái chuyển">
-                        <TSel value={ui("ttChuyen")} onChange={e => setUi("ttChuyen")(e.target.value)}>
-                          <option value="">--- Tất cả ---</option>
-                          <option>Chưa chuyển</option><option>Đã chuyển</option><option>Đã nhận</option>
-                        </TSel>
-                      </TRow>
-                      <div />
-                    </div>
-
-                    {/* ── Cột 3 ──
-                        Mã đơn/Số hiệu đơn và Số tờ trình/Văn bản đã nằm ở bộ lọc
-                        cơ bản; Ngày CV/PC và Ngày thụ lý đến đã gộp lên bộ
-                        trường phía trên. Thụ lý đơn đã ghép cùng Loại án ở cột
-                        1-2; Thủ tục giải quyết giờ có hàng riêng, không còn
-                        ghép với "Đến ngày" (đã gộp vào bộ Ngày BA/QĐ ở trên). */}
-                    <div>
-                      <TRow label="Trả lời đơn">
-                        <TSel value={ui("traLoiDon")} onChange={e => setUi("traLoiDon")(e.target.value)}>
-                          <option value="">--- Tất cả ---</option><option>Đã trả lời</option><option>Chưa trả lời</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Nhận đơn đến">
-                        <TDate value={ui("nhanDonDen")} onChange={setUi("nhanDonDen")} />
-                      </TRow>
-                      <TRow label="Ngày chuyển đến">
-                        <TDate value={ui("chuyenDen")} onChange={setUi("chuyenDen")} />
-                      </TRow>
-                      <TRow label="Trại giam">
-                        <ComboNhapChon value={ui("traiGiam")} onChange={setUi("traiGiam")}
-                          nhomGoiY={[{ nhom: "", items: ["Không"] }, ...DON_VI_TRAI_GIAM]}
-                          placeholder="Tìm hoặc chọn trại giam" chiTrongDanhMuc />
-                      </TRow>
-                      <TRow label="Trạng thái đơn">
-                        <TSel value={fTrangThai} onChange={e => setFTrangThai(e.target.value)}>
-                          <option value="">--- Tất cả ---</option>
-                          <option>Đơn đủ điều kiện</option><option>Đơn không đủ điều kiện</option>
-                        </TSel>
-                      </TRow>
-                      <TRow label="Số QĐKN">
-                        <TInp value={ui("soQDKN")} onChange={e => setUi("soQDKN")(e.target.value)} />
-                      </TRow>
-                      <TRow label="Người kháng nghị">
-                        <TInp value={ui("nguoiKN")} onChange={e => setUi("nguoiKN")(e.target.value)} />
-                      </TRow>
-                      <TRow label="Ngày QĐKN">
-                        <TDate value={ui("ngayQDKN")} onChange={setUi("ngayQDKN")} />
-                      </TRow>
-                    </div>
+                    {/* Hàng 11 */}
+                    <TRow label="Người nhập">
+                      <TSel value={fNguoiNhap} onChange={e => setFNguoiNhap(e.target.value)}>
+                        <option value="">...chọn...</option>
+                        {nguoiNhapOptions.map(o => <option key={o}>{o}</option>)}
+                      </TSel>
+                    </TRow>
                   </div>
                   </div>
               </div>

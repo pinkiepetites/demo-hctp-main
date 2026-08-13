@@ -443,6 +443,64 @@ const MauGiayXacNhan = ({ so, ngay, row }: { so: string; ngay: string; row?: any
   );
 };
 
+// Biểu mẫu: Trả lại đơn — đơn không được thụ lý nên KHÔNG có nội dung phân
+// công thẩm phán, chỉ nêu lý do trả lại và yêu cầu (nếu cán bộ có nhập).
+const MauTraLaiDon = ({ so, ngay, row }: { so: string; ngay: string; row?: any }) => {
+  const d = row?.thongTinDon ?? {};
+  // lý do/yêu cầu trả lại do cán bộ nhập ở màn Sửa đơn, lưu vào lịch sử xử lý
+  // (mục 5) — lấy từ lần xử lý gần nhất thay vì bịa trường mới trên đơn.
+  const rawData = row?.processingHistory?.length
+    ? row.processingHistory[row.processingHistory.length - 1].rawData
+    : undefined;
+  const lyDo = rawData?.lyDoTraLai || "……";
+  const yeuCau = rawData?.yeuCauTraLai || "";
+  return (
+    <TrangA4>
+      <div className="grid grid-cols-2 text-center text-[13px]">
+        <div>
+          <div>TÒA ÁN NHÂN DÂN TỐI CAO</div>
+          <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="mt-3">Số: {so}/TANDTC-VP</div>
+        </div>
+        <div>
+          <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+          <div className="font-bold mt-1.5">Độc lập - Tự do - Hạnh phúc</div>
+          <div className="w-[185px] h-[1px] bg-black mx-auto mt-1" />
+          <div className="italic mt-3">{ngay}</div>
+        </div>
+      </div>
+
+      <div className="text-center mt-8">
+        <div className="text-[15px] font-bold">THÔNG BÁO</div>
+        <div className="text-[14px] font-bold mt-1">Về việc trả lại đơn</div>
+      </div>
+
+      <div className="mt-7 pl-[70px]">
+        <div>Kính gửi: {row?.nguoiGui || "……"}</div>
+        <div>Địa chỉ: {row?.diaChi || "……"}</div>
+      </div>
+
+      <div className="mt-6 space-y-4 text-justify">
+        <p className="indent-[42px]">
+          Tòa án nhân dân tối cao đã nhận được đơn của {row?.nguoiGui || "……"} đề nghị xem xét
+          theo thủ tục giám đốc thẩm/tái thẩm đối với Bản án/Quyết định số {d.soBaqd || "……"}{" "}
+          ngày {d.ngay || "……"} của {d.toaXetXu || "……"} đã có hiệu lực pháp luật.
+        </p>
+        <p className="indent-[42px]">
+          Sau khi xem xét, Tòa án nhân dân tối cao trả lại đơn nêu trên. Lý do: {lyDo}.
+        </p>
+        {yeuCau && (
+          <p className="indent-[42px]">Yêu cầu: {yeuCau}</p>
+        )}
+      </div>
+
+      <NoiNhan
+        dong={["- Như trên;", "- Lưu: HCTP, VP TANDTC."]}
+        ky={["TL. CHÁNH ÁN", "KT. CHÁNH VĂN PHÒNG", "PHÓ CHÁNH VĂN PHÒNG"]} />
+    </TrangA4>
+  );
+};
+
 // Biểu mẫu: Thông báo yêu cầu sửa đổi, bổ sung — gửi ĐƯƠNG SỰ
 const MauYCBSDuongSu = ({ so, ngay, row }: { so: string; ngay: string; row?: any }) => {
   const d = row?.thongTinDon ?? {};
@@ -813,6 +871,11 @@ const MauDanhSachThuLyMoi = ({ so, ngay, donVi, rows }: {
   </div>
 );
 
+// Loại văn bản mà mỗi mã đơn có 1 bản riêng (không gộp theo đơn vị/thẩm
+// phán) — dùng để tách tab xem trước theo từng đơn. Khớp với CAP_THEO_TUNG_DON
+// bên dưới, trừ "Yêu cầu bổ sung" (loại này tự tách 2 tab cố định riêng).
+const TACH_THEO_MA_DON = new Set(["Giấy xác nhận", "Giấy xác nhận cơ quan chuyển đơn", "Trả lại đơn"]);
+
 const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }: {
   rows: any[]; loaiVanBan: string; vanBanDiKem?: string[]; onClose: () => void;
 }) => {
@@ -852,20 +915,22 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   // Các vụ (đơn vị giải quyết) có trong đợt này
   const danhSachVu = [...new Set(rows.map((r: any) => r.thongTinDon?.donViGiaiQuyet || "Chưa xác định"))];
 
-  // "Danh sách thụ lý mới" tách mỗi vụ 1 bản; "Giấy xác nhận" tách mỗi mã đơn
-  // 1 bản (đúng với cách văn bản được tạo — mỗi đơn có 1 Giấy xác nhận riêng);
-  // loại khác 1 bản chung.
+  // "Danh sách thụ lý mới" tách mỗi vụ 1 bản; "Giấy xác nhận", "Giấy xác nhận
+  // cơ quan chuyển đơn" và "Trả lại đơn" tách mỗi mã đơn 1 bản (đúng với cách
+  // văn bản được tạo — mỗi đơn có 1 bản riêng, không gộp theo đơn vị/thẩm
+  // phán); loại khác 1 bản chung.
   const tabDiKem = vanBanDiKem.flatMap(v =>
     v === "Danh sách thụ lý mới"
       ? danhSachVu.map(vu => ({ loai: v, vu, ten: `${v} - ${vu}`, row: undefined as any }))
-      : v === "Giấy xác nhận"
+      : TACH_THEO_MA_DON.has(v)
         ? rows.map((r: any) => ({ loai: v, vu: null as string | null, ten: `${v} - ${r.maDon || r.nguoiGui || "Đơn"}`, row: r }))
         : [{ loai: v, vu: null as string | null, ten: v, row: undefined as any }]);
 
   // Yêu cầu bổ sung tách sẵn 2 biểu mẫu: gửi đương sự và gửi trại giam
   const laYeuCauBoSung = loaiVanBan === "Yêu cầu bổ sung";
-  // Giấy xác nhận là loại chính: mỗi mã đơn 1 bản, giống hệt cách tabDiKem tách ở trên
-  const laGiayXacNhanChinh = loaiVanBan === "Giấy xác nhận" && !laToTrinhPhanCong;
+  // Giấy xác nhận / Giấy xác nhận cơ quan chuyển đơn / Trả lại đơn là loại
+  // chính: mỗi mã đơn 1 bản, giống hệt cách tabDiKem tách ở trên
+  const laGiayXacNhanChinh = TACH_THEO_MA_DON.has(loaiVanBan) && !laToTrinhPhanCong;
   const tabChinh = laYeuCauBoSung
     ? ["Thông báo yêu cầu bổ sung với đương sự", "Thông báo yêu cầu bổ sung với trại giam"]
     : laGiayXacNhanChinh
@@ -893,6 +958,8 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
       return <MauGiayXacNhanCoQuan so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
     if (loai === "Giấy xác nhận")
       return <MauGiayXacNhan so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
+    if (loai === "Trả lại đơn")
+      return <MauTraLaiDon so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
     return (
       <TrangA4 className="text-center italic text-[#888]">
         Chưa có biểu mẫu cho "{loai}".
@@ -1113,7 +1180,14 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
 // Loại văn bản cấp theo TỪNG ĐƠN (mỗi đơn 1 tờ) thay vì gộp theo đơn vị —
 // "Giấy xác nhận" giữ nguyên logic này; các loại khác dùng bảng công văn
 // gộp theo đơn vị (dungVanBanTheoDonVi) như trước đây.
-const CAP_THEO_TUNG_DON = new Set(["Giấy xác nhận", "Yêu cầu bổ sung"]);
+// "Trả lại đơn" cũng cấp theo từng đơn: đơn bị trả lại chưa được phân công
+// thẩm phán nên không có căn cứ để gộp theo tầng "Danh sách đơn - Thẩm phán".
+const CAP_THEO_TUNG_DON = new Set([
+  "Giấy xác nhận",
+  "Giấy xác nhận cơ quan chuyển đơn",
+  "Yêu cầu bổ sung",
+  "Trả lại đơn",
+]);
 
 // Dựng 1 văn bản cho 1 đơn — không có tầng "Danh sách đơn" vì chỉ có đúng 1 đơn.
 const dungVanBanTheoDon = (
@@ -1777,7 +1851,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
           khongCham: !cham,
           children: Object.values(nhomDanhSach).map((g, i) => ({
             id: `${tienTo}-ds-${i}`,
-            name: `Danh sách đơn - ${g.donVi} - Thẩm phán ${g.tp} (${g.loai})`,
+            // Bỏ "(Số: ...)" bám theo đơn vị (chưa có ý nghĩa khi tờ trình
+            // chưa được cấp số) và bỏ nhãn hình thức phân công — tờ trình
+            // phân công TP chỉ nhận đơn ngẫu nhiên nên nhãn này luôn thừa.
+            name: `Danh sách đơn - ${g.donVi.split(" (")[0]} - Thẩm phán ${g.tp}`,
             type: "Danh sách",
             date: "30/07/2026",
             isExpanded: false,   // thu gọn mặc định — xem lý do ở nhánh trên
