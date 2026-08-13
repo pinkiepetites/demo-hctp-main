@@ -12,6 +12,9 @@ export type DonChiSo = {
   // Các trường dưới đây chỉ khối cảnh báo / việc của Trưởng phòng cần đọc.
   maDon?: string;
   nguoiNhap?: string;
+  /** Cán bộ được giao xử lý đơn. Đây mới là "người đang giữ việc"; `nguoiNhap`
+   *  chỉ là người gõ đơn vào hệ thống. Dùng `nguoiGiuViec()` để lấy đúng thứ tự. */
+  canBoXuLy?: string;
   isPhanCong?: boolean;
   /** Hồ sơ kháng nghị — không phải đơn, phải loại khỏi mọi chỉ số về đơn. */
   laKhangNghi?: boolean;
@@ -21,7 +24,7 @@ export type DonChiSo = {
 export type BoLocTuTrangChu = {
   /** Nhãn hiển thị trên chip "Từ Trang chủ: …" ở màn Danh sách đơn. */
   nhan: string;
-  tienDo?: "da-xong" | "chua-xong" | "qua-han";
+  tienDo?: "da-xong" | "chua-xong" | "qua-han" | "sap-den-han";
   /** Khớp đúng `giaiQuyet.nhan`. */
   trangThai?: string;
   /** Phạm vi "Của tôi" — phải đi kèm bộ lọc, nếu không bấm một con số của riêng
@@ -39,15 +42,21 @@ export const HAN_GIAI_QUYET_NGAY = 30;
 /** Câu 3.5 — còn bao nhiêu ngày thì cảnh báo sắp đến hạn. */
 export const NGUONG_SAP_HET_HAN = 3;
 /** Câu 2.2 — trạng thái coi như đã xong ở khâu Phòng HCTP. Riêng "Thụ lý mới"
- *  chỉ tính là xong khi đã chuyển sang Vụ chuyên môn (xem `daChuyenVu`). */
+ *  chỉ tính là xong khi đã chuyển sang Phòng GĐKTTT và THA (xem `daChuyenVu`). */
 const TRANG_THAI_KET_THUC = ["Trả lại đơn", "Không thụ lý"];
 /** Câu 3.4 — đang chờ công dân bổ sung thì dừng đếm hạn, không tính cán bộ quá hạn. */
 const TRANG_THAI_TAM_DUNG_HAN = ["Chưa đủ điều kiện"];
 
+/** Ai đang giữ đơn này. Đã giao thì là cán bộ được giao; chưa giao thì tạm tính
+ *  cho người nhập — dữ liệu cũ chưa có trường phân công, bỏ hẳn thì mọi con số
+ *  tải việc tụt về 0 và màn hình trông như hỏng. */
+export const nguoiGiuViec = (r: DonChiSo) =>
+  (r.canBoXuLy ?? "").trim() || (r.nguoiNhap ?? "").trim();
+
 // ─── Luật phân loại ──────────────────────────────────────────────────────────
 
 /** Cùng một luật với màn Danh sách đơn: có "(Số: …)" trong đơn vị giải quyết
- *  nghĩa là hồ sơ đã được chuyển sang Vụ chuyên môn kèm số công văn. */
+ *  nghĩa là hồ sơ đã được chuyển sang Phòng GĐKTTT và THA kèm số công văn. */
 const daChuyenVu = (r: DonChiSo) => /\(Số:/.test(r.thongTinDon?.donViGiaiQuyet ?? "");
 
 export const daGiaiQuyetXong = (r: DonChiSo) => {
@@ -82,6 +91,11 @@ export const laQuaHan = (r: DonChiSo, homNay: Date) =>
 
 export const laSapDenHan = (r: DonChiSo, homNay: Date) => {
   if (!dangDemHan(r)) return false;
+  // Không đọc được ngày nhập thì KHÔNG kết luận gì. Bỏ qua bước này là dính bẫy:
+  // `soNgayQuaHan` trả 0 cho cả hai trường hợp "đúng ngày đến hạn" và "không biết
+  // ngày nào", nên mọi đơn thiếu ngày nhập đều bị đếm nhầm thành sắp đến hạn.
+  // `laQuaHan` không dính vì nó đòi > 0, còn ở đây 0 lại là giá trị hợp lệ.
+  if (soNgayDaQua(r, homNay) === null) return false;
   const con = -soNgayQuaHan(r, homNay);
   return con >= 0 && con <= NGUONG_SAP_HET_HAN;
 };
@@ -256,7 +270,7 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
             onClick={() => mo({ nhan: "Đã giải quyết xong", tienDo: "da-xong" })}
           >
             <p className="mt-3.5 text-[11px] text-[#94a3b8] leading-relaxed">
-              Đơn đã trả lại, không thụ lý, hoặc đã phân công và chuyển sang Vụ chuyên môn.
+              Đơn đã trả lại, không thụ lý, hoặc đã phân công và chuyển sang Phòng GĐKTTT và THA.
             </p>
           </OChiSo>
 

@@ -3,7 +3,7 @@ import {
   BarChart3,
   Calendar,
 } from "lucide-react";
-import { nguoiTheoVaiTro, type VanBanTrinh } from "./components/QuanLyVanBan";
+import { nguoiTheoVaiTro, type VanBanTrinh, type LocVanBanTuTrangChu } from "./components/QuanLyVanBan";
 import ChiSoTrangChu, { type DonChiSo, type BoLocTuTrangChu } from "./ChiSoTrangChu";
 import TrangChuTruongPhong, { TieuDeMuc, NhomCon } from "./TrangChuTruongPhong";
 import { DU_LIEU_CAN_BO } from "./HieuSuatCanBoChiTiet";
@@ -127,8 +127,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
   donList?: DonChiSo[];
   /** Bấm một chỉ số → sang Danh sách đơn đã lọc sẵn theo chỉ số đó. */
   onMoDanhSachDon?: (loc: BoLocTuTrangChu) => void;
-  /** Sang màn Danh sách văn bản — dùng cho cảnh báo văn bản bị trả lại. */
-  onMoDanhSachVanBan?: () => void;
+  /** Sang màn Danh sách văn bản, kèm bộ lọc của khối vừa bấm — dùng cho cảnh báo
+   *  văn bản bị trả lại. */
+  onMoDanhSachVanBan?: (loc?: LocVanBanTuTrangChu) => void;
 } = {}) {
   // Chỉ Trưởng phòng / Phó-Chánh Văn phòng / Lãnh đạo Tòa / Chánh án-Phó Chánh án
   // mới thấy tầng "Việc của tôi" (duyệt/ký) và bảng tải việc của CẢ PHÒNG — đây

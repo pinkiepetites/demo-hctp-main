@@ -28,7 +28,7 @@ import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
-  Inbox,
+  Inbox, Home,
 } from "lucide-react";
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
@@ -132,9 +132,9 @@ export const nguoiTheoVaiTro = (role: string): { nguoi: string; chucVu: string }
   switch (role) {
     case "truong-phong": return { nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng" };
     case "pho-vp": return { nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng" };
-    case "lanh-dao": return { nguoi: "Nguyễn Thị Bình", chucVu: "Vụ trưởng" };
-    // Người bút phê tờ trình phân công — bước cuối của luồng ký
-    case "chanh-an": return { nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án" };
+    case "lanh-dao": return { nguoi: "Nguyễn Thị Bình", chucVu: "Chánh tòa" };
+    // Người bút phê thông báo phân công — bước cuối của luồng ký
+    case "chanh-an": return { nguoi: "Đặng Quốc Trung", chucVu: "Phó Chánh án" };
     case "van-thu": return { nguoi: "Phạm Thị Lan", chucVu: "Văn thư" };
     default: return { nguoi: "Vũ Văn Yên", chucVu: "Cán bộ" };
   }
@@ -148,7 +148,7 @@ const bayGio = () => {
 const homNay = () => bayGio().split(" ")[0];
 
 const KY_HIEU: Record<string, string> = {
-  "Tờ trình phân công": "TTr", "Tờ trình khác": "TTr", "Tờ trình": "TTr",
+  "Thông báo phân công": "TB", "Tờ trình khác": "TTr", "Tờ trình": "TTr",
   "Thông báo phân công TP": "TB", "Thông báo": "TB",
   "Trả lại đơn": "QĐ", "Quyết định": "QĐ",
 };
@@ -165,8 +165,8 @@ export const soKeTiep = (ds: VanBanTrinh[], loaiVanBan: string): string => {
   const max = ds.reduce((m, v) => {
     const n = parseInt((v.soVanBan ?? "").split("/")[0], 10);
     return Number.isFinite(n) && n > m ? n : m;
-  }, 540);
-  return `${max + 1}/${new Date().getFullYear()}/${kyHieuTheoLoai(loaiVanBan)}-TANDTC-VP`;
+  }, 120);
+  return `${max + 1}/${new Date().getFullYear()}/${kyHieuTheoLoai(loaiVanBan)}-TAHN-VP`;
 };
 
 // ─── Hành động: reducer thuần, luôn trả bản ghi MỚI ──────────────────────────
@@ -262,7 +262,7 @@ export const apSuaVaTrinhLai = (vb: VanBanTrinh, nguoi: string, chucVu: string, 
 
 /** Ký số: nếu chưa có số thì TỰ CẤP số chính thức. Số đã có thì giữ nguyên,
  *  chỉ chuyển trạng thái tạm → chính thức. Không bao giờ đổi số.
- *  Ký số KHÔNG mặc nhiên là bước cuối — tờ trình phân công còn phải qua bút phê
+ *  Ký số KHÔNG mặc nhiên là bước cuối — thông báo phân công còn phải qua bút phê
  *  của Chánh án/Phó Chánh án, nên nếu luồng còn bước thì đẩy sang bước đó. */
 export const apKySo = (vb: VanBanTrinh, nguoi: string, chucVu: string, ds: VanBanTrinh[]): VanBanTrinh => {
   const luongKy = vb.luongKy.map((b, i) =>
@@ -282,7 +282,7 @@ export const apKySo = (vb: VanBanTrinh, nguoi: string, chucVu: string, ds: VanBa
   };
 };
 
-/** Bút phê của Chánh án / Phó Chánh án — bước cuối của tờ trình phân công.
+/** Bút phê của Chánh án / Phó Chánh án — bước cuối của thông báo phân công.
  *  Ý kiến bút phê là bắt buộc, vì đây chính là nội dung chỉ đạo. */
 export const apButPhe = (vb: VanBanTrinh, nguoi: string, chucVu: string, yKien: string): VanBanTrinh => {
   const luongKy = vb.luongKy.map((b, i) =>
@@ -310,7 +310,7 @@ export const taoTuModal = (input: {
     id,
     trichYeu: input.trichYeu,
     loaiVanBan: input.loaiVanBan,
-    donViSoanThao: "Vụ GĐKT & DS",
+    donViSoanThao: "Tòa Dân sự",
     soVanBan: input.soVanBan,
     trangThaiSo: input.soVanBan ? "tam" : undefined,
     ngayCapSo: input.soVanBan ? homNay() : undefined,
@@ -397,7 +397,7 @@ const ND_545_V1 = `Mục 1. Căn cứ đề xuất
 Căn cứ Bộ luật Tố tụng dân sự năm 2015;
 Căn cứ Luật Tổ chức Tòa án nhân dân năm 2014;
 Căn cứ Điều 337 Bộ luật Tố tụng dân sự;
-Xét đề nghị của Vụ Giám đốc kiểm tra và dân sự,
+Xét đề nghị của Tòa Dân sự,
 
 Mục 2. Nội dung phân công
 Phân công Thẩm phán Nguyễn Như Thắng chủ trì giải quyết các đơn đề nghị
@@ -405,14 +405,14 @@ giám đốc thẩm nêu tại Danh sách đơn kèm theo Tờ trình này (03 �
 Thời hạn giải quyết: theo quy định chung.
 
 Mục 3. Tổ chức thực hiện
-Vụ Giám đốc kiểm tra và dân sự chịu trách nhiệm theo dõi, đôn đốc.`;
+Tòa Dân sự chịu trách nhiệm theo dõi, đôn đốc.`;
 
 const ND_545_V2 = `Mục 1. Căn cứ đề xuất
 Căn cứ Bộ luật Tố tụng dân sự năm 2015;
 Căn cứ Luật Tổ chức Tòa án nhân dân năm 2014;
 Căn cứ khoản 2 Điều 337 Bộ luật Tố tụng dân sự;
 Căn cứ Nghị quyết 03/2019/NQ-HĐTP ngày 08/5/2019 của Hội đồng Thẩm phán;
-Xét đề nghị của Vụ Giám đốc kiểm tra và dân sự,
+Xét đề nghị của Tòa Dân sự,
 
 Mục 2. Nội dung phân công
 Phân công Thẩm phán Nguyễn Như Thắng chủ trì giải quyết các đơn đề nghị
@@ -420,7 +420,7 @@ giám đốc thẩm nêu tại Danh sách đơn kèm theo Tờ trình này (03 �
 Thời hạn giải quyết: 30 ngày kể từ ngày ký Tờ trình này.
 
 Mục 3. Tổ chức thực hiện
-Vụ Giám đốc kiểm tra và dân sự chịu trách nhiệm theo dõi, đôn đốc.`;
+Tòa Dân sự chịu trách nhiệm theo dõi, đôn đốc.`;
 
 /** Luồng chung: Trưởng phòng duyệt → PCVP duyệt → PCVP ký số. */
 const luong3 = (): BuocKy[] => [
@@ -429,17 +429,17 @@ const luong3 = (): BuocKy[] => [
   { thuTu: 3, nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", vaiTro: "ky" },
 ];
 
-/** Luồng của TỜ TRÌNH PHÂN CÔNG — khác luồng chung ở hai điểm:
+/** Luồng của THÔNG BÁO PHÂN CÔNG — khác luồng chung ở hai điểm:
  *  CVP/PCVP ký số luôn (không có bước duyệt riêng), và sau khi ký còn phải
  *  chuyển Chánh án/Phó Chánh án bút phê thì mới xong.
  *      Tạo → Trưởng phòng duyệt → CVP/PCVP ký số → Chánh án bút phê          */
 export const luongToTrinhPhanCong = (): BuocKy[] => [
   { thuTu: 1, nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", vaiTro: "duyet" },
   { thuTu: 2, nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", vaiTro: "ky" },
-  { thuTu: 3, nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án", vaiTro: "but_phe" },
+  { thuTu: 3, nguoi: "Đặng Quốc Trung", chucVu: "Phó Chánh án", vaiTro: "but_phe" },
 ];
 
-/** Nhận diện tờ trình phân công để áp đúng luồng. */
+/** Nhận diện thông báo phân công để áp đúng luồng. */
 export const laToTrinhPhanCong = (loaiVanBan: string) =>
   /tờ trình/i.test(loaiVanBan) && /phân công/i.test(loaiVanBan);
 
@@ -450,9 +450,9 @@ export const luongMacDinh = (loaiVanBan: string): BuocKy[] =>
 export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-545",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra và dân sự",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & DS",
-    soVanBan: "545/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "02/08/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Dân sự",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Dân sự",
+    soVanBan: "125/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "02/08/2026",
     trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 2,
     phienBan: [
@@ -476,14 +476,14 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   },
   {
     id: "vb-547",
-    trichYeu: "Công văn chuyển đơn sang Tòa án nhân dân cấp cao tại Đà Nẵng",
-    loaiVanBan: "Công văn chuyển tòa khác", donViSoanThao: "Vụ GĐKT & DS",
-    soVanBan: "547/2026/CV-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "05/08/2026",
+    trichYeu: "Công văn chuyển đơn sang Tòa án nhân dân thành phố Hà Nội",
+    loaiVanBan: "Công văn chuyển tòa khác", donViSoanThao: "Tòa Dân sự",
+    soVanBan: "127/2026/CV-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "05/08/2026",
     trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 2, phienBanHienTai: 2,
     phienBan: [
-      { so: 1, noiDung: "Kính gửi: Tòa án nhân dân cấp cao tại Đà Nẵng\nChuyển đơn đề nghị giám đốc thẩm số 89/2025/KDTM-GDT\nđể giải quyết theo thẩm quyền.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 10:02" },
-      { so: 2, noiDung: "Kính gửi: Tòa án nhân dân cấp cao tại Đà Nẵng\nChuyển đơn đề nghị giám đốc thẩm số 89/2025/KDTM-GDT\nkèm toàn bộ tài liệu để giải quyết theo thẩm quyền.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 15:40" },
+      { so: 1, noiDung: "Kính gửi: Tòa án nhân dân thành phố Hà Nội\nChuyển đơn đề nghị giám đốc thẩm số 89/2025/KDTM-GDT\nđể giải quyết theo thẩm quyền.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 10:02" },
+      { so: 2, noiDung: "Kính gửi: Tòa án nhân dân thành phố Hà Nội\nChuyển đơn đề nghị giám đốc thẩm số 89/2025/KDTM-GDT\nkèm toàn bộ tài liệu để giải quyết theo thẩm quyền.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 15:40" },
     ],
     lichSu: [
       { vongTrinh: 1, thoiGian: "05/08/2026 10:02", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
@@ -500,7 +500,7 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-nhap-1",
     trichYeu: "Công văn chuyển hồ sơ giải quyết nội bộ vụ án dân sự",
-    loaiVanBan: "Công văn chuyển nội bộ", donViSoanThao: "Vụ GĐKT & DS",
+    loaiVanBan: "Công văn chuyển nội bộ", donViSoanThao: "Tòa Dân sự",
     trangThai: "Nhap", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Kính gửi: Vụ Pháp chế và Quản lý khoa học\nChuyển hồ sơ vụ án dân sự số 112/2026/DS-GDT\nđể phối hợp giải quyết.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 09:40" }],
@@ -510,8 +510,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-546",
     trichYeu: "Tờ trình đề xuất chi phí giám định tư pháp bổ sung",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Pháp chế",
-    soVanBan: "546/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "03/08/2026",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Phòng GĐKT, TT & THA",
+    soVanBan: "126/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "03/08/2026",
     trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Mục 1. Căn cứ\nCăn cứ Luật Giám định tư pháp năm 2020;\n\nMục 2. Đề xuất\nKính trình phê duyệt chi phí giám định tư pháp bổ sung\nđối với yêu cầu giám định tài chính doanh nghiệp.", nguoiSua: "Vũ Văn Yên", thoiGian: "03/08/2026 08:15" }],
@@ -525,8 +525,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-544",
     trichYeu: "Thông báo phân công Thẩm phán Nguyễn Như Thắng",
-    loaiVanBan: "Thông báo phân công TP", donViSoanThao: "Vụ GĐKT & DS",
-    soVanBan: "544/2026/TB-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "01/08/2026",
+    loaiVanBan: "Thông báo phân công TP", donViSoanThao: "Tòa Dân sự",
+    soVanBan: "124/2026/TB-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "01/08/2026",
     trangThai: "ChoKy", nguoiTao: "Vũ Văn Yên",
     luongKy: [
       { ...luong3()[0], ketQua: "da_duyet", thoiGian: "01/08/2026 14:00" },
@@ -543,14 +543,14 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "02/08/2026 09:30", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Duyet" },
     ],
     donDinhKem: [
-      { ma: "Mã 7031", nguoiGui: "Tòa án nhân dân tỉnh Bắc Ninh", soBA: "BA_2107", hinhThuc: "Công văn kiến nghị" },
+      { ma: "Mã 7031", nguoiGui: "Tòa án nhân dân khu vực 4 - Hà Nội", soBA: "BA_2107", hinhThuc: "Công văn kiến nghị" },
     ],
   },
   {
     id: "vb-551",
     trichYeu: "Tờ trình đề xuất chi phí giám định tư pháp quý III",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Kế hoạch – TC",
-    soVanBan: "551/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Văn phòng",
+    soVanBan: "131/2026/TTr-TAHN-VP", trangThaiSo: "chinhThuc",
     ngayCapSo: "06/08/2026", ngayBanHanh: "06/08/2026",
     trangThai: "DaBanHanh", nguoiTao: "Vũ Văn Yên",
     luongKy: [
@@ -579,8 +579,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-541",
     trichYeu: "Quyết định trả lại đơn đề nghị giám đốc thẩm do hết thời hạn",
-    loaiVanBan: "Trả lại đơn", donViSoanThao: "Vụ GĐKT & DS",
-    soVanBan: "541/2026/QĐ-TANDTC", trangThaiSo: "chinhThuc",
+    loaiVanBan: "Trả lại đơn", donViSoanThao: "Tòa Dân sự",
+    soVanBan: "121/2026/QĐ-TAHN", trangThaiSo: "chinhThuc",
     ngayCapSo: "30/07/2026", ngayBanHanh: "04/08/2026",
     trangThai: "DaBanHanh", nguoiTao: "Vũ Văn Yên",
     luongKy: [
@@ -604,8 +604,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-549",
     trichYeu: "Tờ trình đề xuất kinh phí giám định tư pháp quý III (đã bỏ)",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Kế hoạch – TC",
-    soVanBan: "549/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "23/07/2026",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Văn phòng",
+    soVanBan: "129/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "23/07/2026",
     trangThai: "DaHuy", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Nội dung đã huỷ.", nguoiSua: "Vũ Văn Yên", thoiGian: "23/07/2026 08:00" }],
@@ -627,9 +627,9 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   // Trưởng phòng: CHỜ DUYỆT (bước 1 của luồng 3 bước)
   {
     id: "vb-560",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hình sự",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & HS",
-    soVanBan: "560/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "05/08/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Hình sự",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Hình sự",
+    soVanBan: "140/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "05/08/2026",
     trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Kính trình phân công Thẩm phán giải quyết 04 đơn đề nghị GĐT.", nguoiSua: "Vũ Văn Yên", thoiGian: "05/08/2026 08:10" }],
@@ -637,14 +637,14 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "05/08/2026 08:10", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
       { vongTrinh: 1, thoiGian: "05/08/2026 08:25", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Kính trình Trưởng phòng xem xét, các đơn đều đã đủ điều kiện thụ lý." },
     ],
-    donDinhKem: [{ ma: "Mã 7031", nguoiGui: "TAND tỉnh Bắc Ninh", soBA: "BA_2107", hinhThuc: "CV kiến nghị GĐT, TT" }],
+    donDinhKem: [{ ma: "Mã 7031", nguoiGui: "TAND khu vực 4 - Hà Nội", soBA: "BA_2107", hinhThuc: "CV kiến nghị GĐT, TT" }],
   },
   // Phó CVP: CHỜ DUYỆT (bước 2) · Trưởng phòng: ĐÃ DUYỆT · Chánh án: SẮP ĐẾN LƯỢT
   {
     id: "vb-561",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra và dân sự",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & DS",
-    soVanBan: "561/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "04/08/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Dân sự",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Dân sự",
+    soVanBan: "141/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "04/08/2026",
     trangThai: "ChoKy", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong().map((b, i) =>
       i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "04/08/2026 14:30" } : b),
@@ -655,14 +655,14 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "04/08/2026 09:12", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình duyệt danh sách phân công tháng 8." },
       { vongTrinh: 1, thoiGian: "04/08/2026 14:30", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí danh sách phân công, đề nghị PCVP ký ban hành." },
     ],
-    donDinhKem: [{ ma: "Mã 7029", nguoiGui: "TAND cấp cao tại TP. HCM", soBA: "917", hinhThuc: "CV kiến nghị GĐT, TT" }],
+    donDinhKem: [{ ma: "Mã 7029", nguoiGui: "TAND thành phố Hà Nội", soBA: "917", hinhThuc: "CV kiến nghị GĐT, TT" }],
   },
   // Chánh án: CHỜ DUYỆT (bút phê) · Trưởng phòng + Phó CVP: ĐÃ DUYỆT
   {
     id: "vb-562",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hành chính",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & HC",
-    soVanBan: "562/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "03/08/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Hành chính",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Hành chính",
+    soVanBan: "142/2026/TTr-TAHN-VP", trangThaiSo: "chinhThuc", ngayCapSo: "03/08/2026",
     trangThai: "ChoButPhe", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong().map((b, i) =>
       i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "03/08/2026 10:05" }
@@ -680,9 +680,9 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   // ĐÃ DUYỆT cho cả 3 vai trò — đi hết luồng
   {
     id: "vb-563",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về lao động",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & LĐ",
-    soVanBan: "563/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "01/08/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Lao động",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Lao động",
+    soVanBan: "143/2026/TTr-TAHN-VP", trangThaiSo: "chinhThuc", ngayCapSo: "01/08/2026",
     trangThai: "DaBanHanh", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong().map((b, i) => ({
       ...b,
@@ -696,7 +696,7 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "01/08/2026 08:40", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình phân công 05 đơn lao động." },
       { vongTrinh: 1, thoiGian: "01/08/2026 09:20", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí." },
       { vongTrinh: 1, thoiGian: "01/08/2026 11:00", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Ky", yKien: "Ký ban hành." },
-      { vongTrinh: 1, thoiGian: "01/08/2026 16:10", nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án", hanhDong: "ButPhe", yKien: "Đồng ý phân công. Yêu cầu báo cáo tiến độ giải quyết trước 30/9." },
+      { vongTrinh: 1, thoiGian: "01/08/2026 16:10", nguoi: "Đặng Quốc Trung", chucVu: "Phó Chánh án", hanhDong: "ButPhe", yKien: "Đồng ý phân công. Yêu cầu báo cáo tiến độ giải quyết trước 30/9." },
     ],
     donDinhKem: [{ ma: "Mã 7037", nguoiGui: "Hoàng Văn Thịnh", soBA: "62/2021/LĐ-PT", hinhThuc: "Đơn đề nghị GĐT, TT" }],
   },
@@ -704,11 +704,11 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-564",
     trichYeu: "Tờ trình đề xuất bổ sung kinh phí xác minh tại địa phương",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Kế hoạch – TC",
-    soVanBan: "564/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "02/08/2026",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Văn phòng",
+    soVanBan: "144/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "02/08/2026",
     trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
-    phienBan: [{ so: 1, noiDung: "Đề xuất bổ sung 45 triệu đồng kinh phí xác minh tại Bắc Ninh.", nguoiSua: "Vũ Văn Yên", thoiGian: "02/08/2026 08:00" }],
+    phienBan: [{ so: 1, noiDung: "Đề xuất bổ sung 45 triệu đồng kinh phí xác minh tại Hà Nội.", nguoiSua: "Vũ Văn Yên", thoiGian: "02/08/2026 08:00" }],
     lichSu: [
       { vongTrinh: 1, thoiGian: "02/08/2026 08:00", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
       { vongTrinh: 1, thoiGian: "02/08/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình duyệt kinh phí xác minh." },
@@ -720,8 +720,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-565",
     trichYeu: "Tờ trình đề xuất mua sắm thiết bị số hoá hồ sơ",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Tổng hợp",
-    soVanBan: "565/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "31/07/2026",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Văn phòng",
+    soVanBan: "145/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "31/07/2026",
     trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 1, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Đề xuất mua 10 máy quét khổ A3 phục vụ số hoá hồ sơ.", nguoiSua: "Vũ Văn Yên", thoiGian: "31/07/2026 09:00" }],
@@ -736,9 +736,9 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   // TỪ CHỐI — Phó Chánh án trả lại ở bước bút phê
   {
     id: "vb-567",
-    trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về kinh doanh thương mại",
-    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & KDTM",
-    soVanBan: "567/2026/TTr-TANDTC-VP", trangThaiSo: "chinhThuc", ngayCapSo: "30/07/2026",
+    trichYeu: "Thông báo phân công thẩm phán – Tòa Kinh tế",
+    loaiVanBan: "Thông báo phân công", donViSoanThao: "Tòa Kinh tế",
+    soVanBan: "147/2026/TTr-TAHN-VP", trangThaiSo: "chinhThuc", ngayCapSo: "30/07/2026",
     trangThai: "BiTraLai", nguoiTao: "Vũ Văn Yên",
     luongKy: luongToTrinhPhanCong().map((b, i) =>
       i === 0 ? { ...b, ketQua: "da_duyet" as const, thoiGian: "30/07/2026 10:00" }
@@ -750,7 +750,7 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
       { vongTrinh: 1, thoiGian: "30/07/2026 09:10", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Trình phân công 02 đơn kinh doanh thương mại." },
       { vongTrinh: 1, thoiGian: "30/07/2026 10:00", nguoi: "Nguyễn Văn Hùng", chucVu: "Trưởng phòng", hanhDong: "Duyet", yKien: "Nhất trí." },
       { vongTrinh: 1, thoiGian: "30/07/2026 14:20", nguoi: "Đỗ Thu Trang", chucVu: "Phó Chánh văn phòng", hanhDong: "Ky", yKien: "Đã ký, trình Phó Chánh án bút phê." },
-      { vongTrinh: 1, thoiGian: "30/07/2026 17:05", nguoi: "Nguyễn Hòa Bình", chucVu: "Phó Chánh án", hanhDong: "TraLai", yKien: "Thẩm phán được đề xuất đang quá tải 12 vụ. Đề nghị phân công lại cho thẩm phán khác." },
+      { vongTrinh: 1, thoiGian: "30/07/2026 17:05", nguoi: "Đặng Quốc Trung", chucVu: "Phó Chánh án", hanhDong: "TraLai", yKien: "Thẩm phán được đề xuất đang quá tải 12 vụ. Đề nghị phân công lại cho thẩm phán khác." },
     ],
     donDinhKem: [{ ma: "Mã 7042", nguoiGui: "TAND TP Từ Sơn", soBA: "33/2024/KDTM-PT", hinhThuc: "Đơn đề nghị GĐT/TT" }],
   },
@@ -758,8 +758,8 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   {
     id: "vb-566",
     trichYeu: "Tờ trình đề xuất điều chỉnh lịch xét xử giám đốc thẩm quý IV",
-    loaiVanBan: "Tờ trình khác", donViSoanThao: "Vụ Tổng hợp",
-    soVanBan: "566/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "06/08/2026",
+    loaiVanBan: "Tờ trình khác", donViSoanThao: "Văn phòng",
+    soVanBan: "146/2026/TTr-TAHN-VP", trangThaiSo: "tam", ngayCapSo: "06/08/2026",
     trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
     luongKy: luong3(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
     phienBan: [{ so: 1, noiDung: "Đề xuất dời 03 phiên giám đốc thẩm sang tháng 11.", nguoiSua: "Vũ Văn Yên", thoiGian: "06/08/2026 08:00" }],
@@ -887,7 +887,7 @@ const Stepper = ({ vb }: { vb: VanBanTrinh }) => {
   const xong = ["DaBanHanh"].includes(vb.trangThai);
   // Nhãn bước lấy theo VAI TRÒ trước, chỉ khi là bước duyệt mới phân biệt
   // Trưởng phòng / PCVP. Trước đây nhãn suy từ chức vụ nên bước ký của PCVP
-  // vẫn ra "PCVP duyệt" — sai với luồng tờ trình phân công.
+  // vẫn ra "PCVP duyệt" — sai với luồng thông báo phân công.
   const nhanBuoc = (b: BuocKy) => {
     if (b.vaiTro === "ky") return "Ký số";
     if (b.vaiTro === "but_phe") return "Bút phê";
@@ -1109,7 +1109,7 @@ const HopThoaiKySo = ({ vb, soSeCap, onXacNhan, onClose }: {
   </KhungHopThoai>
 );
 
-/** Bút phê — bước cuối của tờ trình phân công, do Chánh án/Phó Chánh án thực hiện.
+/** Bút phê — bước cuối của thông báo phân công, do Chánh án/Phó Chánh án thực hiện.
  *  Khác Ký số: không cấp số, không dùng chứng thư số. Khác Duyệt: ý kiến BẮT BUỘC,
  *  vì bút phê chính là nội dung chỉ đạo ghi trên tờ trình. */
 const HopThoaiButPhe = ({ vb, onXacNhan, onClose }: {
@@ -1524,9 +1524,26 @@ const CotThaoTac = ({ vb, nguoiDung, onMo }: { vb: VanBanTrinh; nguoiDung: strin
 };
 
 // ─── Màn "Danh sách văn bản" ──────────────────────────────────────────
-type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaBanHanh";
+export type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaBanHanh";
 
-export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon }: {
+/** Bộ lọc mang sang từ khối cảnh báo trên Trang chủ. Khối đó đếm theo VAI —
+ *  cán bộ đọc "văn bản tôi phải sửa" (theo người tạo), người duyệt đọc "văn bản
+ *  tôi đã trả lại" (theo người trả lại) — nên bộ lọc phải mang được cả hai vế,
+ *  nếu không bấm vào con số lại mở ra một danh sách khác hẳn. */
+export type LocVanBanTuTrangChu = {
+  /** Chữ hiện trên chip, lấy đúng tiêu đề khối trên Trang chủ */
+  nhan: string;
+  /** Tab trạng thái sẽ nhảy tới — giới hạn đúng các tab màn này có. */
+  trangThai?: TabDS;
+  nguoiTao?: string;
+  nguoiTraLai?: string;
+};
+
+/** Người trả lại ở lần gần nhất — cùng cách đọc với Trang chủ. */
+const nguoiTraLaiGanNhat = (vb: VanBanTrinh) =>
+  [...(vb.lichSu ?? [])].reverse().find(m => m.hanhDong === "TraLai")?.nguoi;
+
+export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, locTuTrangChu, onXoaLocTuTrangChu }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
@@ -1537,6 +1554,8 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   onDaMo?: () => void;
   /** Lọc sẵn theo mã đơn — dùng khi sang màn từ nút "Xem văn bản đã trình". */
   locMaDon?: string | null;
+  locTuTrangChu?: LocVanBanTuTrangChu | null;
+  onXoaLocTuTrangChu?: () => void;
 }) => {
   const [tab, setTab] = useState<TabDS>("all");
   const [tim, setTim] = useState("");
@@ -1554,6 +1573,18 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
     if (locMaDon) { setFMaDon(locMaDon); setFNguoiTao(""); }
   }, [locMaDon]);
 
+  // Sang màn từ Trang chủ ⇒ áp đúng điều kiện của khối vừa bấm: nhảy sang tab
+  // trạng thái tương ứng và ĐẶT LẠI hai ô lọc kia. Bỏ mặc định "người tạo = tôi"
+  // là bắt buộc với vai người duyệt — văn bản họ trả lại do cán bộ khác tạo,
+  // giữ mặc định thì bấm vào số 5 lại mở ra danh sách rỗng.
+  useEffect(() => {
+    if (!locTuTrangChu) return;
+    setTab(locTuTrangChu.trangThai ?? "all");
+    setFNguoiTao(locTuTrangChu.nguoiTao ?? "");
+    setFMaDon("");
+    setTim("");
+  }, [locTuTrangChu]);
+
   useEffect(() => {
     if (openId) { setChonId(openId); onDaMo?.(); }
   }, [openId]);
@@ -1567,6 +1598,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
     if (v.trangThai === "DaHuy") return false;
     if (fNguoiTao && v.nguoiTao !== fNguoiTao) return false;
     if (fMaDon && !v.donDinhKem.some(d => d.ma.trim() === fMaDon)) return false;
+    if (locTuTrangChu?.nguoiTraLai && nguoiTraLaiGanNhat(v) !== locTuTrangChu.nguoiTraLai) return false;
     return true;
   });
   const dem = (t: TabDS) => t === "all" ? theoBoLoc.length : theoBoLoc.filter(v => v.trangThai === t).length;
@@ -1579,7 +1611,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
     }
     return true;
   });
-  const coLocThem = !!fMaDon || fNguoiTao !== nguoiDung;
+  const coLocThem = !!fMaDon || fNguoiTao !== nguoiDung || !!locTuTrangChu;
 
   const chon = danhSach.find(v => v.id === chonId) ?? null;
   const capNhat = (vbMoi: VanBanTrinh) =>
@@ -1607,13 +1639,38 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
     }
   };
 
-  const xoaBoLoc = () => { setTim(""); setFMaDon(""); setFNguoiTao(nguoiDung); };
+  const xoaBoLoc = () => {
+    setTim(""); setFMaDon(""); setFNguoiTao(nguoiDung);
+    onXoaLocTuTrangChu?.();
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       <div className="px-5 pt-4">
         <h1 className="text-[18px] font-bold text-[#1d2e4f] mb-3">Danh sách văn bản</h1>
       </div>
+
+      {/* Chip bộ lọc đến từ Trang chủ — nhìn thấy được và xoá được, để không có
+          điều kiện lọc nào chạy ngầm sau khi nhảy màn. Cùng kiểu với chip ở
+          màn Danh sách đơn. */}
+      {locTuTrangChu && (
+        <div className="mx-5 mb-3 flex items-center gap-2 px-3 py-2 bg-[#fff8e6] border border-[#f0d9a0] rounded-[4px] text-[12px] text-[#7a5b00]">
+          <Home size={13} className="flex-shrink-0" />
+          <span>Đang lọc từ Trang chủ:</span>
+          <span className="inline-flex items-center gap-1.5 bg-white border border-[#e0c274] rounded-full pl-2.5 pr-1 py-0.5 font-semibold text-[#8b1a1a]">
+            {locTuTrangChu.nhan}
+            <button
+              type="button"
+              onClick={onXoaLocTuTrangChu}
+              title="Bỏ lọc, xem toàn bộ danh sách"
+              className="w-[16px] h-[16px] rounded-full flex items-center justify-center hover:bg-[#f3e3c0] transition-colors"
+            >
+              <X size={11} />
+            </button>
+          </span>
+          <span className="text-[#a08340]">— {loc.length} văn bản</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-5 border-b border-[#ddd] px-5">
         {TABS.map(t => {
@@ -2334,7 +2391,7 @@ const NGUOI_TRINH_TIEP = [
   "Nguyễn Mạnh Hùng — Phó Chánh văn phòng",
   "Đỗ Thu Trang — Phó Chánh văn phòng",
   "Phạm Văn Nha — Chánh Văn phòng",
-  "Nguyễn Hòa Bình — Phó Chánh án",
+  "Đặng Quốc Trung — Phó Chánh án",
 ];
 
 // Ghi nhớ Cấp trình tiếp / Người đề xuất trình theo từng loại văn bản, để lần
@@ -2697,7 +2754,7 @@ Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
 };
 
 // ─── Màn "Sổ văn bản đi" ─────────────────────────────────────────────────────
-const NGUONG_QUA_HAN = 7; // ngày — tham số cấu hình, chưa được văn thư TANDTC xác nhận
+const NGUONG_QUA_HAN = 7; // ngày — tham số cấu hình, chưa được văn thư TAND TP Hà Nội xác nhận
 
 const soNgayGiu = (ngayCapSo?: string): number | null => {
   if (!ngayCapSo) return null;

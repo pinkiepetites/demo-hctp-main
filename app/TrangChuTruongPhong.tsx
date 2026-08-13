@@ -4,10 +4,10 @@ import {
   ArrowRight, CheckCircle2, Gauge,
 } from "lucide-react";
 import {
-  nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh,
+  nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh, type LocVanBanTuTrangChu,
 } from "./components/QuanLyVanBan";
 import {
-  laQuaHan, laSapDenHan, soNgayQuaHan, daGiaiQuyetXong,
+  laQuaHan, laSapDenHan, soNgayQuaHan, daGiaiQuyetXong, nguoiGiuViec,
   type DonChiSo, type BoLocTuTrangChu,
 } from "./ChiSoTrangChu";
 
@@ -41,8 +41,9 @@ const mocGanNhat = (vb: VanBanTrinh, hanhDong: string) =>
 
 const vietTatTAND = (s: string) => s.replace(/Tòa án nhân dân/gi, "TAND");
 
-/** Nhãn số ngày quá hạn. Dữ liệu có đơn tồn từ nhiều năm trước, in thẳng
- *  "Quá 2244 ngày" thì vừa khó đọc vừa trông như lỗi — trên một năm thì quy ra năm. */
+/** Nhãn số ngày quá hạn. Bình thường đơn quá hạn chỉ tính bằng ngày; nếu gặp đơn
+ *  tồn quá một năm thì quy ra năm, vì in thẳng "Quá 2244 ngày" vừa khó đọc vừa
+ *  trông như lỗi. */
 const nhanQuaHan = (soNgay: number) =>
   soNgay >= 365
     ? `Quá ${(soNgay / 365).toFixed(1).replace(".", ",")} năm`
@@ -167,21 +168,34 @@ const DongCanhBao = ({ tieuDe, moTa, nhanPhai, mauNhan, onClick }: {
 export type TaiViecCanBo = {
   name: string;
   role: string;
-  /** Tổng đơn đang xử lý trong kỳ. */
-  kyNay: number;
-  /** Số đơn đang giữ mà đã quá hạn. */
+  /** Tổng đơn quy cho người này — gồm cả đã xong lẫn đang giữ. */
+  tong: number;
+  /** Đơn đã giải quyết xong. */
+  daXong: number;
+  /** Đơn còn đang giữ = tong − daXong. */
+  dangXuLy: number;
+  /** Trong số đang giữ, bao nhiêu đơn đã quá hạn. */
   quaHan?: number;
   /** Số văn bản của người này đang nằm chờ Trưởng phòng duyệt. */
   choToiDuyet?: number;
 };
 
+/** Hai màu của thanh xếp chồng. Xanh lá lấy đúng mã đã dùng ở màn Tiếp nhận đơn.
+ *  Cặp này qua được kiểm tra phân biệt dưới mắt mù màu (ΔE 20,8 — ngưỡng an toàn
+ *  là 8); cặp #27ae60 + vàng của bản mẫu chỉ đạt 6,8, người mù màu đỏ-lục nhìn
+ *  hai đoạn gần như một. */
+const MAU_DA_XONG = "#1a7a45";
+const MAU_DANG_XU_LY = "#e6a700";
+
+/** Chữ trên nền trắng phải đủ tương phản: bản thân #1a7a45 đạt, nhưng màu vàng
+ *  của thanh thì không, nên số "đang xử lý" dùng mực nâu đậm thay vì màu thanh. */
+const CHU_DA_XONG = "#1a7a45";
+const CHU_DANG_XU_LY = "#8a6d00";
+
 const BangTaiViec = ({ canBo, onXemChiTiet }: {
   canBo: TaiViecCanBo[]; onXemChiTiet?: () => void;
 }) => {
-  // Thang đo dùng chung cho mọi thanh — nếu mỗi thanh tự co giãn theo giá trị
-  // của chính nó thì không so sánh được giữa các cán bộ.
-  const max = Math.max(...canBo.map(c => c.kyNay), 1);
-  const tongTai = canBo.reduce((s, c) => s + c.kyNay, 0);
+  const tongTai = canBo.reduce((s, c) => s + c.dangXuLy, 0);
   const trungBinh = canBo.length ? tongTai / canBo.length : 0;
 
   return (
@@ -206,47 +220,64 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
         </div>
       </div>
 
-      <div className="p-3 space-y-1">
-        {canBo.map(c => {
-          const lechTrungBinh = trungBinh ? ((c.kyNay - trungBinh) / trungBinh) * 100 : 0;
-          const quaTai = lechTrungBinh >= 30;
+      <div className="py-1">
+        {canBo.map((c, i) => {
+          const tyLeXong = c.tong ? (c.daXong / c.tong) * 100 : 0;
+          const quaTai = trungBinh ? ((c.dangXuLy - trungBinh) / trungBinh) * 100 >= 30 : false;
+          const chuCai = c.name.trim().split(" ").pop()?.[0] ?? "?";
           return (
-            <div key={c.name} className="flex items-center gap-3 px-2 py-2.5 rounded-[6px] hover:bg-[#f8fafc] transition-colors">
-              <div className="w-[190px] flex-shrink-0 min-w-0">
-                <div className="text-[13px] font-semibold text-[#1e293b] truncate">{c.name}</div>
-                <div className="text-[11px] text-[#94a3b8] truncate">{c.role}</div>
+            <div key={c.name}
+              className={`flex items-center gap-3.5 px-5 py-3 ${i % 2 === 1 ? "bg-[#f8fafc]" : ""}`}>
+              {/* Chữ cái đầu của TÊN (không phải họ) — người Việt gọi nhau bằng tên */}
+              <div className="w-[38px] h-[38px] rounded-full bg-[#1d2e4f] text-white flex items-center justify-center text-[15px] font-semibold flex-shrink-0">
+                {chuCai}
               </div>
 
-              {/* Thanh tải — một sắc độ duy nhất vì đây là ĐỘ LỚN, không phải danh
-                  tính. Tô mỗi người một màu sẽ ngầm biến bảng thành bảng xếp hạng. */}
-              <div className="flex-1 min-w-0 flex items-center gap-2.5">
-                <div className="flex-1 h-[14px] bg-[#f1f5f9] rounded-[3px] overflow-hidden">
-                  <div
-                    className={`h-full rounded-r-[4px] transition-all duration-700 ${quaTai ? "bg-[#8b1a1a]" : "bg-[#1d2e4f]"}`}
-                    style={{ width: `${(c.kyNay / max) * 100}%` }}
-                  />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-[13px] font-bold text-[#1e293b] truncate">{c.name}</span>
+                  <span className="text-[11px] font-semibold text-[#475569] bg-[#f1f5f9] border border-[#e2e8f0] rounded-[4px] px-2 py-0.5 flex-shrink-0 tabular-nums">
+                    Tổng: {c.tong}
+                  </span>
+                  {quaTai && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#8b1a1a] bg-[#fdeaea] border border-[#f5c6c6] rounded-full px-2 py-0.5 flex-shrink-0">
+                      <AlertTriangle size={9} /> Tải cao
+                    </span>
+                  )}
                 </div>
-                <span className="text-[13px] font-bold text-[#0f172a] w-[54px] flex-shrink-0 tabular-nums">
-                  {c.kyNay} đơn
-                </span>
+                <div className="text-[11px] text-[#94a3b8] mt-0.5 truncate">{c.role}</div>
+
+                {/* Thanh xếp chồng — khe 2px màu nền ngăn hai đoạn, không dùng viền:
+                    viền là mực thừa không mang dữ liệu. */}
+                <div className="flex h-[9px] rounded-full overflow-hidden bg-[#eef1f5] mt-2">
+                  <div className="h-full transition-all duration-700"
+                    style={{ width: `${tyLeXong}%`, background: MAU_DA_XONG }} />
+                  {c.daXong > 0 && c.dangXuLy > 0 && (
+                    <div className="h-full w-[2px] bg-white flex-shrink-0" />
+                  )}
+                  <div className="h-full transition-all duration-700"
+                    style={{ width: `${100 - tyLeXong}%`, background: MAU_DANG_XU_LY }} />
+                </div>
               </div>
 
-              {/* Nhãn trạng thái — chữ + biểu tượng, không dựa vào màu đơn thuần */}
-              <div className="w-[210px] flex-shrink-0 flex items-center justify-end gap-1.5 flex-wrap">
-                {quaTai && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#8b1a1a] bg-[#fdeaea] border border-[#f5c6c6] rounded-full px-2 py-0.5">
-                    <AlertTriangle size={9} /> Cao hơn TB {Math.round(lechTrungBinh)}%
-                  </span>
-                )}
+              <div className="w-[132px] flex-shrink-0 text-right">
+                <div className="text-[12px] font-bold tabular-nums" style={{ color: CHU_DA_XONG }}>
+                  {tyLeXong.toFixed(0)}% hoàn thành
+                </div>
+                <div className="text-[11px] font-medium mt-1 tabular-nums" style={{ color: CHU_DANG_XU_LY }}>
+                  {c.dangXuLy} đang xử lý
+                </div>
+                {/* Quá hạn là tín hiệu rủi ro, giữ lại dù bản mẫu không có: đây là
+                    thứ Trưởng phòng cần thấy nhất khi nhìn vào một cán bộ. */}
                 {!!c.quaHan && c.quaHan > 0 && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#c0392b] bg-[#fef2f2] border border-[#fecaca] rounded-full px-2 py-0.5">
+                  <div className="text-[11px] font-semibold text-[#c0392b] mt-1 tabular-nums">
                     {c.quaHan} quá hạn
-                  </span>
+                  </div>
                 )}
                 {!!c.choToiDuyet && c.choToiDuyet > 0 && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#b45309] bg-[#fffbeb] border border-[#fde68a] rounded-full px-2 py-0.5">
+                  <div className="text-[11px] font-medium text-[#b45309] mt-1 tabular-nums">
                     {c.choToiDuyet} chờ tôi duyệt
-                  </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -254,11 +285,14 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
         })}
       </div>
 
-      <div className="px-5 py-2.5 bg-[#f8fafc] border-t border-[#f1f5f9] rounded-b-[8px]">
-        <p className="text-[11px] text-[#94a3b8]">
-          Thanh đo <span className="font-medium text-[#64748b]">số đơn chưa giải quyết xong đang giữ</span>, không phải thành tích.
-          Thanh đỏ = tải cao hơn trung bình phòng từ 30% trở lên, nên cân nhắc khi phân công đơn mới.
-        </p>
+      {/* Hai đoạn màu → bắt buộc có chú giải, không để người đọc tự đoán */}
+      <div className="px-5 py-3 border-t border-[#f1f5f9] bg-white rounded-b-[8px] flex items-center justify-center gap-6 flex-wrap">
+        <span className="flex items-center gap-1.5 text-[12px] text-[#475569]">
+          <span className="w-2.5 h-2.5 rounded-[2px]" style={{ background: MAU_DA_XONG }} /> Đã giải quyết xong
+        </span>
+        <span className="flex items-center gap-1.5 text-[12px] text-[#475569]">
+          <span className="w-2.5 h-2.5 rounded-[2px]" style={{ background: MAU_DANG_XU_LY }} /> Đang xử lý
+        </span>
       </div>
     </div>
   );
@@ -283,7 +317,7 @@ export default function TrangChuTruongPhong({
   laVaiTroQuanLy?: boolean;
   onMoDanhSachDon?: (loc: BoLocTuTrangChu) => void;
   onMoPheDuyet?: () => void;
-  onMoDanhSachVanBan?: () => void;
+  onMoDanhSachVanBan?: (loc?: LocVanBanTuTrangChu) => void;
   onXemHieuSuat?: () => void;
 }) {
   const homNay = useMemo(() => new Date(), []);
@@ -320,6 +354,10 @@ export default function TrangChuTruongPhong({
     () => donList.filter(d => laSapDenHan(d, homNay)).length,
     [donList, homNay]);
 
+  // Văn bản bị trả lại — LỌC THEO VAI, vì hai vai đứng ở hai đầu của cùng một
+  // sự việc: cán bộ là người phải sửa, người duyệt là người đã trả lại. Trước đây
+  // khối này đổ toàn bộ văn bản bị trả lại của mọi người mà tiêu đề vẫn ghi
+  // "tôi đã trả lại" — cán bộ nhìn vào thấy mình bị nói là người trả lại.
   const vanBanBiTraLai = useMemo(
     () => vanBanList
       .filter(v => v.trangThai === "BiTraLai")
@@ -327,8 +365,23 @@ export default function TrangChuTruongPhong({
         const moc = mocGanNhat(v, "TraLai");
         return { vb: v, nguoiTra: moc?.nguoi ?? "—", soNgay: soNgayTu(moc?.thoiGian, homNay) };
       })
+      .filter(({ vb, nguoiTra }) => laVaiTroQuanLy
+        ? nguoiTra === toiLaAi        // người duyệt: việc mình đã trả lại
+        : vb.nguoiTao === toiLaAi)    // cán bộ: việc mình phải sửa
       .sort((a, b) => (b.soNgay ?? 0) - (a.soNgay ?? 0)),
-    [vanBanList, homNay]);
+    [vanBanList, homNay, laVaiTroQuanLy, toiLaAi]);
+
+  const tieuDeBiTraLai = laVaiTroQuanLy
+    ? "Văn bản tôi đã trả lại, chưa thấy sửa"
+    : "Văn bản bị trả lại";
+
+  // Bấm vào khối phải mở ra ĐÚNG tập vừa đếm, nên bộ lọc mang sang phải lặp lại
+  // cùng điều kiện lọc theo vai ở trên — không chỉ là "mở màn Danh sách văn bản".
+  const locBiTraLai: LocVanBanTuTrangChu = {
+    nhan: tieuDeBiTraLai,
+    trangThai: "BiTraLai",
+    ...(laVaiTroQuanLy ? { nguoiTraLai: toiLaAi } : { nguoiTao: toiLaAi }),
+  };
 
   // ── Tầng 3 — tải việc dựng TỪ CHÍNH DANH SÁCH ĐƠN ─────────────────────────
   // Cố ý không lấy số đơn từ `canBoList`: bảng hiệu suất và dữ liệu đơn là hai
@@ -336,15 +389,24 @@ export default function TrangChuTruongPhong({
   // hạn". Ở đây đếm thẳng đơn đang giữ, rồi mới tra chức danh theo tên.
   const taiViec = useMemo<TaiViecCanBo[]>(() => {
     const chucDanh = new Map(canBoList.map(c => [c.name, c.role]));
-    const dangGiu = donList.filter(d => !daGiaiQuyetXong(d) && d.nguoiNhap);
-
+    // Đếm TOÀN BỘ đơn quy cho mỗi người, kể cả đã xong — thanh xếp chồng cần cả
+    // hai phần. Trước đây chỉ đếm đơn đang giữ nên không dựng được tỉ lệ hoàn thành.
     const theoNguoi = new Map<string, TaiViecCanBo>();
-    dangGiu.forEach(d => {
-      const ten = d.nguoiNhap!;
-      const muc = theoNguoi.get(ten)
-        ?? { name: ten, role: chucDanh.get(ten) ?? "Cán bộ", kyNay: 0, quaHan: 0, choToiDuyet: 0 };
-      muc.kyNay += 1;
-      if (laQuaHan(d, homNay)) muc.quaHan = (muc.quaHan ?? 0) + 1;
+    donList.forEach(d => {
+      // Tính theo NGƯỜI ĐƯỢC GIAO xử lý, không phải người nhập đơn.
+      const ten = nguoiGiuViec(d);
+      if (!ten) return;
+      const muc = theoNguoi.get(ten) ?? {
+        name: ten, role: chucDanh.get(ten) ?? "Cán bộ",
+        tong: 0, daXong: 0, dangXuLy: 0, quaHan: 0, choToiDuyet: 0,
+      };
+      muc.tong += 1;
+      if (daGiaiQuyetXong(d)) {
+        muc.daXong += 1;
+      } else {
+        muc.dangXuLy += 1;
+        if (laQuaHan(d, homNay)) muc.quaHan = (muc.quaHan ?? 0) + 1;
+      }
       theoNguoi.set(ten, muc);
     });
 
@@ -353,7 +415,10 @@ export default function TrangChuTruongPhong({
         v => v.nguoiTao === ten && nguoiDangGiu(v)?.nguoi === toiLaAi).length;
     });
 
-    return [...theoNguoi.values()].sort((a, b) => b.kyNay - a.kyNay);
+    // Xếp theo TỔNG đơn giảm dần, không xếp theo tỉ lệ hoàn thành: xếp theo tỉ lệ
+    // sẽ biến khối này thành bảng xếp hạng thi đua, trong khi việc của Trưởng phòng
+    // ở đây là nhìn khối lượng để cân khi phân công.
+    return [...theoNguoi.values()].sort((a, b) => b.tong - a.tong);
   }, [donList, canBoList, vanBanList, toiLaAi, homNay]);
 
   return (
@@ -421,34 +486,54 @@ export default function TrangChuTruongPhong({
               <DongCanhBao
                 key={`${d.maDon}-${i}`}
                 tieuDe={`Đơn ${(d.maDon ?? "").trim() || "—"}`}
-                moTa={`Cán bộ xử lý: ${vietTatTAND(d.nguoiNhap ?? "chưa phân công")} · ${d.giaiQuyet?.nhan || "Chưa có trạng thái"}`}
+                // Nhãn ghi "Cán bộ xử lý" thì phải đọc người ĐƯỢC GIAO, không phải
+                // người nhập đơn — nguoiGiuViec() lùi về người nhập khi chưa giao.
+                moTa={`Cán bộ xử lý: ${vietTatTAND(nguoiGiuViec(d) || "chưa phân công")} · ${d.giaiQuyet?.nhan || "Chưa có trạng thái"}`}
                 nhanPhai={nhanQuaHan(soNgayQuaHan(d, homNay))}
                 mauNhan="text-[#c0392b] bg-[#fee2e2]"
                 onClick={() => onMoDanhSachDon?.({ nhan: "Quá hạn giải quyết", tienDo: "qua-han" })}
               />
             ))}
             {donSapDenHan > 0 && (
-              <p className="text-[11px] text-[#b45309] bg-[#fffbeb] border border-[#fde68a] rounded-[4px] px-2.5 py-1.5">
+              // Trước đây là <p> tĩnh: người dùng thấy con số thì bấm, nhưng không
+              // có gì xảy ra. Mọi con số trên Trang chủ đều phải mở được danh sách
+              // đứng sau nó, nếu không thì đó là ngõ cụt.
+              <button
+                type="button"
+                onClick={() => onMoDanhSachDon?.({ nhan: "Sắp đến hạn giải quyết", tienDo: "sap-den-han" })}
+                className="w-full text-left text-[11px] text-[#b45309] bg-[#fffbeb] border border-[#fde68a] rounded-[4px] px-2.5 py-1.5 hover:bg-[#fef3c7] hover:border-[#fcd34d] transition-colors cursor-pointer"
+              >
                 Thêm <span className="font-bold">{donSapDenHan}</span> đơn sắp đến hạn — nên xử lý trước khi thành quá hạn.
-              </p>
+                <span className="ml-1 underline underline-offset-2">Xem danh sách</span>
+              </button>
             )}
           </KhungCanhBao>
 
+          {/* Cùng một khối, hai cách đọc: cán bộ đọc là "việc tôi phải làm",
+              người duyệt đọc là "việc tôi đang chờ người khác làm". */}
           <KhungCanhBao
-            tieuDe="Văn bản tôi đã trả lại, chưa thấy sửa"
+            tieuDe={tieuDeBiTraLai}
             icon={<RotateCcw size={18} />} mauIcon="text-[#e67e22]"
             soLuong={vanBanBiTraLai.length}
-            trong="Không có văn bản nào bị trả lại"
-            onXemTatCa={onMoDanhSachVanBan}
+            trong={laVaiTroQuanLy
+              ? "Không có văn bản nào bạn trả lại đang chờ sửa"
+              : "Bạn không có văn bản nào bị trả lại"}
+            onXemTatCa={() => onMoDanhSachVanBan?.(locBiTraLai)}
           >
             {vanBanBiTraLai.slice(0, 3).map(({ vb, nguoiTra, soNgay }) => (
               <DongCanhBao
                 key={vb.id}
                 tieuDe={vb.trichYeu || vb.loaiVanBan}
-                moTa={`Người phải sửa: ${vb.nguoiTao} · Trả lại bởi ${nguoiTra}`}
-                nhanPhai={soNgay === null ? "Chưa rõ ngày" : soNgay === 0 ? "Trả lại hôm nay" : `Đã ${soNgay} ngày`}
+                // Cán bộ đã biết mình phải sửa — thứ họ cần biết là AI trả lại.
+                // Người duyệt đã biết mình trả lại — thứ họ cần biết là AI phải sửa.
+                moTa={laVaiTroQuanLy
+                  ? `Người phải sửa: ${vb.nguoiTao}`
+                  : `Trả lại bởi ${nguoiTra} — sửa xong trình lại`}
+                nhanPhai={soNgay === null ? "Chưa rõ ngày"
+                  : soNgay === 0 ? "Trả lại hôm nay"
+                  : laVaiTroQuanLy ? `Đã ${soNgay} ngày` : `Chờ ${soNgay} ngày`}
                 mauNhan={soNgay !== null && soNgay > HAN_DUYET_VAN_BAN_NGAY ? "text-[#c0392b] bg-[#fee2e2]" : "text-[#b45309] bg-[#fef3c7]"}
-                onClick={onMoDanhSachVanBan}
+                onClick={() => onMoDanhSachVanBan?.(locBiTraLai)}
               />
             ))}
           </KhungCanhBao>
