@@ -1110,6 +1110,11 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   );
 };
 
+// Loại văn bản cấp theo TỪNG ĐƠN (mỗi đơn 1 tờ) thay vì gộp theo đơn vị —
+// "Giấy xác nhận" giữ nguyên logic này; các loại khác dùng bảng công văn
+// gộp theo đơn vị (dungVanBanTheoDonVi) như trước đây.
+const CAP_THEO_TUNG_DON = new Set(["Giấy xác nhận", "Yêu cầu bổ sung"]);
+
 // Dựng 1 văn bản cho 1 đơn — không có tầng "Danh sách đơn" vì chỉ có đúng 1 đơn.
 const dungVanBanTheoDon = (
   loaiVB: string,
@@ -1139,6 +1144,63 @@ const dungVanBanTheoDon = (
       originalData: row,
       khongCham: !chamValidation,
     }],
+  };
+};
+
+// Dựng 1 văn bản cho 1 đơn vị chuyển đến, 3 cấp (bảng công văn):
+//   Văn bản → Danh sách đơn (mỗi thẩm phán 1 danh sách, tách theo hình thức
+//   phân công) → Đơn
+// chamValidation=false cho văn bản đi kèm: vẫn hiển thị đầy đủ thông tin đơn
+// nhưng không bị soi bằng luật của loại văn bản chính.
+const dungVanBanTheoDonVi = (
+  loaiVB: string,
+  donVi: string,
+  rows: any[],
+  idPrefix: string,
+  chamValidation: boolean,
+): DocNode => {
+  const tenGoc = `${loaiVB} - ${donVi}`;
+  const theoTP: Record<string, { tp: string; loai: string; rows: any[] }> = {};
+  rows.forEach(r => {
+    const tp = (r.thongTinDon?.thamPhan || "Chưa phân công").split(" (")[0];
+    const loai = r.loaiPhanCong === "chi-dinh" ? "chỉ định"
+      : r.loaiPhanCong === "ngau-nhien" ? "ngẫu nhiên" : "";
+    (theoTP[`${tp}|${loai}`] ||= { tp, loai, rows: [] }).rows.push(r);
+  });
+
+  const hauToSo = hauToSoCua(loaiVB);
+
+  return {
+    id: idPrefix,
+    name: `${tenGoc} - (Số -/2026/${hauToSo})`,
+    tenGoc,
+    hauToSo,
+    type: loaiVB,
+    date: "30/07/2026",
+    isExpanded: true,
+    coTheLaySo: true,
+    khongCham: !chamValidation,
+    children: Object.values(theoTP).map((g, i) => ({
+      id: `${idPrefix}-ds${i}`,
+      name: `Danh sách đơn - Thẩm phán ${g.tp}${g.loai ? ` (phân công ${g.loai})` : ""}`,
+      type: "Danh sách",
+      date: "30/07/2026",
+      // Thu gọn mặc định: mở popup là thấy ngay có bao nhiêu văn bản sẽ tạo,
+      // không bị hàng chục dòng đơn đẩy phần cấu hình ra khỏi tầm mắt.
+      // Cần xem chi tiết thì bấm mũi tên để xổ.
+      isExpanded: false,
+      khongCham: !chamValidation,
+      children: g.rows.map((r, j) => ({
+        id: `${idPrefix}-ds${i}-${r.id}`,
+        sttHienThi: j + 1,
+        name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
+        type: "Đơn",
+        date: r.ngayNhap || "30/07/2026",
+        isExpanded: false,
+        originalData: r,
+        khongCham: !chamValidation,
+      })),
+    })),
   };
 };
 
@@ -1673,12 +1735,12 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   // Trình duyệt luôn, thay vì để cán bộ bấm rồi mới báo lỗi.
   const khongCoVanBanHopLe = treeData.filter(n => n.isValid !== false).length === 0;
 
-  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản, luôn 2 tầng
-  // (Văn bản → Đơn), không còn tầng "Danh sách đơn" ở giữa.
-  //   "Tờ trình phân công thẩm phán": TẤT CẢ đơn được chọn gộp vào 1 tờ trình,
-  //   đơn để thẳng dưới tờ trình.
-  //   Mọi loại khác: mỗi đơn 1 văn bản riêng (ví dụ: Giấy xác nhận cơ quan
-  //   chuyển đơn → Mã đơn).
+  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
+  //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
+  //                    → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
+  //                    → Đơn
+  //   Loại trong CAP_THEO_TUNG_DON (Giấy xác nhận, Yêu cầu bổ sung): mỗi đơn
+  //   1 văn bản, bỏ tầng Danh sách đơn.
   useEffect(() => {
     if (!isOpen) return;
 
@@ -1687,11 +1749,21 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
     const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
       if (loaiVB === "Tờ trình phân công thẩm phán") {
-        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất, đơn để thẳng
-        // dưới tờ trình — bỏ tầng "Danh sách đơn" theo đơn vị/thẩm phán/hình
-        // thức phân công.
+        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất
         const tenGoc = `${loaiVB} chung`;
         const hauToSo = hauToSoCua(loaiVB);
+
+        // Tách các danh sách đơn theo: đơn vị gửi đến (donViGiaiQuyet/donViGui), thẩm phán (thamPhan), hình thức phân công (loaiPhanCong)
+        // Nếu có 1 trong 3 điều kiện này khác đi, bắt buộc phải tách thành 1 danh sách mới
+        const nhomDanhSach: Record<string, { donVi: string; tp: string; loai: string; rows: any[] }> = {};
+        selectedRows.forEach(r => {
+          const dv = r.thongTinDon?.donViGiaiQuyet || r.thongTinDon?.donViGui || "Chưa xác định";
+          const tp = (r.thongTinDon?.thamPhan || "Chưa phân công").split(" (")[0];
+          const loai = r.loaiPhanCong === "chi-dinh" ? "chỉ định"
+            : r.loaiPhanCong === "ngau-nhien" ? "ngẫu nhiên" : "chưa rõ";
+          const key = `${dv}|${tp}|${loai}`;
+          (nhomDanhSach[key] ||= { donVi: dv, tp, loai, rows: [] }).rows.push(r);
+        });
 
         const toTrinhNode: DocNode = {
           id: `${tienTo}-${n++}`,
@@ -1703,20 +1775,36 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
           isExpanded: true,
           coTheLaySo: true,
           khongCham: !cham,
-          children: selectedRows.map((r, j) => ({
-            id: `${tienTo}-${r.id}`,
-            sttHienThi: j + 1,
-            name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
-            type: "Đơn",
-            date: r.ngayNhap || "30/07/2026",
-            isExpanded: false,
-            originalData: r,
+          children: Object.values(nhomDanhSach).map((g, i) => ({
+            id: `${tienTo}-ds-${i}`,
+            name: `Danh sách đơn - ${g.donVi} - Thẩm phán ${g.tp} (${g.loai})`,
+            type: "Danh sách",
+            date: "30/07/2026",
+            isExpanded: false,   // thu gọn mặc định — xem lý do ở nhánh trên
             khongCham: !cham,
+            children: g.rows.map((r, j) => ({
+              id: `${tienTo}-ds-${i}-${r.id}`,
+              sttHienThi: j + 1,
+              name: r.maDon || r.nguoiGui || `Đơn ${r.id}`,
+              type: "Đơn",
+              date: r.ngayNhap || "30/07/2026",
+              isExpanded: false,
+              originalData: r,
+              khongCham: !cham,
+            })),
           })),
         };
         nodes.push(toTrinhNode);
-      } else {
+      } else if (CAP_THEO_TUNG_DON.has(loaiVB)) {
         selectedRows.forEach(r => nodes.push(dungVanBanTheoDon(loaiVB, r, `${tienTo}-${n++}`, cham)));
+      } else {
+        const theoDonVi: Record<string, any[]> = {};
+        selectedRows.forEach(row => {
+          const dv = row.thongTinDon?.donViGiaiQuyet || "Chưa xác định";
+          (theoDonVi[dv] ||= []).push(row);
+        });
+        Object.entries(theoDonVi).forEach(([donVi, rowsDV]) =>
+          nodes.push(dungVanBanTheoDonVi(loaiVB, donVi, rowsDV, `${tienTo}-${n++}`, cham)));
       }
     };
 
