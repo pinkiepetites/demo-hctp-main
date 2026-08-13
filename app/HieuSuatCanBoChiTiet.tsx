@@ -4,7 +4,7 @@ import {
 } from "lucide-react";
 import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";
 import {
-  daGiaiQuyetXong, laQuaHan, TRANG_THAI_THU_LY, type DonChiSo,
+  daGiaiQuyetXong, laQuaHan, nguoiGiuViec, TRANG_THAI_THU_LY, type DonChiSo,
 } from "./ChiSoTrangChu";
 
 /** Danh bạ chức vụ. Trước đây file này còn giữ cả một BẢNG SỐ LIỆU mẫu riêng, tách
@@ -40,8 +40,9 @@ const dungBang = (rows: DonChiSo[], homNay: Date): DongHieuSuat[] => {
   const theoNguoi = new Map<string, DongHieuSuat>();
 
   rows.forEach(r => {
-    const ten = (r.nguoiNhap ?? "").trim();
-    if (!ten) return;   // đơn chưa có người nhập thì không quy được cho ai
+    // Quy cho NGƯỜI ĐƯỢC GIAO xử lý; chưa giao thì tạm tính cho người nhập.
+    const ten = nguoiGiuViec(r);
+    if (!ten) return;   // không quy được cho ai thì bỏ qua
     const dong = theoNguoi.get(ten) ?? {
       name: ten,
       role: CHUC_VU_THEO_TEN.get(ten) ?? "Cán bộ",
@@ -156,7 +157,7 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
         <KPICard
           title="Chưa giải quyết"
           value={String(t.chuaXong)} unit="đơn"
-          phuChu="Đang giữ, chưa chuyển Vụ chuyên môn"
+          phuChu="Đang giữ, chưa chuyển Phòng GĐKTTT và THA"
           icon={<Clock size={24} />}
           bgColorClass="bg-[#fff7ed]" colorClass="text-[#f97316]"
         />

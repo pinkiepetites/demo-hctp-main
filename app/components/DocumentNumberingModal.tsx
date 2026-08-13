@@ -21,7 +21,7 @@ export interface DocNode {
   soVanBan?: string;
   ngayLaySo?: string;
   tenGoc?: string;      // tên chưa kèm số, dùng để dựng lại nhãn sau khi lấy số
-  hauToSo?: string;     // "TTr-TANDTC-VP" cho tờ trình, "TANDTC-VP" cho công văn
+  hauToSo?: string;     // "TTr-TAHN-VP" cho tờ trình, "TAHN-VP" cho công văn
   sttHienThi?: number;  // STT của đơn trong danh sách chứa nó
   // Văn bản đi kèm: vẫn giữ originalData để hiển thị đầy đủ thông tin đơn,
   // nhưng không chấm validation theo luật của loại văn bản chính.
@@ -61,7 +61,7 @@ interface DocumentNumberingModalProps {
   /** Bấm "Xem văn bản đã trình" ở popup thành công — sang màn Danh sách văn bản. */
   onXemVanBanDaTrinh?: () => void;
   /** Mã đơn (nguyên bản) → mô tả văn bản đang chứa nó, ví dụ
-   *  `"Mã 7022" → "545/2026/TTr-TANDTC-VP (bị trả lại)"`.
+   *  `"Mã 7022" → "545/2026/TTr-TAHN-VP (bị trả lại)"`.
    *  Đưa thẳng vào hệ thống "đơn không hợp lệ" sẵn có, không dựng cảnh báo riêng. */
   donTrung?: Record<string, string>;
 }
@@ -74,7 +74,8 @@ const DOC_TYPES = [
   "Công văn chuyển tòa khác", 
   "Công văn chuyển ngoài", 
   "Trả lại đơn", 
-  "Tờ trình phân công thẩm phán", 
+  // Đã ẩn "Thông báo phân công thẩm phán" khỏi danh mục — không còn lập từ
+  // luồng Danh sách đơn nữa.
   "Tờ trình khác", 
   "Thông báo phân công TP", 
   "Yêu cầu bổ sung"
@@ -93,8 +94,8 @@ const THAM_PHAN_BAN_DAU = [
 const INITIAL_TREE_DATA: DocNode[] = [
   {
     id: "doc-1",
-    name: "Tờ trình phân công thẩm phán",
-    type: "Tờ trình",
+    name: "Thông báo phân công thẩm phán",
+    type: "Thông báo",
     date: "30/07/2026",
     isExpanded: true,
     children: [
@@ -114,7 +115,7 @@ const INITIAL_TREE_DATA: DocNode[] = [
   }
 ];
 
-// Danh sách người cho luồng duyệt Tờ trình phân công thẩm phán
+// Danh sách người cho luồng duyệt Thông báo phân công thẩm phán
 const NGUOI_DUYET_OPTIONS = [
   "Trần Văn B - Trưởng phòng - 15/04/1980",
   "Lê Thị C - Phó phòng - 22/09/1985",
@@ -130,7 +131,7 @@ const VAN_BAN_DI_KEM_TAT_CA = [
   "Danh sách đơn chuyển tòa khác",
   "Danh sách thụ lý mới",
   "Trả lại đơn",
-  "Tờ trình phân công",
+  "Thông báo phân công",
   "Tờ trình khác",
   "Thông báo phân công TP",
   "Yêu cầu bổ sung",
@@ -138,11 +139,6 @@ const VAN_BAN_DI_KEM_TAT_CA = [
 
 // Giới hạn theo loại văn bản chính. Loại nào không có ở đây thì cho chọn tất cả.
 const VAN_BAN_DI_KEM_GIOI_HAN: Record<string, string[]> = {
-  "Tờ trình phân công thẩm phán": [
-    "Công văn chuyển nội bộ",
-    "Giấy xác nhận",
-    "Giấy xác nhận cơ quan chuyển đơn",
-  ],
   "Giấy xác nhận": [
     "Giấy xác nhận cơ quan chuyển đơn",
     "Danh sách thụ lý mới",
@@ -221,19 +217,19 @@ export const LY_DO_YEU_CAU_BO_SUNG = [
   "Lý do khác",
 ];
 
-// Ký hiệu số theo loại văn bản. Loại không khai ở đây dùng mặc định TANDTC-VP.
+// Ký hiệu số theo loại văn bản. Loại không khai ở đây dùng mặc định TAHN-VP.
 const HAU_TO_SO_RIENG: Record<string, string> = {
   "Thông báo phân công TP": "TB-TA",
   "Giấy xác nhận": "TB-TA",
 };
 const hauToSoCua = (loaiVB: string) =>
-  HAU_TO_SO_RIENG[loaiVB] ?? (loaiVB.startsWith("Tờ trình") ? "TTr-TANDTC-VP" : "TANDTC-VP");
+  HAU_TO_SO_RIENG[loaiVB] ?? (loaiVB.startsWith("Tờ trình") ? "TTr-TAHN-VP" : "TAHN-VP");
 
 const NGUOI_KY_OPTIONS = [
   "Nguyễn Minh An - Phó CVP - 01/03/1975",
   "Hoàng Kim Long - CVP - 10/08/1970",
 ];
-// --- Biểu mẫu Tờ trình phân công Thẩm phán ---
+// --- Biểu mẫu Thông báo phân công Thẩm phán ---
 interface ToTrinhInfo {
   soTT: string; ngay: string; thang: string; nam: string;
   kinhTrinh: string;
@@ -245,12 +241,12 @@ interface ToTrinhInfo {
 
 const TO_TRINH_MAC_DINH: ToTrinhInfo = {
   soTT: "", ngay: "", thang: "", nam: "",
-  kinhTrinh: "Đồng chí Chánh án Tòa án nhân dân tối cao",
+  kinhTrinh: "Đồng chí Chánh án Tòa án nhân dân thành phố Hà Nội",
   tieuDe: "Về việc thụ lý đơn và phân công Thẩm phán giải quyết đơn đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm, tái thẩm",
   doan: [
-    "Vụ Giám đốc, kiểm tra về dân sự Tòa án nhân dân tối cao nhận và thụ lý các đơn đề nghị, kiến nghị, thông báo của công dân, tổ chức gửi Tòa án nhân dân tối cao đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm và dự kiến phân công các Thẩm phán Tòa án nhân dân giải quyết đơn",
+    "Tòa Dân sự Tòa án nhân dân thành phố Hà Nội nhận và thụ lý các đơn đề nghị, kiến nghị, thông báo của công dân, tổ chức gửi Tòa án nhân dân thành phố Hà Nội đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật theo trình tự giám đốc thẩm và dự kiến phân công các Thẩm phán Tòa án nhân dân giải quyết đơn",
     "Sau khi xem xét các đơn đề nghị, kiến nghị theo thủ tục giám đốc thẩm, Văn phòng nhận thấy các đơn đề nghị, kiến nghị nêu trên đã đủ điều kiện thụ lý theo quy định. Căn cứ vào kết quả phân công khách quan theo tổ Thẩm phán chuyên sâu; số lượng vụ án mà các Thẩm phán đang xem xét giải quyết; các vụ án có cùng nguyên đơn, bị đơn; có cùng người khởi kiện, người bị kiện.",
-    "Vụ Giám đốc, kiểm tra về dân sự báo cáo và kính đề nghị đồng chí Chánh án Tòa án nhân dân tối cao giải quyết (có danh sách kèm theo).",
+    "Tòa Dân sự báo cáo và kính đề nghị đồng chí Chánh án Tòa án nhân dân thành phố Hà Nội giải quyết (có danh sách kèm theo).",
     "Kính trình Đồng chí./.",
   ],
   chucDanhKy: "KT. CHÁNH VĂN PHÒNG\nPHÓ CHÁNH VĂN PHÒNG",
@@ -314,7 +310,7 @@ const MauCongVanChuyenNoiBo = ({ so, ngay }: { so: string; ngay: string }) => (
       </div>
     </div>
     <div className="grid grid-cols-2 text-center text-[13px] mt-5">
-      <div>Số: {so}/TANDTC-VP</div>
+      <div>Số: {so}/TAHN-VP</div>
       <div className="italic">{ngay}</div>
     </div>
 
@@ -322,21 +318,21 @@ const MauCongVanChuyenNoiBo = ({ so, ngay }: { so: string; ngay: string }) => (
 
     <div className="mt-5 space-y-4 text-justify">
       <p className="indent-[42px]">
-        Vụ Giám đốc, kiểm tra về dân sự Tòa án nhân dân tối cao đã nhận và thụ lý các đơn của
-        công dân, tổ chức gửi Tòa án nhân dân tối cao đề nghị xem xét lại quyết định, bản án
+        Tòa Dân sự Tòa án nhân dân thành phố Hà Nội đã nhận và thụ lý các đơn của
+        công dân, tổ chức gửi Tòa án nhân dân thành phố Hà Nội đề nghị xem xét lại quyết định, bản án
         đã có hiệu lực pháp luật theo trình tự giám đốc thẩm, tái thẩm
         (có danh sách đơn gửi kèm theo Công văn này).
       </p>
       <p className="indent-[42px]">
-        Vụ Giám đốc, kiểm tra về dân sự chuyển các đơn đề nghị, kiến nghị, thông báo đến Quý vụ
+        Tòa Dân sự chuyển các đơn đề nghị, kiến nghị, thông báo đến Quý vụ
         để xem xét, giải quyết theo thẩm quyền. Đề nghị Quý vụ ký xác nhận và chuyển phát danh
         sách đã ký nhận về phòng Tiếp công dân và xử lý đơn tư pháp thuộc Vụ Giám đốc, kiểm tra
-        về dân sự Tòa án nhân dân tối cao./.
+        về dân sự Tòa án nhân dân thành phố Hà Nội./.
       </p>
     </div>
 
     <NoiNhan
-      dong={["- Như trên;", "- Đ/c Chánh án TANDTC (để b/c);", "- Đ/c Chánh Văn phòng TANDTC (để b/c);", "- Lưu: VP TANDTC."]}
+      dong={["- Như trên;", "- Đ/c Chánh án TAND TP Hà Nội (để b/c);", "- Đ/c Chánh Văn phòng TAND TP Hà Nội (để b/c);", "- Lưu: VP TAND TP Hà Nội."]}
       ky={["KT. CHÁNH VĂN PHÒNG", "PHÓ CHÁNH VĂN PHÒNG"]} />
   </TrangA4>
 );
@@ -350,7 +346,7 @@ const MauGiayXacNhanCoQuan = ({ so, ngay, row }: { so: string; ngay: string; row
         <div>
           <div>TÒA ÁN NHÂN DÂN TỐI CAO</div>
           <div className="w-[95px] h-[1px] bg-black mx-auto mt-1" />
-          <div className="mt-3">Số: {so}/TANDTC-VP</div>
+          <div className="mt-3">Số: {so}/TAHN-VP</div>
         </div>
         <div>
           <div className="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
@@ -367,23 +363,23 @@ const MauGiayXacNhanCoQuan = ({ so, ngay, row }: { so: string; ngay: string; row
 
       <div className="mt-6 space-y-4 text-justify">
         <p className="indent-[42px]">
-          Tòa án nhân dân tối cao nhận được công văn số {d.soCV || "……"} ngày {d.ngayCV || "……"} của{" "}
+          Tòa án nhân dân thành phố Hà Nội nhận được công văn số {d.soCV || "……"} ngày {d.ngayCV || "……"} của{" "}
           {d.donViGui || "……"} chuyển đơn của ông/bà {row?.nguoiGui || "……"} về việc đề nghị Chánh án
-          Tòa án nhân dân tối cao xem xét theo thủ tục giám đốc thẩm/tái thẩm đối với Bản án/Quyết định
+          Tòa án nhân dân thành phố Hà Nội xem xét theo thủ tục giám đốc thẩm/tái thẩm đối với Bản án/Quyết định
           số {d.soBaqd || "……"} ngày {d.ngay || "……"} của {d.toaXetXu || "……"} đã có hiệu lực pháp luật.
         </p>
         <p className="indent-[42px]">
-          Sau khi nghiên cứu đơn đề nghị nêu trên, Vụ Giám đốc, kiểm tra về dân sự Tòa án nhân dân tối cao
+          Sau khi nghiên cứu đơn đề nghị nêu trên, Tòa Dân sự Tòa án nhân dân thành phố Hà Nội
           đã chuyển đơn của ông/bà {row?.nguoiGui || "……"} đến {d.donViGiaiQuyet || "……"} thuộc Tòa án nhân dân
-          tối cao theo công văn số {so}/TANDTC-VP ngày {ngay} để xem xét, giải quyết theo quy định pháp luật.
+          thành phố Hà Nội theo công văn số {so}/TAHN-VP ngày {ngay} để xem xét, giải quyết theo quy định pháp luật.
         </p>
         <p className="indent-[42px]">
-          Tòa án nhân dân tối cao trân trọng thông báo để Quý cơ quan được biết./.
+          Tòa án nhân dân thành phố Hà Nội trân trọng thông báo để Quý cơ quan được biết./.
         </p>
       </div>
 
       <NoiNhan
-        dong={["- Như trên;", "- Đ/c Chánh án TANDTC (để b/c);", "- Đ/c Chánh Văn phòng TANDTC (để b/c);", "- Lưu: VP TANDTC."]}
+        dong={["- Như trên;", "- Đ/c Chánh án TAND TP Hà Nội (để b/c);", "- Đ/c Chánh Văn phòng TAND TP Hà Nội (để b/c);", "- Lưu: VP TAND TP Hà Nội."]}
         ky={["TL. CHÁNH ÁN", "KT. CHÁNH VĂN PHÒNG", "PHÓ CHÁNH VĂN PHÒNG"]} />
     </TrangA4>
   );
@@ -426,14 +422,14 @@ const MauGiayXacNhan = ({ so, ngay, row }: { so: string; ngay: string; row?: any
 
       <div className="mt-6 space-y-4 text-justify">
         <p className="indent-[42px]">
-          Căn cứ <Sup n="6" />Điều 375 của Bộ luật tố tụng hình sự, <Sup n="7" />Tòa án nhân dân tối cao
+          Căn cứ <Sup n="6" />Điều 375 của Bộ luật tố tụng hình sự, <Sup n="7" />Tòa án nhân dân thành phố Hà Nội
           thông báo cho <Sup n="8" />ông/bà {row?.nguoiGui || "……"} biết <Sup n="9" />ngày {ngay}{" "}
-          <Sup n="10" />Tòa án nhân dân tối cao đã nhận được Đơn đề nghị giám đốc thẩm/Kiến nghị giám đốc
+          <Sup n="10" />Tòa án nhân dân thành phố Hà Nội đã nhận được Đơn đề nghị giám đốc thẩm/Kiến nghị giám đốc
           thẩm đối với Bản án/Quyết định số: <Sup n="11" />{d.soBaqd || "……"} <Sup n="12" />ngày {d.ngay || "……"}{" "}
           của <Sup n="13" />{d.toaXetXu || "……"} đã có hiệu lực pháp luật cần xem xét theo thủ tục giám đốc thẩm.
         </p>
         <p className="indent-[42px]">
-          Căn cứ các quy định của pháp luật tố tụng hình sự, <Sup n="17" />Tòa án nhân dân tối cao sẽ tiến
+          Căn cứ các quy định của pháp luật tố tụng hình sự, <Sup n="17" />Tòa án nhân dân thành phố Hà Nội sẽ tiến
           hành xem xét Đơn đề nghị/Kiến nghị nêu trên theo thủ tục giám đốc thẩm.
         </p>
       </div>
@@ -442,7 +438,7 @@ const MauGiayXacNhan = ({ so, ngay, row }: { so: string; ngay: string; row?: any
         <div className="text-[12px]">
           <div className="font-bold italic">Nơi nhận:</div>
           <div>- Như trên;</div>
-          <div>- Đ/c Chánh Văn phòng TANDTC (để b/c);</div>
+          <div>- Đ/c Chánh Văn phòng TAND TP Hà Nội (để b/c);</div>
           <div>- Lưu: HCTP, VP.</div>
           <div className="mt-1"><Sup n="15" />09D01167596-</div>
         </div>
@@ -554,12 +550,12 @@ const MauYCBSDuongSu = ({ so, ngay, row }: { so: string; ngay: string; row?: any
         </p>
         <p className="indent-[42px]">
           Xét đơn đề nghị giám đốc thẩm/tái thẩm của <Sup n="5" />{row?.nguoiGui || "……"} đề ngày{" "}
-          {d.ngayCV || d.ngay || "……"} về việc đề nghị Chánh án Tòa án nhân dân tối cao xem xét theo
+          {d.ngayCV || d.ngay || "……"} về việc đề nghị Chánh án Tòa án nhân dân thành phố Hà Nội xem xét theo
           thủ tục giám đốc thẩm/tái thẩm đối với <Sup n="8" />Bản án/Quyết định số {d.soBaqd || "……"}{" "}
           ngày {d.ngay || "……"} của {d.toaXetXu || "……"} đã có hiệu lực pháp luật;
         </p>
         <p className="indent-[42px]">
-          Tòa án nhân dân tối cao yêu cầu <Sup n="5" />{row?.nguoiGui || "……"} sửa đổi, bổ sung các
+          Tòa án nhân dân thành phố Hà Nội yêu cầu <Sup n="5" />{row?.nguoiGui || "……"} sửa đổi, bổ sung các
           nội dung sau đây trong thời hạn 30 ngày, kể từ ngày nhận được thông báo này:
         </p>
         <div className="pl-[42px] space-y-1">
@@ -574,7 +570,7 @@ const MauYCBSDuongSu = ({ so, ngay, row }: { so: string; ngay: string; row?: any
         <p className="indent-[42px] italic text-[13px]">
           (Lưu ý: Để sớm hoàn thành việc xử lý đơn, khi nộp đơn sửa đổi, bổ sung và các tài liệu kèm
           theo, đề nghị gửi kèm theo bản photo thông báo này cho Phòng Tiếp công dân và xử lý đơn tư
-          pháp thuộc Văn phòng Tòa án nhân dân tối cao theo địa chỉ: ).
+          pháp thuộc Văn phòng Tòa án nhân dân thành phố Hà Nội theo địa chỉ: ).
         </p>
       </div>
 
@@ -583,7 +579,7 @@ const MauYCBSDuongSu = ({ so, ngay, row }: { so: string; ngay: string; row?: any
           <div className="font-bold italic">Nơi nhận:</div>
           <div>- Như trên;</div>
           <div>- Đ/c Chánh văn phòng <Sup n="10" />TANDCC (để b/c);</div>
-          <div>- Lưu: HCTP, VP TANDTC;</div>
+          <div>- Lưu: GĐKT, TT & THA, VP TAND TP Hà Nội;</div>
           <div className="mt-1"><Sup n="11" />09D01167375-</div>
         </div>
         <div className="text-center text-[13px] font-bold">
@@ -624,13 +620,13 @@ const MauYCBSTraiGiam = ({ so, ngay, row }: { so: string; ngay: string; row?: an
 
       <div className="mt-5 space-y-3 text-justify">
         <p className="indent-[42px]">
-          Tòa án nhân dân tối cao nhận được đơn của phạm nhân {row?.nguoiGui || "……"} đề ngày{" "}
+          Tòa án nhân dân thành phố Hà Nội nhận được đơn của phạm nhân {row?.nguoiGui || "……"} đề ngày{" "}
           {d.ngayCV || d.ngay || "……"} (do {traiGiam} chuyển đến), trong đơn có nội dung đề nghị xem
           xét theo thủ tục giám đốc thẩm đối với Bản án số {d.soBaqd || "……"} ngày {d.ngay || "……"}{" "}
           của {d.toaXetXu || "……"} đã có hiệu lực pháp luật;
         </p>
         <p className="indent-[42px]">
-          Để có cơ sở xem xét đơn đề nghị giám đốc thẩm nêu trên, Tòa án nhân dân tối cao đề nghị{" "}
+          Để có cơ sở xem xét đơn đề nghị giám đốc thẩm nêu trên, Tòa án nhân dân thành phố Hà Nội đề nghị{" "}
           {traiGiam} hướng dẫn phạm nhân {row?.nguoiGui || "……"} bổ sung các nội dung sau:
         </p>
         <div className="pl-[42px]">
@@ -640,7 +636,7 @@ const MauYCBSTraiGiam = ({ so, ngay, row }: { so: string; ngay: string; row?: an
         </div>
         <p className="indent-[42px] italic text-[13px]">
           (Lưu ý: Đề nghị gửi đơn và các tài liệu kèm theo đến Phòng Tiếp công dân và xử lý đơn tư
-          pháp thuộc Văn phòng Tòa án nhân dân tối cao theo địa chỉ: ).
+          pháp thuộc Văn phòng Tòa án nhân dân thành phố Hà Nội theo địa chỉ: ).
         </p>
       </div>
 
@@ -834,7 +830,7 @@ const MauDanhSachThuLyMoi = ({ so, ngay, donVi, rows }: {
         của Văn phòng chuyển {donVi}
       </div>
       <div className="text-[13px] font-bold italic mt-1">
-        (Gửi kèm theo Tờ trình số {so}/TANDTC-VP ngày {ngay} của Tòa án nhân dân tối cao)
+        (Gửi kèm theo Tờ trình số {so}/TAHN-VP ngày {ngay} của Tòa án nhân dân thành phố Hà Nội)
       </div>
     </div>
 
@@ -935,7 +931,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   const ngayHienThi = `${info.ngay || "……"}/${info.thang || "……"}/${info.nam || "……"}`;
   const ngayVanBan = `Hà Nội, ngày ${info.ngay || "……"} tháng ${info.thang || "……"} năm ${info.nam || "……"}`;
 
-  const laToTrinhPhanCong = loaiVanBan === "Tờ trình phân công thẩm phán";
+  const laThongBaoPhanCong = loaiVanBan === "Thông báo phân công thẩm phán";
 
   // Các vụ (đơn vị giải quyết) có trong đợt này
   const danhSachVu = [...new Set(rows.map((r: any) => r.thongTinDon?.donViGiaiQuyet || "Chưa xác định"))];
@@ -953,9 +949,8 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
 
   // Yêu cầu bổ sung tách sẵn 2 biểu mẫu: gửi đương sự và gửi trại giam
   const laYeuCauBoSung = loaiVanBan === "Yêu cầu bổ sung";
-  // Giấy xác nhận / Giấy xác nhận cơ quan chuyển đơn / Trả lại đơn là loại
-  // chính: mỗi mã đơn 1 bản, giống hệt cách tabDiKem tách ở trên
-  const laGiayXacNhanChinh = TACH_THEO_MA_DON.has(loaiVanBan) && !laToTrinhPhanCong;
+  // Giấy xác nhận là loại chính: mỗi mã đơn 1 bản, giống hệt cách tabDiKem tách ở trên
+  const laGiayXacNhanChinh = loaiVanBan === "Giấy xác nhận" && !laThongBaoPhanCong;
   const tabChinh = laYeuCauBoSung
     ? ["Thông báo yêu cầu bổ sung với đương sự", "Thông báo yêu cầu bổ sung với trại giam"]
     : laGiayXacNhanChinh
@@ -964,10 +959,10 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
 
   const danhSachTab = [
     ...tabChinh,
-    ...(laToTrinhPhanCong ? [`Danh sách ${loaiVanBan}`] : []),
+    ...(laThongBaoPhanCong ? [`Danh sách ${loaiVanBan}`] : []),
     ...tabDiKem.map(t => t.ten),
   ];
-  const viTriDiKem = tabChinh.length + (laToTrinhPhanCong ? 1 : 0);
+  const viTriDiKem = tabChinh.length + (laThongBaoPhanCong ? 1 : 0);
   const mucDiKem = tab >= viTriDiKem ? tabDiKem[tab - viTriDiKem] : null;
 
   // Bảng ánh xạ loại văn bản → biểu mẫu. Thêm loại mới chỉ cần thêm 1 nhánh.
@@ -1060,14 +1055,14 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
           {/* ── TAB VĂN BẢN CHÍNH ── */}
           {laYeuCauBoSung && tab === 0 && <MauYCBSDuongSu so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />}
           {laYeuCauBoSung && tab === 1 && <MauYCBSTraiGiam so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />}
-          {tab === 0 && !laToTrinhPhanCong && !laYeuCauBoSung && renderMau(loaiVanBan)}
-          {tab === 0 && laToTrinhPhanCong && (
+          {tab === 0 && !laThongBaoPhanCong && !laYeuCauBoSung && renderMau(loaiVanBan)}
+          {tab === 0 && laThongBaoPhanCong && (
             <div className="mx-auto bg-white shadow-md w-full max-w-[794px] px-[85px] py-[55px] text-black font-['Times_New_Roman','Times',serif] text-[14.5px] leading-[1.55]">
               <QuocHieu />
 
               <div className="grid grid-cols-2 mt-4 text-[13px]">
                 <div className="text-center">
-                  Số: {edLine(info.soTT, v => set("soTT", v), "", "w-[70px] text-center")}/TTr-TANDTC-VP
+                  Số: {edLine(info.soTT, v => set("soTT", v), "", "w-[70px] text-center")}/TTr-TAHN-VP
                 </div>
                 <div className="text-center italic">
                   Hà Nội, ngày {edLine(info.ngay, v => set("ngay", v), "italic", "w-[46px] text-center")} tháng {edLine(info.thang, v => set("thang", v), "italic", "w-[46px] text-center")} năm {edLine(info.nam, v => set("nam", v), "italic", "w-[60px] text-center")}
@@ -1112,15 +1107,15 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
             </div>
           )}
 
-          {/* ── TAB 2: DANH SÁCH KÈM THEO TỜ TRÌNH PHÂN CÔNG ── */}
-          {tab === 1 && laToTrinhPhanCong && (
+          {/* ── TAB 2: DANH SÁCH KÈM THEO THÔNG BÁO PHÂN CÔNG ── */}
+          {tab === 1 && laThongBaoPhanCong && (
             <div className="mx-auto bg-white shadow-md w-full max-w-[1100px] px-[55px] py-[45px] text-black font-['Times_New_Roman','Times',serif] text-[13px] leading-[1.45] relative">
               <div className="absolute right-[30px] top-[20px] text-[12px]">1</div>
               <QuocHieu />
 
               <div className="text-center mt-8">
                 <div className="text-[14px] font-bold leading-[1.5]">
-                  {laToTrinhPhanCong ? (
+                  {laThongBaoPhanCong ? (
                     <>
                       Danh sách đơn vụ án {edLine(info.loaiAn, v => set("loaiAn", v), "font-bold", "w-[110px] text-center")} thụ lý
                       <br />
@@ -1131,7 +1126,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
                   )}
                 </div>
                 <div className="text-[13px] font-bold italic mt-1">
-                  (Kèm theo {loaiVanBan.toLowerCase()} số {soTTHienThi}/{hauToSoCua(loaiVanBan)} ngày {ngayHienThi} của Văn phòng Tòa án nhân dân tối cao)
+                  (Kèm theo {loaiVanBan.toLowerCase()} số {soTTHienThi}/{hauToSoCua(loaiVanBan)} ngày {ngayHienThi} của Văn phòng Tòa án nhân dân thành phố Hà Nội)
                 </div>
               </div>
 
@@ -1350,25 +1345,12 @@ export const lyDoDonKhongHopLe = (
   if (loai === "trả lại đơn")
     return tq !== "Trả lại đơn" ? "TT Giải quyết phải là Trả lại đơn" : null;
 
-  if (loai === "tờ trình phân công thẩm phán" || loai === "tờ trình") {
-    // Chỉ đơn phân công ngẫu nhiên mới phải lập tờ trình để chánh án/phó
-    // chánh án ký; đơn phân công chỉ định không phải làm tờ trình.
-    if (!tq.includes("Thụ lý mới") || !data?.isPhanCong) return "TT Giải quyết: Thụ lý mới & Đã phân công";
-    if (data?.loaiPhanCong === "chi-dinh") return "Đơn phân công chỉ định không phải lập tờ trình";
-    return null;
-  }
-
   if (loai === "thông báo phân công tp") {
-    //  1. Đơn đã có thẩm phán dự kiến
-    //  2. Đơn là đơn thụ lý mới
-    //  3. Phân công ngẫu nhiên → bắt buộc có tờ trình phân công TP đã ký
-    //  4. Phân công chỉ định → tạo được ngay, không cần tờ trình
+    // Chánh án phân công xong là lập được Thông báo ngay. Không còn bước tờ
+    // trình chờ ký ở giữa: quyết định của Chánh án chính là căn cứ, Thông báo
+    // chỉ đưa quyết định đó sang Phòng GĐKT & THA.
     if (!(data?.thongTinDon?.thamPhan || "").trim()) return "Đơn chưa có thẩm phán dự kiến";
     if (!tq.toLowerCase().includes("thụ lý mới")) return "Chỉ lập cho đơn Thụ lý mới";
-    if (data?.loaiPhanCong === "ngau-nhien" && toTrinhStatus !== "da_ky")
-      return toTrinhStatus === "trinh_lanh_dao"
-        ? "Phân công ngẫu nhiên: tờ trình đang chờ chánh án/phó chánh án ký"
-        : "Phân công ngẫu nhiên: cần tờ trình phân công TP đã được ký";
     return null;
   }
 
@@ -1552,7 +1534,7 @@ const HangTaiLieu = ({
         </tr>
         {node.isExpanded && node.children!.map((c, i) => (
           <HangTaiLieu key={c.id} node={c} level={level + 1}
-            soCongVanCha={node.soVanBan ? `${node.soVanBan}/2026/${node.hauToSo ?? "TANDTC-VP"}` : soCongVanCha}
+            soCongVanCha={node.soVanBan ? `${node.soVanBan}/2026/${node.hauToSo ?? "TAHN-VP"}` : soCongVanCha}
             onToggleExpand={onToggleExpand} onLaySo={onLaySo}
             nguoiTheoDon={nguoiTheoDon} setNguoiTheoDon={setNguoiTheoDon}
             duyetChung={duyetChung} kyChung={kyChung}
@@ -1777,7 +1759,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   // So khớp không phân biệt hoa thường vì hai danh mục viết hoa khác nhau.
   const loaiKhoiTao =
     DOC_TYPES.find(t => t.toLowerCase() === (loaiVanBanMacDinh ?? "").toLowerCase())
-    ?? "Tờ trình phân công thẩm phán";
+    ?? "Thông báo phân công thẩm phán";
   const [docType, setDocType] = useState(loaiKhoiTao);
   const [treeData, setTreeData] = useState<DocNode[]>([]);
   // Chuẩn hoá key một lần để validateTree tra cứu nhanh và khớp được cả những
@@ -1791,7 +1773,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   // New UI states
   const [nguoiTao, setNguoiTao] = useState("Vũ Văn Yên");
   const [nguoiDuyet, setNguoiDuyet] = useState("");
-  // Luồng duyệt của Tờ trình phân công thẩm phán
+  // Luồng duyệt của Thông báo phân công thẩm phán
   const [nguoiKy, setNguoiKy] = useState("");
   // Ý kiến trình — gửi kèm tới người duyệt bước 1, lưu vào lịch sử văn bản.
   const [yKienDuyet, setYKienDuyet] = useState("");
@@ -1830,30 +1812,13 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   const thieuLyDoYCBS = laYCBS && Object.values(lyDoTheoDon).some(
     v => !v.chon || (v.chon === "Lý do khác" && !v.khac.trim()));
   const thieuNguoiDuyetKy = !nguoiDuyet || !nguoiKy || thieuLyDoYCBS;
-  // Không còn văn bản nào hợp lệ để trình (toàn bộ đã bị loại) — disable nút
-  // Trình duyệt luôn, thay vì để cán bộ bấm rồi mới báo lỗi.
-  const khongCoVanBanHopLe = treeData.filter(n => n.isValid !== false).length === 0;
-
-  const taoDonDinhKem = () => (selectedRows ?? []).map((r: any, index) => ({
-    ma: r?.maDon ?? String(r?.id ?? "—"),
-    nguoiGui: r?.nguoiGui ?? "—",
-    soBA: r?.thongTinDon?.soBaqd ?? "—",
-    hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
-    thamPhan: r?.thongTinDon?.thamPhan?.trim() || r?.thamPhan?.trim()
-      || THAM_PHAN_BAN_DAU[index % THAM_PHAN_BAN_DAU.length],
-    ghiChuPhanCong: r?.thongTinDon?.ghiChuPhanCong,
-    toaAn: r?.thongTinDon?.toaXetXu,
-    ngayBA: r?.thongTinDon?.ngay,
-    thuTuc: r?.thongTinDon?.thuTuc,
-    diaChi: r?.diaChi,
-  }));
-
-  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
-  //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
-  //                    → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
-  //                    → Đơn
-  //   Loại trong CAP_THEO_TUNG_DON (Giấy xác nhận, Yêu cầu bổ sung): mỗi đơn
-  //   1 văn bản, bỏ tầng Danh sách đơn.
+  
+  // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản, luôn 2 tầng
+  // (Văn bản → Đơn), không còn tầng "Danh sách đơn" ở giữa.
+  //   "Thông báo phân công thẩm phán": TẤT CẢ đơn được chọn gộp vào 1 tờ trình,
+  //   đơn để thẳng dưới tờ trình.
+  //   Mọi loại khác: mỗi đơn 1 văn bản riêng (ví dụ: Giấy xác nhận cơ quan
+  //   chuyển đơn → Mã đơn).
   useEffect(() => {
     if (!isOpen) return;
 
@@ -1861,8 +1826,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     let n = 1;
 
     const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
-      if (loaiVB === "Tờ trình phân công thẩm phán") {
-        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất
+      if (loaiVB === "Thông báo phân công thẩm phán") {
+        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất, đơn để thẳng
+        // dưới tờ trình — bỏ tầng "Danh sách đơn" theo đơn vị/thẩm phán/hình
+        // thức phân công.
         const tenGoc = `${loaiVB} chung`;
         const hauToSo = hauToSoCua(loaiVB);
 
@@ -2000,7 +1967,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
         ...n,
         soVanBan: so,
         ngayLaySo: hnay,
-        name: `${n.tenGoc ?? n.name} - (Số ${so}/2026/${n.hauToSo ?? "TANDTC-VP"} - ${hnay})`,
+        name: `${n.tenGoc ?? n.name} - (Số ${so}/2026/${n.hauToSo ?? "TAHN-VP"} - ${hnay})`,
       };
     });
   };
