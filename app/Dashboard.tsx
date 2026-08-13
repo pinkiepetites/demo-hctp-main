@@ -261,24 +261,44 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   ];
   const maxHinhThuc = Math.max(...hinhThucTiepNhan.map(h => h.value));
 
-  // Đơn quá hạn giải quyết — số liệu ảo, khớp đúng 10 đơn đã gắn cờ quaHanNam
-  // trong SAMPLE_ROWS (Danh sách đơn) để khi bấm "Xem tất cả" sang tab Tổng số
-  // + bộ lọc "Quá hạn giải quyết" thì đúng bằng 10 dòng này.
-  const donQuaHan = [
-    { maDon: "7038", canBoXuLy: "Phùng Trâm Anh", trangThai: "Đã thụ lý", quaHanNam: 6.2 },
-    { maDon: "7037", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", quaHanNam: 4.9 },
-    { maDon: "7035", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Đã thụ lý", quaHanNam: 3.3 },
-    { maDon: "7034", canBoXuLy: "Phùng Trâm Anh", trangThai: "Đã thụ lý", quaHanNam: 2.8 },
-    { maDon: "7021", canBoXuLy: "Phùng Trâm Anh", trangThai: "Thụ lý mới", quaHanNam: 2.1 },
-    { maDon: "7022", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", quaHanNam: 1.7 },
-    { maDon: "7027", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", quaHanNam: 1.4 },
-    { maDon: "7028", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Thụ lý mới", quaHanNam: 1.1 },
-    { maDon: "7048", canBoXuLy: "Nguyễn Minh An", trangThai: "Thụ lý mới", quaHanNam: 0.6 },
-    { maDon: "7031", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", quaHanNam: 0.3 },
-  ];
+  // Đơn quá hạn giải quyết — hạn xử lý là 3 ngày kể từ ngày Tòa nhận đơn.
+  // Ngày xử lý = hôm nay - ngày Tòa nhận:
+  //  - < 2 ngày: chưa đáng lo, không đưa vào danh sách cảnh báo này
+  //  - 2-3 ngày: sắp quá hạn (chỉ đếm số lượng, nhắc xử lý sớm)
+  //  - > 3 ngày: quá hạn, hiển thị trong bảng bên dưới, badge = số ngày quá hạn
+  //    (ngày xử lý - 3), sắp xếp quá hạn nhiều nhất lên đầu.
+  const HAN_XU_LY_NGAY = 3;
+  const NGUONG_SAP_QUA_HAN_NGAY = 2;
+  const soNgayXuLy = (ngayToaNhan: string) => {
+    const [d, m, y] = ngayToaNhan.split("/").map(Number);
+    const homNay = new Date();
+    homNay.setHours(0, 0, 0, 0);
+    return Math.floor((homNay.getTime() - new Date(y, m - 1, d).getTime()) / 86400000);
+  };
+  const donTheoNgayNhan = [
+    { maDon: "7038", canBoXuLy: "Phùng Trâm Anh", trangThai: "Đã thụ lý", ngayToaNhan: "29/07/2026" },
+    { maDon: "7037", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", ngayToaNhan: "01/08/2026" },
+    { maDon: "7035", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Đã thụ lý", ngayToaNhan: "04/08/2026" },
+    { maDon: "7034", canBoXuLy: "Phùng Trâm Anh", trangThai: "Đã thụ lý", ngayToaNhan: "05/08/2026" },
+    { maDon: "7021", canBoXuLy: "Phùng Trâm Anh", trangThai: "Thụ lý mới", ngayToaNhan: "06/08/2026" },
+    { maDon: "7022", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", ngayToaNhan: "07/08/2026" },
+    { maDon: "7027", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", ngayToaNhan: "07/08/2026" },
+    { maDon: "7028", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Thụ lý mới", ngayToaNhan: "08/08/2026" },
+    { maDon: "7048", canBoXuLy: "Nguyễn Minh An", trangThai: "Thụ lý mới", ngayToaNhan: "09/08/2026" },
+    { maDon: "7031", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", ngayToaNhan: "09/08/2026" },
+    { maDon: "7052", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Thụ lý mới", ngayToaNhan: "10/08/2026" },
+    { maDon: "7053", canBoXuLy: "Phùng Trâm Anh", trangThai: "Thụ lý mới", ngayToaNhan: "10/08/2026" },
+    { maDon: "7054", canBoXuLy: "Vũ Văn Yên", trangThai: "Thụ lý mới", ngayToaNhan: "11/08/2026" },
+    { maDon: "7055", canBoXuLy: "Nguyễn Minh An", trangThai: "Thụ lý mới", ngayToaNhan: "11/08/2026" },
+    { maDon: "7056", canBoXuLy: "Nguyễn Thị Lan", trangThai: "Thụ lý mới", ngayToaNhan: "11/08/2026" },
+  ].map(d => ({ ...d, soNgayXuLy: soNgayXuLy(d.ngayToaNhan) }))
+    .filter(d => d.soNgayXuLy >= NGUONG_SAP_QUA_HAN_NGAY);
+  const donQuaHan = donTheoNgayNhan
+    .filter(d => d.soNgayXuLy > HAN_XU_LY_NGAY)
+    .sort((a, b) => b.soNgayXuLy - a.soNgayXuLy);
   // Đơn sắp đến hạn — chưa quá hạn nên KHÔNG cộng vào donQuaHan.length, chỉ nêu
   // để nhắc xử lý trước khi rơi vào nhóm trên.
-  const soDonSapDenHan = 5;
+  const soDonSapDenHan = donTheoNgayNhan.filter(d => d.soNgayXuLy <= HAN_XU_LY_NGAY).length;
 
   // "Hiện trạng đơn" — số liệu ảo (đếm trực tiếp trên danh sách đơn tại thời
   // điểm hiện tại theo tinh thần thiết kế, không phải số theo kỳ như khối cũ).
@@ -372,7 +392,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#c0392b] transition-colors">Đơn Mã {d.maDon}</span>
                     <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-[3px] bg-[#fee2e2] text-[#c0392b] whitespace-nowrap">
-                      Quá {d.quaHanNam.toFixed(1).replace(".", ",")} năm
+                      Quá {d.soNgayXuLy - HAN_XU_LY_NGAY} ngày
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -394,12 +414,12 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
             </div>
           </div>
 
-          {/* Đơn trả lại, chưa thấy sửa */}
+          {/* Văn bản trả lại */}
           <div className="border border-[#eee] rounded-[8px] flex flex-col">
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#f1f5f9]">
               <h3 className="text-[13.5px] font-bold text-[#0f172a] flex items-center gap-2">
                 <RotateCcw size={16} className="text-[#e67e22]" />
-                Đơn trả lại, chưa thấy sửa
+                Văn bản trả lại
               </h3>
               <span className="bg-[#ffedd5] text-[#c2610a] text-[11px] font-bold px-2 py-0.5 rounded-full">{vanBanTraLai.length}</span>
             </div>
