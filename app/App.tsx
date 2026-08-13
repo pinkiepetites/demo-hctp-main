@@ -8012,30 +8012,29 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         để rời rạc ở các cột khác nhau như trước. */}
                     <div className="space-y-2 pb-3 mb-2">
                       <div className="grid grid-cols-2 gap-x-7">
+                        {/* Số BA/QĐ đã có ở bộ lọc cơ bản (Row 2) — bỏ để không lặp;
+                            "từ ngày" gộp cùng "đến ngày" (vốn tách rời ở dưới) thành
+                            một bộ khoảng ngày trọn vẹn, không để ô trống. */}
                         <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Số BA/QĐ</span>
-                          <TInp value={fSoBA} onChange={e => setFSoBA(e.target.value)} />
+                          <span className="block text-[11px] text-[#666] mb-1">Ngày BA/QĐ</span>
+                          <FDateRange from={fNgayBAFrom} to={fNgayBATo} onFrom={setFNgayBAFrom} onTo={setFNgayBATo} />
                         </div>
-                        <div>
-                          <span className="block text-[11px] text-[#666] mb-1">Ngày BA/QĐ từ ngày</span>
-                          <TDate value={fNgayBAFrom} onChange={setFNgayBAFrom} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-7">
                         <div>
                           <span className="block text-[11px] text-[#666] mb-1">Ngày thụ lý</span>
                           <FDateRange from={ui("thuLyTu")} to={ui("thuLyDen")} onFrom={setUi("thuLyTu")} onTo={setUi("thuLyDen")} />
                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-7">
                         <div>
                           <span className="block text-[11px] text-[#666] mb-1">Số thụ lý</span>
                           <TInp value={ui("soThuLy")} onChange={e => setUi("soThuLy")(e.target.value)} />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-x-7">
                         <div>
                           <span className="block text-[11px] text-[#666] mb-1">Tên cơ quan chuyển đến</span>
                           <TInp value={ui("coQuanChuyen")} onChange={e => setUi("coQuanChuyen")(e.target.value)} />
                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-7">
                         <div>
                           <span className="block text-[11px] text-[#666] mb-1">Số CV/PC đến</span>
                           <TInp value={ui("soCVPC")} onChange={e => setUi("soCVPC")(e.target.value)} />
@@ -8170,17 +8169,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       <TRow label="Ngày chuyển từ">
                         <TDate value={ui("chuyenTu")} onChange={setUi("chuyenTu")} />
                       </TRow>
-                      <TRow label="Đến ngày">
-                        <div className="grid grid-cols-2 gap-2">
-                          <TDate value={fNgayBATo} onChange={setFNgayBATo} />
-                          <div>
-                            <span className="block text-[11px] text-[#666] mb-0.5">Thủ tục giải quyết</span>
-                            <TSel value={ui("thuTuc")} onChange={e => setUi("thuTuc")(e.target.value)}>
-                              <option value="">--Tất cả--</option>
-                              <option>Giám đốc thẩm</option><option>Tái thẩm</option>
-                            </TSel>
-                          </div>
-                        </div>
+                      <TRow label="Thủ tục giải quyết">
+                        <TSel value={ui("thuTuc")} onChange={e => setUi("thuTuc")(e.target.value)}>
+                          <option value="">--Tất cả--</option>
+                          <option>Giám đốc thẩm</option><option>Tái thẩm</option>
+                        </TSel>
                       </TRow>
 
                       <TRow label="Án tử hình">
@@ -8207,8 +8200,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     {/* ── Cột 3 ──
                         Mã đơn/Số hiệu đơn và Số tờ trình/Văn bản đã nằm ở bộ lọc
                         cơ bản; Ngày CV/PC và Ngày thụ lý đến đã gộp lên bộ
-                        trường phía trên. Thụ lý đơn và Thủ tục giải quyết đã
-                        chuyển sang ghép cùng Loại án / Đến ngày ở cột 1-2. */}
+                        trường phía trên. Thụ lý đơn đã ghép cùng Loại án ở cột
+                        1-2; Thủ tục giải quyết giờ có hàng riêng, không còn
+                        ghép với "Đến ngày" (đã gộp vào bộ Ngày BA/QĐ ở trên). */}
                     <div>
                       <TRow label="Trả lời đơn">
                         <TSel value={ui("traLoiDon")} onChange={e => setUi("traLoiDon")(e.target.value)}>
