@@ -12,17 +12,22 @@ import {
   Globe,
   UserCheck,
   Building2,
-  Scale,
   ListChecks,
   RotateCcw,
   Clock,
   CheckCircle2,
   FileText,
-  Gavel,
   Layers,
-  XCircle,
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh, type TabDS } from "./components/QuanLyVanBan";
+import {
+  KET_QUA_ICON,
+  KET_QUA_NHAN_NGAN,
+  heSoNhanKy,
+  tinhBanLoaiAnRows,
+  tinhTongTheoKetQua,
+  type KyBaoCao,
+} from "./SoSanhLoaiAnChiTiet";
 
 // Biến thể của KPICard có nút "Xem chi tiết" ở góc phải — dùng cho 2 card
 // duyệt tài liệu, dẫn thẳng sang màn Phê duyệt đề xuất.
@@ -30,9 +35,9 @@ const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, on
   title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string,
   onXemChiTiet?: () => void,
 }) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
-    <div className="flex items-start justify-between gap-2 mb-1.5">
-      <p className="text-[13px] text-[#666] font-medium">{title}</p>
+  <div className="bg-white rounded-[8px] border border-[#eee] px-5 py-6 min-h-[124px] flex flex-col justify-center shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
+    <div className="flex items-start justify-between gap-2 mb-2.5">
+      <p className="text-[13px] text-[#666] font-medium min-w-0 truncate">{title}</p>
       <button
         onClick={onXemChiTiet}
         className="text-[#3b82f6] text-[11px] font-medium hover:underline flex items-center gap-0.5 flex-shrink-0"
@@ -40,10 +45,13 @@ const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, on
         Xem chi tiết <ArrowRight size={11} />
       </button>
     </div>
-    <div className="flex items-center justify-between">
-      <div className="flex items-baseline gap-2.5">
+    <div className="flex items-center justify-between gap-2">
+      {/* min-w-0 + leading-tight: card hẹp lại nên dòng xu hướng được phép
+          xuống dòng thay vì tràn ra ngoài khung; 2 dòng 12px vẫn thấp hơn
+          vòng tròn icon 52px nên chiều cao card không đổi. */}
+      <div className="flex items-baseline gap-2.5 min-w-0">
         <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
-        <span className={`text-[12px] font-semibold flex items-center gap-0.5 ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#f39c12]')}`}>
+        <span className={`text-[12px] font-semibold leading-tight ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#f39c12]')}`}>
           {trend}
         </span>
       </div>
@@ -60,12 +68,14 @@ const KPICardCoLink = ({ title, value, icon, colorClass, bgColorClass, trend, on
 const KPICardDon = ({ title, value, icon, colorClass, bgColorClass, trend }: {
   title: string, value: string, icon: React.ReactNode, colorClass: string, bgColorClass: string, trend: string,
 }) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
-    <div>
-      <p className="text-[13px] text-[#666] font-medium mb-1.5">{title}</p>
+  <div className="bg-white rounded-[8px] border border-[#eee] px-5 py-6 min-h-[124px] flex items-center justify-between gap-2 shadow-sm hover:shadow-md transition-shadow duration-300 group cursor-default">
+    <div className="min-w-0">
+      <p className="text-[13px] text-[#666] font-medium mb-2.5 truncate">{title}</p>
+      {/* Xem chú thích ở KPICardCoLink: dòng xu hướng được xuống dòng khi card
+          hẹp, chiều cao card vẫn do vòng tròn icon 52px quyết định. */}
       <div className="flex items-baseline gap-2.5">
         <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{value}</span>
-        <span className={`text-[12px] font-semibold flex items-center gap-0.5 ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#94a3b8]')}`}>
+        <span className={`text-[12px] font-semibold leading-tight ${trend.startsWith('+') || trend.startsWith('Tăng') ? 'text-[#27ae60]' : (trend.startsWith('-') || trend.startsWith('Giảm') ? 'text-[#c0392b]' : 'text-[#94a3b8]')}`}>
           {trend}
         </span>
       </div>
@@ -76,8 +86,11 @@ const KPICardDon = ({ title, value, icon, colorClass, bgColorClass, trend }: {
   </div>
 );
 
-export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDanhSachDon, onXemDonQuaHan, onXemDanhSachVanBan, vanBanList = [], currentRole = "can-bo" }: {
+export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDanhSachDon, onXemDonQuaHan, onXemDanhSachVanBan, onXemSoSanhLoaiAn, vanBanList = [], currentRole = "can-bo" }: {
   onXemChiTietHieuSuat?: () => void;
+  /** Bấm "Chi tiết" ở biểu đồ "Phân bố đơn theo trạng thái xử lý" — sang màn
+   *  "So sánh số đơn theo loại án & kết quả xử lý", mở sẵn đúng kỳ đang lọc. */
+  onXemSoSanhLoaiAn?: (ky: KyBaoCao) => void;
   /** Bấm "Xem chi tiết" ở card "Tài liệu cần duyệt" / "Tài liệu đã duyệt" —
    *  sang màn Phê duyệt và đề xuất, mở sẵn tab tương ứng. */
   onXemPheDuyet?: (tab?: "cho_duyet" | "da_duyet") => void;
@@ -102,12 +115,10 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   const { nguoi: nguoiDung } = nguoiTheoVaiTro(currentRole);
   const taiLieuChoDuyet = vanBanList.filter(v => dangChoXuLy(v.trangThai));
   const soTaiLieuCanDuyet = taiLieuChoDuyet.filter(v => nguoiDangGiu(v)?.nguoi === nguoiDung).length;
-  const soTaiLieuDaDuyet = vanBanList.filter(v => v.trangThai === "DaBanHanh").length;
 
   const [chartPeriod, setChartPeriod] = useState<"day" | "week" | "month" | "year" | "custom">("week");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
-  const [filterOfficer, setFilterOfficer] = useState("all");
 
   const getPeriodLabel = () => {
     switch (chartPeriod) {
@@ -129,79 +140,17 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     }
   };
 
-  // Danh sách Loại án đầy đủ — khớp LOAI_AN_OPTIONS dùng ở màn Phân công thẩm
-  // phán / Nhận đơn, dùng riêng cho bảng "So sánh số đơn theo loại án & kết
-  // quả xử lý" (hiện với mọi vai trò, không phải chỉ 3 nhóm rút gọn của khối KPI bên trên).
-  const LOAI_AN_SO_SANH = [
-    "Hình sự", "Dân sự", "Hành chính", "Kinh doanh thương mại",
-    "Hôn nhân gia đình", "Lao động", "Sở hữu trí tuệ", "Phá sản",
-  ] as const;
-  // Loại án rút gọn cho khối "Thống kê đơn nhận {kỳ}" (khớp mockup 4 card).
-  // Card thứ 3 gộp mọi loại án còn lại (Hành chính, KD-TM, HN-GĐ, Lao động,
-  // SHTT, Phá sản...) nên đặt tên "Loại án khác" thay vì "Chưa xác định".
-  const LOAI_AN_DON_NHAN = ["Hình sự", "Dân sự", "Loại án khác"] as const;
-  // "Kết quả xử lý đơn" — đủ 9 trạng thái xử lý thật của đơn: 5 cột đầu là kết
-  // quả khi "Nơi chuyển đến" = Nội bộ (Thụ lý mới, Thụ lý mới trùng thẩm phán,
-  // Xin ý kiến lãnh đạo, Không thụ lý, Đơn không đủ điều kiện); 4 cột còn lại
-  // là các giá trị "Nơi chuyển đến" khác (Tòa khác, Ngoài tòa án, Trả lại đơn,
-  // Lưu theo dõi). 1 hàng tiêu đề duy nhất, mỗi cột kèm icon riêng — khớp
-  // format bảng báo cáo "So sánh số đơn theo loại án và kết quả xử lý".
-  const KET_QUA_LIST = [
-    "Thụ lý mới", "Thụ lý mới trùng thẩm phán", "Xin ý kiến lãnh đạo", "Không thụ lý", "Đơn không đủ điều kiện",
-    "Tòa khác", "Ngoài tòa án", "Trả lại đơn", "Lưu theo dõi",
-  ] as const;
-  const KET_QUA_ICON: Record<typeof KET_QUA_LIST[number], React.ReactNode> = {
-    "Thụ lý mới": <FileText size={13} />,
-    "Thụ lý mới trùng thẩm phán": <Layers size={13} />,
-    "Xin ý kiến lãnh đạo": <Users size={13} />,
-    "Không thụ lý": <XCircle size={13} />,
-    "Đơn không đủ điều kiện": <AlertTriangle size={13} />,
-    "Tòa khác": <Building2 size={13} />,
-    "Ngoài tòa án": <Globe size={13} />,
-    "Trả lại đơn": <RotateCcw size={13} />,
-    "Lưu theo dõi": <Clock size={13} />,
-  };
-  // Kết quả xử lý theo Loại án — ma trận Loại án × Kết quả cho kỳ "Tuần này";
-  // các kỳ khác co giãn theo cùng hệ số nhân với officerData bên dưới để nhất
-  // quán trong toàn Dashboard.
-  const LOAI_AN_KET_QUA_TUAN: Record<typeof LOAI_AN_SO_SANH[number], Record<string, number>> = {
-    "Hình sự": { "Thụ lý mới": 3, "Thụ lý mới trùng thẩm phán": 1, "Xin ý kiến lãnh đạo": 1, "Không thụ lý": 0, "Đơn không đủ điều kiện": 1, "Tòa khác": 1, "Ngoài tòa án": 0, "Trả lại đơn": 1, "Lưu theo dõi": 1 },
-    "Dân sự": { "Thụ lý mới": 2, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 1, "Không thụ lý": 0, "Đơn không đủ điều kiện": 0, "Tòa khác": 0, "Ngoài tòa án": 1, "Trả lại đơn": 0, "Lưu theo dõi": 1 },
-    "Hành chính": { "Thụ lý mới": 1, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 0, "Đơn không đủ điều kiện": 1, "Tòa khác": 1, "Ngoài tòa án": 0, "Trả lại đơn": 0, "Lưu theo dõi": 0 },
-    "Kinh doanh thương mại": { "Thụ lý mới": 1, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 0, "Đơn không đủ điều kiện": 0, "Tòa khác": 0, "Ngoài tòa án": 0, "Trả lại đơn": 1, "Lưu theo dõi": 0 },
-    "Hôn nhân gia đình": { "Thụ lý mới": 1, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 0, "Đơn không đủ điều kiện": 0, "Tòa khác": 0, "Ngoài tòa án": 0, "Trả lại đơn": 0, "Lưu theo dõi": 0 },
-    "Lao động": { "Thụ lý mới": 0, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 0, "Đơn không đủ điều kiện": 1, "Tòa khác": 0, "Ngoài tòa án": 0, "Trả lại đơn": 0, "Lưu theo dõi": 0 },
-    "Sở hữu trí tuệ": { "Thụ lý mới": 0, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 0, "Đơn không đủ điều kiện": 0, "Tòa khác": 0, "Ngoài tòa án": 0, "Trả lại đơn": 0, "Lưu theo dõi": 1 },
-    "Phá sản": { "Thụ lý mới": 0, "Thụ lý mới trùng thẩm phán": 0, "Xin ý kiến lãnh đạo": 0, "Không thụ lý": 1, "Đơn không đủ điều kiện": 0, "Tòa khác": 0, "Ngoài tòa án": 0, "Trả lại đơn": 0, "Lưu theo dõi": 0 },
-  };
-  const soSanhMult = chartPeriod === "day" ? 0.1 : chartPeriod === "month" ? 4 : chartPeriod === "year" ? 40 : chartPeriod === "custom" ? 0.5 : 1;
-  // 1 dòng / Loại án, kèm tổng dòng — nguồn cho bảng nhiệt bên dưới. Không gộp
-  // theo "Vụ chuyên môn" nữa: 1 Loại án (vd. Hình sự) vẫn có thể phát sinh
-  // phần việc thuộc Loại án khác (vd. phần dân sự trong vụ án hình sự) nên gán
-  // cố định 1 Loại án ↔ 1 Vụ là không đúng thực tế nghiệp vụ.
-  const banLoaiAnRows = LOAI_AN_SO_SANH.map(loaiAn => {
-    const ketQua = KET_QUA_LIST.map(kq => ({
-      key: kq,
-      soLuong: Math.round(LOAI_AN_KET_QUA_TUAN[loaiAn][kq] * soSanhMult),
-    }));
-    return { loaiAn, ketQua, tong: ketQua.reduce((s, k) => s + k.soLuong, 0) };
-  });
-  // Tổng theo cột (mỗi Kết quả, cộng dồn mọi Loại án) — thay cho panel xếp
-  // hạng "Kết quả xử lý đơn" cũ, nay là hàng "Tổng" cuối bảng.
-  const tongTheoKetQua = KET_QUA_LIST.map(kq => ({
-    key: kq,
-    soLuong: banLoaiAnRows.reduce((s, r) => s + (r.ketQua.find(k => k.key === kq)?.soLuong ?? 0), 0),
-  }));
+  // Khối "Thống kê văn bản nhận {kỳ}" của vai trò quản lý — chia theo LOẠI VĂN
+  // BẢN tiếp nhận (Đơn / Công văn / Tài liệu), không phải theo Loại án nữa.
+  // Trục Loại án đã có màn riêng "So sánh số đơn theo loại án & kết quả xử lý".
+  const LOAI_VAN_BAN_NHAN = ["Đơn", "Công văn", "Tài liệu"] as const;
+  // Ma trận Loại án × Kết quả xử lý dùng chung với màn "So sánh số đơn theo
+  // loại án & kết quả xử lý" (SoSanhLoaiAnChiTiet.tsx) — Dashboard chỉ lấy
+  // phần tổng theo cột để vẽ biểu đồ "Phân bố đơn theo trạng thái xử lý".
+  const banLoaiAnRows = tinhBanLoaiAnRows(chartPeriod);
+  const tongTheoKetQua = tinhTongTheoKetQua(banLoaiAnRows);
   const tongTatCa = tongTheoKetQua.reduce((s, k) => s + k.soLuong, 0) || 1;
-  // Giá trị lớn nhất trong toàn ma trận — chuẩn hoá độ đậm ô nhiệt (heatmap)
-  // theo 1 thang màu xanh duy nhất (sequential), giúp so sánh độ lớn giữa các
-  // ô trực quan hơn bảng số thuần tuý.
-  const maxKetQuaOSanh = Math.max(1, ...banLoaiAnRows.flatMap(r => r.ketQua.map(k => k.soLuong)));
-  const heatmapStyle = (soLuong: number): React.CSSProperties => {
-    if (soLuong <= 0) return {};
-    const cuongDo = 0.12 + (soLuong / maxKetQuaOSanh) * 0.48;
-    return { backgroundColor: `rgba(59, 130, 246, ${cuongDo})`, color: cuongDo > 0.42 ? "#fff" : "#1e3a8a", fontWeight: 600 };
-  };
+  const soSanhMult = heSoNhanKy(chartPeriod);
   // Đơn chuyển Nội bộ theo Vụ/Đơn vị tiếp nhận thực tế — trục độc lập với Loại
   // án (khớp trường "Đơn vị chuyển đến" ở màn Chuyển đơn khi Nơi chuyển đến =
   // Nội bộ, App.tsx ~2718). Đây mới là dữ liệu "đơn chuyển qua Vụ" thật, không
@@ -220,30 +169,52 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
     "Đã thụ lý": "#3b82f6",
     "Xin ý kiến lãnh đạo": "#f97316",
   };
-  // Tổng mỗi Vụ giữ nguyên (6, 4, 2, 3 → 15), chỉ đổi cách chia theo 3 trạng
-  // thái thật thay vì 5 trạng thái cũ.
+  // ĐỦ 12 đơn vị của dropdown "Đơn vị chuyển đến" khi Nơi chuyển đến = Nội bộ
+  // (App.tsx ~2719-2730) — kể cả đơn vị chưa nhận đơn nào trong kỳ, để biểu đồ
+  // phản ánh đúng danh mục đơn vị chứ không chỉ vài Vụ có số liệu. Danh sách
+  // dài nên biểu đồ chỉ hiện SO_VU_HIEN_MAC_DINH dòng đầu, phần còn lại ẩn sau
+  // nút "Xem thêm".
   const VU_THU_LY_NOI_BO_TUAN: Record<string, Record<string, number>> = {
-    "Vụ GĐKT Hình sự": { "Thụ lý mới": 3, "Đã thụ lý": 2, "Xin ý kiến lãnh đạo": 1 },
-    "Vụ GĐKT Dân sự": { "Thụ lý mới": 2, "Đã thụ lý": 1, "Xin ý kiến lãnh đạo": 1 },
-    "Vụ GĐKT Hành chính": { "Thụ lý mới": 1, "Đã thụ lý": 1, "Xin ý kiến lãnh đạo": 0 },
-    "Vụ GĐKT KD-TM & khác": { "Thụ lý mới": 2, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 1 },
+    "Vụ Giám đốc kiểm tra về hình sự": { "Thụ lý mới": 3, "Đã thụ lý": 2, "Xin ý kiến lãnh đạo": 1 },
+    "Vụ Giám đốc, kiểm tra về dân sự": { "Thụ lý mới": 2, "Đã thụ lý": 1, "Xin ý kiến lãnh đạo": 1 },
+    "Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên": { "Thụ lý mới": 2, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 1 },
+    "Vụ Giám đốc, kiểm tra về hành chính": { "Thụ lý mới": 1, "Đã thụ lý": 1, "Xin ý kiến lãnh đạo": 0 },
+    "Hội đồng Thẩm phán TANDTC": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 2 },
+    "Vụ Pháp chế và Quản lý khoa học": { "Thụ lý mới": 1, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
+    "Vụ Tổng hợp": { "Thụ lý mới": 1, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
+    "Thanh tra Tòa án nhân dân tối cao": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 1 },
+    "Vụ Tổ chức - Cán bộ": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
+    "Vụ Thi đua - Khen thưởng": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
+    "Vụ Hợp tác quốc tế": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
+    "Vụ Công tác phía Nam": { "Thụ lý mới": 0, "Đã thụ lý": 0, "Xin ý kiến lãnh đạo": 0 },
   };
+  // Tên rút gọn để vừa cột nhãn của biểu đồ; tên đầy đủ vẫn hiện khi rê chuột.
+  const VU_TEN_NGAN: Record<string, string> = {
+    "Vụ Giám đốc kiểm tra về hình sự": "Vụ GĐKT Hình sự",
+    "Vụ Giám đốc, kiểm tra về dân sự": "Vụ GĐKT Dân sự",
+    "Vụ Giám đốc, kiểm tra về hành chính": "Vụ GĐKT Hành chính",
+    "Vụ Giám đốc kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên": "Vụ GĐKT KD-TM & khác",
+    "Vụ Pháp chế và Quản lý khoa học": "Vụ Pháp chế & QLKH",
+    "Thanh tra Tòa án nhân dân tối cao": "Thanh tra TANDTC",
+  };
+  const SO_VU_HIEN_MAC_DINH = 5;
+  const [moTatCaVu, setMoTatCaVu] = useState(false);
   const donChuyenVu = Object.entries(VU_THU_LY_NOI_BO_TUAN).map(([vu, ketQuaTuan]) => {
     const ketQua = THU_LY_NOI_BO_LIST.map(kq => ({ key: kq, soLuong: Math.round(ketQuaTuan[kq] * soSanhMult) }));
     return { vu, ketQua, soLuong: ketQua.reduce((s, k) => s + k.soLuong, 0) };
   });
   const maxDonChuyenVu = Math.max(1, ...donChuyenVu.map(v => v.soLuong));
   const tongDonChuyenVu = donChuyenVu.reduce((s, v) => s + v.soLuong, 0);
-  // Vụ nhiều đơn nhất lên đầu — dễ so sánh hơn giữ nguyên thứ tự cố định.
+  // Vụ nhiều đơn nhất lên đầu — dễ so sánh hơn giữ nguyên thứ tự cố định, và
+  // để phần bị ẩn khi thu gọn luôn là các đơn vị ít/không có đơn.
   const donChuyenVuSapXep = [...donChuyenVu].sort((a, b) => b.soLuong - a.soLuong);
-  // Trục hoành cho 2 biểu đồ thanh ngang bên dưới — làm tròn lên bước 2 đơn vị
-  // để có mốc chẵn (0, 2, 4…), luôn chừa dư so với giá trị lớn nhất.
+  const donChuyenVuHienThi = moTatCaVu ? donChuyenVuSapXep : donChuyenVuSapXep.slice(0, SO_VU_HIEN_MAC_DINH);
+  const soVuConLai = donChuyenVuSapXep.length - SO_VU_HIEN_MAC_DINH;
+  // Mốc lớn nhất của thang đo 2 biểu đồ thanh ngang bên dưới — làm tròn lên bước
+  // 2 đơn vị, luôn chừa dư so với giá trị lớn nhất để thanh dài nhất không chạm
+  // mép. Không vẽ dãy số dưới trục nữa (mỗi thanh đã ghi sẵn số lượng ở cuối),
+  // biến này chỉ còn dùng để tính bề rộng thanh.
   const niceAxisMax = (maxVal: number) => Math.ceil((maxVal + 1) / 2) * 2;
-  const axisTicks = (max: number) => {
-    const ticks: number[] = [];
-    for (let t = 0; t <= max; t += 2) ticks.push(t);
-    return ticks;
-  };
   // Màu theo trạng thái xử lý — dùng riêng cho biểu đồ "Phân bố đơn theo trạng
   // thái xử lý" (đủ 9 trạng thái của KET_QUA_LIST, khác miền 3 trạng thái
   // "Thụ lý đơn" ở biểu đồ theo Vụ bên trên).
@@ -260,23 +231,21 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   };
   const maxTrangThai = Math.max(1, ...tongTheoKetQua.map(k => k.soLuong));
   const axisMaxTrangThai = niceAxisMax(maxTrangThai);
-  const ticksTrangThai = axisTicks(axisMaxTrangThai);
   const axisMaxVu = niceAxisMax(maxDonChuyenVu);
-  const ticksVu = axisTicks(axisMaxVu);
-  // Đơn nhận theo Loại án (khớp báo cáo Phòng HCTP: 27 đơn nhận trong tuần) —
-  // nguồn cho khối "Thống kê đơn nhận {kỳ}" của các vai trò quản lý.
-  const DON_NHAN_LOAI_AN_TUAN: Record<typeof LOAI_AN_DON_NHAN[number], number> = {
-    "Hình sự": 14, "Dân sự": 10, "Loại án khác": 3,
+  // Văn bản nhận theo loại (khớp báo cáo Phòng HCTP: 27 văn bản nhận trong
+  // tuần) — nguồn cho khối "Thống kê văn bản nhận {kỳ}" của vai trò quản lý.
+  const VAN_BAN_NHAN_TUAN: Record<typeof LOAI_VAN_BAN_NHAN[number], number> = {
+    "Đơn": 16, "Công văn": 7, "Tài liệu": 4,
   };
-  const DON_NHAN_META: Record<typeof LOAI_AN_DON_NHAN[number], { icon: React.ReactNode; bg: string; color: string }> = {
-    "Hình sự": { icon: <Gavel size={24} />, bg: "bg-[#eff6ff]", color: "text-[#3b82f6]" },
-    "Dân sự": { icon: <Scale size={24} />, bg: "bg-[#f0fdf4]", color: "text-[#16a34a]" },
-    "Loại án khác": { icon: <Layers size={24} />, bg: "bg-[#f5f3ff]", color: "text-[#8b5cf6]" },
+  const VAN_BAN_NHAN_META: Record<typeof LOAI_VAN_BAN_NHAN[number], { icon: React.ReactNode; bg: string; color: string }> = {
+    "Đơn": { icon: <FileText size={24} />, bg: "bg-[#eff6ff]", color: "text-[#3b82f6]" },
+    "Công văn": { icon: <Mail size={24} />, bg: "bg-[#f0fdf4]", color: "text-[#16a34a]" },
+    "Tài liệu": { icon: <Layers size={24} />, bg: "bg-[#f5f3ff]", color: "text-[#8b5cf6]" },
   };
-  const donNhanLoaiAn = LOAI_AN_DON_NHAN.map(loaiAn => ({
-    loaiAn, soLuong: Math.round(DON_NHAN_LOAI_AN_TUAN[loaiAn] * soSanhMult),
+  const vanBanNhanTheoLoai = LOAI_VAN_BAN_NHAN.map(loai => ({
+    loai, soLuong: Math.round(VAN_BAN_NHAN_TUAN[loai] * soSanhMult),
   }));
-  const tongDonNhan = donNhanLoaiAn.reduce((s, l) => s + l.soLuong, 0) || 1;
+  const tongVanBanNhan = vanBanNhanTheoLoai.reduce((s, l) => s + l.soLuong, 0) || 1;
 
   const getOfficerData = () => {
     let mult = 1;
@@ -295,7 +264,6 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   };
 
   const officerData = getOfficerData();
-  const displayedOfficers = filterOfficer === "all" ? officerData : officerData.filter(o => o.name === filterOfficer);
 
   // Cơ cấu loại hình án — đủ 8 loại án, cùng thứ tự với LOAI_AN_SO_SANH để
   // nhất quán với biểu đồ "So sánh số đơn theo loại án & kết quả" bên dưới.
@@ -365,39 +333,23 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   // điểm hiện tại theo tinh thần thiết kế, không phải số theo kỳ như khối cũ).
   // daGiaiQuyet + chuaGiaiQuyet luôn = tổng trạng thái thụ lý bên dưới, và
   // quaHan luôn ⊆ chuaGiaiQuyet, để 2 khối số không bao giờ lệch nhau.
+  // donTon + nhanMoi là cách chia THỨ HAI của cùng tổng đó (theo nguồn gốc đơn:
+  // tồn từ kỳ trước / mới nhận trong kỳ), khác với daGiaiQuyet + chuaGiaiQuyet
+  // (chia theo tiến độ). Hai cặp bắt buộc cộng ra cùng 1 tổng.
   const [phamViHienTrang, setPhamViHienTrang] = useState<"toi" | "phong">("toi");
   const HIEN_TRANG_DON: Record<"toi" | "phong", {
     daGiaiQuyet: number; chuaGiaiQuyet: number; quaHan: number; sapDenHan: number;
-    trangThai: { nhan: string; mau: string; tab: number; soLuong: number }[];
+    donTon: number; nhanMoi: number;
   }> = {
-    toi: {
-      daGiaiQuyet: 5, chuaGiaiQuyet: 7, quaHan: 5, sapDenHan: 1,
-      trangThai: [
-        { nhan: "Thụ lý mới", mau: "#22c55e", tab: 2, soLuong: 7 },
-        { nhan: "Đã thụ lý", mau: "#3b82f6", tab: 2, soLuong: 0 },
-        { nhan: "Chưa đủ điều kiện", mau: "#f59e0b", tab: 3, soLuong: 1 },
-        { nhan: "Chờ ý kiến Lãnh đạo", mau: "#f97316", tab: 0, soLuong: 2 },
-        { nhan: "Trả lại đơn", mau: "#3b82f6", tab: 6, soLuong: 2 },
-        { nhan: "Không thụ lý", mau: "#ef4444", tab: 0, soLuong: 0 },
-      ],
-    },
-    phong: {
-      daGiaiQuyet: 20, chuaGiaiQuyet: 28, quaHan: 10, sapDenHan: 5,
-      trangThai: [
-        { nhan: "Thụ lý mới", mau: "#22c55e", tab: 2, soLuong: 26 },
-        { nhan: "Đã thụ lý", mau: "#3b82f6", tab: 2, soLuong: 4 },
-        { nhan: "Chưa đủ điều kiện", mau: "#f59e0b", tab: 3, soLuong: 6 },
-        { nhan: "Chờ ý kiến Lãnh đạo", mau: "#f97316", tab: 0, soLuong: 5 },
-        { nhan: "Trả lại đơn", mau: "#3b82f6", tab: 6, soLuong: 6 },
-        { nhan: "Không thụ lý", mau: "#ef4444", tab: 0, soLuong: 1 },
-      ],
-    },
+    toi: { daGiaiQuyet: 5, chuaGiaiQuyet: 7, quaHan: 5, sapDenHan: 1, donTon: 4, nhanMoi: 8 },
+    phong: { daGiaiQuyet: 20, chuaGiaiQuyet: 28, quaHan: 10, sapDenHan: 5, donTon: 15, nhanMoi: 33 },
   };
   const hienTrang = HIEN_TRANG_DON[phamViHienTrang];
   const tongDonHienTrang = hienTrang.daGiaiQuyet + hienTrang.chuaGiaiQuyet;
   const pctDaGiaiQuyet = Math.round((hienTrang.daGiaiQuyet / tongDonHienTrang) * 100);
   const pctChuaGiaiQuyet = 100 - pctDaGiaiQuyet;
-  const pctQuaHan = Math.round((hienTrang.quaHan / hienTrang.chuaGiaiQuyet) * 100);
+  const pctDonTon = Math.round((hienTrang.donTon / tongDonHienTrang) * 100);
+  const pctNhanMoi = 100 - pctDonTon;
 
   // Văn bản BỊ TRẢ LẠI mà chính cán bộ đang đăng nhập là người tạo (nguoiTao)
   // — tức "tôi" là người phải sửa lại. Tính thẳng từ vanBanList thật (không
@@ -420,37 +372,90 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
       .sort((a, b) => b.soNgay - a.soNgay);
   }, [vanBanList]);
 
+  // Bộ lọc thời gian (+ lọc theo Cán bộ với vai trò quản lý) — tách ra biến để
+  // đặt được ở 2 vị trí khác nhau theo vai trò mà không nhân đôi mã: Cán bộ xem
+  // ngay dưới "Cảnh báo cần xử lý" (trên cùng), vai trò quản lý xem ngay trên
+  // các khối phụ thuộc kỳ lọc ở nửa dưới trang.
+  const boLocThoiGian = (
+    <div className="flex items-center justify-between bg-white p-3.5 rounded-[8px] border border-[#e2e8f0] shadow-sm">
+      <div className="flex items-center gap-5 flex-wrap w-full">
+        <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
+          {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
+            const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
+            return (
+              <button
+                key={period}
+                onClick={() => setChartPeriod(period)}
+                className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
+              >
+                {labels[idx]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Vạch ngăn chỉ có nghĩa khi có ô ngày tùy chọn bên phải — bỏ bộ lọc
+            Cán bộ rồi nên không để vạch lơ lửng ở cuối thanh lọc. */}
+        {chartPeriod === "custom" && (
+          <div className="w-px h-6 bg-[#cbd5e1]"></div>
+        )}
+
+        {chartPeriod === "custom" && (
+          <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
+            <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
+            <input
+              type="date"
+              value={customStartDate}
+              onChange={e => setCustomStartDate(e.target.value)}
+              className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
+            />
+            <span className="text-[#94a3b8]">-</span>
+            <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
+            <input
+              type="date"
+              value={customEndDate}
+              onChange={e => setCustomEndDate(e.target.value)}
+              className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
+            />
+          </div>
+        )}
+
+        <div className="flex-1"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="p-5 space-y-5 bg-[#f4f7f9] min-h-full font-sans">
-      {/* Cảnh báo cần xử lý — chỉ vai trò Cán bộ; các vai trò quản lý xem khối
-          "Thống kê đơn nhận {kỳ}" gọn hơn thay cho khối này (xem bên dưới, sau
-          Filters). 2 bảng tách riêng vì đòi hai hành động khác nhau: đơn quá
-          hạn cần được XỬ LÝ TIẾP, còn văn bản bị trả lại cần được SỬA LẠI rồi
-          trình lại. Gộp chung sẽ nhoè mất sự khác biệt đó. */}
+      {/* Cảnh báo cần xử lý — chỉ vai trò Cán bộ, đặt TRÊN CÙNG vì đây là việc
+          phải làm ngay; kế đó là bộ lọc thời gian rồi mới tới "Hiện trạng đơn".
+          Các vai trò quản lý không có khối này (họ xem "Thống kê đơn nhận {kỳ}").
+          2 bảng tách riêng vì đòi hai hành động khác nhau: đơn quá hạn cần được
+          XỬ LÝ TIẾP, còn văn bản bị trả lại cần được SỬA LẠI rồi trình lại. */}
       {!laVaiTroQuanLy && (
       <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#f1f5f9]">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#f1f5f9]">
           <h2 className="text-[16px] font-bold text-[#0f172a] flex items-center gap-2">
             <AlertTriangle size={18} className="text-[#c0392b]" />
             Cảnh báo cần xử lý
           </h2>
           <span className="text-[11px] text-[#94a3b8]">Hai loại tách riêng vì đòi hai hành động khác nhau</span>
         </div>
-        <div className="grid grid-cols-2 gap-5 p-5">
+        <div className="grid grid-cols-2 gap-4 p-4">
           {/* Đơn quá hạn giải quyết */}
           <div className="border border-[#eee] rounded-[8px] flex flex-col">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#f1f5f9]">
+            <div className="flex items-center justify-between px-3.5 py-2 border-b border-[#f1f5f9]">
               <h3 className="text-[13.5px] font-bold text-[#0f172a] flex items-center gap-2">
                 <AlertTriangle size={16} className="text-[#c0392b]" />
                 Đơn quá hạn giải quyết
               </h3>
               <span className="bg-[#fee2e2] text-[#c0392b] text-[11px] font-bold px-2 py-0.5 rounded-full">{donQuaHan.length}</span>
             </div>
-            <div className="p-3 space-y-2">
+            <div className="p-2.5 space-y-1.5">
               {donQuaHan.slice(0, 3).map(d => (
                 <div key={d.maDon} onClick={() => onXemDonQuaHan?.()}
-                  className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#c0392b]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                  className="px-3 py-2 border border-[#f1f5f9] rounded-[6px] hover:border-[#c0392b]/30 hover:bg-[#fef2f2]/50 transition-colors cursor-pointer group">
+                  <div className="flex items-start justify-between gap-2 mb-0.5">
                     <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#c0392b] transition-colors">Đơn Mã {d.maDon}</span>
                     <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-[3px] bg-[#fee2e2] text-[#c0392b] whitespace-nowrap">
                       Quá {d.soNgayXuLy - HAN_XU_LY_NGAY} ngày
@@ -463,12 +468,12 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                 </div>
               ))}
               {soDonSapDenHan > 0 && (
-                <div className="px-3 py-2 rounded-[6px] bg-[#fffbeb] border border-[#fde68a] text-[12px] text-[#92400e]">
+                <div className="px-3 py-1.5 rounded-[6px] bg-[#fffbeb] border border-[#fde68a] text-[12px] text-[#92400e]">
                   Thêm <b>{soDonSapDenHan}</b> đơn sắp đến hạn — nên xử lý trước khi thành quá hạn.
                 </div>
               )}
             </div>
-            <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
+            <div className="mt-auto px-3 py-2 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
               <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                 Xem tất cả {donQuaHan.length} mục
               </button>
@@ -477,21 +482,21 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
 
           {/* Văn bản trả lại */}
           <div className="border border-[#eee] rounded-[8px] flex flex-col">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#f1f5f9]">
+            <div className="flex items-center justify-between px-3.5 py-2 border-b border-[#f1f5f9]">
               <h3 className="text-[13.5px] font-bold text-[#0f172a] flex items-center gap-2">
                 <RotateCcw size={16} className="text-[#e67e22]" />
                 Văn bản trả lại
               </h3>
               <span className="bg-[#ffedd5] text-[#c2610a] text-[11px] font-bold px-2 py-0.5 rounded-full">{vanBanTraLai.length}</span>
             </div>
-            <div className="p-3 space-y-2 flex-1">
+            <div className="p-2.5 space-y-1.5 flex-1">
               {vanBanTraLai.length === 0 && (
                 <p className="text-[12px] text-[#94a3b8] py-6 text-center">Không có đơn nào đang chờ sửa lại.</p>
               )}
               {vanBanTraLai.slice(0, 3).map(({ vb, traLaiBoi, soNgay }) => (
                 <div key={vb.id} onClick={() => onXemDanhSachVanBan?.("BiTraLai")}
-                  className="p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#e67e22]/30 hover:bg-[#fff7ed]/50 transition-colors cursor-pointer group">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                  className="px-3 py-2 border border-[#f1f5f9] rounded-[6px] hover:border-[#e67e22]/30 hover:bg-[#fff7ed]/50 transition-colors cursor-pointer group">
+                  <div className="flex items-start justify-between gap-2 mb-0.5">
                     <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#e67e22] transition-colors line-clamp-1">{vb.trichYeu}</span>
                     <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-[3px] bg-[#ffedd5] text-[#c2610a] whitespace-nowrap">
                       Đã {soNgay} ngày
@@ -504,7 +509,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                 </div>
               ))}
             </div>
-            <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
+            <div className="mt-auto px-3 py-2 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
               <button onClick={() => onXemDanhSachVanBan?.("BiTraLai")} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                 Xem tất cả {vanBanTraLai.length} mục
               </button>
@@ -514,48 +519,80 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
       </div>
       )}
 
-      {/* 1. Hiện trạng đơn (Cán bộ) / Thống kê đơn nhận (vai trò quản lý) — đếm
-          trực tiếp trên danh sách đơn tại thời điểm hiện tại, thay cho khối
+      {/* Bộ lọc thời gian (vai trò Cán bộ) — nằm giữa "Cảnh báo cần xử lý" và
+          "Hiện trạng đơn". Vai trò quản lý xem bộ lọc này ngay bên dưới. */}
+      {!laVaiTroQuanLy && boLocThoiGian}
+
+      {/* Duyệt tài liệu — chỉ Trưởng phòng / Phó-Chánh Văn phòng / Lãnh đạo Tòa
+          / Chánh án-Phó Chánh án. Đặt TRÊN CÙNG với nhóm này vì đây là việc phải
+          làm ngay (đúng vai trò của khối "Cảnh báo cần xử lý" với Cán bộ), rồi
+          mới tới bộ lọc và các khối thống kê. */}
+      {hienThiTheDuyet && (
+        <div>
+          <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
+            <FileCheck size={18} className="text-[#8b1a1a]" />
+            Duyệt tài liệu
+          </h2>
+          <div className="grid grid-cols-5 gap-5">
+            <KPICardCoLink
+              title="Tài liệu cần duyệt"
+              value={String(soTaiLieuCanDuyet)}
+              trend="Đang chờ bạn xử lý"
+              icon={<FileCheck size={24} />}
+              bgColorClass="bg-[#fef3e2]"
+              colorClass="text-[#f39c12]"
+              onXemChiTiet={() => onXemPheDuyet?.("cho_duyet")}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Bộ lọc thời gian (vai trò quản lý) — nằm giữa "Duyệt tài liệu" và
+          "Thống kê văn bản nhận", chi phối mọi khối thống kê bên dưới. */}
+      {laVaiTroQuanLy && boLocThoiGian}
+
+      {/* 1. Hiện trạng đơn (Cán bộ) / Thống kê văn bản nhận (vai trò quản lý) —
+          đếm trực tiếp trên danh sách đơn tại thời điểm hiện tại, thay cho khối
           "Tình hình xử lý đơn {kỳ}" trước đây (số theo kỳ ngày/tuần/tháng —
           không hợp với ý "cập nhật theo thời gian thực"). Các vai trò quản lý
-          xem bản gọn hơn theo Loại án, khớp mockup "Thống kê đơn nhận tuần này". */}
+          xem bản gọn hơn theo loại văn bản tiếp nhận. */}
       {laVaiTroQuanLy ? (
       <div>
         <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
           <Calendar size={18} className="text-[#8b1a1a]" />
-          Thống kê đơn nhận {getPeriodLabel()}
+          Thống kê văn bản nhận
         </h2>
-        <div className="grid grid-cols-4 gap-5">
+        {/* 5 cột cho 4 card — mỗi card hẹp lại còn ~1/5 bề ngang thay vì 1/4,
+            và khớp đúng bề ngang với 2 card "Duyệt tài liệu" bên dưới. Chiều
+            cao / cỡ chữ / icon giữ nguyên như cũ, chỉ hẹp bề ngang. */}
+        <div className="grid grid-cols-5 gap-5">
           <KPICardDon
-            title="Tổng đơn nhận"
-            value={String(tongDonNhan)}
+            title="Tổng văn bản nhận"
+            value={String(tongVanBanNhan)}
             trend={`+8% so với ${getCompareLabel()}`}
-            icon={<FileText size={24} />}
-            bgColorClass="bg-[#eff6ff]"
-            colorClass="text-[#3b82f6]"
+            icon={<Inbox size={24} />}
+            bgColorClass="bg-[#fef3e2]"
+            colorClass="text-[#f39c12]"
           />
-          {donNhanLoaiAn.map(l => (
+          {vanBanNhanTheoLoai.map(l => (
             <KPICardDon
-              key={l.loaiAn}
-              title={l.loaiAn}
+              key={l.loai}
+              title={l.loai}
               value={String(l.soLuong)}
-              trend={`${((l.soLuong / tongDonNhan) * 100).toFixed(1).replace(".", ",")}% tổng số đơn`}
-              icon={DON_NHAN_META[l.loaiAn].icon}
-              bgColorClass={DON_NHAN_META[l.loaiAn].bg}
-              colorClass={DON_NHAN_META[l.loaiAn].color}
+              trend={`${((l.soLuong / tongVanBanNhan) * 100).toFixed(1).replace(".", ",")}% tổng số`}
+              icon={VAN_BAN_NHAN_META[l.loai].icon}
+              bgColorClass={VAN_BAN_NHAN_META[l.loai].bg}
+              colorClass={VAN_BAN_NHAN_META[l.loai].color}
             />
           ))}
         </div>
       </div>
       ) : (
       <div>
-        <h2 className="text-[16px] font-bold text-[#0f172a] mb-1 flex items-center gap-2">
+        <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
           <ListChecks size={18} className="text-[#8b1a1a]" />
           Hiện trạng đơn
         </h2>
-        <p className="text-[12px] text-[#94a3b8] mb-4">
-          Đếm trực tiếp trên danh sách đơn tại thời điểm hiện tại — bấm vào số nào mở đúng danh sách đó.
-        </p>
 
         <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm p-5">
           <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
@@ -577,200 +614,82 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-[11px] text-[#94a3b8]">
-                {phamViHienTrang === "toi" ? "Đơn do tôi nhập, chưa giải quyết xong" : "Đơn toàn phòng, chưa giải quyết xong"} · cập nhật theo thời gian thực
-              </span>
               <button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
                 Xem hiệu suất chi tiết <ArrowRight size={11} />
               </button>
             </div>
           </div>
 
+          {/* 3 card kéo hết bề ngang khung. Không đặt chiều cao tối thiểu —
+              chiều cao do nội dung card nhiều thông tin nhất (Tổng số đơn) quyết
+              định, giữ khối gọn trong một màn hình. Nút "Xem danh sách" đẩy
+              xuống đáy (mt-auto) để 3 card thẳng hàng nhau. */}
           <div className="grid grid-cols-3 gap-5">
             {/* Tổng số đơn */}
-            <div className="border border-[#eee] rounded-[8px] p-4">
-              <div className="flex items-start justify-between mb-2">
+            <div className="border border-[#eee] rounded-[8px] px-4 py-3 flex flex-col">
+              <div className="flex items-start justify-between mb-1.5">
                 <span className="text-[13px] text-[#666] font-medium">Tổng số đơn</span>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#eff6ff] text-[#3b82f6] flex-shrink-0">
-                  <Inbox size={17} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#eff6ff] text-[#3b82f6] flex-shrink-0">
+                  <Inbox size={16} />
                 </div>
               </div>
               <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{tongDonHienTrang}</span>
-              <div className="flex items-center gap-0.5 h-[7px] rounded-full overflow-hidden mt-3 mb-2">
-                <div className="h-full bg-[#22c55e]" style={{ width: `${pctDaGiaiQuyet}%` }} />
-                <div className="h-full bg-[#f97316]" style={{ width: `${pctChuaGiaiQuyet}%` }} />
+              {/* Thanh tiến độ chia theo NGUỒN GỐC đơn (tồn kỳ trước / mới nhận)
+                  — không lặp lại cách chia Đã/Chưa giải quyết, vì 2 card bên
+                  cạnh đã nói đúng cách chia đó rồi. */}
+              <div className="flex items-center gap-0.5 h-[7px] rounded-full overflow-hidden mt-2.5 mb-2">
+                <div className="h-full bg-[#f59e0b]" style={{ width: `${pctDonTon}%` }} />
+                <div className="h-full bg-[#3b82f6]" style={{ width: `${pctNhanMoi}%` }} />
               </div>
-              <div className="flex items-center gap-3 text-[11px] text-[#64748b] mb-3">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#22c55e]" />Đã giải quyết</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f97316]" />Chưa giải quyết</span>
+              <div className="flex items-center gap-3 text-[11px] text-[#64748b] mb-2.5">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f59e0b]" />Đơn tồn <b className="text-[#0f172a]">{hienTrang.donTon}</b></span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#3b82f6]" />Nhận mới <b className="text-[#0f172a]">{hienTrang.nhanMoi}</b></span>
               </div>
-              <button onClick={() => onXemDanhSachDon?.(phamViHienTrang === "toi" ? 1 : 0)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+              <button onClick={() => onXemDanhSachDon?.(phamViHienTrang === "toi" ? 1 : 0)} className="mt-auto text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1 self-start">
                 Xem danh sách <ArrowRight size={11} />
               </button>
             </div>
 
             {/* Đã giải quyết xong */}
-            <div className="border border-[#eee] rounded-[8px] p-4">
-              <div className="flex items-start justify-between mb-2">
+            <div className="border border-[#eee] rounded-[8px] px-4 py-3 flex flex-col">
+              <div className="flex items-start justify-between mb-1.5">
                 <span className="text-[13px] text-[#666] font-medium">Đã giải quyết xong</span>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#f0fdf4] text-[#16a34a] flex-shrink-0">
-                  <CheckCircle2 size={17} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#f0fdf4] text-[#16a34a] flex-shrink-0">
+                  <CheckCircle2 size={16} />
                 </div>
               </div>
-              <div className="flex items-baseline gap-2 mb-2">
+              <div className="flex items-baseline gap-2 mb-2.5">
                 <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{hienTrang.daGiaiQuyet}</span>
                 <span className="text-[12px] font-semibold text-[#16a34a]">{pctDaGiaiQuyet}% tổng số đơn</span>
               </div>
-              <p className="text-[12px] text-[#64748b] mb-3">Đơn đã trả lại, không thụ lý, hoặc đã phân công và chuyển sang Vụ chuyên môn.</p>
-              <button onClick={() => onXemDanhSachDon?.(6)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+              <button onClick={() => onXemDanhSachDon?.(6)} className="mt-auto text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1 self-start">
                 Xem danh sách <ArrowRight size={11} />
               </button>
             </div>
 
             {/* Chưa giải quyết */}
-            <div className="border border-[#eee] rounded-[8px] p-4">
-              <div className="flex items-start justify-between mb-2">
+            <div className="border border-[#eee] rounded-[8px] px-4 py-3 flex flex-col">
+              <div className="flex items-start justify-between mb-1.5">
                 <span className="text-[13px] text-[#666] font-medium">Chưa giải quyết</span>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#fff7ed] text-[#f97316] flex-shrink-0">
-                  <Clock size={17} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#fff7ed] text-[#f97316] flex-shrink-0">
+                  <Clock size={16} />
                 </div>
               </div>
-              <div className="flex items-baseline gap-2 mb-3">
+              <div className="flex items-baseline gap-2 mb-2.5">
                 <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{hienTrang.chuaGiaiQuyet}</span>
                 <span className="text-[12px] font-semibold text-[#e67e22]">{pctChuaGiaiQuyet}% tổng số đơn</span>
               </div>
-              <div className="rounded-[6px] bg-[#fef2f2] border border-[#fecaca] px-3 py-2 mb-3">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-[12px] font-semibold text-[#c0392b] flex items-center gap-1"><AlertTriangle size={12} /> Quá hạn giải quyết</span>
-                  <span className="text-[13px] font-bold text-[#c0392b]">{hienTrang.quaHan}</span>
-                </div>
-                <p className="text-[11px] text-[#c0392b]/80">
-                  Chiếm {pctQuaHan}% số đơn chưa giải quyết · còn {hienTrang.sapDenHan} đơn sắp đến hạn
-                </p>
-              </div>
-              <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+              {/* Bỏ thẻ cảnh báo "Quá hạn giải quyết" trong card này — số đơn
+                  quá hạn đã có khối "Cảnh báo cần xử lý" ở trên cùng lo. */}
+              <button onClick={() => onXemDonQuaHan?.()} className="mt-auto text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1 self-start">
                 Xem danh sách <ArrowRight size={11} />
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-5 mb-3">
-            <span className="text-[12px] font-bold text-[#0f172a] uppercase tracking-wide">Đơn theo trạng thái thụ lý</span>
-            <span className="text-[11px] text-[#94a3b8]">Bấm vào từng trạng thái để mở danh sách đơn tương ứng</span>
-          </div>
-          <div className="grid grid-cols-6 gap-3">
-            {hienTrang.trangThai.map(t => (
-              <button
-                key={t.nhan}
-                onClick={() => onXemDanhSachDon?.(t.tab)}
-                className="text-left border border-[#eee] rounded-[8px] p-3 hover:border-[#cbd5e1] hover:bg-[#f8fafc] transition-colors group"
-              >
-                <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-[#475569] mb-2">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.mau }} />
-                  {t.nhan}
-                </span>
-                <div className="flex items-center justify-between">
-                  <span className="text-[20px] font-bold text-[#1d2e4f] leading-none">{t.soLuong}</span>
-                  <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors" />
-                </div>
-              </button>
-            ))}
-          </div>
         </div>
       </div>
       )}
-
-      {/* Duyệt tài liệu — chỉ Trưởng phòng / Phó Chánh án-Chánh án / Lãnh đạo Tòa */}
-      {hienThiTheDuyet && (
-        <div>
-          <h2 className="text-[16px] font-bold text-[#0f172a] mb-4 flex items-center gap-2">
-            <FileCheck size={18} className="text-[#8b1a1a]" />
-            Duyệt tài liệu
-          </h2>
-          <div className="grid grid-cols-4 gap-5">
-            <KPICardCoLink
-              title="Tài liệu cần duyệt"
-              value={String(soTaiLieuCanDuyet)}
-              trend="Đang chờ bạn xử lý"
-              icon={<FileCheck size={24} />}
-              bgColorClass="bg-[#fef3e2]"
-              colorClass="text-[#f39c12]"
-              onXemChiTiet={() => onXemPheDuyet?.("cho_duyet")}
-            />
-            <KPICardCoLink
-              title="Tài liệu đã duyệt"
-              value={String(soTaiLieuDaDuyet)}
-              trend="Đã hoàn tất luồng duyệt"
-              icon={<CheckCircle2 size={24} />}
-              bgColorClass="bg-[#e8f7ee]"
-              colorClass="text-[#1a7a45]"
-              onXemChiTiet={() => onXemPheDuyet?.("da_duyet")}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Filters — đặt ngay trên các khối dùng chartPeriod/filterOfficer bên dưới
-          (bảng So sánh số đơn theo loại án & kết quả xử lý, Đơn theo cán bộ) thay
-          vì trên cùng trang, vì "Hiện trạng đơn" (Cán bộ) không phụ thuộc kỳ lọc này. */}
-      <div className="flex items-center justify-between bg-white p-3.5 rounded-[8px] border border-[#e2e8f0] shadow-sm mb-5">
-        <div className="flex items-center gap-5 flex-wrap w-full">
-          <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
-            {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
-              const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
-              return (
-                <button
-                  key={period}
-                  onClick={() => setChartPeriod(period)}
-                  className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
-                >
-                  {labels[idx]}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="w-px h-6 bg-[#cbd5e1]"></div>
-
-          {chartPeriod === "custom" && (
-            <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
-              <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
-              <input
-                type="date"
-                value={customStartDate}
-                onChange={e => setCustomStartDate(e.target.value)}
-                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
-              />
-              <span className="text-[#94a3b8]">-</span>
-              <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
-              <input
-                type="date"
-                value={customEndDate}
-                onChange={e => setCustomEndDate(e.target.value)}
-                className="h-[32px] px-2.5 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] text-[#1e293b]"
-              />
-            </div>
-          )}
-
-          <div className="flex-1"></div>
-
-          {/* Lọc theo Cán bộ — chỉ vai trò quản lý; Cán bộ chỉ xem dữ liệu của
-              chính mình nên không cần lọc theo người khác. */}
-          {laVaiTroQuanLy && (
-          <div className="flex items-center gap-2.5">
-            <label className="text-[13px] font-medium text-[#475569]">Lọc theo Cán bộ:</label>
-            <select
-              value={filterOfficer}
-              onChange={e => setFilterOfficer(e.target.value)}
-              className="h-[32px] px-3 border border-[#cbd5e1] rounded-[4px] text-[13px] outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] bg-white min-w-[220px] text-[#1e293b] cursor-pointer"
-            >
-              <option value="all">Tất cả cán bộ</option>
-              {officerData.map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
-            </select>
-          </div>
-          )}
-        </div>
-      </div>
 
       {/* ROW 2a: 2 biểu đồ thanh ngang tổng quan — đặt trước bảng so sánh chi
           tiết theo Loại án để xem toàn cảnh trước khi đi vào từng dòng. */}
@@ -783,14 +702,25 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               <BarChart3 size={18} className="text-[#8b1a1a]" />
               Phân bố đơn theo trạng thái xử lý
             </h3>
-            <span className="text-[12.5px] text-[#64748b]">Tổng: <span className="font-bold text-[#0f172a]">{tongTatCa}</span> đơn</span>
+            <div className="flex items-center gap-3">
+              <span className="text-[12.5px] text-[#64748b]">Tổng: <span className="font-bold text-[#0f172a]">{tongTatCa}</span> đơn</span>
+              {/* Sang màn "So sánh số đơn theo loại án & kết quả xử lý" — cùng
+                  dữ liệu, tách thêm trục Loại án. Truyền kỳ đang lọc sang để
+                  màn kia mở ra đúng kỳ. */}
+              <button
+                onClick={() => onXemSoSanhLoaiAn?.(chartPeriod)}
+                className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-0.5 whitespace-nowrap"
+              >
+                Chi tiết <ArrowRight size={12} />
+              </button>
+            </div>
           </div>
           <div className="p-5">
             <div className="space-y-2.5">
               {tongTheoKetQua.map(k => (
                 <div key={k.key} className="grid items-center gap-2.5" style={{ gridTemplateColumns: "160px 1fr 84px" }}>
-                  <span className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#334155] truncate">
-                    {KET_QUA_ICON[k.key]} {k.key}
+                  <span title={k.key} className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#334155] truncate">
+                    {KET_QUA_ICON[k.key]} {KET_QUA_NHAN_NGAN[k.key] ?? k.key}
                   </span>
                   <div className="h-[16px] bg-[#f1f5f9] rounded-[3px] overflow-hidden">
                     <div className="h-full rounded-[3px] transition-all duration-700" style={{ width: `${(k.soLuong / axisMaxTrangThai) * 100}%`, backgroundColor: TRANG_THAI_MAU[k.key] }}></div>
@@ -800,16 +730,6 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                   </span>
                 </div>
               ))}
-            </div>
-            {/* Trục hoành */}
-            <div className="grid items-center gap-2.5 mt-2 pt-1.5 border-t border-[#f1f5f9]" style={{ gridTemplateColumns: "160px 1fr 84px" }}>
-              <span></span>
-              <div className="relative h-[14px] text-[10.5px] text-[#94a3b8]">
-                {ticksTrangThai.map(t => (
-                  <span key={t} className="absolute -translate-x-1/2" style={{ left: `${(t / axisMaxTrangThai) * 100}%` }}>{t}</span>
-                ))}
-              </div>
-              <span></span>
             </div>
           </div>
         </div>
@@ -839,9 +759,11 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
           </div>
           <div className="p-5 pt-4">
             <div className="space-y-3">
-              {donChuyenVuSapXep.map(v => (
-                <div key={v.vu} className="grid items-center gap-2.5" style={{ gridTemplateColumns: "150px 1fr 30px" }}>
-                  <span className="text-[12.5px] font-semibold text-[#334155] truncate">{v.vu}</span>
+              {donChuyenVuHienThi.map(v => (
+                <div key={v.vu} className="grid items-center gap-2.5" style={{ gridTemplateColumns: "170px 1fr 30px" }}>
+                  <span title={v.vu} className="text-[12.5px] font-semibold text-[#334155] truncate">
+                    {VU_TEN_NGAN[v.vu] ?? v.vu}
+                  </span>
                   <div className="h-[16px] bg-[#f1f5f9] rounded-[3px] overflow-hidden">
                     <div className="h-full flex gap-[2px]" style={{ width: `${(v.soLuong / axisMaxVu) * 100}%` }}>
                       {v.ketQua.filter(k => k.soLuong > 0).map(k => (
@@ -854,83 +776,25 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                       ))}
                     </div>
                   </div>
-                  <span className="text-[12.5px] font-bold text-[#0f172a]">{v.soLuong}</span>
+                  <span className={`text-[12.5px] font-bold ${v.soLuong > 0 ? "text-[#0f172a]" : "text-[#cbd5e1]"}`}>{v.soLuong}</span>
                 </div>
               ))}
             </div>
-            {/* Trục hoành */}
-            <div className="grid items-center gap-2.5 mt-2 pt-1.5 border-t border-[#f1f5f9]" style={{ gridTemplateColumns: "150px 1fr 30px" }}>
-              <span></span>
-              <div className="relative h-[14px] text-[10.5px] text-[#94a3b8]">
-                {ticksVu.map(t => (
-                  <span key={t} className="absolute -translate-x-1/2" style={{ left: `${(t / axisMaxVu) * 100}%` }}>{t}</span>
-                ))}
-              </div>
-              <span></span>
-            </div>
+            {/* Danh mục có 12 đơn vị — mặc định chỉ hiện 5 đơn vị nhiều đơn nhất,
+                phần còn lại (thường là các đơn vị không nhận đơn trong kỳ) ẩn
+                sau nút này để biểu đồ không bị dài. */}
+            {soVuConLai > 0 && (
+              <button
+                onClick={() => setMoTatCaVu(v => !v)}
+                className="mt-3 pt-2.5 w-full border-t border-[#f1f5f9] text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors"
+              >
+                {moTatCaVu ? "Thu gọn" : `Xem thêm ${soVuConLai} đơn vị`}
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ROW 2b: So sánh số đơn theo loại án & kết quả xử lý — bảng nhiệt (heatmap)
-          Loại án × Kết quả xử lý, độ đậm ô = số lượng (thang xanh liên tục, chuẩn
-          hoá theo giá trị lớn nhất toàn bảng) để mắt bắt được điểm nóng ngay mà
-          không cần nhóm thêm trục nào khác. Bỏ cột "Vụ chuyên môn" nhóm theo Loại
-          án trước đây: 1 Loại án không gắn cố định 1 Vụ trong thực tế (vd. vụ án
-          hình sự vẫn có thể phát sinh phần dân sự), nhóm cứng như vậy gây hiểu
-          nhầm nên bỏ, giữ đúng 2 trục thật sự độc lập với nhau. */}
-      <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center gap-2">
-          <BarChart3 size={18} className="text-[#8b1a1a]" />
-          <h3 className="text-[14px] font-bold text-[#0f172a]">So sánh số đơn theo loại án & kết quả xử lý</h3>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-[12.5px] border-collapse">
-            <thead>
-              <tr className="bg-[#eff6ff]">
-                <th className="px-3 py-2.5 font-bold text-[#3b82f6] text-left whitespace-nowrap">Loại án</th>
-                {KET_QUA_LIST.map(kq => (
-                  <th key={kq} className="px-2 py-2.5 font-semibold text-[#3b82f6] text-center min-w-[100px] leading-tight whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5">
-                      {KET_QUA_ICON[kq]}
-                      {kq}
-                    </span>
-                  </th>
-                ))}
-                <th className="px-3 py-2.5 font-bold text-[#3b82f6] text-center whitespace-nowrap">∑ Tổng</th>
-              </tr>
-            </thead>
-            <tbody>
-              {banLoaiAnRows.map(r => (
-                <tr key={r.loaiAn} className="bg-white border-b border-[#f1f5f9] last:border-b-0">
-                  <td className="px-3 py-2 text-[#334155] font-medium whitespace-nowrap">{r.loaiAn}</td>
-                  {r.ketQua.map(k => (
-                    <td
-                      key={k.key}
-                      title={`${r.loaiAn} · ${k.key}: ${k.soLuong}`}
-                      style={heatmapStyle(k.soLuong)}
-                      className="px-2 py-2 text-center text-[#334155] transition-colors"
-                    >
-                      {k.soLuong > 0 ? k.soLuong : <span className="text-[#cbd5e1]">-</span>}
-                    </td>
-                  ))}
-                  <td className="px-3 py-2 text-center font-bold text-[#3b82f6]">{r.tong}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-[#f8fafc] font-bold border-t-2 border-[#dbeafe]">
-                <td className="px-3 py-2.5 text-[#3b82f6] whitespace-nowrap">Tổng cộng</td>
-                {tongTheoKetQua.map(k => (
-                  <td key={k.key} className="px-2 py-2.5 text-center text-[#3b82f6]">{k.soLuong}</td>
-                ))}
-                <td className="px-3 py-2.5 text-center text-[#3b82f6]">{tongTatCa}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
 
       {/* ROW 3: Hình thức tiếp nhận đơn + Cơ cấu loại hình án + Hiệu suất cán bộ
           — gộp chung 1 hàng lưới 4 cột (thay vì 2 hàng riêng, hàng đầu chỉ có 1
@@ -1000,7 +864,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
           </div>
           
           <div className="flex-1 p-2 overflow-y-auto">
-            {displayedOfficers.map((officer, index) => (
+            {officerData.map((officer, index) => (
               <div key={index} className="flex items-center gap-4 p-3 hover:bg-[#f8fafc] rounded-[6px] transition-colors border-b border-[#f1f5f9] last:border-0 group cursor-pointer">
                 <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#1e293b] to-[#334155] text-white flex items-center justify-center font-bold text-[16px] flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
                   {officer.avatar}

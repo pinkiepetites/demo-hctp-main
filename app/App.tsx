@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
+import SoSanhLoaiAnChiTiet, { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
@@ -12446,7 +12447,10 @@ export default function App() {
   // Nếu URL có #don=... thì tab này mở thẳng màn đơn (giống Thêm mới) với dữ
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
+  // Kỳ lọc đang chọn ở Trang chủ lúc bấm "Chi tiết" — mở màn So sánh loại án
+  // với đúng kỳ đó thay vì luôn mặc định "Tuần này".
+  const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("week");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
@@ -13182,6 +13186,12 @@ export default function App() {
                                 <ChevronRight size={12} />
                                 <span className="text-[#333]">Xem chi tiết</span>
                               </>
+                          : view === "so_sanh_loai_an"
+                            ? <>
+                                <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Trang chủ</span>
+                                <ChevronRight size={12} />
+                                <span className="text-[#333]">So sánh số đơn theo loại án & kết quả xử lý</span>
+                              </>
                             : <>
                           <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                           <ChevronRight size={12} />
@@ -13198,6 +13208,7 @@ export default function App() {
                 onXemDanhSachDon={(tab) => { setDanhSachDonTab(tab); setDanhSachDonQuaHanOnly(false); setView("list"); }}
                 onXemDonQuaHan={() => { setDanhSachDonTab(0); setDanhSachDonQuaHanOnly(true); setView("list"); }}
                 onXemDanhSachVanBan={(tab) => { setVanBanTrinhKyTab(tab ?? "ChoDuyet"); setView("van_ban_trinh_ky"); }}
+                onXemSoSanhLoaiAn={(ky) => { setSoSanhLoaiAnKy(ky); setView("so_sanh_loai_an"); }}
                 vanBanList={vanBanList} currentRole={currentRole} />
             </div>
           )}
@@ -13206,6 +13217,14 @@ export default function App() {
           {view === "hieu_suat_chi_tiet" && (
             <div className="flex-1 overflow-y-auto">
               <HieuSuatCanBoChiTiet currentRole={currentRole} onBack={() => setView("home")} />
+            </div>
+          )}
+
+          {/* So sánh số đơn theo loại án & kết quả xử lý — mở từ nút "Chi tiết"
+              ở biểu đồ "Phân bố đơn theo trạng thái xử lý" trên Trang chủ */}
+          {view === "so_sanh_loai_an" && (
+            <div className="flex-1 overflow-y-auto">
+              <SoSanhLoaiAnChiTiet initialPeriod={soSanhLoaiAnKy} onBack={() => setView("home")} />
             </div>
           )}
 
