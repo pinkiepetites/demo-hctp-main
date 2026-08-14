@@ -21,6 +21,23 @@ export const HAN_DUYET_VAN_BAN_NGAY = 3;
 
 type VaiTro = "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
 
+/** Bốn vai trò nằm trong luồng ký duyệt văn bản — cùng nhìn Trang chủ ở góc
+ *  người quản lý (có Tầng 1 "Việc của tôi" và Tầng 3 "Tải việc của phòng"). */
+const VAI_TRO_QUAN_LY: readonly VaiTro[] = ["truong-phong", "pho-vp", "lanh-dao", "chanh-an"];
+
+/** Người mà Trang chủ lấy làm "tôi" khi đếm việc.
+ *
+ *  Bốn vai trò quản lý cố ý cùng quy về bàn Trưởng phòng, để Trang chủ của
+ *  Trưởng phòng · Phó/Chánh Văn phòng · Lãnh đạo Tòa · Chánh án/Phó Chánh án
+ *  hiện ra GIỐNG HỆT NHAU — cùng số văn bản chờ duyệt/chờ ký, cùng cảnh báo,
+ *  cùng bảng tải việc. Dữ liệu mẫu chỉ dựng đủ việc cho bàn Trưởng phòng; nếu
+ *  lọc theo đúng người đăng nhập thì ba vai còn lại sẽ thấy phần lớn ô về 0 và
+ *  hai khối cảnh báo rỗng, không còn là bản mockup để trình bày.
+ *
+ *  Cán bộ vẫn lọc theo chính họ — đó là màn khác (không có Tầng 1/Tầng 3). */
+export const nguoiXemTrangChu = (role: VaiTro | string): string =>
+  nguoiTheoVaiTro(VAI_TRO_QUAN_LY.includes(role as VaiTro) ? "truong-phong" : role).nguoi;
+
 // ─── Tiện ích ────────────────────────────────────────────────────────────────
 
 const parseNgayGio = (s?: string): Date | null => {
@@ -321,7 +338,8 @@ export default function TrangChuTruongPhong({
   onXemHieuSuat?: () => void;
 }) {
   const homNay = useMemo(() => new Date(), []);
-  const { nguoi: toiLaAi } = nguoiTheoVaiTro(currentRole);
+  // Bốn vai trò quản lý cùng nhìn một màn hình — xem chú thích nguoiXemTrangChu.
+  const toiLaAi = nguoiXemTrangChu(currentRole);
 
   // ── Tầng 1 — việc đang đứng chờ chính tôi ──────────────────────────────────
   const viec = useMemo(() => {

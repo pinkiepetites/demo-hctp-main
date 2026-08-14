@@ -3,9 +3,9 @@ import {
   BarChart3,
   Calendar,
 } from "lucide-react";
-import { nguoiTheoVaiTro, type VanBanTrinh, type LocVanBanTuTrangChu } from "./components/QuanLyVanBan";
+import { type VanBanTrinh, type LocVanBanTuTrangChu } from "./components/QuanLyVanBan";
 import ChiSoTrangChu, { type DonChiSo, type BoLocTuTrangChu } from "./ChiSoTrangChu";
-import TrangChuTruongPhong, { TieuDeMuc, NhomCon } from "./TrangChuTruongPhong";
+import TrangChuTruongPhong, { TieuDeMuc, NhomCon, nguoiXemTrangChu } from "./TrangChuTruongPhong";
 import { DU_LIEU_CAN_BO } from "./HieuSuatCanBoChiTiet";
 
 // "Kết quả xử lý đơn" — bar ngang xếp hạng theo giá trị giảm dần, mỗi hạng mục một màu riêng
@@ -230,7 +230,10 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
             nên cán bộ luôn có số liệu của mình mà không cần khối riêng. */}
         <NhomCon>
           <ChiSoTrangChu rows={donList} onMoDanhSach={onMoDanhSachDon}
-            toiLaAi={nguoiTheoVaiTro(currentRole).nguoi}
+            // Cùng một "tôi" với Tầng 1-3 ở trên: bốn vai trò quản lý xem chip
+            // "Của tôi" cũng phải ra cùng một tập đơn, nếu không thì trên cùng
+            // một màn có hai định nghĩa "tôi" khác nhau.
+            toiLaAi={nguoiXemTrangChu(currentRole)}
             macDinhCuaToi={!hienThiTheDuyet}
             onXemHieuSuat={onXemChiTietHieuSuat} />
         </NhomCon>
