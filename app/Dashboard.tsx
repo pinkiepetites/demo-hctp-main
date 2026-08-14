@@ -189,51 +189,54 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
               <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{hienTrang.chuaGiaiQuyet}</span>
               <span className="text-[12px] font-semibold text-[#e67e22]">{pct1(hienTrang.chuaGiaiQuyet, tongDon)}% tổng số đơn</span>
             </div>
-            <div className="rounded-[6px] bg-[#fef2f2] border border-[#fecaca] px-3 py-2 mb-3">
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-[12px] font-semibold text-[#c0392b] flex items-center gap-1"><AlertTriangle size={12} /> Quá hạn giải quyết</span>
-                <span className="text-[13px] font-bold text-[#c0392b]">{hienTrang.quaHan}</span>
-              </div>
-              <p className="text-[11px] text-[#c0392b]/80">
-                Chiếm {pct1(hienTrang.quaHan, hienTrang.chuaGiaiQuyet)}% số đơn chưa giải quyết
-                {hienTrang.sapDenHan > 0 && ` · còn ${hienTrang.sapDenHan} đơn sắp đến hạn`}
-              </p>
-            </div>
+            <p className="text-[12px] text-[#64748b] mb-3">Đơn đang trong quá trình thụ lý, xem xét hoặc chờ ý kiến — chưa ra kết quả cuối cùng.</p>
             <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
               Xem danh sách <ArrowRight size={11} />
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-5 mb-3">
-          <span className="text-[12px] font-bold text-[#0f172a] uppercase tracking-wide flex items-center gap-1.5">
-            <Clock size={14} className="text-[#8b1a1a]" />
-            Đơn theo trạng thái thụ lý
-          </span>
-          <span className="text-[11px] text-[#94a3b8]">Bấm vào từng trạng thái để mở danh sách đơn tương ứng</span>
-        </div>
-        <div className="grid grid-cols-6 gap-3">
-          {hienTrang.trangThai.map(t => (
-            <button
-              key={t.nhan}
-              onClick={() => onXemDanhSachDon?.(t.tab)}
-              className="text-left border border-[#eee] rounded-[8px] p-3 hover:border-[#cbd5e1] hover:bg-[#f8fafc] transition-colors group"
-            >
-              <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-[#475569] mb-2">
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.mau }} />
-                {t.nhan}
-              </span>
-              <div className="flex items-center justify-between">
-                <span className="text-[20px] font-bold text-[#1d2e4f] leading-none">{t.soLuong}</span>
-                <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors" />
-              </div>
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
 };
+
+// ─── Lưới "Đơn theo trạng thái thụ lý" ───────────────────────────────────────
+// Vẫn là số đếm HIỆN TRẠNG (giống khối "Hiện trạng đơn", không co giãn theo kỳ)
+// nhưng đặt trong khối báo cáo, ngay dưới bộ lọc kỳ — nên phải nói rõ điều đó
+// trong dòng chú thích để người đọc không hiểu nhầm là số chốt kỳ.
+const DonTheoTrangThaiThuLy = ({ trangThai, onXemDanhSachDon }: {
+  trangThai: SoLieuHienTrang["trangThai"];
+  onXemDanhSachDon?: (tab: number) => void;
+}) => (
+  <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm p-5 mb-5">
+    <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+      <span className="text-[12px] font-bold text-[#0f172a] uppercase tracking-wide flex items-center gap-1.5">
+        <Clock size={14} className="text-[#8b1a1a]" />
+        Đơn theo trạng thái thụ lý
+      </span>
+      <span className="text-[11px] text-[#94a3b8]">Số liệu hiện tại, không đổi theo kỳ báo cáo · bấm vào từng trạng thái để mở danh sách đơn tương ứng</span>
+    </div>
+    <div className="grid grid-cols-6 gap-3">
+      {trangThai.map(t => (
+        <button
+          key={t.nhan}
+          onClick={() => onXemDanhSachDon?.(t.tab)}
+          className="text-left border border-[#eee] rounded-[8px] p-3 hover:border-[#cbd5e1] hover:bg-[#f8fafc] transition-colors group"
+        >
+          <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-[#475569] mb-2">
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: t.mau }} />
+            {t.nhan}
+          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[20px] font-bold text-[#1d2e4f] leading-none">{t.soLuong}</span>
+            <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors" />
+          </div>
+        </button>
+      ))}
+    </div>
+  </div>
+);
 
 // ─── Khối "Báo cáo kết quả xử lý theo kỳ" ────────────────────────────────────
 // Nguồn: báo cáo chốt kỳ của Phòng HCTP — KHÁC "Hiện trạng đơn" ở trên (đếm
@@ -261,7 +264,10 @@ const BAO_CAO_KET_QUA_TUAN: Record<typeof LOAI_AN_BAO_CAO[number], Record<string
 // (đơn đã nhận nhưng chưa ra kết quả nên tổng các kết quả luôn nhỏ hơn số này).
 const DON_NHAN_TUAN = 27;
 
-const BaoCaoKetQuaTheoKy = () => {
+const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon }: {
+  trangThai: SoLieuHienTrang["trangThai"];
+  onXemDanhSachDon?: (tab: number) => void;
+}) => {
   const [chartPeriod, setChartPeriod] = useState<"day" | "week" | "month" | "year" | "custom">("week");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -330,6 +336,8 @@ const BaoCaoKetQuaTheoKy = () => {
           </div>
         )}
       </div>
+
+      <DonTheoTrangThaiThuLy trangThai={trangThai} onXemDanhSachDon={onXemDanhSachDon} />
 
       <div className="grid grid-cols-3 gap-5">
         {/* So sánh số đơn theo loại án & kết quả — cột nhóm: 3 loại án × 6 kết quả */}
@@ -924,8 +932,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
         onXemChiTietHieuSuat={onXemChiTietHieuSuat}
       />
 
-      {/* Báo cáo kết quả xử lý theo kỳ — chung cho mọi vai trò */}
-      <BaoCaoKetQuaTheoKy />
+      {/* Báo cáo kết quả xử lý theo kỳ — chung cho mọi vai trò. Lưới "Đơn theo
+          trạng thái thụ lý" nằm trong khối này, ngay dưới bộ lọc kỳ. */}
+      <BaoCaoKetQuaTheoKy trangThai={hienTrang.trangThai} onXemDanhSachDon={onXemDanhSachDon} />
     </div>
   );
 }
