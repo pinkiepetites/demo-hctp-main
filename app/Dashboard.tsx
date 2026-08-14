@@ -86,6 +86,23 @@ const KPICardDon = ({ title, value, icon, colorClass, bgColorClass, trend }: {
   </div>
 );
 
+type VaiTro = "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
+
+/** Bốn vai trò nằm trong luồng ký duyệt văn bản. */
+const VAI_TRO_QUAN_LY: readonly VaiTro[] = ["truong-phong", "pho-vp", "lanh-dao", "chanh-an"];
+
+/** Người mà Trang chủ lấy làm "tôi" khi đếm việc.
+ *
+ *  Bốn vai trò quản lý cố ý cùng quy về bàn Trưởng phòng, để Trang chủ của
+ *  Trưởng phòng · Phó/Chánh Văn phòng · Lãnh đạo Tòa · Chánh án/Phó Chánh án
+ *  hiện ra GIỐNG HỆT NHAU. Dữ liệu mẫu chỉ dựng đủ việc cho bàn Trưởng phòng;
+ *  lọc theo đúng người đăng nhập thì ba vai còn lại thấy card "Tài liệu cần
+ *  duyệt" về 0, không còn là bản mockup để trình bày.
+ *
+ *  Cán bộ vẫn lọc theo chính họ — nhóm này xem bố cục Trang chủ khác. */
+const nguoiXemTrangChu = (role: VaiTro | string): string =>
+  nguoiTheoVaiTro(VAI_TRO_QUAN_LY.includes(role as VaiTro) ? "truong-phong" : role).nguoi;
+
 export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDanhSachDon, onXemDonQuaHan, onXemDanhSachVanBan, onXemSoSanhLoaiAn, vanBanList = [], currentRole = "can-bo" }: {
   onXemChiTietHieuSuat?: () => void;
   /** Bấm "Chi tiết" ở biểu đồ "Phân bố đơn theo trạng thái xử lý" — sang màn
@@ -104,7 +121,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
    *  sang thẳng màn Danh sách văn bản, mở sẵn tab tương ứng (mặc định "Chờ duyệt"). */
   onXemDanhSachVanBan?: (tab?: TabDS) => void;
   vanBanList?: VanBanTrinh[];
-  currentRole?: "can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an";
+  currentRole?: VaiTro;
 } = {}) {
   // Mọi vai trò quản lý (khác Cán bộ) xem khối "Thống kê đơn nhận {kỳ}" gọn
   // theo Loại án thay cho "Cảnh báo cần xử lý" + "Hiện trạng đơn" của Cán bộ,
@@ -112,7 +129,8 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
   // Văn phòng / Lãnh đạo Tòa / Chánh án-Phó Chánh án).
   const laVaiTroQuanLy = currentRole !== "can-bo";
   const hienThiTheDuyet = laVaiTroQuanLy;
-  const { nguoi: nguoiDung } = nguoiTheoVaiTro(currentRole);
+  // Bốn vai trò quản lý cùng nhìn một màn hình — xem chú thích nguoiXemTrangChu.
+  const nguoiDung = nguoiXemTrangChu(currentRole);
   const taiLieuChoDuyet = vanBanList.filter(v => dangChoXuLy(v.trangThai));
   const soTaiLieuCanDuyet = taiLieuChoDuyet.filter(v => nguoiDangGiu(v)?.nguoi === nguoiDung).length;
 
