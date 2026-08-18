@@ -1,0 +1,6 @@
+var VBDH_ROLES={
+  clerk:{name:"Nguyễn Thị Mỹ Dung",label:"Văn thư HCTP"},
+  business:{name:"Phạm Quốc Hưng",label:"Cán bộ nghiệp vụ HCTP"},
+  leader:{name:"Nguyễn Văn Quảng",label:"Lãnh đạo HCTP"},
+  admin:{name:"Trần Hữu Nam",label:"Quản trị tích hợp"}
+};
