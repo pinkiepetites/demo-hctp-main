@@ -11,6 +11,7 @@ import {
 import Dashboard from "./Dashboard";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import TiepNhanDonLienThong from "./components/TiepNhanDonLienThong";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
@@ -1945,6 +1946,11 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
         <div>
           <GroupItem icon={<RefreshCw size={15} />} label="Tích hợp - Đồng bộ"
             open={tichHopOpen} onToggle={() => setTichHopOpen(!tichHopOpen)} />
+          {tichHopOpen && (
+            <div className="pb-1">
+              <SubItem icon={<RefreshCw size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "tiep_nhan_lien_thong"} nav="tiep_nhan_lien_thong" />
+            </div>
+          )}
         </div>
       </nav>
 
@@ -12446,7 +12452,7 @@ export default function App() {
   // Nếu URL có #don=... thì tab này mở thẳng màn đơn (giống Thêm mới) với dữ
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "tiep_nhan_lien_thong">(donChiTietTabMoi ? "form" : "list");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
@@ -13054,9 +13060,11 @@ export default function App() {
                   ? "Danh sách biểu mẫu đơn"
                   : view === "wordeditor"
                     ? "Chỉnh sửa biểu mẫu"
-                    : editingRow
-                      ? `Sửa đơn ${editingRow.maDon}`
-                      : "Thêm mới Đơn đề nghị GĐT/TT"}
+                    : view === "tiep_nhan_lien_thong"
+                      ? "Tiếp nhận đơn liên thông"
+                      : editingRow
+                        ? `Sửa đơn ${editingRow.maDon}`
+                        : "Thêm mới Đơn đề nghị GĐT/TT"}
         </span>
         <div className="ml-auto flex items-center gap-4">
           <div className="relative">
@@ -13162,6 +13170,12 @@ export default function App() {
                           <ChevronRight size={12} />
                           <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                         </>
+                        : view === "tiep_nhan_lien_thong"
+                          ? <>
+                            <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                            <ChevronRight size={12} />
+                            <span className="text-[#333]">Tiếp nhận đơn liên thông</span>
+                          </>
                         : view === "phancong"
                           ? <span className="text-[#333]">Phân công thẩm phán</span>
                           : view === "phe_duyet"
@@ -13283,6 +13297,13 @@ export default function App() {
           {view === "wordeditor" && (
             <div className="flex-1 overflow-y-auto">
               <WordEditor onBack={() => setView("list")} />
+            </div>
+          )}
+
+          {/* Tiếp nhận đơn liên thông view */}
+          {view === "tiep_nhan_lien_thong" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <TiepNhanDonLienThong />
             </div>
           )}
 
