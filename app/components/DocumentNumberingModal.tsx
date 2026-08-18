@@ -698,10 +698,21 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
         <div className="w-14 h-14 rounded-full bg-[#e8f5e9] border-2 border-[#4caf50] flex items-center justify-center mx-auto">
           <Check size={30} className="text-[#2e7d32]" strokeWidth={3} />
         </div>
-        <div className="text-[17px] font-bold text-[#1b5e20] mt-3">Trình duyệt thành công</div>
+        <div className="text-[17px] font-bold text-[#1b5e20] mt-3">
+          {nguoiDuyet ? "Trình duyệt thành công" : "Lưu nháp thành công"}
+        </div>
         <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
-          Hồ sơ đã gửi tới <b>{nguoiDuyet.split(" - ")[0] || "người duyệt"}</b>.<br />
-          Xem tiến độ tại màn <b>Văn bản trình ký của tôi</b> bất cứ lúc nào.
+          {nguoiDuyet ? (
+            <>
+              Hồ sơ đã gửi tới <b>{nguoiDuyet.split(" - ")[0]}</b>.<br />
+              Xem tiến độ tại màn <b>Văn bản trình ký của tôi</b> bất cứ lúc nào.
+            </>
+          ) : (
+            <>
+              Văn bản đã được lưu vào <b>Danh sách văn bản</b>.<br />
+              Bạn có thể tiếp tục chỉnh sửa và trình duyệt sau.
+            </>
+          )}
         </div>
       </div>
 
@@ -2271,45 +2282,77 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
               </>
             ) : (
               // Can bo: Luu & Trinh duyet — chặn khi chưa chọn Người duyệt / Người ký
-              <button
-                onClick={() => {
-                  // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
-                  if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
-                  // Nhánh demo lỗi hệ thống khi gửi hồ sơ — không đẩy văn bản
-                  // vào kho, cán bộ có thể bấm "Thử lại".
-                  if (TRINH_DUYET_DEMO_FAIL) { setLoiTrinhDuyet(""); return; }
-                  // Đường ra của popup: đẩy văn bản vào kho dùng chung.
-                  // Trước kia chỗ này chỉ setDaTrinhDuyet(true) rồi hết —
-                  // popup là ngõ cụt, tạo xong không màn nào thấy.
-                  const goc = treeData[0];
-                  onTrinhDuyet?.({
-                    trichYeu: goc?.tenGoc ?? goc?.name ?? docType,
-                    loaiVanBan: docType,
-                    nguoiTao, nguoiDuyet, nguoiKy,
-                    // Thân văn bản và ý kiến trình là hai thứ khác nhau — trước
-                    // đây bị gộp làm một nên ý kiến bị hiểu nhầm thành nội dung.
-                    noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
-                    yKienTrinh: yKienDuyet.trim() || undefined,
-                    soVanBan: goc?.soVanBan,
-                    donDinhKem: (selectedRows ?? []).map((r: any) => ({
-                      ma: r?.maDon ?? String(r?.id ?? "—"),
-                      nguoiGui: r?.nguoiGui ?? "—",
-                      soBA: r?.thongTinDon?.soBaqd ?? "—",
-                      hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
-                    })),
-                  });
-                  setDaTrinhDuyet(true);
-                }}
-                disabled={thieuNguoiDuyetKy || khongCoVanBanHopLe}
-                title={khongCoVanBanHopLe
-                  ? "Không có văn bản hợp lệ để trình duyệt"
-                  : thieuLyDoYCBS
-                  ? "Vui lòng chọn Lý do yêu cầu bổ sung"
-                  : thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
-                className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
-                  thieuNguoiDuyetKy || khongCoVanBanHopLe ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
-                <Send size={15} /> Trình duyệt
-              </button>
+              <>
+                {/* Nút Lưu nháp chỉ xuất hiện cho các loại Tờ trình */}
+                {docType?.toLowerCase().includes("tờ trình") && (
+                  <button
+                    onClick={() => {
+                      if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
+                      const goc = treeData[0];
+                      onTrinhDuyet?.({
+                        trichYeu: goc?.tenGoc ?? goc?.name ?? docType,
+                        loaiVanBan: docType,
+                        nguoiTao, nguoiDuyet: "", nguoiKy: "", // Bỏ người duyệt/ký để lưu nháp
+                        noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
+                        yKienTrinh: yKienDuyet.trim() || undefined,
+                        soVanBan: goc?.soVanBan,
+                        donDinhKem: (selectedRows ?? []).map((r: any) => ({
+                          ma: r?.maDon ?? String(r?.id ?? "—"),
+                          nguoiGui: r?.nguoiGui ?? "—",
+                          soBA: r?.thongTinDon?.soBaqd ?? "—",
+                          hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
+                        })),
+                      });
+                      setDaTrinhDuyet(true); // Có thể hiện popup báo lưu nháp thành công
+                    }}
+                    disabled={khongCoVanBanHopLe}
+                    title={khongCoVanBanHopLe ? "Không có văn bản hợp lệ để lưu" : undefined}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
+                      khongCoVanBanHopLe ? "bg-[#1a5a96]/50 cursor-not-allowed" : "bg-[#1a5a96] hover:bg-[#154a7a]"}`}>
+                    <Save size={15} /> Lưu nháp
+                  </button>
+                )}
+                
+                <button
+                  onClick={() => {
+                    // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
+                    if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
+                    // Nhánh demo lỗi hệ thống khi gửi hồ sơ — không đẩy văn bản
+                    // vào kho, cán bộ có thể bấm "Thử lại".
+                    if (TRINH_DUYET_DEMO_FAIL) { setLoiTrinhDuyet(""); return; }
+                    // Đường ra của popup: đẩy văn bản vào kho dùng chung.
+                    // Trước kia chỗ này chỉ setDaTrinhDuyet(true) rồi hết —
+                    // popup là ngõ cụt, tạo xong không màn nào thấy.
+                    const goc = treeData[0];
+                    onTrinhDuyet?.({
+                      trichYeu: goc?.tenGoc ?? goc?.name ?? docType,
+                      loaiVanBan: docType,
+                      nguoiTao, nguoiDuyet, nguoiKy,
+                      // Thân văn bản và ý kiến trình là hai thứ khác nhau — trước
+                      // đây bị gộp làm một nên ý kiến bị hiểu nhầm thành nội dung.
+                      noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
+                      yKienTrinh: yKienDuyet.trim() || undefined,
+                      soVanBan: goc?.soVanBan,
+                      donDinhKem: (selectedRows ?? []).map((r: any) => ({
+                        ma: r?.maDon ?? String(r?.id ?? "—"),
+                        nguoiGui: r?.nguoiGui ?? "—",
+                        soBA: r?.thongTinDon?.soBaqd ?? "—",
+                        hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
+                      })),
+                    });
+                    setDaTrinhDuyet(true);
+                  }}
+                  disabled={thieuNguoiDuyetKy || khongCoVanBanHopLe}
+                  title={khongCoVanBanHopLe
+                    ? "Không có văn bản hợp lệ để trình duyệt"
+                    : thieuLyDoYCBS
+                    ? "Vui lòng chọn Lý do yêu cầu bổ sung"
+                    : thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
+                  className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
+                    thieuNguoiDuyetKy || khongCoVanBanHopLe ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
+                  <Send size={15} /> Trình duyệt
+                </button>
+              </>
             )}
           </div>
         </div>

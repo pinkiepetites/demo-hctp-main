@@ -1,109 +1,101 @@
-# KỊCH BẢN DEMO CHI TIẾT HỆ THỐNG QUẢN LÝ ĐƠN THƯ HCTP
-## Luồng Nghiệp Vụ Liên Thông Đầu Cuối (End-to-End Workflow) Trên Giao Diện Thực Tế
+# KỊCH BẢN DEMO CHI TIẾT HỆ THỐNG QUẢN LÝ ĐƠN HCTP
 
-Kịch bản demo dưới đây mô tả chi tiết từng bước thao tác trực quan trên giao diện phần mềm, đi theo một luồng nghiệp vụ duy nhất từ khâu cán bộ tiếp nhận hồ sơ, qua các cấp phê duyệt, đến bổ sung, chuyển quyền xử lý, ghép trùng và xử lý sai sót.
-
----
-
-### TÓM TẮT TIẾN TRÌNH LUỒNG DEMO (MỘT LUỒNG DUY NHẤT)
-Câu chuyện nghiệp vụ: Tiếp nhận và xử lý hồ sơ đơn đề nghị của đương sự **Trần Văn Bình** liên quan đến Bản án hình sự của Tòa án nhân dân tỉnh.
-- **Bước 1 (Vai trò: Cán bộ xử lý cũ)**: Tạo hồ sơ mới bằng PDF OCR ở trạng thái Chưa đủ điều kiện.
-- **Bước 2 (Vai trò: Cán bộ xử lý cũ)**: Lập Yêu cầu bổ sung tài liệu trình duyệt.
-- **Bước 3 (Vai trò: Trưởng phòng)**: Phê duyệt đề xuất yêu cầu bổ sung.
-- **Bước 4 (Vai trò: Phó / Chánh Văn phòng)**: Ký ban hành văn bản, hệ thống cấp số tự động.
-- **Bước 5 (Vai trò: Cán bộ xử lý cũ)**: Bổ sung tài liệu gốc và cập nhật trạng thái đơn thành Thụ lý mới.
-- **Bước 6 (Vai trò: Cán bộ xử lý cũ)**: Thực hiện Chuyển đơn (bàn giao đơn thư của Trần Văn Bình sang Cán bộ xử lý mới).
-- **Bước 7 (Vai trò: Cán bộ xử lý mới)**: Thực hiện Ghép đơn.
-- **Bước 8 (Vai trò: Cán bộ xử lý mới)**: Lập Tờ trình phân công Thẩm phán và Trình duyệt.
-- **Bước 9 (Vai trò: Trưởng phòng & Lãnh đạo)**: Phê duyệt và Ký ban hành tờ trình phân công.
-- **Bước 10 (Vai trò: Cán bộ xử lý mới)**: Thực hiện Hủy số thụ lý cấp nhầm để thu hồi số trong ngày.
+Kịch bản demo dưới đây được chia thành các luồng nghiệp vụ độc lập nhằm trình diễn đầy đủ các tính năng trọng tâm của hệ thống. Kịch bản ưu tiên đi từ luồng trơn tru nhất (Happy Case) để khách hàng thấy sự tiện lợi, sau đó mới đến các luồng xử lý ngoại lệ và tiện ích nâng cao. 
 
 ---
 
-### CHI TIẾT CÁC BƯỚC THAO TÁC TRÊN GIAO DIỆN
+## PHẦN 1: DỮ LIỆU CẦN CHUẨN BỊ TRƯỚC DEMO
 
-#### Bước 1: Tiếp nhận đơn thư mới
-- **Vai trò hiện tại**: Đăng nhập tài khoản cán bộ xử lý cũ. Vùng hiển thị vai trò ở góc dưới cùng bên trái của Sidebar hiển thị **Cán bộ** (`can-bo`).
-- **Thao tác trên giao diện**:
-  1. Tại Sidebar, chọn menu **Quản lý đơn** > **Danh sách đơn**.
-  2. Tại thanh công cụ phía trên bảng dữ liệu, nhấn nút **+ Thêm mới**.
-  3. Màn hình chuyển sang giao diện Thêm mới gồm 2 Panel. Tại Panel bên phải, nhấn nút **Tải lên file PDF** và chọn tệp đơn đề nghị của đương sự **Trần Văn Bình**.
-  4. Hệ thống chạy OCR, điền tự động tên người gửi là "Trần Văn Bình" vào form Panel bên trái.
-  5. Cán bộ chuyển sang tab **Xử lý đơn** (Tab 4) ở form bên trái, chọn trường **Trạng thái đơn** là "Đơn không đủ điều kiện", chọn **Lý do không đủ điều kiện** là "Thiếu bản án/quyết định".
-  6. Nhấn nút **Lưu** ở thanh tiêu đề trên cùng. Giao diện quay trở lại màn hình Danh sách đơn.
+**1. Chuẩn bị chung (Tài khoản & Trình duyệt):**
+- Mở sẵn 3-4 tab trình duyệt ẩn danh/cấu hình đăng nhập sẵn các vai trò:
+  - Tab 1: **Cán bộ 1** (Tiếp nhận đơn).
+  - Tab 2: **Cán bộ 2** (Nhận chuyển đơn & ghép đơn).
+  - Tab 3: **Trưởng phòng** (Duyệt văn bản).
+  - Tab 4: **Phó/Chánh Án** và **Phó/Chánh VP** (Ký duyệt văn bản).
 
-#### Bước 2: Lập Yêu cầu bổ sung tài liệu
-- **Vai trò hiện tại**: Cán bộ (`can-bo`).
-- **Thao tác trên giao diện**:
-  1. Tại Sidebar, chọn menu **Quản lý đơn** > **Danh sách đơn**. Nhấp chọn tab **Đơn của tôi**.
-  2. Nhập "Trần Văn Bình" vào ô **Từ khóa tìm kiếm chung** ở bộ lọc cơ bản để tìm nhanh dòng đơn vừa tạo.
-  3. Nhấn vào nút thao tác ba chấm ở cuối dòng đơn Trần Văn Bình, chọn **Tạo yêu cầu bổ sung**.
-  4. Giao diện mở ra Popup **Lưu số văn bản và trình duyệt**.
-  5. Tại Panel trái của Popup, chọn trường **Người duyệt** là "Trần Văn B - Trưởng phòng", chọn **Người ký** là "Hoàng Kim Long - CVP".
-  6. Tại cây danh mục văn bản đính kèm phía dưới, tích chọn biểu mẫu **Thông báo YCBS gửi đương sự**.
-  7. Tại ô nhập lý do bổ sung, tick chọn lý do "Thiếu bản án có hiệu lực pháp luật".
-  8. Quan sát nội dung dự thảo Văn bản A4 cập nhật tự động ở Panel xem trước bên phải. Nhấn nút **Trình duyệt**.
+**2. Dữ liệu chuẩn bị chi tiết theo từng luồng:**
 
-#### Bước 3: Trưởng phòng phê duyệt đề xuất
-- **Thao tác chuyển vai trò**: Click vào Khối tài khoản ở góc dưới cùng bên trái của Sidebar, chọn **Chuyển vai trò** > **Trưởng phòng** (`truong-phong`).
-- **Thao tác trên giao diện**:
-  1. Tại Sidebar, chọn menu **Công tác lãnh đạo** > **Phê duyệt đề xuất**.
-  2. Tìm kiếm dòng văn bản đề xuất có tên đương sự **Trần Văn Bình** ở trạng thái Chờ duyệt. Nhấn chọn dòng đó để mở chi tiết.
-  3. Kiểm tra nội dung văn bản và ý kiến trình của cán bộ. Nhấn nút **Phê duyệt**.
+* **Luồng 1 (Happy Case - Tiếp nhận & Phân công):**
+  - **Thông tin hồ sơ**: Chuẩn bị sẵn 1 bộ thông tin đương sự (Tên, Địa chỉ, Số bản án/Quyết định dân sự/hình sự hoàn chỉnh, Tội danh...).
+  - **Tài liệu đính kèm**: Cần 1 file PDF mẫu (Bản án/Quyết định) để biểu diễn trực quan tính năng xem trước tài liệu trên web.
 
-#### Bước 4: Lãnh đạo Văn phòng ký ban hành văn bản đi
-- **Thao tác chuyển vai trò**: Click vào Khối tài khoản ở góc dưới cùng bên trái, chọn **Chuyển vai trò** > **Phó / Chánh Văn phòng** (`pho-vp`).
-- **Thao tác trên giao diện**:
-  1. Tại Sidebar, chọn menu **Quản lý đơn** > **Danh sách văn bản**.
-  2. Tìm kiếm và nhấp chọn văn bản Thông báo yêu cầu bổ sung của đương sự **Trần Văn Bình** (đang có trạng thái Chờ ký).
-  3. Nhấn nút **Ký ban hành**.
-  4. Hệ thống hiển thị thông báo ký ban hành thành công và cập nhật số văn bản đi chính thức.
+* **Luồng 2 (Xử lý ngoại lệ - Yêu cầu bổ sung):**
+  - **Thông tin hồ sơ**: 1 đơn chưa đủ điều kiện. Đơn này có thể tạo trước hoặc **tạo mới trực tiếp trong lúc demo** (ví dụ đương sự Lê Văn C) để biểu diễn thao tác chọn "Không đủ điều kiện".
+  - **Tài liệu nộp bù**: Cần sẵn 1 file PDF mẫu để đóng vai trò là "Bản án đương sự nộp bổ sung" ở bước 2.2.
 
-#### Bước 5: Cập nhật tài liệu nộp bổ sung trực tiếp
-- **Thao tác chuyển vai trò**: Click vào Khối tài khoản ở góc dưới cùng bên trái, chọn **Chuyển vai trò** > **Cán bộ** (`can-bo`).
-- **Thao tác trên giao diện**:
-  1. Khi đương sự mang bản án hình sự gốc đến nộp, cán bộ mở màn hình **Danh sách đơn**, nhấn chọn tab **Chưa đủ điều kiện**.
-  2. Nhập từ khóa "Trần Văn Bình" để tìm kiếm nhanh đơn.
-  3. Nhấn nút ba chấm ở cuối dòng đơn, chọn **Bổ sung tài liệu**.
-  4. Popup hiện ra, nhập ngày bổ sung, chọn loại tài liệu và tải lên file quét bản án gốc. Nhấn nút **Thêm vào danh sách**.
-  5. Tại phần Kết quả giải quyết phía dưới popup, chọn **Đơn đủ điều kiện**. Tại ô **Thụ lý đơn** chọn "Thụ lý mới". Nhập Số thụ lý tạm thời. Nhấn nút **Lưu**.
-  6. Đơn biến mất khỏi tab Chưa đủ điều kiện và chuyển sang trạng thái Thụ lý mới ngoài danh sách.
+* **Luồng 3 (Chuyển đơn & Ghép đơn):**
+  - **Đơn mồi (Đơn gốc chờ ghép)**: Cần **tạo trước** trên hệ thống một đơn có tên đương sự trùng khớp với đương sự ở Luồng 2 (vd: Lê Văn C).
+  - **Điều kiện đơn mồi**: Trạng thái đơn phải là *Thụ lý mới* và đang được **phân công giải quyết cho Cán bộ 2**. (Mục đích: dùng làm đơn gốc để demo tính năng hệ thống tự động gộp đơn khi phát hiện trùng lặp).
 
-#### Bước 6: Thực hiện Chuyển quyền xử lý (Chuyển đơn)
-- **Thao tác trên giao diện**:
-  1. Tại màn hình **Danh sách đơn**, tìm dòng đơn của đương sự **Trần Văn Bình** vừa được thụ lý mới.
-  2. Nhấn nút ba chấm ở cuối dòng đơn Trần Văn Bình, chọn **Chuyển đơn**.
-  3. Giao diện mở ra Popup Chuyển đơn. Tại ô chọn cán bộ nhận, chọn tên cán bộ xử lý mới (ví dụ: cán bộ Trần Văn C). Nhập lý do chuyển đơn và nhấn nút **Xác nhận**.
-  4. Đơn biến mất khỏi danh sách quản lý của cán bộ cũ.
+---
 
-#### Bước 7: Tra cứu đơn trùng và Ghép đơn
-- **Thao tác giả định**: Cán bộ xử lý mới đăng nhập hệ thống, mở màn hình **Danh sách đơn** > **Đơn của tôi**.
-- **Thao tác trên giao diện**:
-  1. Tại ô **Từ khóa tìm kiếm chung**, cán bộ mới nhập số bản án của đương sự Trần Văn Bình vừa nhận bàn giao để kiểm tra.
-  2. Hệ thống hiển thị 2 dòng đơn có cùng số bản án (gồm 1 đơn trùng cũ đã có sẵn từ trước do cán bộ mới phụ trách và đơn mới vừa được chuyển giao).
-  3. Tích chọn vào checkbox đầu dòng của cả 2 đơn Trần Văn Bình.
-  4. Tại thanh công cụ phía trên bảng, nhấn nút **Ghép đơn**.
-  5. Trên popup xác nhận, chọn đơn trùng cũ làm Đơn chính, đơn mới nhận bàn giao làm Đơn kèm. Nhấn nút **Xác nhận ghép**.
-  6. Hệ thống liên kết 2 đơn thành một nhóm, đơn mới nhận bàn giao hiển thị nhãn "Đã ghép với [Mã đơn chính]".
+## PHẦN 2: CÁC LUỒNG DEMO CHI TIẾT
 
-#### Bước 8: Lập Tờ trình phân công Thẩm phán
-- **Thao tác trên giao diện**:
-  1. Tích chọn dòng đơn chính (đơn cũ của cán bộ mới) của Trần Văn Bình trên bảng danh sách đơn.
-  2. Nhấn nút **Lưu số văn bản và in báo cáo** trên thanh công cụ.
-  3. Trên popup hiện ra, chọn Loại văn bản là "Tờ trình phân công thẩm phán". Chọn Người duyệt và Người ký.
-  4. Tại Panel xem trước bên phải, nhấn nút **Sửa** trực tiếp trên văn bản tờ trình, tiến hành chỉ định Thẩm phán dự kiến phân công giải quyết, nhấn hoàn thành sửa.
-  5. Nhấn nút **Trình duyệt** để chuyển đề xuất lên phòng ban.
+### LUỒNG 1: HAPPY CASE - TIẾP NHẬN HỢP LỆ & PHÂN CÔNG THẨM PHÁN
+*(Bao gồm: Tiếp nhận đủ điều kiện -> Thụ lý mới -> Lập Tờ trình phân công -> Lãnh đạo duyệt/ký -> Tạo thông báo phân công)*
 
-#### Bước 9: Phê duyệt và Ban hành tờ trình phân công
-- **Thao tác trên giao diện**:
-  1. Chuyển vai trò sang **Trưởng phòng** (`truong-phong`), vào menu **Phê duyệt đề xuất** duyệt tờ trình phân công thẩm phán của đương sự Trần Văn Bình.
-  2. Chuyển vai trò sang **Phó / Chánh Văn phòng** (`pho-vp`), vào mục **Danh sách văn bản** mở tờ trình đã được phê duyệt và nhấn nút **Ký ban hành** để hoàn tất ban hành quyết định giải quyết thụ lý đơn.
+#### Bước 1.1: Tiếp nhận đơn đủ điều kiện
+- **Vai trò**: Cán bộ (`can-bo`).
+- **Trình tự thao tác**:
+  1. Vào **Quản lý đơn** > **Danh sách đơn** > Bấm nút **+ Thêm mới**.
+  2. Nhập thông tin đương sự (ví dụ: Nguyễn Văn A), đính kèm file PDF bản án ở cột bên phải.
+  3. Sang tab **Xử lý đơn**, phần Kết quả chọn "Đơn đủ điều kiện" > "Thụ lý mới". Nhập số thụ lý tạm (nếu cần). Nhấn nút **Lưu**.
 
-#### Bước 10: Hủy số thụ lý cấp sai
-- **Thao tác chuyển vai trò**: Chọn **Chuyển vai trò** > **Cán bộ** (`can-bo`).
-- **Thao tác trên giao diện**:
-  1. Phát hiện nhập sai số thụ lý tạm thời của đơn Trần Văn Bình trong ngày. Mở màn hình **Danh sách đơn** của cán bộ mới.
-  2. Tìm đơn của đương sự **Trần Văn Bình** (đang ở trạng thái Thụ lý mới).
-  3. Nhấn vào nút ba chấm ở cuối dòng, chọn **Hủy số thụ lý**.
-  4. Popup cảnh báo hiện ra, xác nhận thông tin và nhấn nút **Xác nhận**.
-  5. Số thụ lý bị xóa bỏ, đơn tự động cập nhật trạng thái thành "Không thụ lý" và ghi nhận lịch sử thao tác.
+#### Bước 1.2: Lập Tờ trình phân công Thẩm phán
+- **Vai trò**: Cán bộ (`can-bo`).
+- **Trình tự thao tác**:
+  1. Ở Danh sách đơn, tích chọn vào ô vuông trước đơn Nguyễn Văn A vừa thụ lý. Bấm nút **Lưu số văn bản...** (hoặc icon tạo văn bản) trên thanh công cụ.
+  2. Chọn loại văn bản là "Tờ trình phân công Thẩm phán". Chọn Người duyệt (Trưởng phòng) và Người ký (Lãnh đạo).
+  3. Ở panel xem trước bên phải, bấm nút **Sửa**, gõ tên Thẩm phán dự kiến vào văn bản > **Lưu** > Bấm **Trình duyệt**.
+
+#### Bước 1.3: Quy trình ký/duyệt của Lãnh đạo
+- **Vai trò**: Trưởng phòng & Lãnh đạo VP.
+- **Trình tự thao tác**:
+  1. Đổi sang tab trình duyệt của vai **Trưởng phòng** > Vào **Phê duyệt đề xuất** > Chọn tờ trình của Nguyễn Văn A > Chọn người duyệt tiếp > Bấm **Phê duyệt**.
+  2. Đổi sang tab trình duyệt của vai **Phó / Chánh Văn phòng** > Vào **Phê duyệt đề xuất**> Chọn người duyệt tiếp > Bấm **Phê duyệt**.
+  3. Đổi sang tab trình duyệt của vai **Phó / Chánh Án** > Vào **Phê duyệt đề xuất**> Bấm **Phê duyệt**.
+  4. Đổi sang tab trình duyệt của vai **Phó / Chánh Văn phòng** > Vào **Danh sách văn bản** > Mở Tờ trình > Bấm **Ký logic**.
+
+#### Bước 1.4: Tạo thông báo phân công Thẩm phán tự động (Tính năng nổi bật)
+- **Vai trò**: Cán bộ (`can-bo`).
+- **Trình tự thao tác**:
+  1. Chuyển lại vai trò **Cán bộ** > Vào **Danh sách văn bản** > Click mở chi tiết Tờ trình phân công vừa được lãnh đạo ký.
+  2. Cuộn xuống dưới cùng bên phải panel chi tiết, bấm nút **Tạo thông báo phân công**.
+  3. Cửa sổ "Lưu và trình ký" bật lên, Loại văn bản được điền sẵn là "Thông báo phân công TP" và danh sách Đơn liên quan đã có sẵn đơn Nguyễn Văn A. Bấm **Lưu nháp** hoặc **Trình duyệt**. Sau đó thực hiện luồng ký số như 1.3
+
+---
+
+### LUỒNG 2: XỬ LÝ NGOẠI LỆ - ĐƠN KHÔNG HỢP LỆ
+*(Bao gồm: Tiếp nhận thiếu hồ sơ -> Tạo YCBS -> Lãnh đạo ký -> Bổ sung tài liệu)*
+
+#### Bước 2.1: Tiếp nhận đơn thiếu tài liệu & Tạo Yêu cầu bổ sung
+- **Vai trò**: Cán bộ (`can-bo`).
+- **Trình tự thao tác**:
+  1. Thêm mới 1 đơn (ví dụ: Lê Văn C), sang tab **Xử lý đơn** chọn "Đơn không đủ điều kiện", lý do "Thiếu bản án" > **Lưu**.
+  2. Ở Danh sách đơn, bấm nút ba chấm ở dòng đơn Lê Văn C > Chọn **Tạo yêu cầu bổ sung**.
+  3. Chọn người duyệt/ký, tick biểu mẫu "Thông báo YCBS gửi đương sự" & tick lý do. Bấm **Trình duyệt**.
+
+#### Bước 2.2: Lãnh đạo ký YCBS và Cán bộ bổ sung tài liệu
+- **Vai trò**: Lãnh đạo (Duyệt/Ký) -> Cán bộ (Bổ sung).
+- **Trình tự thao tác**:
+  1. (Thao tác nhanh) Trưởng phòng duyệt, Lãnh đạo VP ký YCBS.
+  2. Về lại tab **Cán bộ** > Vào **Danh sách đơn** > tab **Chưa đủ điều kiện** > Nút ba chấm ở đơn Lê Văn C > **Bổ sung tài liệu**.
+  3. Tải file bản án lên. Kéo xuống phần Kết quả, chọn "Đơn đủ điều kiện" > "Thụ lý mới" > **Lưu**.
+
+---
+
+### LUỒNG 3: LUÂN CHUYỂN VÀ XỬ LÝ TRÙNG LẶP
+*(Bao gồm: Chuyển đơn -> Ghép đơn)*
+
+#### Bước 3.1: Quy trình chuyển đơn
+- **Vai trò**: Cán bộ 1.
+- **Trình tự thao tác**:
+  1. Tại Danh sách đơn, bấm nút ba chấm cuối dòng đơn Lê Văn C vừa thụ lý xong > **Chuyển đơn**.
+  2. Chọn người nhận là Cán bộ 2, nhập lý do "Phân công lại" > **Xác nhận**.
+
+#### Bước 3.2: Quy trình ghép đơn
+- **Vai trò**: Cán bộ 2.
+- **Trình tự thao tác**:
+  1. Đổi sang tab trình duyệt của **Cán bộ 2** > Vào **Danh sách đơn**.
+  2. Tích chọn vào ô vuông trước đơn Lê Văn C (vừa chuyển tới) và Đơn B1 (đơn mồi đã chuẩn bị từ trước). Bấm nút **Ghép đơn** hình mắt xích ở thanh công cụ phía trên.
+  3. Cửa sổ hiện ra, tích chọn radio button tại Đơn B1 để làm đơn chính > Bấm **Xác nhận ghép**.
