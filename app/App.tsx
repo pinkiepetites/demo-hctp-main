@@ -12,6 +12,7 @@ import Dashboard from "./Dashboard";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import SoSanhLoaiAnChiTiet, { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import TiepNhanDonLienThong from "./components/TiepNhanDonLienThong";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
@@ -1827,7 +1828,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
   const coQuyenPheDuyet = currentRole === "truong-phong" || currentRole === "pho-vp"
     || currentRole === "lanh-dao" || currentRole === "chanh-an";
   const [quanLyDonOpen, setQuanLyDonOpen] = useState(true);
-  const [tichHopOpen, setTichHopOpen] = useState(false);
+
   const [quanLyAnOpen, setQuanLyAnOpen] = useState(true);
   const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
 
@@ -1891,6 +1892,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
             open={quanLyDonOpen} onToggle={() => setQuanLyDonOpen(!quanLyDonOpen)} />
           {quanLyDonOpen && (
             <div className="pb-1">
+              <SubItem icon={<RefreshCw size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "tiep_nhan_lien_thong"} nav="tiep_nhan_lien_thong" />
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
               {/* Đặt ngay dưới Danh sách đơn vì văn bản sinh ra từ chính màn đó —
                   cán bộ tạo tờ trình ở trên, theo dõi tiến độ ở đây. */}
@@ -1942,11 +1944,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
           <span>Cấu hình chung</span>
         </div>
 
-        {/* Tích hợp - Đồng bộ */}
-        <div>
-          <GroupItem icon={<RefreshCw size={15} />} label="Tích hợp - Đồng bộ"
-            open={tichHopOpen} onToggle={() => setTichHopOpen(!tichHopOpen)} />
-        </div>
+
       </nav>
 
       {/* Tài khoản đang đăng nhập — ghim đáy sidebar */}
@@ -4661,6 +4659,8 @@ interface DanhSachDonRow {
   // Mã đơn bên màn Nhận đơn và TL vụ án — có giá trị nghĩa là đơn đang ở
   // tab "Chờ ý kiến LĐ", cột Thông tin giải quyết lấy theo kết luận của LĐ
   choYKienLD?: string;
+  donViChuyenDen?: string;
+  caNhanChuyenDen?: string;
 }
 
 // Ngày sinh cán bộ nhập. Chỉ đem ra hiển thị khi trong danh sách có từ 2 cán bộ
@@ -7488,6 +7488,57 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
   const OFFICERS = ["Nguyễn Văn An", "Trần Thị Bình", "Lê Thị Hà", "Phạm Văn Đức", "Hoàng Thị Thu"];
   const [rows, setRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      try {
+        const pkgStr = localStorage.getItem('assigned_gdt_package');
+        if (pkgStr) {
+          const pkg = JSON.parse(pkgStr);
+          localStorage.removeItem('assigned_gdt_package');
+          // Add to rows if it doesn't exist
+          setRows(prev => {
+            if (prev.find(r => r.maDon === pkg.packageId)) return prev;
+            return [{
+              id: Date.now(),
+              maDon: pkg.packageId,
+              nguoiGui: pkg.applicant || "Trần Quang Sang",
+              diaChi: "Hải Phòng",
+              loaiHinhThuc: pkg.applicationKind || "Đơn đề nghị GĐT-TT",
+              loaiHinhThucColor: "#1d4ed8",
+              thongTinDon: {
+                soBaqd: "BA_GDT_001",
+                ngay: pkg.documentDate || "14/08/2026",
+                toaXetXu: "TAND Cấp cao",
+                thuTuc: pkg.procedure || "Giám đốc thẩm",
+                hinhThuc: pkg.applicationKind || "Đơn đề nghị GĐT-TT",
+                soCV: pkg.documentNumber || "",
+                ngayCV: pkg.documentDate || "",
+                loaiCV: pkg.applicationKind || "",
+                donViGui: pkg.sender || "",
+                thamPhan: "",
+                donViGiaiQuyet: ""
+              },
+              giaiQuyet: {
+                nhan: "Chờ phân công",
+                color: "#f57f17",
+                stl: "",
+                coVanBan: false
+              },
+              nguoiNhap: pkg.officer || "Nguyễn Thị Mỹ Dung",
+              ngayNhap: pkg.arrivalAt ? pkg.arrivalAt.split(' ')[0] : "15/08/2026",
+              gioNhap: pkg.arrivalAt ? pkg.arrivalAt.split(' ')[1] : "09:15",
+              trangThai: 'Chờ phân công',
+              nguoiXuLy: pkg.businessOfficer,
+              cuaToi: true
+            }, ...prev];
+          });
+        }
+      } catch (e) {}
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
 
   // Mã đơn → mô tả văn bản đang chứa nó. Đưa thẳng vào hệ thống "đơn không hợp lệ"
   // của popup lấy số thay vì dựng một cảnh báo song song với con số riêng.
@@ -12447,10 +12498,6 @@ export default function App() {
   // Nếu URL có #don=... thì tab này mở thẳng màn đơn (giống Thêm mới) với dữ
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
-  // Kỳ lọc đang chọn ở Trang chủ lúc bấm "Chi tiết" — mở màn So sánh loại án
-  // với đúng kỳ đó thay vì luôn mặc định "Tuần này".
-  const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("week");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
@@ -13058,9 +13105,11 @@ export default function App() {
                   ? "Danh sách biểu mẫu đơn"
                   : view === "wordeditor"
                     ? "Chỉnh sửa biểu mẫu"
-                    : editingRow
-                      ? `Sửa đơn ${editingRow.maDon}`
-                      : "Thêm mới Đơn đề nghị GĐT/TT"}
+                    : view === "tiep_nhan_lien_thong"
+                      ? "Tiếp nhận đơn liên thông"
+                      : editingRow
+                        ? `Sửa đơn ${editingRow.maDon}`
+                        : "Thêm mới Đơn đề nghị GĐT/TT"}
         </span>
         <div className="ml-auto flex items-center gap-4">
           <div className="relative">
@@ -13166,6 +13215,12 @@ export default function App() {
                           <ChevronRight size={12} />
                           <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                         </>
+                        : view === "tiep_nhan_lien_thong"
+                          ? <>
+                            <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                            <ChevronRight size={12} />
+                            <span className="text-[#333]">Tiếp nhận đơn liên thông</span>
+                          </>
                         : view === "phancong"
                           ? <span className="text-[#333]">Phân công thẩm phán</span>
                           : view === "phe_duyet"
@@ -13302,6 +13357,13 @@ export default function App() {
           {view === "wordeditor" && (
             <div className="flex-1 overflow-y-auto">
               <WordEditor onBack={() => setView("list")} />
+            </div>
+          )}
+
+          {/* Tiếp nhận đơn liên thông view */}
+          {view === "tiep_nhan_lien_thong" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <TiepNhanDonLienThong />
             </div>
           )}
 
