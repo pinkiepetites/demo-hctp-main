@@ -28,7 +28,7 @@ import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
-  Inbox, FilePlus
+  Inbox,
 } from "lucide-react";
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
@@ -1245,13 +1245,11 @@ export const TienTrinhGon = ({ vb }: { vb: VanBanTrinh }) => {
 };
 
 // ─── Panel chi tiết — dùng chung cho mọi màn ─────────────────────────────────
-export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onCapNhat, onClose, onTaoThongBaoPhanCong }: {
+export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
   vb: VanBanTrinh; nguoiDung: string; chucVu: string;
   danhSach: VanBanTrinh[];
-  setDanhSach?: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   onCapNhat: (vbMoi: VanBanTrinh) => void;
   onClose: () => void;
-  onTaoThongBaoPhanCong?: (donList: any[]) => void;
 }) => {
   const [tab, setTab] = useState<"noidung" | "dinhkem" | "lichsu" | "banin">(
     vb.trangThai === "BiTraLai" ? "lichsu" : "noidung");
@@ -1273,42 +1271,6 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
   const hanhDong = () => {
     if (daKhoa) return (
       <>
-        {vb.trangThai === "DaBanHanh" && vb.loaiVanBan.includes("Tờ trình phân công") && setDanhSach && (
-          <BtnPrimary onClick={() => {
-            if (onTaoThongBaoPhanCong) {
-              const donList = vb.donDinhKem.map(d => ({
-                maDon: d.ma,
-                nguoiGui: d.nguoiGui,
-                thongTinDon: {
-                  soBaqd: d.soBA,
-                  hinhThuc: d.hinhThuc
-                }
-              }));
-              onTaoThongBaoPhanCong(donList);
-              onClose();
-              return;
-            }
-            const moi: VanBanTrinh = {
-              id: `TBPC-${Date.now()}`,
-              trichYeu: `Thông báo phân công Thẩm phán giải quyết các đơn theo Tờ trình số ${vb.soVanBan || "Chưa có"}`,
-              loaiVanBan: "Thông báo phân công TP",
-              donViSoanThao: vb.donViSoanThao,
-              trangThai: "Nhap",
-              nguoiTao: nguoiDung,
-              luongKy: [],
-              buocHienTai: 0,
-              vongTrinh: 1,
-              phienBanHienTai: 1,
-              phienBan: [{ so: 1, thoiGian: bayGio(), nguoiSua: nguoiDung, noiDung: "Nội dung Thông báo phân công Thẩm phán" }],
-              lichSu: [{ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiDung, chucVu: chucVu || "Cán bộ", hanhDong: "Tao" }],
-              donDinhKem: [...vb.donDinhKem]
-            };
-            setDanhSach(ds => [moi, ...ds]);
-            onClose();
-          }}>
-            <FilePlus size={13} /> Tạo thông báo phân công
-          </BtnPrimary>
-        )}
         <BtnNeutral onClick={onClose}><Download size={13} /> Kết xuất</BtnNeutral>
         <BtnPrimary onClick={onClose}><Printer size={13} /> In</BtnPrimary>
       </>
@@ -1564,7 +1526,7 @@ const CotThaoTac = ({ vb, nguoiDung, onMo }: { vb: VanBanTrinh; nguoiDung: strin
 // ─── Màn "Danh sách văn bản" ──────────────────────────────────────────
 export type TabDS = "all" | "Nhap" | "ChoDuyet" | "ChoKy" | "BiTraLai" | "DaBanHanh";
 
-export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, initialTab = "all", onTaoThongBaoPhanCong }: {
+export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, initialTab = "all" }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
@@ -1577,7 +1539,6 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   locMaDon?: string | null;
   /** Tab mở sẵn khi vào màn — dùng khi điều hướng từ Trang chủ (card "Đơn của tôi"). */
   initialTab?: TabDS;
-  onTaoThongBaoPhanCong?: (donList: any[]) => void;
 }) => {
   const [tab, setTab] = useState<TabDS>(initialTab);
   const [tim, setTim] = useState("");
@@ -1711,12 +1672,10 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
             <thead className="bg-[#f5f5f5] text-[#333] border-b border-[#e0e0e0]">
               <tr>
                 <th className="px-3 py-2 font-semibold w-[44px]">STT</th>
-                <th className="px-3 py-2 font-semibold w-[155px]">Số / Ký hiệu</th>
+                <th className="px-3 py-2 font-semibold w-[175px]">Số / Ký hiệu</th>
                 <th className="px-3 py-2 font-semibold">Trích yếu</th>
-                <th className="px-3 py-2 font-semibold w-[105px] text-center">Số lượng đơn</th>
-                <th className="px-3 py-2 font-semibold w-[110px]">Ngày tạo</th>
                 <th className="px-3 py-2 font-semibold w-[155px]">Đang ở ai</th>
-                <th className="px-3 py-2 font-semibold w-[200px]">Trạng thái</th>
+                <th className="px-3 py-2 font-semibold w-[250px]">Trạng thái</th>
                 <th className="px-3 py-2 font-semibold w-[86px] text-center">Thao tác</th>
               </tr>
             </thead>
@@ -1740,19 +1699,9 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                       <div className="leading-relaxed">{v.trichYeu}</div>
                       <div className="text-[11px] text-[#666] mt-[3px]">
                         {v.loaiVanBan}
+                        {v.donDinhKem.length > 0 && ` · ${v.donDinhKem.length} đơn`}
                         {v.vongTrinh > 1 && ` · Vòng ${v.vongTrinh}`}
                         {moiTao && <span className="text-[#b45309] font-medium"> · Vừa tạo</span>}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 align-top text-center">
-                      <span className="inline-block px-2 py-0.5 bg-[#f0f0f0] border border-[#e0e0e0] text-[#333] font-medium rounded-full text-[12px]">
-                        {v.donDinhKem.length}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 align-top text-[#444]">
-                      <div>{v.lichSu[0]?.thoiGian.split(' ')[1] || v.lichSu[0]?.thoiGian}</div>
-                      <div className="text-[11px] text-[#888] mt-[3px]">
-                        {v.lichSu[0]?.thoiGian.split(' ')[0]}
                       </div>
                     </td>
                     <td className="px-3 py-2 align-top">
@@ -1780,7 +1729,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                 );
               })}
               {loc.length === 0 && (
-                <tr><td colSpan={8} className="py-14 text-center">
+                <tr><td colSpan={6} className="py-14 text-center">
                   <FileText size={26} className="mx-auto mb-2.5 text-[#ccc]" />
                   <div className="text-[12px] text-[#666]">{rong().m}</div>
                   {(rong() as any).phu && <div className="text-[11px] text-[#888] mt-1.5">{(rong() as any).phu}</div>}
@@ -1801,8 +1750,8 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
       </div>
 
       {chon && (
-        <PanelChiTiet vb={chon} nguoiDung={nguoiDung} chucVu={chucVu} danhSach={danhSach} setDanhSach={setDanhSach}
-          onCapNhat={capNhat} onClose={() => setChonId(null)} onTaoThongBaoPhanCong={onTaoThongBaoPhanCong} />
+        <PanelChiTiet vb={chon} nguoiDung={nguoiDung} chucVu={chucVu} danhSach={danhSach}
+          onCapNhat={capNhat} onClose={() => setChonId(null)} />
       )}
     </div>
   );
