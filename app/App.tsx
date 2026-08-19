@@ -12,7 +12,6 @@ import Dashboard from "./Dashboard";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import SoSanhLoaiAnChiTiet, { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
-import TiepNhanDonLienThong from "./components/TiepNhanDonLienThong";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
@@ -1908,7 +1907,6 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
           {quanLyDonOpen && (
             <div className="pb-1">
               <SubItem icon={<Inbox size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "lienthong"} nav="lienthong" />
-              <SubItem icon={<RefreshCw size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "tiep_nhan_lien_thong"} nav="tiep_nhan_lien_thong" />
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
               {/* Đặt ngay dưới Danh sách đơn vì văn bản sinh ra từ chính màn đó —
                   cán bộ tạo tờ trình ở trên, theo dõi tiến độ ở đây. */}
@@ -13163,7 +13161,7 @@ export default function App() {
   const [isLienThongMode, setIsLienThongMode] = useState(false);
   const [activeDonLienThong, setActiveDonLienThong] = useState<DonTiepNhan | null>(null);
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "tiep_nhan_lien_thong" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
   const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
@@ -13792,10 +13790,8 @@ export default function App() {
                   ? "Danh sách biểu mẫu đơn"
                   : view === "wordeditor"
                     ? "Chỉnh sửa biểu mẫu"
-                    : view === "tiep_nhan_lien_thong"
-                      ? "Tiếp nhận đơn liên thông"
-                      : editingRow
-                        ? `Sửa đơn ${editingRow.maDon}`
+                    : editingRow
+                      ? `Sửa đơn ${editingRow.maDon}`
                         : "Thêm mới Đơn đề nghị GĐT/TT"}
         </span>
         <div className="ml-auto flex items-center gap-4">
@@ -13902,13 +13898,7 @@ export default function App() {
                           <ChevronRight size={12} />
                           <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                         </>
-                        : view === "tiep_nhan_lien_thong"
-                          ? <>
-                            <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
-                            <ChevronRight size={12} />
-                            <span className="text-[#333]">Tiếp nhận đơn liên thông</span>
-                          </>
-                          : view === "phancong"
+                        : view === "phancong"
                             ? <span className="text-[#333]">Phân công thẩm phán</span>
                             : view === "phe_duyet"
                               ? <>
@@ -14095,13 +14085,6 @@ export default function App() {
           {view === "wordeditor" && (
             <div className="flex-1 overflow-y-auto">
               <WordEditor onBack={() => setView("list")} />
-            </div>
-          )}
-
-          {/* Tiếp nhận đơn liên thông view */}
-          {view === "tiep_nhan_lien_thong" && (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <TiepNhanDonLienThong />
             </div>
           )}
 
