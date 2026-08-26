@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Search, ChevronDown, Check, ArrowRight, UserPlus, FolderOpen, ArrowDownToLine, MoreHorizontal, Inbox, List, RefreshCw, X, ChevronRight, Share2, CornerUpLeft, Plus, Download, ChevronLeft, Eye, MessageSquare, AlertCircle, FileText, CheckCircle2, FileUp, Send, Loader2, ArrowRightCircle } from "lucide-react";
+import { Search, ChevronDown, Check, ArrowRight, UserPlus, FolderOpen, ArrowDownToLine, MoreHorizontal, Inbox, List, RefreshCw, X, ChevronRight, Share2, CornerUpLeft, Plus, Download, ChevronLeft, Eye, MessageSquare, AlertCircle, FileText, CheckCircle2, FileUp, Send, Loader2, ArrowRightCircle, RotateCcw } from "lucide-react";
 type DonNguon = "VBDH" | "DVTT" | "DVC" | "BuuDien" | "TrucTiep";
 import { Select } from "./ui/select";
 import { Button } from "./ui/button";
@@ -118,7 +118,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
     return acc;
   }, {} as Record<string, number>);
   const [search, setSearch] = useState("");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -462,48 +462,43 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
         ))}
       </div>
 
-      {/* Search bar */}
+      {/* Bộ lọc & Tìm kiếm */}
       <div className="px-4 py-2.5 border-b border-[#eee] bg-[#fafafa]">
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 max-w-[420px]">
-            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#aaa]" />
-            <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Tìm theo số đến, mã đơn, người làm đơn..."
-              className="w-full h-[30px] pl-7 pr-2 text-[12px] border border-[#ddd] rounded-[3px] focus:outline-none focus:border-[#8b1a1a]" />
-          </div>
-          <button onClick={() => setShowAdvanced(v => !v)}
-            className={`h-[30px] px-3 border rounded-[3px] text-[11.5px] transition-colors ${showAdvanced ? "border-[#8b1a1a] text-[#8b1a1a] bg-[#fdeaea]" : "border-[#ddd] text-[#555] bg-white hover:bg-[#f5f5f5]"}`}>
-            Nâng cao
-          </button>
-          <button className="h-[30px] px-3 bg-[#8b1a1a] text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] transition-colors">
-            Tìm kiếm
-          </button>
-          <button onClick={() => { setSearch(""); resetAdvanced(); }}
-            className="h-[30px] px-3 border border-[#ddd] bg-white text-[#555] rounded-[3px] text-[11.5px] hover:bg-[#f5f5f5] transition-colors">
-            Đặt lại
-          </button>
+        <div className="grid gap-x-3 gap-y-2.5 mb-3" style={{ gridTemplateColumns: 'repeat(6, minmax(0, 1fr))' }}>
+          {[
+            { label: "Từ khóa tìm kiếm chung", el: <input value={search} onChange={e => setSearch(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" placeholder="Số đến, mã đơn..." />, advanced: false },
+            { label: "Nguồn tiếp nhận", el: <select value={fNguon} onChange={e => setFNguon(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white"><option value="">Tất cả</option><option value="VBDH">Hệ thống văn bản điều hành</option><option value="DVTT">Cổng dịch vụ tư pháp</option><option value="DVC">Cổng DVC Quốc gia</option><option value="BuuDien">Đường bưu điện</option><option value="TrucTiep">Nộp trực tiếp</option></select>, advanced: true },
+            { label: "Hình thức đơn", el: <select value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white"><option value="">Tất cả</option><optgroup label="— Đơn"><option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option><option value="Đơn khiếu nại tố cáo trong tố tụng">2. Đơn khiếu nại tố cáo trong tố tụng</option><option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option><option value="Đơn khác">4. Đơn khác</option></optgroup><optgroup label="— Công văn"><option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option><option value="CV chuyển đơn">2. CV chuyển đơn</option><option value="CV chuyển kiến nghị GĐT-TT">3. CV chuyển kiến nghị GĐT-TT</option><option value="CV khác">4. CV khác</option></optgroup><optgroup label="— Tài liệu"><option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option></optgroup></select>, advanced: true },
+            { label: "Loại án", el: <select value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white"><option value="">Tất cả</option><option>Hành chính</option><option>Dân sự</option><option>Hình sự</option><option>Lao động</option><option>Kinh doanh thương mại</option></select>, advanced: true },
+            { label: "Trạng thái", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white"><option value="">Tất cả</option><option value="cho-phan-cong">Chờ phân công</option><option value="da-phan-cong">Đã phân công</option><option value="cho-xu-ly">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select>, advanced: true },
+            { label: "Cán bộ tiếp nhận", el: <select value={fCanBo} onChange={e => setFCanBo(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white"><option value="">Tất cả</option>{CAN_BO_LIST_LT.map(cb => <option key={cb} value={cb}>{cb}</option>)}</select>, advanced: true },
+            { label: "Người đứng đơn", el: <input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" placeholder="Nhập tên..." />, advanced: true },
+            { label: "Ngày tiếp nhận từ", el: <input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" />, advanced: true },
+            { label: "Đến ngày", el: <input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" />, advanced: true },
+          ].filter(item => !item.advanced || showAdvanced).map(({ label, el }) => (
+            <div key={label} className="min-w-0 overflow-hidden" style={{ gridColumn: (!showAdvanced && label === "Từ khóa tìm kiếm chung") ? 'span 2' : 'span 1' }}>
+              <div className="text-[11px] font-semibold text-[#1a5a96] mb-0.5 truncate">{label}</div>
+              {el}
+            </div>
+          ))}
         </div>
 
-        {/* Advanced filter */}
-        {showAdvanced && (
-          <div className="mt-2.5 grid grid-cols-4 gap-2.5">
-            {[
-              { label: "Nguồn tiếp nhận", el: <select value={fNguon} onChange={e => setFNguon(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]"><option value="">Tất cả</option><option>VBDH</option><option>DVTT</option><option>DVC</option></select> },
-              { label: "Người đứng đơn", el: <input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]" placeholder="Nhập tên..." /> },
-              { label: "Ngày tiếp nhận từ", el: <input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]" /> },
-              { label: "Đến ngày", el: <input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]" /> },
-              { label: "Hình thức đơn", el: <select value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]"><option value="">Tất cả</option><optgroup label="— Đơn"><option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option><option value="Đơn khiếu nại tố cáo trong tố tụng">2. Đơn khiếu nại tố cáo trong tố tụng</option><option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option><option value="Đơn khác">4. Đơn khác</option></optgroup><optgroup label="— Công văn"><option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option><option value="CV chuyển đơn">2. CV chuyển đơn</option><option value="CV chuyển kiến nghị GĐT-TT">3. CV chuyển kiến nghị GĐT-TT</option><option value="CV khác">4. CV khác</option></optgroup><optgroup label="— Tài liệu"><option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option></optgroup></select> },
-              { label: "Loại án", el: <select value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]"><option value="">Tất cả</option><option>Hành chính</option><option>Dân sự</option><option>Hình sự</option><option>Lao động</option><option>Kinh doanh thương mại</option></select> },
-              { label: "Cán bộ tiếp nhận", el: <select value={fCanBo} onChange={e => setFCanBo(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]"><option value="">Tất cả</option>{CAN_BO_LIST_LT.map(cb => <option key={cb} value={cb}>{cb}</option>)}</select> },
-              { label: "Trạng thái", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[28px] px-2 border border-[#ddd] rounded-[3px] text-[11.5px] focus:outline-none focus:border-[#8b1a1a]"><option value="">Tất cả</option><option value="cho-phan-cong">Chờ phân công</option><option value="da-phan-cong">Đã phân công</option><option value="cho-xu-ly">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select> },
-            ].map(({ label, el }) => (
-              <div key={label}>
-                <div className="text-[10px] text-[#888] mb-0.5">{label}</div>
-                {el}
-              </div>
-            ))}
+        <div className="flex items-center justify-between">
+          <button onClick={() => setShowAdvanced(v => !v)}
+            className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline">
+            <ChevronDown size={13} className={`transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
+            {showAdvanced ? "Thu gọn" : "Mở rộng"}
+          </button>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-1.5 h-[32px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+              <Search size={13} /> Tìm kiếm
+            </button>
+            <button onClick={() => { setSearch(""); resetAdvanced(); }}
+              className="flex items-center gap-1.5 h-[32px] px-4 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[12px] text-[#555] transition-colors">
+              <RotateCcw size={13} /> Xóa bộ lọc
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
             {isTruongPhong && (activeTab === "cho-phan-cong" || activeTab === "da-phan-cong") && (
