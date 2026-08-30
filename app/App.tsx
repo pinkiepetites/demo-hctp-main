@@ -91,7 +91,7 @@ export const triggerNoti = (text: string) => {
 };
 
 // ─── Ý kiến Lãnh đạo — dùng chung giữa Danh sách đơn và Nhận đơn & TL vụ án ──
-// Đơn nằm trong tab "Chờ ý kiến LĐ" hiển thị ở Danh sách đơn với trạng thái
+// Đơn nằm trong tab "Đơn chờ phê duyệt" hiển thị ở Danh sách đơn với trạng thái
 // "Chờ ý kiến Lãnh đạo"; khi Lãnh đạo kết luận thì đổi sang Thụ lý mới /
 // Không thụ lý. Hai màn nằm ở hai view khác nhau nên trạng thái để ở ngoài
 // component, đăng ký lại bằng useSyncExternalStore để cả hai cùng cập nhật.
@@ -4684,7 +4684,7 @@ interface DanhSachDonRow {
   quaHanNam?: number;
   thoiHieu?: ThoiHieuKey;         // nhãn thời hiệu giải quyết hiện dưới thông tin người gửi
   // Mã đơn bên màn Nhận đơn và TL vụ án — có giá trị nghĩa là đơn đang ở
-  // tab "Chờ ý kiến LĐ", cột Thông tin giải quyết lấy theo kết luận của LĐ
+  // tab "Đơn chờ phê duyệt", cột Thông tin giải quyết lấy theo kết luận của LĐ
   choYKienLD?: string;
 }
 
@@ -5266,7 +5266,7 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
     thoiHieu: "qua-5-nam",
     nguoiNhap: "Nguyễn Thị Lan", ngayNhap: "10/10/2022", gioNhap: "14:35:00",
   },
-  // ── 3 đơn đang ở tab "Chờ ý kiến LĐ" (màn Nhận đơn và TL vụ án) ──
+  // ── 3 đơn đang ở tab "Đơn chờ phê duyệt" (màn Nhận đơn và TL vụ án) ──
   // Cột Thông tin giải quyết của các đơn này lấy theo kết luận của Lãnh đạo,
   // giá trị trong giaiQuyet.nhan chỉ là trạng thái ban đầu.
   {
@@ -5926,6 +5926,7 @@ const NHAN_MAU: Record<string, string> = {
   "Án tử hình": "bg-[#c0392b] text-white border-[#a5281c]",
   "Án QH": "bg-[#eef3fb] text-[#2c5aa0] border-[#c3d5ef]",
   "Trong hạn 1 năm": "bg-[#e8f5e9] text-[#1b5e20] border-[#a5d6a7]",
+  "Cảnh báo án hết thời hiệu": "bg-[#c0392b] text-white border-[#a5281c]",
 };
 const nhanMau = (n: string) => NHAN_MAU[n] ?? "bg-[#fdecea] text-[#c0392b] border-[#f3c0bb]";
 
@@ -5946,7 +5947,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 1, maDon: "4984", ...DON_4984, ndd: "Võ Hoài Trâm",
       toaBA: "Tòa án nhân dân khu vực 7 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Quá TH 5 năm"],
+      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Cảnh báo án hết thời hiệu"],
       maVuAn: "VA26-002012", ttv: "Nguyễn Văn A",
       tenVuAn: "Vụ án ĐẶNG THIÊN DƯƠNG - Tội cố ý gây thương tích hoặc gây hại cho sức khoẻ người khác"
     },
@@ -5959,7 +5960,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 3, maDon: "4984", ...DON_4984, cvChuyen: undefined, thuLyMoi: undefined, daThuLy: true,
       ndd: "Võ Hoài Trâm", toaBA: "Tòa án nhân dân khu vực 5 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Quá TH 3 năm"]
+      nhan: ["Án chỉ đạo", "Án tử hình", "Cảnh báo án hết thời hiệu"]
     },
     {
       id: 4, maDon: "4956", cvChuyen: "18 - 05/06/2026", thuLyMoi: "2329180", thamPhan: "Đỗ Tất Thống",
@@ -5977,12 +5978,12 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     },
   ],
 
-  // ── Chờ ý kiến LĐ: cột 5 là Ý kiến lãnh đạo ──
-  "Chờ ý kiến LĐ": [
+  // ── Đơn chờ phê duyệt: cột 5 là Ý kiến lãnh đạo ──
+  "Đơn chờ phê duyệt": [
     {
       id: 1, maDon: "4984", ...DON_4984, ndd: "Võ Hoài Trâm",
       toaBA: "Tòa án nhân dân khu vực 7 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Quá TH 5 năm"],
+      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Cảnh báo án hết thời hiệu"],
       yKien: [
         { ketQua: "Không thụ lý", nguoi: "Nguyễn Thị Bình", chucVu: "Vụ trưởng", ngayDuyet: "10/07/2026" },
         { ketQua: "Không thụ lý", nguoi: "Nguyễn Văn Tiến", chucVu: "Phó CA", ngayDuyet: "10/07/2026" },
@@ -6011,7 +6012,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 1, maDon: "4984", ...DON_4984, thamPhanDuKien: true, ndd: "Võ Hoài Trâm",
       toaBA: "Tòa án nhân dân khu vực 7 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Quá TH 5 năm"],
+      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Cảnh báo án hết thời hiệu"],
       maVuAn: "VA26-002012", ttv: "Nguyễn Văn A", moVuAn: true,
       tenVuAn: "Vụ án ĐẶNG THIÊN DƯƠNG - Tội cố ý gây thương tích hoặc gây hại cho sức khoẻ người khác"
     },
@@ -6024,7 +6025,7 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 3, maDon: "4984", ...DON_4984, cvChuyen: undefined, thuLyMoi: undefined, daThuLy: true,
       thamPhanDuKien: true, ndd: "Võ Hoài Trâm", toaBA: "Tòa án nhân dân khu vực 5 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Quá TH 3 năm"]
+      nhan: ["Án chỉ đạo", "Án tử hình", "Cảnh báo án hết thời hiệu"]
     },
     {
       id: 4, maDon: "4956", cvChuyen: "18 - 05/06/2026", thuLyMoi: "2329180", thamPhan: "Đỗ Tất Thống",
@@ -6102,13 +6103,13 @@ const DU_LIEU_TAB: Record<string, DonGDTRow[]> = {
     {
       id: 1, maDon: "4984", ...DON_4984, ndd: "Võ Hoài Trâm",
       toaBA: "Tòa án nhân dân khu vực 7 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Quá TH 5 năm"],
+      nhan: ["Án chỉ đạo", "Án tử hình", "Án QH", "Cảnh báo án hết thời hiệu"],
       maHS: "VA26-002012", ttv: "Nguyễn Văn A"
     },
     {
       id: 2, maDon: "4984", ...DON_4984, cvChuyen: undefined, thuLyMoi: undefined, daThuLy: true,
       ndd: "Võ Hoài Trâm", toaBA: "Tòa án nhân dân khu vực 5 - Đà Nẵng",
-      nhan: ["Án chỉ đạo", "Án tử hình", "Quá TH 3 năm"]
+      nhan: ["Án chỉ đạo", "Án tử hình", "Cảnh báo án hết thời hiệu"]
     },
     {
       id: 3, maDon: "5101", cvChuyen: "62 - 18/07/2026", thuLyMoi: "2331001", thamPhan: "Nguyễn Văn Hùng",
@@ -6148,11 +6149,11 @@ const NhanDonTLVuAn = () => {
   const [chon, setChon] = useState<number[]>([]);
   useKetLuanLD();   // render lại khi kết luận của LĐ thay đổi
 
-  // Số trên tab "Chờ ý kiến LĐ" chỉ đếm đơn LĐ chưa cho kết luận
-  const soChoYKien = (DU_LIEU_TAB["Chờ ý kiến LĐ"] ?? [])
+  // Số trên tab "Đơn chờ phê duyệt" chỉ đếm đơn LĐ chưa cho kết luận
+  const soChoYKien = (DU_LIEU_TAB["Đơn chờ phê duyệt"] ?? [])
     .filter(r => !r.maDon || !layKetLuanLD(r.maDon)).length;
   const TABS = [
-    { label: "Tất cả", count: "49" }, { label: "Chờ ý kiến LĐ", count: String(soChoYKien) },
+    { label: "Tất cả", count: "49" }, { label: "Đơn chờ phê duyệt", count: String(soChoYKien) },
     { label: "Chưa có vụ án", count: "5" }, { label: "Đã có vụ án", count: "+37" },
     { label: "Hồ sơ kháng nghị", count: "+3" }, { label: "Hồ sơ tử hình", count: "2" },
     { label: "Trả lại", count: "2" },
@@ -6161,7 +6162,7 @@ const NhanDonTLVuAn = () => {
   const tenTab = TABS[tab].label;
   const rows = DU_LIEU_TAB[tenTab] ?? [];
   // Cấu hình khác nhau giữa các tab
-  const laYKien = tenTab === "Chờ ý kiến LĐ";     // cột 5 = Ý kiến lãnh đạo, bỏ cột nhận/trả
+  const laYKien = tenTab === "Đơn chờ phê duyệt";     // cột 5 = Ý kiến lãnh đạo, bỏ cột nhận/trả
   const laHoSo = tenTab === "Hồ sơ tử hình";      // cột 5 = Thông tin hồ sơ
   const coGiaoTieuHoSo = tenTab === "Đã có vụ án";
   const tenCot5 = laYKien ? "Ý kiến lãnh đạo" : laHoSo ? "Thông tin hồ sơ" : "Thông tin vụ án";
@@ -7542,6 +7543,13 @@ interface DonTiepNhan {
   ocrTrangThai?: "du-dieu-kien" | "khong-du-dieu-kien";
   ocrLyDo?: "Thiếu BA/QĐ có hiệu lực" | "Thiếu thông tin CCCD";
   canBoXuLyGanNhat?: string;
+  ycbsData?: {
+    nguoiDungDon: string;
+    soBA: string;
+    ngayBA: string;
+    toaBA: string;
+    canBoYeuCau: string;
+  };
 }
 
 const DON_SAMPLE: DonTiepNhan[] = [
@@ -7621,6 +7629,34 @@ const DON_SAMPLE: DonTiepNhan[] = [
     donLienQuan: [{ maDon: "001254", quanHe: "Tài liệu bổ sung cho vụ Lê Minh Tuấn" }],
     soBA: "19/2026/HS-PT", ngayBA: "15/05/2026", toaBA: "TAND tỉnh Hải Dương",
     ocrTrangThai: "du-dieu-kien"
+  },
+  {
+    maDon: "001263", ngayTiepNhan: "21/08/2026 09:00", nguoiLamDon: "Đỗ Mai Anh",
+    hinhThucDon: "Đơn khiếu nại tố cáo trong tố tụng", loaiAn: "Dân sự", canBoTiepNhan: "Chưa phân công",
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: false,
+    soBA: "11/2026/DS-PT", ngayBA: "10/01/2026", toaBA: "TAND TP HCM",
+    ocrTrangThai: "du-dieu-kien",
+    ycbsData: {
+      nguoiDungDon: "Đỗ Mai Anh",
+      soBA: "11/2026/DS-PT",
+      ngayBA: "10/01/2026",
+      toaBA: "TAND TP HCM",
+      canBoYeuCau: "Nguyễn Hải Trâm"
+    }
+  },
+  {
+    maDon: "001264", ngayTiepNhan: "21/08/2026 09:30", nguoiLamDon: "Lê Văn Hùng",
+    hinhThucDon: "CV chuyển đơn", loaiAn: "Hành chính", canBoTiepNhan: "Chưa phân công",
+    trangThai: "cho-phan-cong", nguon: "DVTT", coDonLienQuan: false,
+    soBA: "12/2026/HC-PT", ngayBA: "15/02/2026", toaBA: "TAND cấp cao tại Hà Nội",
+    ocrTrangThai: "du-dieu-kien",
+    ycbsData: {
+      nguoiDungDon: "Lê Văn Hùng",
+      soBA: "12/2026/HC-PT",
+      ngayBA: "15/02/2026",
+      toaBA: "TAND cấp cao tại Hà Nội",
+      canBoYeuCau: "Lê Thị Hoa"
+    }
   }
 ];
 
@@ -7680,6 +7716,80 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
   const [traLaiGhiChu, setTraLaiGhiChu] = useState("");
   const [chonCanBo, setChonCanBo] = useState("");
   const [phanCongResult] = useState({ canBo: "Nguyễn Hải Trâm", tyLe: "18%", uuTien: "Có BA/QĐ liên quan đã được cán bộ xử lý" });
+  
+  const [filterYCBS, setFilterYCBS] = useState<"tat-ca" | "ycbs">("tat-ca");
+  const [phanCongBlockPopup, setPhanCongBlockPopup] = useState(false);
+  const [selectedCanBoBlock, setSelectedCanBoBlock] = useState<Set<string>>(new Set(CAN_BO_LIST_LT));
+
+  const handleBlockAssignment = () => {
+    if (selectedIds.size === 0) {
+      alert("Vui lòng chọn ít nhất một đơn để phân công");
+      return;
+    }
+    const selectedList = Array.from(selectedCanBoBlock);
+    if (selectedList.length === 0) {
+      alert("Vui lòng chọn ít nhất một cán bộ để phân bổ");
+      return;
+    }
+    
+    const targets = Array.from(selectedIds);
+    let unitsToProcess = rows.filter(r => targets.includes(r.maDon));
+    const updatedRows = [...rows];
+    
+    // 1. Phân bổ các đơn có YCBS trước
+    unitsToProcess = unitsToProcess.map(don => {
+      if (don.ycbsData) {
+        // Kiểm tra khớp dữ liệu
+        const match = don.nguoiLamDon === don.ycbsData.nguoiDungDon && 
+                      don.soBA === don.ycbsData.soBA &&
+                      don.ngayBA === don.ycbsData.ngayBA &&
+                      don.toaBA === don.ycbsData.toaBA;
+        if (match && selectedList.includes(don.ycbsData.canBoYeuCau)) {
+          // Gán cho cán bộ yêu cầu
+          const idx = updatedRows.findIndex(r => r.maDon === don.maDon);
+          if (idx !== -1) {
+            updatedRows[idx] = { ...updatedRows[idx], canBoTiepNhan: don.ycbsData.canBoYeuCau, trangThai: "da-phan-cong" };
+          }
+          return null;
+        }
+      }
+      return don;
+    }).filter(Boolean) as DonTiepNhan[];
+    
+    // 2. Phân bổ block cho các đơn còn lại
+    // Sort theo mã đơn tăng dần
+    unitsToProcess.sort((a, b) => a.maDon.localeCompare(b.maDon));
+    
+    const totalRemaining = unitsToProcess.length;
+    if (totalRemaining > 0) {
+      const chunkSize = Math.ceil(totalRemaining / selectedList.length);
+      let currentOfficerIdx = 0;
+      let currentChunkCount = 0;
+      
+      for (const don of unitsToProcess) {
+        const canBo = selectedList[currentOfficerIdx];
+        const idx = updatedRows.findIndex(r => r.maDon === don.maDon);
+        if (idx !== -1) {
+          updatedRows[idx] = { ...updatedRows[idx], canBoTiepNhan: canBo, trangThai: "da-phan-cong" };
+        }
+        
+        currentChunkCount++;
+        if (currentChunkCount >= chunkSize) {
+          currentOfficerIdx++;
+          currentChunkCount = 0;
+          if (currentOfficerIdx >= selectedList.length) {
+             // Safe guard, though Math.ceil should prevent overflow
+             currentOfficerIdx = selectedList.length - 1;
+          }
+        }
+      }
+    }
+    
+    setRows(updatedRows);
+    setSelectedIds(new Set());
+    setPhanCongBlockPopup(false);
+  };
+
 
   const counts = useMemo(() => ({
     "tat-ca": DON_SAMPLE.length,
@@ -7699,6 +7809,10 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
     const q = search.trim().toLowerCase();
     return rows.filter(d => {
       if (activeTab !== "tat-ca" && d.trangThai !== activeTab) return false;
+      
+      // Lọc YCBS
+      if (filterYCBS === "ycbs" && !d.ycbsData) return false;
+
       if (fNguon && d.nguon !== fNguon) return false;
       if (fHinhThuc && d.hinhThucDon !== fHinhThuc) return false;
       if (fLoaiAn && d.loaiAn !== fLoaiAn) return false;
@@ -7708,7 +7822,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoTiepNhan].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, refreshKey]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, refreshKey, filterYCBS]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -7844,6 +7958,48 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
         </div>
       )}
 
+      {/* Popup: Phân bổ hàng loạt theo block */}
+      {phanCongBlockPopup && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={() => setPhanCongBlockPopup(false)}>
+          <div className="bg-white rounded-[4px] border border-[#ddd] w-[450px] shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-[#eee] flex items-center justify-between">
+              <div className="text-[13px] font-bold text-[#1d2e4f]">Cấu hình phân công tự động</div>
+              <button onClick={() => setPhanCongBlockPopup(false)} className="text-[#aaa] hover:text-[#333] text-[16px]">×</button>
+            </div>
+            <div className="p-4 space-y-4 text-[12px]">
+              <div>
+                <div className="text-[12.5px] font-semibold text-[#333] mb-2">Chọn cán bộ tham gia phân bổ:</div>
+                <div className="space-y-2 border border-[#eee] rounded-[3px] p-3 bg-[#fafafa] max-h-[150px] overflow-y-auto">
+                  {CAN_BO_LIST_LT.map(cb => (
+                    <label key={cb} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedCanBoBlock.has(cb)}
+                        onChange={(e) => {
+                          const next = new Set(selectedCanBoBlock);
+                          if (e.target.checked) next.add(cb);
+                          else next.delete(cb);
+                          setSelectedCanBoBlock(next);
+                        }}
+                        className="w-[14px] h-[14px] accent-[#8b1a1a]"
+                      />
+                      <span className="text-[#333]">{cb}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="text-[#555] italic">
+                Hệ thống sẽ tự động ưu tiên gán lại cho cán bộ yêu cầu bổ sung nếu khớp thông tin. Số đơn còn lại sẽ được chia đều theo số đến tăng dần cho các cán bộ đã chọn.
+              </div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#eee]">
+                <button onClick={() => setPhanCongBlockPopup(false)} className="h-[28px] px-4 border border-[#ddd] bg-white text-[#555] rounded-[3px] text-[11.5px] hover:bg-[#f5f5f5]">Hủy</button>
+                <button onClick={handleBlockAssignment} className="h-[28px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân bổ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Popup: trả lại */}
       {traLaiPopup && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={() => setTraLaiPopup(null)}>
@@ -7953,6 +8109,15 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
 
       {/* Bộ lọc & Tìm kiếm */}
       <div className="px-4 py-2.5 border-b border-[#eee] bg-[#fafafa]">
+        <div className="flex items-center gap-5 mb-3">
+          {[["tat-ca", "Tất cả"], ["ycbs", "Đơn đã có yêu cầu bổ sung"]].map(([val, label]) => (
+            <label key={val} className="flex items-center gap-2 cursor-pointer text-[13px]">
+              <input type="radio" name="filterYCBS" className="accent-[#8b1a1a]"
+                checked={filterYCBS === val} onChange={() => { setFilterYCBS(val as any); setSelectedIds(new Set()); }} />
+              <span className={filterYCBS === val ? "font-semibold text-[#8b1a1a]" : "text-[#444]"}>{label}</span>
+            </label>
+          ))}
+        </div>
         <div className="grid gap-x-3 gap-y-2.5 mb-3" style={{ gridTemplateColumns: 'repeat(6, minmax(0, 1fr))' }}>
           {[
             { label: "Từ khóa tìm kiếm chung", el: <input value={search} onChange={e => setSearch(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" placeholder="Số đến, mã đơn..." />, advanced: false },
@@ -7990,38 +8155,38 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
         </div>
       </div>
 
-      {isTruongPhong && activeTab === "cho-phan-cong" && (
-        <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-[#ddd] bg-white">
-          <button onClick={() => {
-            if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-            setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoTiepNhan: "Phạm Quốc Hưng", trangThai: "da-phan-cong" } : r));
-            setSelectedIds(new Set());
-          }}
-            className="h-[28px] px-3 bg-[#1a5a96] text-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#154b7e] transition-colors">
-            Phân công tự động
-          </button>
-
-          <select
-            value=""
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!val) return;
+      {isTruongPhong && (activeTab === "cho-phan-cong" || activeTab === "da-phan-cong") && (
+        <div className="flex items-center justify-end px-3 pb-2 pt-2 border-b border-[#ddd] bg-white">
+          <div className="flex items-center gap-2">
+            <button onClick={() => {
               if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-              setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
-                ...r,
-                canBoTiepNhan: val,
-                trangThai: "da-phan-cong"
-              } : r));
-              setSelectedIds(new Set());
-            }}
-            className="w-[180px] h-[28px] px-2 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none cursor-pointer"
-          >
-            <option value="" disabled hidden>Phân công chỉ định...</option>
-            {CAN_BO_LIST_LT.map(cb => {
-              const count = assignmentCounts[cb] || 0;
-              return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
-            })}
-          </select>
+              setPhanCongBlockPopup(true);
+            }} className="h-[26px] px-3 border border-[#1a5a96] text-[#1a5a96] bg-white hover:bg-[#f0f6ff] transition-colors rounded-[3px] text-[11.5px] font-medium">
+              Phân công tự động
+            </button>
+
+            <select
+              value=""
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val) return;
+                if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
+                setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
+                  ...r,
+                  canBoTiepNhan: val,
+                  trangThai: "da-phan-cong"
+                } : r));
+                setSelectedIds(new Set());
+              }}
+              className="w-[180px] h-[26px] px-2 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="" disabled hidden>Phân công chỉ định...</option>
+              {CAN_BO_LIST_LT.map(cb => {
+                const count = assignmentCounts[cb] || 0;
+                return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
+              })}
+            </select>
+          </div>
         </div>
       )}
 
@@ -8473,7 +8638,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     setAutoMergeMap(nextAuto);
   }, [rows]);
 
-  // Đơn thuộc tab "Chờ ý kiến LĐ" bên màn Nhận đơn và TL vụ án: trạng thái
+  // Đơn thuộc tab "Đơn chờ phê duyệt" bên màn Nhận đơn và TL vụ án: trạng thái
   // giải quyết lấy theo kết luận của Lãnh đạo. Thay ngay từ đây để tab, bộ lọc
   // và cột Thông tin giải quyết cùng ăn theo một nguồn.
   const vLD = useKetLuanLD();

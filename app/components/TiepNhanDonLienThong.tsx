@@ -21,8 +21,12 @@ interface DonTiepNhan {
   canBoTiepNhan: string;
   trangThai: DonTrangThai;
   nguon: DonNguon;
-  coDonLienQuan: boolean;
-  donLienQuan?: { maDon: string; quanHe: string }[];
+  coDonLienQuan: boolean; https://127.0.0.1:63078/static/artifacts/e5e6b40c-4bd3-48ec-8bbf-11ac01dcdcd2/.user_uploaded/media_1787988742916.png?csrf=e8aa7b57-a36d-49db-860d-962f06f67249
+  donLienQuan?: { maDon: string; quanHe: string } [];
+ycbsData ?: {
+  coYCBS: boolean;
+  canBoCu?: string;
+};
 }
 
 const DON_SAMPLE: DonTiepNhan[] = [
@@ -47,14 +51,15 @@ const DON_SAMPLE: DonTiepNhan[] = [
   },
   {
     maDon: "DVC-2026-00312", ngayTiepNhan: "17/08/2026 15:45", nguoiLamDon: "Vũ Thu Hà",
-    hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Lao động", canBoTiepNhan: "Nguyễn Hải Trâm",
-    trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: true,
+    hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Lao động", canBoTiepNhan: "Chưa phân công",
+    trangThai: "cho-phan-cong", nguon: "DVC", coDonLienQuan: true,
     donLienQuan: [{ maDon: "000921", quanHe: "Có yêu cầu bổ sung trước đó" }],
+    ycbsData: { coYCBS: true, canBoCu: "Nguyễn Hải Trâm" }
   },
   {
     maDon: "001250", ngayTiepNhan: "16/08/2026 10:20", nguoiLamDon: "Công ty TNHH ABC",
-    hinhThucDon: "CV kiến nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Phạm Quốc Hưng",
-    trangThai: "tra-lai", nguon: "VBDH", coDonLienQuan: false,
+    hinhThucDon: "CV kiến nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Chưa phân công",
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: false,
   },
   {
     maDon: "001248", ngayTiepNhan: "15/08/2026 09:30", nguoiLamDon: "Hoàng Văn Nam",
@@ -87,9 +92,9 @@ const DON_SAMPLE: DonTiepNhan[] = [
 
 const TRANG_THAI_META: Record<DonTrangThai, { label: string; cls: string }> = {
   "cho-phan-cong": { label: "Chờ phân công", cls: "bg-[#fff4db] text-[#8b5e00] border-[#f5c842]" },
-  "da-phan-cong":  { label: "Đã phân công",  cls: "bg-[#e8f0fe] text-[#1a5a96] border-[#a9c9f4]" },
-  "cho-xu-ly":     { label: "Chờ xử lý",     cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]" },
-  "tra-lai":       { label: "Trả lại",        cls: "bg-[#fdecea] text-[#8b1a1a] border-[#f5a3a3]" },
+  "da-phan-cong": { label: "Đã phân công", cls: "bg-[#e8f0fe] text-[#1a5a96] border-[#a9c9f4]" },
+  "cho-xu-ly": { label: "Chờ xử lý", cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]" },
+  "tra-lai": { label: "Trả lại", cls: "bg-[#fdecea] text-[#8b1a1a] border-[#f5a3a3]" },
 };
 
 const NGUON_META_LT: Record<DonNguon, { label: string; cls: string }> = {
@@ -131,6 +136,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
   const [fLoaiAn, setFLoaiAn] = useState("");
   const [fCanBo, setFCanBo] = useState("");
   const [fTrangThai, setFTrangThai] = useState("");
+  const [filterYCBS, setFilterYCBS] = useState<"tat-ca" | "ycbs">("tat-ca");
 
   // Popup state
   const [donLienQuanPopup, setDonLienQuanPopup] = useState<DonTiepNhan | null>(null);
@@ -143,20 +149,63 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
   const [chonCanBo, setChonCanBo] = useState("");
   const [phanCongResult] = useState({ canBo: "Nguyễn Hải Trâm", tyLe: "18%", uuTien: "Có BA/QĐ liên quan đã được cán bộ xử lý" });
 
+  const [phanCongBlockPopup, setPhanCongBlockPopup] = useState(false);
+  const [blockOfficers, setBlockOfficers] = useState<Set<string>>(new Set(CAN_BO_LIST_LT));
+
+  const handleBlockAssignment = () => {
+    if (blockOfficers.size === 0) {
+      alert("Vui lòng chọn ít nhất một cán bộ để phân bổ.");
+      return;
+    }
+
+    setRows(prev => {
+      const updated = [...prev];
+      const selected = updated.filter(r => selectedIds.has(r.maDon));
+      const targetOfficers = Array.from(blockOfficers);
+
+      // Ưu tiên YCBS
+      let remaining: typeof updated = [];
+      selected.forEach(don => {
+        if (don.ycbsData?.coYCBS && don.ycbsData.canBoCu) {
+          don.canBoTiepNhan = don.ycbsData.canBoCu;
+          don.trangThai = "da-phan-cong";
+        } else {
+          remaining.push(don);
+        }
+      });
+
+      // Sắp xếp còn lại theo mã đơn tăng dần (giả lập số đến tăng dần)
+      remaining.sort((a, b) => a.maDon.localeCompare(b.maDon));
+
+      // Chia block
+      const chunkSize = Math.ceil(remaining.length / targetOfficers.length);
+      remaining.forEach((don, idx) => {
+        const officerIndex = Math.floor(idx / chunkSize);
+        don.canBoTiepNhan = targetOfficers[officerIndex] || targetOfficers[targetOfficers.length - 1];
+        don.trangThai = "da-phan-cong";
+      });
+
+      return updated;
+    });
+
+    setSelectedIds(new Set());
+    setPhanCongBlockPopup(false);
+  };
+
   const counts = useMemo(() => ({
-    "tat-ca":        DON_SAMPLE.length,
+    "tat-ca": DON_SAMPLE.length,
     "cho-phan-cong": DON_SAMPLE.filter(d => d.trangThai === "cho-phan-cong").length,
-    "da-phan-cong":  DON_SAMPLE.filter(d => d.trangThai === "da-phan-cong").length,
-    "cho-xu-ly":     DON_SAMPLE.filter(d => d.trangThai === "cho-xu-ly").length,
-    "tra-lai":       DON_SAMPLE.filter(d => d.trangThai === "tra-lai").length,
+    "da-phan-cong": DON_SAMPLE.filter(d => d.trangThai === "da-phan-cong").length,
+    "cho-xu-ly": DON_SAMPLE.filter(d => d.trangThai === "cho-xu-ly").length,
+    "tra-lai": DON_SAMPLE.filter(d => d.trangThai === "tra-lai").length,
   }), [refreshKey]);
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: "tat-ca",        label: `Tất cả (${counts["tat-ca"]})` },
+    { key: "tat-ca", label: `Tất cả (${counts["tat-ca"]})` },
     { key: "cho-phan-cong", label: `Chờ phân công (${counts["cho-phan-cong"]})` },
-    { key: "da-phan-cong",  label: `Đã phân công (${counts["da-phan-cong"]})` },
-    { key: "cho-xu-ly",     label: `Chờ xử lý (${counts["cho-xu-ly"]})` },
-    { key: "tra-lai",       label: `Trả lại (${counts["tra-lai"]})` },
+    { key: "da-phan-cong", label: `Đã phân công (${counts["da-phan-cong"]})` },
+    { key: "cho-xu-ly", label: `Chờ xử lý (${counts["cho-xu-ly"]})` },
+    { key: "tra-lai", label: `Trả lại (${counts["tra-lai"]})` },
   ];
 
   const filtered = useMemo(() => {
@@ -169,10 +218,11 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
       if (fCanBo && d.canBoTiepNhan !== fCanBo) return false;
       if (fTrangThai && d.trangThai !== fTrangThai) return false;
       if (fNguoiDon && !d.nguoiLamDon.toLowerCase().includes(fNguoiDon.toLowerCase())) return false;
+      if (filterYCBS === "ycbs" && !d.ycbsData?.coYCBS) return false;
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoTiepNhan].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, refreshKey]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, filterYCBS, refreshKey]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -217,6 +267,43 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup: phân bổ theo block */}
+      {phanCongBlockPopup && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={() => setPhanCongBlockPopup(false)}>
+          <div className="bg-white rounded-[4px] border border-[#ddd] w-[420px] shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-[#eee] flex items-center justify-between">
+              <div className="text-[13px] font-bold text-[#1d2e4f]">Cấu hình phân công tự động</div>
+              <button onClick={() => setPhanCongBlockPopup(false)} className="text-[#aaa] hover:text-[#333] text-[16px]">×</button>
+            </div>
+            <div className="p-4 space-y-3 text-[12px]">
+              <div className="text-[#555] mb-2">Chọn các cán bộ tham gia nhận đơn phân bổ:</div>
+              <div className="space-y-1.5 border border-[#eee] p-2 rounded-[3px] max-h-[150px] overflow-y-auto">
+                {CAN_BO_LIST_LT.map(cb => (
+                  <label key={cb} className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={blockOfficers.has(cb)}
+                      onChange={() => {
+                        setBlockOfficers(prev => {
+                          const next = new Set(prev);
+                          next.has(cb) ? next.delete(cb) : next.add(cb);
+                          return next;
+                        });
+                      }} />
+                    <span>{cb}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="px-3 py-2 bg-[#fffbf0] border border-[#f5c842] rounded-[3px] text-[11px] text-[#7a5e00] mt-2">
+                * Các đơn có YCBS sẽ được tự động gán cho cán bộ đã xử lý trước đó. Các đơn còn lại sẽ chia block cho cán bộ đã chọn.
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button onClick={() => setPhanCongBlockPopup(false)} className="h-[28px] px-4 border border-[#ddd] bg-white text-[#555] rounded-[3px] text-[11.5px] hover:bg-[#f5f5f5]">Hủy</button>
+                <button onClick={handleBlockAssignment} className="h-[28px] px-4 bg-[#8b1a1a] text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân công</button>
+              </div>
             </div>
           </div>
         </div>
@@ -371,7 +458,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
               <div className="text-[13px] font-bold text-[#1d2e4f]">Kiểm soát tải lượng cán bộ tiếp nhận</div>
               <button onClick={() => setShowDanhSachCanBo(false)} className="text-[#aaa] hover:text-[#333] text-[16px]">×</button>
             </div>
-            
+
             <div className="flex-1 flex min-h-0">
               {/* Left pane: Danh sách cán bộ */}
               <div className="w-[280px] border-r border-[#ddd] flex flex-col bg-[#fafafa]">
@@ -381,7 +468,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
                     const count = assignmentCounts[cb] || 0;
                     const isSelected = selectedCanBoPopup === cb;
                     return (
-                      <div key={cb} 
+                      <div key={cb}
                         onClick={() => setSelectedCanBoPopup(cb)}
                         className={`px-3 py-2.5 border-b border-[#eee] cursor-pointer flex justify-between items-center transition-colors
                           ${isSelected ? 'bg-[#e8f0fe] border-l-4 border-l-[#1a5a96]' : 'hover:bg-white border-l-4 border-l-transparent'}`}>
@@ -452,11 +539,10 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
       <div className="flex items-end border-b border-[#ddd] px-4 pt-0.5 gap-0 bg-white">
         {tabs.filter(t => isTruongPhong || (t.key !== "tat-ca" && t.key !== "cho-phan-cong" && t.key !== "da-phan-cong")).map(t => (
           <button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
-            className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
-              activeTab === t.key
+            className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === t.key
                 ? "border-[#8b1a1a] text-[#8b1a1a]"
                 : "border-transparent text-[#555] hover:text-[#222]"
-            }`}>
+              }`}>
             {t.label}
           </button>
         ))}
@@ -475,6 +561,20 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
             { label: "Người đứng đơn", el: <input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" placeholder="Nhập tên..." />, advanced: true },
             { label: "Ngày tiếp nhận từ", el: <input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" />, advanced: true },
             { label: "Đến ngày", el: <input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors border-[#ccc] bg-white" />, advanced: true },
+            {
+              label: "Loại đơn",
+              el: (
+                <div className="flex items-center gap-3 h-[26px] text-[12px]">
+                  <label className="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="filterYCBS" checked={filterYCBS === "tat-ca"} onChange={() => { setFilterYCBS("tat-ca"); setSelectedIds(new Set()); }} /> Tất cả
+                  </label>
+                  <label className="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="filterYCBS" checked={filterYCBS === "ycbs"} onChange={() => { setFilterYCBS("ycbs"); setSelectedIds(new Set()); }} /> YCBS
+                  </label>
+                </div>
+              ),
+              advanced: false
+            },
           ].filter(item => !item.advanced || showAdvanced).map(({ label, el }) => (
             <div key={label} className="min-w-0 overflow-hidden" style={{ gridColumn: (!showAdvanced && label === "Từ khóa tìm kiếm chung") ? 'span 2' : 'span 1' }}>
               <div className="text-[11px] font-semibold text-[#1a5a96] mb-0.5 truncate">{label}</div>
@@ -501,38 +601,56 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
         </div>
       </div>
 
-            {isTruongPhong && (activeTab === "cho-phan-cong" || activeTab === "da-phan-cong") && (
-        <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-[#ddd] bg-white">
-          <button onClick={() => {
-            if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-            setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoTiepNhan: "Phạm Quốc Hưng", trangThai: "da-phan-cong" } : r));
-            setSelectedIds(new Set());
-          }}
-            className="h-[28px] px-3 bg-[#1a5a96] text-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#154b7e] transition-colors">
-            Phân công tự động
-          </button>
-          
-          <select
-            value=""
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!val) return;
+      {isTruongPhong && (activeTab === "cho-phan-cong" || activeTab === "da-phan-cong") && (
+        <div className="flex items-center justify-end px-3 pb-2 pt-2 border-b border-[#ddd] bg-white">
+          <div className="flex items-center gap-2">
+            <button onClick={() => {
               if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-              setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
-                ...r,
-                canBoTiepNhan: val,
-                trangThai: "da-phan-cong"
-              } : r));
-              setSelectedIds(new Set());
+
+              if (filterYCBS === "ycbs") {
+                // Tự gán cho cán bộ xử lý cũ, nếu k thấy thì để trống (cho vào danh sách chưa xác định)
+                setRows(prev => prev.map(r => {
+                  if (selectedIds.has(r.maDon)) {
+                    if (r.ycbsData?.coYCBS && r.ycbsData.canBoCu) {
+                      return { ...r, canBoTiepNhan: r.ycbsData.canBoCu, trangThai: "da-phan-cong" };
+                    } else {
+                      return { ...r, canBoTiepNhan: "Chưa phân công", trangThai: "cho-phan-cong" };
+                    }
+                  }
+                  return r;
+                }));
+                setSelectedIds(new Set());
+                alert("Đã phân công thành công các đơn YCBS!");
+              } else {
+                setPhanCongBlockPopup(true);
+              }
             }}
-            className="w-[180px] h-[28px] px-2 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none cursor-pointer"
-          >
-            <option value="" disabled hidden>Phân công chỉ định...</option>
-            {CAN_BO_LIST_LT.map(cb => {
+              className="h-[28px] px-3 bg-[#1a5a96] text-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#154b7e] transition-colors">
+              Phân công tự động
+            </button>
+
+            <select
+              value=""
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val) return;
+                if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
+                setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
+                  ...r,
+                  canBoTiepNhan: val,
+                  trangThai: "da-phan-cong"
+                } : r));
+                setSelectedIds(new Set());
+              }}
+              className="w-[180px] h-[28px] px-2 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="" disabled hidden>Phân công chỉ định...</option>
+              {CAN_BO_LIST_LT.map(cb => {
                 const count = assignmentCounts[cb] || 0;
                 return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
-            })}
-          </select>
+              })}
+            </select>
+          </div>
         </div>
       )}
 
@@ -594,8 +712,8 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
                       >
                         <option value="">-- Chưa phân công --</option>
                         {CAN_BO_LIST_LT.map(cb => {
-                           const count = assignmentCounts[cb] || 0;
-                           return <option key={cb} value={cb}>{cb} ({count})</option>
+                          const count = assignmentCounts[cb] || 0;
+                          return <option key={cb} value={cb}>{cb} ({count})</option>
                         })}
                       </select>
                     ) : (
