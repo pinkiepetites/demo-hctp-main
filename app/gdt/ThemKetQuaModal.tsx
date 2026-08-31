@@ -160,9 +160,9 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
     },
     {
       id: "HS04",
-      label: "📁 Tiểu hồ sơ nghiên cứu của Công chức",
+      label: "📁 Tiểu hồ sơ nghiên cứu của TTV",
       files: [
-        "Báo cáo nghiên cứu hồ sơ của Công chức Lý Thái Phúc",
+        "Báo cáo nghiên cứu hồ sơ của TTV Lý Thái Phúc",
         "Phiếu đề xuất hướng giải quyết kháng nghị GĐT",
       ],
     },
@@ -681,7 +681,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                         <option value="Đặng Quốc Trung – Chánh án">Đặng Quốc Trung – Chánh án</option>
                         <option value="Lê Minh Trí – Phó Chánh án">Lê Minh Trí – Phó Chánh án</option>
                         <option value="Lê Hoàng Nam - Trưởng phòng">Lê Hoàng Nam - Trưởng phòng</option>
-                        <option value="Lý Thái Phúc - Công chức">Lý Thái Phúc - Công chức</option>
+                        <option value="Lý Thái Phúc - TTV">Lý Thái Phúc - TTV</option>
                       </select>
                     </div>
 
@@ -1157,7 +1157,7 @@ export function ThemQuyetDinhHoanModal({
         soQuyetDinh,
         ngayQuyetDinh,
         nguoiKy,
-        nguoiTao: "Lý Thái Phúc (Công chức)",
+        nguoiTao: "Lý Thái Phúc (TTV)",
       });
     }
     alert("Đã lưu quyết định hoãn thi hành án thành công!");

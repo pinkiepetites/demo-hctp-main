@@ -864,7 +864,7 @@ const NGUOI_CON_NGUOI: NguoiGoiY[] = [
 const DAN_TOC_OPTIONS = ["Kinh", "Tày", "Thái", "Mường", "Khmer", "Hoa", "Nùng", "H'Mông", "Dao", "Khác"];
 const TON_GIAO_OPTIONS = ["Không", "Phật giáo", "Công giáo", "Tin lành", "Cao Đài", "Phật giáo Hòa Hảo", "Hồi giáo", "Khác"];
 const QUOC_TICH_OPTIONS = ["Việt Nam", "Hoa Kỳ", "Nhật Bản", "Hàn Quốc", "Trung Quốc", "Pháp", "Khác"];
-const NGHE_NGHIEP_OPTIONS = ["Nông dân", "Công nhân", "Cán bộ, công chức", "Kinh doanh", "Lao động tự do", "Hưu trí", "Học sinh, sinh viên", "Khác"];
+const NGHE_NGHIEP_OPTIONS = ["Nông dân", "Công nhân", "Cán bộ, TTV", "Kinh doanh", "Lao động tự do", "Hưu trí", "Học sinh, sinh viên", "Khác"];
 const TRINH_DO_VH_OPTIONS = ["Tiểu học", "THCS", "THPT", "Khác"];
 const TRINH_DO_DT_OPTIONS = ["Sơ cấp", "Trung cấp", "Cao đẳng", "Đại học", "Thạc sĩ", "Tiến sĩ"];
 const THANH_PHAN_GD_OPTIONS = ["Bình thường", "Chính sách", "Khác"];
@@ -1216,7 +1216,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                       </div>
 
                       <div>
-                        <NDLbl req>Công chức, viên chức</NDLbl>
+                        <NDLbl req>TTV, viên chức</NDLbl>
                         <div className="flex items-center gap-5 h-[32px]">
                           {["Không", "Có"].map(o => (
                             <label key={o} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
@@ -1854,7 +1854,7 @@ const MENU_GDT: { nav: string; label: string; icon: React.ReactNode }[] = [
   { nav: "gdt:don-cho-phe-duyet", label: "Nhận đơn và TL vụ án", icon: <Inbox size={13} /> },
   { nav: "gdt:ho-so-khang-nghi", label: "Hồ sơ kháng nghị", icon: <FolderOpen size={13} /> },
   { nav: "gdt:quan-ly-vu-an", label: "Quản lý vụ án", icon: <Gavel size={13} /> },
-  { nav: "gdt:phan-cong-ttv", label: "Phân công Công chức", icon: <Users size={13} /> },
+  { nav: "gdt:phan-cong-ttv", label: "Phân công TTV", icon: <Users size={13} /> },
   // Màn "Phân công Ủy ban thẩm phán" đã bỏ khỏi menu. Component vẫn còn vì màn
   // Quản lý vụ xét xử GĐT nhúng lại nó ở chế độ chỉ đọc để hiện Danh sách tham mưu.
   { nav: "gdt:quan-ly-vu-xet-xu", label: "Quản lý vụ xét xử GĐT", icon: <Scale size={13} /> },
@@ -1862,7 +1862,7 @@ const MENU_GDT: { nav: string; label: string; icon: React.ReactNode }[] = [
   { nav: "gdt:an-quoc-hoi", label: "Án quốc hội", icon: <Scale size={13} /> },
   { nav: "gdt:an-thoi-hieu", label: "Án thời hiệu", icon: <Clock size={13} /> },
   { nav: "gdt:cong-van-trao-doi", label: "Công văn trao đổi", icon: <Mail size={13} /> },
-  { nav: "gdt:cau-hinh-ttv", label: "Cấu hình Công chức báo cáo", icon: <Settings size={13} /> },
+  { nav: "gdt:cau-hinh-ttv", label: "Cấu hình TTV báo cáo", icon: <Settings size={13} /> },
 ];
 
 // ─── Sidebar navigation ──────────────────────────────────────────────────────
@@ -13504,7 +13504,7 @@ export default function App() {
                                 <option value="">-- Chọn cá nhân --</option>
                                 <option>Trưởng phòng - {donViChuyenDen}</option>
                                 <option>Phó Trưởng phòng - {donViChuyenDen}</option>
-                                <option>Công chức - {donViChuyenDen}</option>
+                                <option>TTV - {donViChuyenDen}</option>
                               </Sel>
                             </div>
                           )}

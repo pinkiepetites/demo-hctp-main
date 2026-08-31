@@ -889,7 +889,7 @@ export function WordEditorView({ onBack, record }: { onBack: () => void; record?
                     <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Thông tin đơn / Thụ lý</th>
                     <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Đương sự</th>
                     <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Bản án / Quyết định</th>
-                    <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Thẩm phán / Công chức</th>
+                    <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Thẩm phán / TTV</th>
                     <th style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "left" }}>Ghi chú / Kết quả</th>
                   </tr>
                 </thead>
@@ -916,7 +916,7 @@ export function WordEditorView({ onBack, record }: { onBack: () => void; record?
                       </td>
                       <td style={{ border: "1px solid #000", padding: "6px 8px" }}>
                         {c.thamPhan && <div><b>TP:</b> {c.thamPhan}</div>}
-                        {c.ttv && <div><b>Công chức:</b> {c.ttv}</div>}
+                        {c.ttv && <div><b>TTV:</b> {c.ttv}</div>}
                       </td>
                       <td style={{ border: "1px solid #000", padding: "6px 8px" }}>
                         {c.lyDoTraLai || c.yKienLD?.[0]?.name || "Đã lưu hồ sơ"}

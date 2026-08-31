@@ -40,7 +40,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân tỉnh Tuyên Quang",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "Số CV: CV-TR-01\nNgày: 08/07/2026",
-    phanCong: "Công chức: Nguyễn Văn An",
+    phanCong: "TTV: Nguyễn Văn An",
     coKQGG: true,
   },
   {
@@ -56,7 +56,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân thành phố Hà Nội",
     donViNhan: "VKSND Tối cao",
     phanHoi: "–",
-    phanCong: "Công chức: Lê Thị Bình",
+    phanCong: "TTV: Lê Thị Bình",
     coKQGG: false,
   },
   {
@@ -72,7 +72,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "TAND TP. Hà Nội",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "Số CV: CV-TR-05\nNgày: 10/08/2026",
-    phanCong: "Công chức: Trần Minh Đức",
+    phanCong: "TTV: Trần Minh Đức",
     coKQGG: true,
   },
   {
@@ -88,7 +88,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân thành phố Hà Nội",
     donViNhan: "Bộ Tư Pháp",
     phanHoi: "Số CV: 215/BTP-V1\nNgày: 18/08/2026",
-    phanCong: "Công chức: Nguyễn Văn An",
+    phanCong: "TTV: Nguyễn Văn An",
     coKQGG: true,
   },
   {
@@ -104,7 +104,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "TAND khu vực 2 - Hà Nội",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "–",
-    phanCong: "Công chức: Hoàng Quỳnh Trang",
+    phanCong: "TTV: Hoàng Quỳnh Trang",
     coKQGG: true,
   },
   {
@@ -120,7 +120,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "VKSND Tối cao",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "Số CV: CV-TR-08\nNgày: 25/08/2026",
-    phanCong: "Công chức: Vũ Biêu Thư",
+    phanCong: "TTV: Vũ Biêu Thư",
     coKQGG: true,
   },
   {
@@ -136,7 +136,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân thành phố Hà Nội",
     donViNhan: "Bộ Công An",
     phanHoi: "–",
-    phanCong: "Công chức: Lý Thái Phúc",
+    phanCong: "TTV: Lý Thái Phúc",
     coKQGG: false,
   },
   {
@@ -152,7 +152,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "TAND khu vực 6 - Hà Nội",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "–",
-    phanCong: "Công chức: Nguyễn Văn An",
+    phanCong: "TTV: Nguyễn Văn An",
     coKQGG: true,
   },
   {
@@ -168,7 +168,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân thành phố Hà Nội",
     donViNhan: "TAND thành phố Hà Nội",
     phanHoi: "Số CV: 410/ĐN\nNgày: 02/09/2026",
-    phanCong: "Công chức: Trần Minh Đức",
+    phanCong: "TTV: Trần Minh Đức",
     coKQGG: true,
   },
   {
@@ -184,7 +184,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "VKSND Thành phố Hà Nội",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "–",
-    phanCong: "Công chức: Lê Thị Bình",
+    phanCong: "TTV: Lê Thị Bình",
     coKQGG: false,
   },
   {
@@ -200,7 +200,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "Tòa án nhân dân thành phố Hà Nội",
     donViNhan: "Ủy ban Nhân dân TP.HCM",
     phanHoi: "–",
-    phanCong: "Công chức: Hoàng Quỳnh Trang",
+    phanCong: "TTV: Hoàng Quỳnh Trang",
     coKQGG: true,
   },
   {
@@ -216,7 +216,7 @@ export const CV_ROWS: CVRow[] = [
     donViGui: "TAND khu vực 3 - Hà Nội",
     donViNhan: "Tòa án nhân dân thành phố Hà Nội",
     phanHoi: "Số CV: CV-TR-12\nNgày: 12/09/2026",
-    phanCong: "Công chức: Vũ Biêu Thư",
+    phanCong: "TTV: Vũ Biêu Thư",
     coKQGG: true,
   },
 ];
@@ -2085,10 +2085,10 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
               </table>
             </div>
 
-            {/* 3. Card: Lịch sử phân công Công chức và LĐV */}
+            {/* 3. Card: Lịch sử phân công TTV và LĐV */}
             <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, padding: 18 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>Lịch sử phân công Công chức và LĐV</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>Lịch sử phân công TTV và LĐV</div>
                 <button title="Làm mới" style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center" }}>
                   <RotateCw size={13} />
                 </button>
@@ -2115,7 +2115,7 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
                   <tr style={{ background: "#fff" }}>
                     <td style={{ ...TD, textAlign: "center", color: MUTED }}>1</td>
                     <td style={{ ...TD, fontWeight: 700 }}>Hoàng Ngọc Chiều</td>
-                    <td style={TD}>Công chức</td>
+                    <td style={TD}>TTV</td>
                     <td style={TD}>21/07/2026</td>
                     <td style={{ ...TD, fontWeight: 600 }}>Nguyễn Văn Hiền</td>
                     <td style={TD}>Phó Trưởng phòng</td>
@@ -2269,8 +2269,8 @@ export default function CongVanTraoDoiView({
               <input type="date" value={ngayNhanFilter} onChange={e => setNgayNhanFilter(e.target.value)} style={inputStyle} />
             </div>
             <div>
-              <span style={labelStyle}>Công chức</span>
-              <input value={ttvFilter} onChange={e => setTtvFilter(e.target.value)} placeholder="Nhập công chức" style={inputStyle} />
+              <span style={labelStyle}>TTV</span>
+              <input value={ttvFilter} onChange={e => setTtvFilter(e.target.value)} placeholder="Nhập TTV" style={inputStyle} />
             </div>
           </div>
 

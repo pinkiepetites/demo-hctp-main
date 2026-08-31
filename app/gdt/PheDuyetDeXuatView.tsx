@@ -280,7 +280,7 @@ export function XemBieuMauScreen({ onClose, loaiPhieu }: { onClose: () => void; 
                 <strong>Kính trình:</strong> Lãnh đạo Tòa án nhân dân thành phố Hà Nội
               </p>
               <p style={{ marginBottom: 12, fontSize: 13, lineHeight: 1.7 }}>
-                Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; Công chức báo cáo kết quả nghiên cứu hồ sơ như sau:
+                Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; TTV báo cáo kết quả nghiên cứu hồ sơ như sau:
               </p>
               <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>I. THÔNG TIN CHUNG</p>
               <ol style={{ paddingLeft: 24, fontSize: 13, lineHeight: 2, marginBottom: 12 }}>
@@ -291,7 +291,7 @@ export function XemBieuMauScreen({ onClose, loaiPhieu }: { onClose: () => void; 
               </ol>
               <p style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>II. NHẬN XÉT, ĐỀ XUẤT</p>
               <p style={{ fontSize: 13, lineHeight: 1.7 }}>
-                Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. Công chức kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.
+                Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. TTV kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.
               </p>
             </div>
           )}
@@ -314,7 +314,7 @@ const LICH_SU_DATA = [
     don: "TLMT-10", nguoiGui: "Trần Văn Hùng", ngayNhan: "22/05/2026",
     rows: [
       { ngay: "15/05/2026", nguoi: "Nguyễn Văn B (Trưởng phòng)", noiDung: "Trả lời đơn" },
-      { ngay: "10/05/2026", nguoi: "Trần Văn C (Công chức)", noiDung: "Trả lời đơn" },
+      { ngay: "10/05/2026", nguoi: "Trần Văn C (TTV)", noiDung: "Trả lời đơn" },
     ],
   },
   {
@@ -326,7 +326,7 @@ const LICH_SU_DATA = [
   {
     don: "TLMT-09", nguoiGui: "Trần Văn Hùng", ngayNhan: "22/05/2026",
     rows: [
-      { ngay: "12/05/2026", nguoi: "Lê Thị D (Công chức)", noiDung: "Trả lời đơn" },
+      { ngay: "12/05/2026", nguoi: "Lê Thị D (TTV)", noiDung: "Trả lời đơn" },
     ],
   },
 ];
@@ -765,7 +765,7 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
               <div style={{ textAlign: "center", fontWeight: 700, marginBottom: 2 }}>TỜ TRÌNH</div>
               <div style={{ textAlign: "center", fontWeight: 700, marginBottom: 16 }}>THẨM TRA VỤ VIỆC</div>
               <p style={{ marginBottom: 10 }}><strong>Kính trình:</strong> Lãnh đạo Tòa án nhân dân thành phố Hà Nội</p>
-              <p style={{ marginBottom: 10 }}>Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; Công chức báo cáo kết quả nghiên cứu hồ sơ như sau:</p>
+              <p style={{ marginBottom: 10 }}>Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; TTV báo cáo kết quả nghiên cứu hồ sơ như sau:</p>
               <p style={{ fontWeight: 700, marginBottom: 6 }}>I. THÔNG TIN CHUNG</p>
               <ol style={{ paddingLeft: 18, marginBottom: 10 }}>
                 <li>Số bản án: 137120/2026/HSST-QĐ</li>
@@ -774,7 +774,7 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
                 <li>Nội dung đề nghị: Xem xét lại bản án theo thủ tục giám đốc thẩm, tái thẩm.</li>
               </ol>
               <p style={{ fontWeight: 700, marginBottom: 6 }}>II. NHẬN XÉT, ĐỀ XUẤT</p>
-              <p style={{ marginBottom: 16 }}>Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. Công chức kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.</p>
+              <p style={{ marginBottom: 16 }}>Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. TTV kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.</p>
               {/* Chữ ký */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 24, fontSize: 12 }}>
                 <div>

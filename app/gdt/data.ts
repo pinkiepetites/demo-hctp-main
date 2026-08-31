@@ -224,7 +224,7 @@ const LOAI_AN_META: LoaiAnMeta[] = [
       "Vụ án PHẠM VĂN LÂM – Khiếu kiện Quyết định thu hồi đất, Quyết định phê duyệt phương án bồi thường, hỗ trợ tái định cư và Quyết định cưỡng chế thu hồi đất của UBND tỉnh",
       "Vụ án NGUYỄN THỊ MINH – Khiếu kiện quyết định xử phạt vi phạm hành chính trong lĩnh vực xây dựng",
       "Vụ án TRẦN VĂN PHÚC – Khiếu kiện Quyết định cấp Giấy chứng nhận quyền sử dụng đất và hành vi không giải quyết thủ tục đăng ký biến động đất đai của Văn phòng ĐKĐĐ",
-      "Vụ án LÊ THỊ QUỲNH – Khiếu kiện quyết định kỷ luật buộc thôi việc công chức",
+      "Vụ án LÊ THỊ QUỲNH – Khiếu kiện quyết định kỷ luật buộc thôi việc TTV",
       "Vụ án HOÀNG VĂN SƠN – Khiếu kiện quyết định thu hồi giấy phép xây dựng dự án thương mại",
       "Vụ án PHẠM VĂN CƯỜNG – Khiếu kiện Quyết định thu hồi đất và phương án bồi thường tái định cư huyện Yên Dũng",
       "Vụ án HOÀNG VĂN MINH – Khiếu kiện Quyết định xử phạt vi phạm hành chính trong lĩnh vực đất đai TP Nha Trang",
@@ -630,7 +630,7 @@ export function getCasesByVu(vu: VuPhuTrach): DonCase[] {
 }
 
 // ─── Danh bạ nhân sự của tòa án đang đăng nhập (TAND thành phố Hà Nội) ───────
-// Các ô tìm kiếm "Thẩm phán", "Công chức giải quyết", "Lãnh đạo phụ trách"
+// Các ô tìm kiếm "Thẩm phán", "TTV giải quyết", "Lãnh đạo phụ trách"
 // đều đổ từ đây, thay vì mỗi màn gõ một danh sách riêng — trước đây cùng một ô
 // ở hai màn lại ra hai bộ tên khác nhau.
 
@@ -644,7 +644,7 @@ export const THAM_PHAN_TOA = [
   "Lê Hoàng Nam",
 ];
 
-/** Công chức của phòng tại tòa án đang đăng nhập. */
+/** TTV của phòng tại tòa án đang đăng nhập. */
 export const THAM_TRA_VIEN_PHONG = [
   "Lý Thái Phúc",
   "Vũ Biêu Thư",

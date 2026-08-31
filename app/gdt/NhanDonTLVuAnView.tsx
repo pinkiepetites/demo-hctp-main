@@ -192,7 +192,7 @@ function CellVuAn({ c, onThemHoSo }: { c: DonCase; onThemHoSo?: () => void }) {
           )}
           {c.ttv && (
             <span style={{ fontSize: 11, color: TEXT, fontFamily: F, display: "block" }}>
-              Công chức: {c.ttv}
+              TTV: {c.ttv}
             </span>
           )}
         </div>
@@ -208,7 +208,7 @@ function CellVuAn({ c, onThemHoSo }: { c: DonCase; onThemHoSo?: () => void }) {
           </span>
           {c.ttvGiaiQuyet && (
             <span style={{ fontSize: 11, color: TEXT, fontFamily: F, display: "block" }}>
-              Công chức giải quyết: <strong>{c.ttvGiaiQuyet}</strong>
+              TTV giải quyết: <strong>{c.ttvGiaiQuyet}</strong>
             </span>
           )}
           {c.tpGiaiQuyet && (
@@ -570,7 +570,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
 
   const mainTabs = [
     { id: "nhan-vphctp", label: "Nhận THS từ VPHCTP" },
-    { id: "giao-ttv", label: "Giao THS đến Công chức" },
+    { id: "giao-ttv", label: "Giao THS đến TTV" },
   ] as const;
 
   const giaoCases = [
@@ -751,7 +751,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                 <SelectBox placeholder="Giao tiểu hồ sơ" options={["Chưa giao tiểu hồ sơ", "Đã giao tiểu hồ sơ"]} />
               </div>
               <div>
-                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Công chức giải quyết</div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>TTV giải quyết</div>
                 <SelectBox placeholder="-- Tất cả --" options={THAM_TRA_VIEN_PHONG} />
               </div>
             </div>
@@ -902,8 +902,8 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                   <>
                     <th style={TH_STYLE}>Người giao Vụ GĐ,KT</th>
                     <th style={TH_STYLE}>Ngày Vụ nhận</th>
-                    <th style={TH_STYLE}>Công chức nhận</th>
-                    <th style={TH_STYLE}>Ngày Công chức nhận</th>
+                    <th style={TH_STYLE}>TTV nhận</th>
+                    <th style={TH_STYLE}>Ngày TTV nhận</th>
                     <th style={TH_STYLE}>Ghi chú</th>
                   </>
                 ) : (
