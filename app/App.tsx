@@ -8055,7 +8055,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                     {!(currentRole === "pho-vp" && activeTab === 1) && (
                                       <span className="text-on-surface-variant">Nhập: </span>
                                     )}
-                                    {currentRole === "pho-vp" && activeTab === 1 && row.nguoiNhap === "Chưa phân công" ? (
+                                    {currentRole === "pho-vp" && activeTab === 1 && (row.nguoiNhap === "Chưa phân công" || row.nguoiNhap === "Chờ xử lý") ? (
                                       <select
                                         className="h-[22px] px-1 border border-primary text-primary bg-white rounded-[2px] text-[11px] font-medium focus:outline-none cursor-pointer max-w-[120px]"
                                         value={draftAssignments[row.id] || ""}
@@ -8076,7 +8076,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                           setDraftAssignments(prev => ({ ...prev, [row.id]: val }));
                                         }}
                                       >
-                                        <option value="">-- Chưa phân công --</option>
+                                        <option value="">-- Chờ xử lý --</option>
                                         {OFFICERS.map(cb => <option key={cb} value={cb}>{cb}</option>)}
                                       </select>
                                     ) : (
@@ -11665,8 +11665,8 @@ export default function App() {
           soCV: "", ngayCV: "", loaiCV: d.loaiVanBan, donViGui: d.nguoiGui,
           thamPhan: "", donViGiaiQuyet: "",
         },
-        // Vừa tiếp nhận: chờ phân công
-        giaiQuyet: { nhan: "Chờ phân công", color: "#e67e22", stl: "", coVanBan: false },
+        // Vừa tiếp nhận: chờ xử lý
+        giaiQuyet: { nhan: "Chờ xử lý", color: "#e67e22", stl: "", coVanBan: false },
         daNhan: false,
         soDon: 1,
         hinhThucTiepNhan: d.hinhThucTiepNhan,
