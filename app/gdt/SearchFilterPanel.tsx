@@ -84,7 +84,7 @@ const SEARCH_ROWS_KHANG_NGHI: RowCell[][] = [
   [
     { label: "Số CV chuyển", type: "input", placeholder: "Số CV chuyển" },
     { label: "Ngày CV chuyển", type: "date" },
-    { label: "TTV giải quyết", type: "select", placeholder: "-- Tất cả --", options: [...THAM_TRA_VIEN_PHONG] },
+    { label: "Công chức nghiên cứu giải quyết", type: "select", placeholder: "-- Tất cả --", options: [...THAM_TRA_VIEN_PHONG] },
     { label: "Loại án", type: "select", placeholder: "-- Tất cả --", options: [...LOAI_AN_OPTIONS] },
   ],
   [

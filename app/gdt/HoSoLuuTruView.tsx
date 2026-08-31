@@ -512,7 +512,7 @@ export function HoSoLuuTruView({
                   >
                     <div style={{ fontWeight: 700, color: TEXT, marginBottom: 6 }}>Tóm lược nội dung bút lục:</div>
                     Tài liệu lưu trữ được quét và niêm phong điện tử theo Quy chế công tác lưu trữ của Tòa án nhân dân thành phố Hà Nội.
-                    Bao gồm {selectedItem.soTrang} trang văn bản gốc kèm chữ ký xác nhận của TTV thụ lý.
+                    Bao gồm {selectedItem.soTrang} trang văn bản gốc kèm chữ ký xác nhận của Công chức nghiên cứu thụ lý.
                   </div>
                 </div>
               )}
@@ -596,14 +596,14 @@ export function HoSoLuuTruView({
                     {
                       time: "22/07/2026 14:15",
                       title: "Bàn giao hồ sơ nghiên cứu",
-                      desc: "TTV Lý Thái Phúc mượn Tập 1 & Tập 2 theo phiếu PM-2026-001",
+                      desc: "Công chức nghiên cứu Lý Thái Phúc mượn Tập 1 & Tập 2 theo phiếu PM-2026-001",
                       user: "Nguyễn Văn Hưng (Văn thư)",
                     },
                     {
                       time: "26/07/2026 16:30",
                       title: "Bổ sung tài liệu chứng cứ",
                       desc: "Bổ sung 15 bút lục tài liệu giám định mới vào Tập 2",
-                      user: "Lý Thái Phúc (TTV)",
+                      user: "Lý Thái Phúc (Công chức nghiên cứu)",
                     },
                   ].map((h, i) => (
                     <div key={i} style={{ display: "flex", gap: 10, position: "relative" }}>

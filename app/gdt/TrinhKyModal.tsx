@@ -432,9 +432,9 @@ export function HoSoToTrinhModal({
                   Tại Bản án hình sự sơ thẩm số 12/2023/HS-ST ngày 25/06/2023 của TAND quận Thanh Xuân và Bản án phúc thẩm số 45/2023/HS-PT ngày 28/11/2023 của TAND TP. Hà Nội đã quyết định tuyên phạt Nguyễn Văn A mức án 03 năm tù giam.
                 </p>
 
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>3. Nhận định và đề xuất của TTV</div>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>3. Nhận định và đề xuất của Công chức nghiên cứu</div>
                 <p style={{ margin: "0 0 10px", textIndent: 24 }}>
-                  Qua nghiên cứu toàn bộ hồ sơ vụ án, lời khai của các bên liên quan và kết luận giám định pháp y số 28/GĐ-PY, TTV nhận thấy có tình tiết mới làm thay đổi cơ bản nội dung vụ án mà Tòa án cấp sơ thẩm và phúc thẩm chưa xem xét đầy đủ.
+                  Qua nghiên cứu toàn bộ hồ sơ vụ án, lời khai của các bên liên quan và kết luận giám định pháp y số 28/GĐ-PY, Công chức nghiên cứu nhận thấy có tình tiết mới làm thay đổi cơ bản nội dung vụ án mà Tòa án cấp sơ thẩm và phúc thẩm chưa xem xét đầy đủ.
                 </p>
                 <p style={{ margin: "0 0 10px", textIndent: 24 }}>
                   Kính trình Chánh án Tòa án nhân dân thành phố Hà Nội xem xét kháng nghị theo thủ tục Giám đốc thẩm đối với Bản án phúc thẩm nêu trên theo hướng hủy bản án để điều tra lại theo đúng quy định của Bộ luật Tố tụng hình sự.
@@ -1249,7 +1249,7 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
     if (capTrinh === "Trình thẩm phán") return ["Nguyễn Tiến Hiệp – Thẩm phán phân công", "Lê Văn Tùng – Thẩm phán tái phân công"];
     if (capTrinh === "Trình phó chánh án") return ["Nguyễn Thị Mai – Phó Chánh án", "Lê Minh Trí – Phó Chánh án", "Nguyễn Văn Du – Phó Chánh án"];
     if (capTrinh === "Trình chánh án") return ["Đặng Quốc Trung – Chánh án TAND thành phố Hà Nội"];
-    if (capTrinh === "Nghiên cứu lại, xác minh, bổ sung") return ["Lý Thái Phúc – TTV", "Nguyễn Minh Tú – TTV"];
+    if (capTrinh === "Nghiên cứu lại, xác minh, bổ sung") return ["Lý Thái Phúc – Công chức nghiên cứu", "Nguyễn Minh Tú – Công chức nghiên cứu"];
     return [];
   };
 
@@ -1419,19 +1419,19 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
                   <hr style={{ border: "none", borderTop: "1px solid #000", margin: "4px 0" }} />
                 </div>
               </div>
-              <div style={{ fontSize: 11, marginBottom: 4 }}>Số: 12/TTr-TTV</div>
+              <div style={{ fontSize: 11, marginBottom: 4 }}>Số: 12/TTr-Công chức nghiên cứu</div>
               <div style={{ textAlign: "right", fontStyle: "italic", fontSize: 12, marginBottom: 20 }}>Hà Nội, ngày 08 tháng 04 năm 2026</div>
               <div style={{ textAlign: "center", fontWeight: 700, fontSize: 15, marginBottom: 4 }}>TỜ TRÌNH</div>
               <div style={{ textAlign: "center", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>THẨM TRA VỤ VIỆC</div>
               <div style={{ textAlign: "center", fontStyle: "italic", fontSize: 12, marginBottom: 20 }}>Kính trình: Lãnh đ o Tòa án nhân dân t i cao</div>
-              <p style={{ textAlign: "justify", marginBottom: 16, fontSize: 12 }}>Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; TTV báo cáo kết quả nghiên cứu hồ sơ như sau:</p>
+              <p style={{ textAlign: "justify", marginBottom: 16, fontSize: 12 }}>Căn cứ đơn đề nghị xem xét theo thủ tục giám đốc thẩm, tái thẩm và các tài liệu có trong hồ sơ vụ việc; Công chức nghiên cứu báo cáo kết quả nghiên cứu hồ sơ như sau:</p>
               <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>I. THÔNG TIN CHUNG</div>
               <div style={{ fontSize: 12, marginBottom: 4, paddingLeft: 16 }}>Số bản án: 137120/2026/HSST-QĐ</div>
               <div style={{ fontSize: 12, marginBottom: 4, paddingLeft: 16 }}>Tòa án xét xử: Tòa án nhân dân thành phố Hà Nội</div>
               <div style={{ fontSize: 12, marginBottom: 4, paddingLeft: 16 }}>Người đề nghị: Nguyễn Văn A</div>
               <div style={{ fontSize: 12, marginBottom: 16, paddingLeft: 16 }}>Nội dung đề nghị: Xem xét lại bản án theo thủ tục giám đốc thẩm, tái thẩm.</div>
               <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 13 }}>II. NHẬN XÉT, ĐỀ XUẤT</div>
-              <p style={{ textAlign: "justify", fontSize: 12, marginBottom: 40 }}>Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. TTV kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.</p>
+              <p style={{ textAlign: "justify", fontSize: 12, marginBottom: 40 }}>Qua kiểm tra, hồ sơ có nội dung cần xin ý kiến lãnh đạo để thống nhất hướng xử lý. Công chức nghiên cứu kính đề nghị lãnh đạo xem xét, cho ý kiến chỉ đạo làm căn cứ thực hiện các bước tiếp theo theo đúng quy định.</p>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
                 <div>
                   <div style={{ fontStyle: "italic" }}>N i nh n:</div>

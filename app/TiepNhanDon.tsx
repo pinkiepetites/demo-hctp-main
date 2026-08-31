@@ -27,23 +27,23 @@ import {
 // ─── Thành phần dùng chung (khớp kiểu với các màn còn lại) ───────────────────
 
 const Lbl = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
-  <label className="block text-[13px] font-medium text-[#333] mb-1">
-    {children}{req && <span className="text-[#c0392b] ml-0.5">*</span>}
+  <label className="block text-[13px] font-medium text-on-surface mb-1">
+    {children}{req && <span className="text-error ml-0.5">*</span>}
   </label>
 );
 
 const Inp = ({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input {...props}
-    className={`w-full h-[30px] px-2 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]/20 disabled:bg-[#f5f5f5] disabled:text-[#999] ${className}`} />
+    className={`w-full h-[30px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:bg-surface-container-low disabled:text-outline ${className}`} />
 );
 
 const Sel = ({ className = "", children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
   <div className="relative">
     <select {...props}
-      className={`w-full h-[30px] pl-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none disabled:bg-[#f5f5f5] disabled:text-[#999] ${className}`}>
+      className={`w-full h-[30px] pl-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary appearance-none disabled:bg-surface-container-low disabled:text-outline ${className}`}>
       {children}
     </select>
-    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
   </div>
 );
 
@@ -51,11 +51,11 @@ const Khoi = ({ icon, tieuDe, moTa, children, extra }: {
   icon: React.ReactNode; tieuDe: string; moTa?: string;
   children: React.ReactNode; extra?: React.ReactNode;
 }) => (
-  <div className="bg-white border border-[#ddd] rounded-[4px]">
-    <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 border-b border-[#eee]">
+  <div className="bg-white border border-surface-container rounded-[4px]">
+    <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 border-b border-surface-container-high">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-[#8b1a1a] flex-shrink-0">{icon}</span>
-        <span className="text-[13px] font-semibold text-[#1d2e4f]">{tieuDe}</span>
+        <span className="text-error flex-shrink-0">{icon}</span>
+        <span className="text-[13px] font-semibold text-tertiary">{tieuDe}</span>
         {moTa && <span className="text-[12px] text-[#94a3b8] truncate">· {moTa}</span>}
       </div>
       {extra}
@@ -151,12 +151,12 @@ const OTaiLieu = ({ nhan, moTa, batBuoc, tep, dangXem, onThem, onXoa, onXem }: {
   const oFile = useRef<HTMLInputElement>(null);
 
   return (
-    <div className={`rounded-[4px] border transition-colors ${dangXem ? "border-[#8b1a1a] bg-[#fdf7f7]" : "border-[#e0e0e0] bg-[#fafafa]"}`}>
+    <div className={`rounded-[4px] border transition-colors ${dangXem ? "border-error bg-[#fdf7f7]" : "border-surface-container-highest bg-surface-bright"}`}>
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <FileText size={16} className={tep.length ? "text-[#27ae60]" : "text-[#aaa]"} />
+        <FileText size={16} className={tep.length ? "text-[#27ae60]" : "text-outline"} />
         <div className="min-w-0 flex-1">
-          <div className="text-[13px] font-medium text-[#333]">
-            {nhan}{batBuoc && <span className="text-[#c0392b] ml-0.5">*</span>}
+          <div className="text-[13px] font-medium text-on-surface">
+            {nhan}{batBuoc && <span className="text-error ml-0.5">*</span>}
             {tep.length > 0 && (
               <span className="ml-2 text-[11px] font-semibold text-[#27ae60]">{tep.length} tệp</span>
             )}
@@ -164,7 +164,7 @@ const OTaiLieu = ({ nhan, moTa, batBuoc, tep, dangXem, onThem, onXoa, onXem }: {
           <div className="text-[11px] text-[#94a3b8] truncate">{moTa}</div>
         </div>
         <button type="button" onClick={() => oFile.current?.click()}
-          className="flex items-center gap-1.5 h-[28px] px-2.5 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[12px] font-medium transition-colors flex-shrink-0">
+          className="flex items-center gap-1.5 h-[28px] px-2.5 border border-error text-error hover:bg-[#fcf5f5] rounded-[3px] text-[12px] font-medium transition-colors flex-shrink-0">
           <Upload size={12} /> Tải lên
         </button>
         <input ref={oFile} type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.tif" className="hidden"
@@ -176,16 +176,16 @@ const OTaiLieu = ({ nhan, moTa, batBuoc, tep, dangXem, onThem, onXoa, onXem }: {
       </div>
 
       {tep.length > 0 && (
-        <div className="border-t border-[#eee] divide-y divide-[#f0f0f0]">
+        <div className="border-t border-surface-container-high divide-y divide-[#f0f0f0]">
           {tep.map((t, i) => (
             <div key={`${t.ten}-${i}`} className="flex items-center gap-2 px-3 py-1.5 bg-white">
               <Paperclip size={11} className="text-[#94a3b8] flex-shrink-0" />
-              <span className="text-[12px] text-[#333] truncate flex-1">{t.ten}</span>
+              <span className="text-[12px] text-on-surface truncate flex-1">{t.ten}</span>
               <span className="text-[11px] text-[#94a3b8] flex-shrink-0 tabular-nums">{coChu(t.kb)}</span>
               <button type="button" onClick={onXem} title="Xem ở khung bên phải"
-                className="text-[#1a5a96] hover:text-[#0f3f6e] flex-shrink-0"><Eye size={13} /></button>
+                className="text-primary hover:text-[#0f3f6e] flex-shrink-0"><Eye size={13} /></button>
               <button type="button" onClick={() => onXoa(i)} title="Xóa tệp"
-                className="text-[#aaa] hover:text-[#c0392b] flex-shrink-0"><Trash2 size={13} /></button>
+                className="text-outline hover:text-error flex-shrink-0"><Trash2 size={13} /></button>
             </div>
           ))}
         </div>
@@ -380,11 +380,11 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
       {onHuy && (
         <div className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-[#d8dee6] flex-shrink-0">
           <button type="button" onClick={onHuy}
-            className="flex items-center gap-1.5 h-[30px] px-3 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[13px] font-medium text-[#333] transition-colors flex-shrink-0">
+            className="flex items-center gap-1.5 h-[30px] px-3 border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-[13px] font-medium text-on-surface transition-colors flex-shrink-0">
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="min-w-0">
-            <div className="text-[14px] font-bold text-[#1d2e4f] leading-tight flex items-center gap-2">
+            <div className="text-[14px] font-bold text-tertiary leading-tight flex items-center gap-2">
               {banGhi ? "Chi tiết văn thư đến" : "Tiếp nhận đơn mới"}
               {chiXem && (
                 <span className="px-1.5 py-[1px] rounded text-[10px] font-semibold bg-[#eef1f5] text-[#64748b] border border-[#d8dee6]">
@@ -408,7 +408,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
           Đang nhập tiếp trong bì thư <b className="font-semibold">{maBiThu || "—"}</b>
           — đã lưu <b className="font-semibold">{soDonCungBi}</b> đơn.
           <button type="button" onClick={() => { datLai(false); setThongBao(""); }}
-            className="ml-auto text-[#8b1a1a] hover:underline font-medium">
+            className="ml-auto text-error hover:underline font-medium">
             Kết thúc bì này
           </button>
         </div>
@@ -421,7 +421,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
           {/* Lối tắt sang đúng nơi đơn vừa tới — đỡ phải tự đi tìm trong menu */}
           {daLuuVaoGDT && onMoDanhSachGDT && (
             <button type="button" onClick={onMoDanhSachGDT}
-              className="flex-shrink-0 font-semibold text-[#1a5a96] hover:underline">
+              className="flex-shrink-0 font-semibold text-primary hover:underline">
               Mở Danh sách đơn GĐT/TT →
             </button>
           )}
@@ -446,10 +446,10 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
                   return (
                     <button key={h.ma} type="button" onClick={() => setHinhThuc(h.ma)}
                       aria-pressed={chon}
-                      className={`flex items-center justify-center gap-1.5 h-[34px] rounded-[3px] text-[13px] font-medium border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a73e8]
+                      className={`flex items-center justify-center gap-1.5 h-[34px] rounded-[3px] text-[13px] font-medium border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
                         ${chon
-                          ? "bg-[#fdeaea] border-[#8b1a1a] text-[#8b1a1a]"
-                          : "bg-white border-[#ccc] text-[#555] hover:border-[#999]"}`}>
+                          ? "bg-[#fdeaea] border-error text-error"
+                          : "bg-white border-surface-container-highest text-on-surface-variant hover:border-outline"}`}>
                       {h.icon}{h.nhan}
                     </button>
                   );
@@ -482,7 +482,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
                   <Lbl>Số đến (Văn bản điều hành)</Lbl>
                   <Inp value={soDen} onChange={e => setSoDen(e.target.value)}
                     readOnly={soDenTuDong}
-                    className={soDenTuDong ? "bg-[#f5f7fa] text-[#1a5a96] font-semibold cursor-default" : ""}
+                    className={soDenTuDong ? "bg-[#f5f7fa] text-primary font-semibold cursor-default" : ""}
                     placeholder="Chưa có số" />
                   {/* Chỉ chú thích khi CÓ số — lúc đó mới cần giải thích vì sao ô
                       bị khóa. Chưa có số thì ô trống đã tự nói hết, thêm chữ chỉ
@@ -535,7 +535,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
             <Khoi icon={nguoiGuiLa === "ca-nhan" ? <User size={15} /> : <Building2 size={15} />} tieuDe="Người gửi đơn">
               <div className="flex items-center gap-5 mb-3">
                 {([["ca-nhan", "Cá nhân"], ["to-chuc", "Cơ quan / tổ chức"]] as const).map(([ma, nhan]) => (
-                  <label key={ma} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                  <label key={ma} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                     <input type="radio" name="nguoiGuiLa" className="accent-[#8b1a1a]"
                       checked={nguoiGuiLa === ma} onChange={() => setNguoiGuiLa(ma)} />
                     {nhan}
@@ -623,7 +623,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
                   <Lbl req>Trích yếu / Nội dung</Lbl>
                   <textarea value={trichYeu} onChange={e => setTrichYeu(e.target.value)} rows={3}
                     placeholder="Tóm tắt nội dung đơn — đây là dòng cán bộ khác đọc để nhận ra đơn này."
-                    className="w-full px-2 py-1.5 text-[13px] border border-[#ccc] rounded-[3px] bg-white resize-y focus:outline-none focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]/20" />
+                    className="w-full px-2 py-1.5 text-[13px] border border-surface-container-highest rounded-[3px] bg-white resize-y focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20" />
                 </div>
               </div>
             </Khoi>
@@ -654,8 +654,8 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
             đơn (nền #404040, thanh công cụ #323232, nút ▸ để ẩn, dải dọc "Tài liệu"
             để mở lại) — hai màn cùng một thao tác thì phải trông và bấm như nhau. */}
         {hienTaiLieu && (
-        <div className="flex-1 min-w-[380px] flex flex-col bg-[#404040] border-l border-[#333]">
-          <div className="bg-[#323232] flex items-center gap-1 px-2 border-b border-[#555] flex-shrink-0">
+        <div className="flex-1 min-w-[380px] flex flex-col bg-[#404040] border-l border-on-surface">
+          <div className="bg-[#323232] flex items-center gap-1 px-2 border-b border-on-surface-variant flex-shrink-0">
             <button type="button" onClick={() => setHienTaiLieu(false)} title="Ẩn tài liệu"
               className="text-white/60 hover:text-white transition-colors p-1 rounded flex-shrink-0">
               <ChevronRight size={15} />
@@ -664,7 +664,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
               <button key={n.ma} type="button" onClick={() => setNhomDangXem(n.ma)}
                 className={`px-3 py-2 text-[12px] font-medium border-b-2 -mb-px transition-colors
                   ${nhomDangXem === n.ma
-                    ? "border-[#8b1a1a] text-white"
+                    ? "border-error text-white"
                     : "border-transparent text-white/60 hover:text-white"}`}>
                 {n.nhan}
                 {tep[n.ma].length > 0 && (
@@ -676,7 +676,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
             ))}
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-[7px] bg-[#3a3a3a] border-b border-[#555] flex-shrink-0">
+          <div className="flex items-center gap-2 px-3 py-[7px] bg-[#3a3a3a] border-b border-on-surface-variant flex-shrink-0">
             {[<ZoomOut key="a" size={14} />, <ZoomIn key="b" size={14} />, <RotateCw key="c" size={14} />].map((ic, i) => (
               <button key={i} type="button" disabled={tepDangXem.length === 0}
                 className="p-1 rounded text-white/60 hover:text-white disabled:opacity-30 transition-colors">
@@ -701,10 +701,10 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
               <div className="space-y-3">
                 {tepDangXem.map((t, i) => (
                   <div key={`${t.ten}-${i}`} className="bg-white rounded-[3px] shadow-lg overflow-hidden">
-                    <div className="px-3 py-1.5 bg-[#f5f5f5] border-b border-[#e0e0e0] flex items-center gap-2">
-                      <FileText size={13} className="text-[#8b1a1a] flex-shrink-0" />
-                      <span className="text-[12px] font-medium text-[#333] truncate flex-1">{t.ten}</span>
-                      <span className="text-[11px] text-[#888] flex-shrink-0 tabular-nums">{coChu(t.kb)}</span>
+                    <div className="px-3 py-1.5 bg-surface-container-low border-b border-surface-container-highest flex items-center gap-2">
+                      <FileText size={13} className="text-error flex-shrink-0" />
+                      <span className="text-[12px] font-medium text-on-surface truncate flex-1">{t.ten}</span>
+                      <span className="text-[11px] text-on-surface-variant flex-shrink-0 tabular-nums">{coChu(t.kb)}</span>
                     </div>
                     <div className="h-[190px] flex flex-col items-center justify-center gap-1.5 text-[#b0b7c0] bg-[#fbfbfb]">
                       <FileText size={30} strokeWidth={1.2} />
@@ -720,13 +720,13 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
 
         {/* Dải dọc mở lại khung tài liệu — giống hệt màn Danh sách đơn */}
         {!hienTaiLieu && (
-          <div className="flex-shrink-0 border-l border-[#ccc] bg-[#f5f5f5] flex items-start pt-3">
+          <div className="flex-shrink-0 border-l border-surface-container-highest bg-surface-container-low flex items-start pt-3">
             <button type="button" onClick={() => setHienTaiLieu(true)} title="Hiện tài liệu"
-              className="flex flex-col items-center gap-1 px-2 py-2 text-[#555] hover:text-[#1d2e4f] hover:bg-[#e8edf5] rounded-[3px] transition-colors">
+              className="flex flex-col items-center gap-1 px-2 py-2 text-on-surface-variant hover:text-tertiary hover:bg-[#e8edf5] rounded-[3px] transition-colors">
               <ChevronLeft size={15} />
               <span className="text-[10px] font-medium [writing-mode:vertical-rl] rotate-180">Tài liệu</span>
               {soTepTong > 0 && (
-                <span className="text-[10px] font-semibold bg-[#8b1a1a] text-white rounded-full px-1.5 py-0.5">
+                <span className="text-[10px] font-semibold bg-error text-white rounded-full px-1.5 py-0.5">
                   {soTepTong}
                 </span>
               )}
@@ -746,7 +746,7 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
             <b className="font-semibold text-[#334155]">Đơn vị xử lý</b> ngay trên màn danh sách.
           </span>
           <button type="button" onClick={onHuy}
-            className="ml-auto h-[30px] px-4 rounded-[3px] border border-[#ccc] bg-white hover:bg-[#f5f5f5] text-[13px] font-medium text-[#333] transition-colors">
+            className="ml-auto h-[30px] px-4 rounded-[3px] border border-surface-container-highest bg-white hover:bg-surface-container-low text-[13px] font-medium text-on-surface transition-colors">
             Quay lại danh sách
           </button>
         </div>
@@ -772,20 +772,20 @@ function FormTiepNhanDon({ canBoDangNhap = "Vũ Văn Yên", onHuy, onMoDanhSachG
           <>
               <button type="button" disabled={!luuDuoc} onClick={() => luu("dong")}
                 className={`h-[32px] px-4 border rounded-[3px] text-[13px] font-medium transition-colors
-                  ${luuDuoc ? "border-[#8b1a1a] text-[#8b1a1a] bg-white hover:bg-[#fcf5f5]" : "border-[#ddd] text-[#aaa] bg-[#f7f7f7] cursor-not-allowed"}`}>
+                  ${luuDuoc ? "border-error text-error bg-white hover:bg-[#fcf5f5]" : "border-surface-container text-outline bg-[#f7f7f7] cursor-not-allowed"}`}>
                 Lưu
               </button>
               {/* Chỉ có nghĩa khi nhận qua bưu điện — một bì mới chứa được nhiều đơn */}
               {quaBuuDien && (
                 <button type="button" disabled={!luuDuoc} onClick={() => luu("cung-bi")}
                   className={`h-[32px] px-4 border rounded-[3px] text-[13px] font-medium transition-colors
-                    ${luuDuoc ? "border-[#8b1a1a] text-[#8b1a1a] bg-white hover:bg-[#fcf5f5]" : "border-[#ddd] text-[#aaa] bg-[#f7f7f7] cursor-not-allowed"}`}>
+                    ${luuDuoc ? "border-error text-error bg-white hover:bg-[#fcf5f5]" : "border-surface-container text-outline bg-[#f7f7f7] cursor-not-allowed"}`}>
                   Lưu &amp; thêm cùng bì
                 </button>
               )}
               <button type="button" disabled={!luuDuoc} onClick={() => luu("moi")}
                 className={`h-[32px] px-4 rounded-[3px] text-[13px] font-medium text-white transition-colors
-                  ${luuDuoc ? "bg-[#8b1a1a] hover:bg-[#6e1414]" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
+                  ${luuDuoc ? "bg-error hover:bg-error-container" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
                 Lưu &amp; thêm mới
               </button>
           </>
@@ -826,15 +826,15 @@ type VanThuDen = {
 /** Màu theo LOẠI văn bản — dùng lại đúng dải màu của các màn khác để một loại
  *  luôn cùng một màu ở mọi nơi. */
 const MAU_LOAI: Record<string, string> = {
-  "Đơn đề nghị GĐT/TT": "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]",
+  "Đơn đề nghị GĐT/TT": "bg-info-container text-primary border-surface-variant",
   "Đơn khiếu nại tố cáo trong tố tụng": "bg-[#fff7ed] text-[#b45309] border-[#fcd48a]",
   "Thông báo phát hiện vi phạm pháp luật": "bg-[#f0fdf4] text-[#1a7a45] border-[#a9debb]",
-  "Đơn khác": "bg-[#f5f3ff] text-[#6d28d9] border-[#ddd6fe]",
+  "Đơn khác": "bg-[#f5f3ff] text-on-tertiary-fixed-variant border-[#ddd6fe]",
   "CV kiến nghị GĐT/TT": "bg-[#eef4ff] text-[#3b52a4] border-[#c7d3f5]",
   "CV chuyển đơn": "bg-[#eef4ff] text-[#3b52a4] border-[#c7d3f5]",
   "CV chuyển kiến nghị GĐT/TT": "bg-[#eef4ff] text-[#3b52a4] border-[#c7d3f5]",
-  "Công văn khác": "bg-[#f5f5f5] text-[#555] border-[#ddd]",
-  "Hồ sơ kháng nghị": "bg-[#f3e8ff] text-[#6d28d9] border-[#d8b4fe]",
+  "Công văn khác": "bg-surface-container-low text-on-surface-variant border-surface-container",
+  "Hồ sơ kháng nghị": "bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim",
   "Tài liệu chứng cứ": "bg-[#ecfeff] text-[#0e7490] border-[#a5e8f0]",
 };
 
@@ -1055,43 +1055,43 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-[#eef1f5]">
       {/* Tabs */}
-      <div className="bg-white border-b border-[#ddd] flex items-end px-3 pt-2 gap-0 flex-shrink-0">
+      <div className="bg-white border-b border-surface-container flex items-end px-3 pt-2 gap-0 flex-shrink-0">
         {TABS.map(t => (
           <button key={t.ma} type="button" onClick={() => { setTab(t.ma); setLoai(""); }}
             className={`px-4 py-[7px] text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap
-              ${tab === t.ma ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#222]"}`}>
+              ${tab === t.ma ? "border-error text-error" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}>
             {t.nhan}
             <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full
-              ${tab === t.ma ? "bg-[#8b1a1a] text-white" : "bg-[#eee] text-[#666]"}`}>{t.dem}</span>
+              ${tab === t.ma ? "bg-error text-white" : "bg-surface-container-high text-on-surface-variant"}`}>{t.dem}</span>
           </button>
         ))}
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {/* Thanh tìm kiếm + hành động */}
-        <div className="bg-white border border-[#ddd] rounded-[4px] p-3 space-y-3">
+        <div className="bg-white border border-surface-container rounded-[4px] p-3 space-y-3">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative flex-1 min-w-[260px]">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#aaa]" />
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-outline" />
               <input value={tuKhoa}
                 onChange={e => { setTuKhoa(e.target.value); setMoGoiY(true); setViTriGoiY(-1); }}
                 onFocus={() => setMoGoiY(true)}
                 onBlur={() => { setMoGoiY(false); setViTriGoiY(-1); }}
                 onKeyDown={phimGoiY}
                 placeholder="Tìm theo trích yếu, người gửi, nơi gửi…"
-                className="w-full h-[32px] pl-7 pr-7 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                className="w-full h-[32px] pl-7 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
               {tuKhoa && (
                 <button type="button" onClick={() => { setTuKhoa(""); setViTriGoiY(-1); }}
                   title="Xoá từ khoá"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#666]">
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant">
                   <X size={13} />
                 </button>
               )}
               {/* Gợi ý rút từ chính các dòng đang hiển thị. onMouseDown chặn
                   blur, nếu không input mất focus trước khi onClick kịp chạy. */}
               {moGoiY && goiY.length > 0 && (
-                <div className="absolute left-0 right-0 top-[34px] z-20 bg-white border border-[#ddd] rounded-[4px] shadow-lg max-h-[260px] overflow-y-auto">
-                  <p className="px-3 py-1.5 text-[11px] text-[#8a94a6] border-b border-[#f0f0f0]">
+                <div className="absolute left-0 right-0 top-[34px] z-20 bg-white border border-surface-container rounded-[4px] shadow-lg max-h-[260px] overflow-y-auto">
+                  <p className="px-3 py-1.5 text-[11px] text-[#8a94a6] border-b border-surface-container">
                     Gợi ý từ {hienThi.length} dòng đang hiển thị
                   </p>
                   {goiY.map((g, i) => (
@@ -1101,13 +1101,13 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
                       onMouseDown={e => e.preventDefault()}
                       onMouseEnter={() => setViTriGoiY(i)}
                       onClick={() => chonGoiY(g.giaTri)}
-                      className={`w-full text-left px-3 py-[6px] text-[12px] flex items-baseline gap-2 border-b border-[#f5f5f5] last:border-0
+                      className={`w-full text-left px-3 py-[6px] text-[12px] flex items-baseline gap-2 border-b border-surface-container-low last:border-0
                         ${i === viTriGoiY ? "bg-[#eef4fd]" : "hover:bg-[#f7f9fc]"}`}
                     >
-                      <span className="text-[10px] text-[#8a94a6] border border-[#e0e0e0] rounded-[2px] px-1 py-[1px] flex-shrink-0">
+                      <span className="text-[10px] text-[#8a94a6] border border-surface-container-highest rounded-[2px] px-1 py-[1px] flex-shrink-0">
                         {g.truong}
                       </span>
-                      <span className="text-[#222] truncate">{g.giaTri}</span>
+                      <span className="text-on-surface truncate">{g.giaTri}</span>
                     </button>
                   ))}
                 </div>
@@ -1118,8 +1118,8 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
             <button type="button" onClick={() => setHoiXacNhan(true)} disabled={daChon.length === 0}
               className={`flex items-center gap-1.5 h-[32px] px-4 rounded-[3px] text-[13px] font-medium transition-colors
                 ${daChon.length === 0
-                  ? "border border-[#ddd] bg-[#f7f7f7] text-[#aaa] cursor-not-allowed"
-                  : "bg-[#8b1a1a] hover:bg-[#6e1414] text-white"}`}>
+                  ? "border border-surface-container bg-[#f7f7f7] text-outline cursor-not-allowed"
+                  : "bg-error hover:bg-error-container text-white"}`}>
               <Send size={13} /> Chuyển đơn{daChon.length > 0 && ` (${daChon.length})`}
             </button>
           </div>
@@ -1131,28 +1131,28 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
             <button type="button" onClick={() => setMoBoLoc(v => !v)}
               className={`flex items-center gap-1.5 h-[26px] px-2.5 rounded-[3px] border text-[12px] font-medium transition-colors
                 ${soDieuKienPhu > 0
-                  ? "border-[#8b1a1a] text-[#8b1a1a] bg-[#fdecea]"
-                  : "border-[#ccc] text-[#555] bg-white hover:border-[#999]"}`}>
+                  ? "border-error text-error bg-[#fdecea]"
+                  : "border-surface-container-highest text-on-surface-variant bg-white hover:border-outline"}`}>
               <SlidersHorizontal size={12} />
               Bộ lọc chi tiết
               {soDieuKienPhu > 0 && (
-                <span className="bg-[#8b1a1a] text-white rounded-full text-[10px] font-semibold min-w-[15px] h-[15px] leading-[15px] text-center px-1">
+                <span className="bg-error text-white rounded-full text-[10px] font-semibold min-w-[15px] h-[15px] leading-[15px] text-center px-1">
                   {soDieuKienPhu}
                 </span>
               )}
               {moBoLoc ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             </button>
-            <span className="w-px h-5 bg-[#e0e0e0]" />
+            <span className="w-px h-5 bg-surface-container-highest" />
             <span className="text-[12px] text-[#8a94a6]">Loại văn bản:</span>
             <button type="button" onClick={() => setLoai("")}
               className={`px-2.5 py-[3px] rounded-full text-[12px] font-medium border transition-colors
-                ${!loai ? "bg-[#1d2e4f] border-[#1d2e4f] text-white" : "bg-white border-[#ccc] text-[#555] hover:border-[#999]"}`}>
+                ${!loai ? "bg-tertiary border-tertiary text-white" : "bg-white border-surface-container-highest text-on-surface-variant hover:border-outline"}`}>
               Tất cả <span className="opacity-70">{theoTab.length}</span>
             </button>
             {dsLoai.map(([ten, dem]) => (
               <button key={ten} type="button" onClick={() => setLoai(l => l === ten ? "" : ten)}
                 className={`px-2.5 py-[3px] rounded-full text-[12px] font-medium border transition-colors
-                  ${loai === ten ? "bg-[#1d2e4f] border-[#1d2e4f] text-white" : "bg-white border-[#ccc] text-[#555] hover:border-[#999]"}`}>
+                  ${loai === ten ? "bg-tertiary border-tertiary text-white" : "bg-white border-surface-container-highest text-on-surface-variant hover:border-outline"}`}>
                 {ten} <span className="opacity-70">{dem}</span>
               </button>
             ))}
@@ -1160,7 +1160,7 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
 
           {/* ── Bộ lọc chi tiết ── */}
           {moBoLoc && (
-            <div className="border-t border-[#eee] pt-3 space-y-2.5">
+            <div className="border-t border-surface-container-high pt-3 space-y-2.5">
               <div className="grid grid-cols-4 gap-x-3 gap-y-2.5">
                 <div>
                   <Lbl>Số đến</Lbl>
@@ -1188,7 +1188,7 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
                   <Lbl>Ngày nhận</Lbl>
                   <div className="flex items-center gap-1.5">
                     <Inp type="date" value={fTuNgay} onChange={e => setFTuNgay(e.target.value)} />
-                    <span className="text-[12px] text-[#888] flex-shrink-0">đến</span>
+                    <span className="text-[12px] text-on-surface-variant flex-shrink-0">đến</span>
                     <Inp type="date" value={fDenNgay} onChange={e => setFDenNgay(e.target.value)} />
                   </div>
                 </div>
@@ -1203,8 +1203,8 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
                   <button type="button" onClick={xoaBoLocPhu} disabled={soDieuKienPhu === 0}
                     className={`w-full h-[30px] rounded-[3px] border text-[12px] font-medium transition-colors
                       ${soDieuKienPhu === 0
-                        ? "border-[#e0e0e0] text-[#bbb] cursor-not-allowed"
-                        : "border-[#ccc] text-[#555] hover:border-[#8b1a1a] hover:text-[#8b1a1a]"}`}>
+                        ? "border-surface-container-highest text-[#bbb] cursor-not-allowed"
+                        : "border-surface-container-highest text-on-surface-variant hover:border-error hover:text-error"}`}>
                     Xoá bộ lọc chi tiết
                   </button>
                 </div>
@@ -1217,9 +1217,9 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
         </div>
 
         {/* Bảng */}
-        <div className="bg-white border border-[#ddd] rounded-[4px] overflow-hidden">
-          <div className="px-3.5 py-2 border-b border-[#eee] flex items-center justify-between gap-3">
-            <span className="text-[13px] font-semibold text-[#1d2e4f]">Văn thư đến</span>
+        <div className="bg-white border border-surface-container rounded-[4px] overflow-hidden">
+          <div className="px-3.5 py-2 border-b border-surface-container-high flex items-center justify-between gap-3">
+            <span className="text-[13px] font-semibold text-tertiary">Văn thư đến</span>
             {/* Bấm đúp là thao tác ẩn — không nói ra thì không ai đoán được */}
             <span className="text-[12px] text-[#8a94a6]">
               Bấm đúp vào một dòng để sửa · {hienThi.length} văn bản
@@ -1228,30 +1228,30 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#f5f5f5]">
-                  <th className="border border-[#ddd] px-2 py-[6px] text-center w-[34px]">
+                <tr className="bg-surface-container-low">
+                  <th className="border border-surface-container px-2 py-[6px] text-center w-[34px]">
                     <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                       title="Chọn tất cả đơn chưa chuyển đang hiển thị"
                       checked={coTheChuyen.length > 0 && daChon.length === coTheChuyen.length}
                       onChange={() => setDaChon(daChon.length === coTheChuyen.length ? [] : coTheChuyen.map(r => r.id))} />
                   </th>
-                  <th className="border border-[#ddd] px-2 py-[6px] text-center font-semibold text-[#333] w-[42px]">STT</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[100px]">Ngày nhận</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Trích yếu</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[190px]">Người gửi</th>
+                  <th className="border border-surface-container px-2 py-[6px] text-center font-semibold text-on-surface w-[42px]">STT</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[100px]">Ngày nhận</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Trích yếu</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[190px]">Người gửi</th>
                   {/* Hình thức nhận đứng trước Loại văn bản, để Loại văn bản và
                       Đơn vị xử lý nằm sát nhau — hai ô này ràng buộc lẫn nhau
                       (đổi loại là kéo theo đơn vị), tách rời thì không thấy được
                       quan hệ đó khi nhìn lướt qua bảng. */}
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Hình thức nhận</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[170px]">Loại văn bản</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[210px]">Đơn vị xử lý</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[135px]">Trạng thái</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[110px]">Hình thức nhận</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[170px]">Loại văn bản</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[210px]">Đơn vị xử lý</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[135px]">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
                 {hienThi.length === 0 ? (
-                  <tr><td colSpan={9} className="border border-[#ddd] px-4 py-10 text-center text-[#999]">
+                  <tr><td colSpan={9} className="border border-surface-container px-4 py-10 text-center text-outline">
                     Không có văn bản nào khớp điều kiện.
                   </td></tr>
                 ) : hienThi.map((r, i) => {
@@ -1262,67 +1262,67 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
                     onDoubleClick={() => onSua(r)}
                     title="Bấm đúp để sửa văn bản này"
                     className={`align-top cursor-pointer select-none transition-colors
-                      ${tich ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"} hover:bg-[#f5f8fc]`}>
+                      ${tich ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"} hover:bg-[#f5f8fc]`}>
                     {/* Ô tích và ô chọn đơn vị chặn sự kiện, nếu không bấm hai lần
                         vào chúng sẽ vô tình mở màn sửa. */}
-                    <td className="border border-[#ddd] px-2 py-2 text-center"
+                    <td className="border border-surface-container px-2 py-2 text-center"
                       onDoubleClick={e => e.stopPropagation()}>
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a] disabled:opacity-40"
                         checked={tich} disabled={daChuyen}
                         title={daChuyen ? "Đơn đã chuyển, không chuyển lại" : "Chọn để chuyển đơn"}
                         onChange={() => setDaChon(p => p.includes(r.id) ? p.filter(x => x !== r.id) : [...p, r.id])} />
                     </td>
-                    <td className="border border-[#ddd] px-2 py-2 text-center text-[#666]">{i + 1}</td>
-                    <td className="border border-[#ddd] px-3 py-2 text-[#333] whitespace-nowrap">{r.ngayNhan}</td>
-                    <td className="border border-[#ddd] px-3 py-2">
-                      <div className="text-[#333] leading-snug">{r.trichYeu}</div>
+                    <td className="border border-surface-container px-2 py-2 text-center text-on-surface-variant">{i + 1}</td>
+                    <td className="border border-surface-container px-3 py-2 text-on-surface whitespace-nowrap">{r.ngayNhan}</td>
+                    <td className="border border-surface-container px-3 py-2">
+                      <div className="text-on-surface leading-snug">{r.trichYeu}</div>
                       {r.laGDTTT && (
-                        <span className="inline-block mt-1 px-1.5 py-[1px] rounded text-[10px] font-semibold bg-[#fdeaea] text-[#8b1a1a] border border-[#f0c9c9]">
+                        <span className="inline-block mt-1 px-1.5 py-[1px] rounded text-[10px] font-semibold bg-[#fdeaea] text-error border border-[#f0c9c9]">
                           GĐT/TT
                         </span>
                       )}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2">
-                      <div className="font-medium text-[#1d2e4f] leading-snug">{r.nguoiGui}</div>
-                      <div className="text-[11px] text-[#888] mt-0.5 leading-snug">{r.noiGui}</div>
+                    <td className="border border-surface-container px-3 py-2">
+                      <div className="font-medium text-tertiary leading-snug">{r.nguoiGui}</div>
+                      <div className="text-[11px] text-on-surface-variant mt-0.5 leading-snug">{r.noiGui}</div>
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.hinhThucNhan}</td>
+                    <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{r.hinhThucNhan}</td>
                     {/* Loại văn bản sửa tại chỗ: màn chi tiết chỉ để xem, nên đây
                         là nơi duy nhất đổi được — và nó kéo theo Đơn vị xử lý ở
                         ngay ô bên cạnh. */}
-                    <td className="border border-[#ddd] px-2 py-2" onDoubleClick={e => e.stopPropagation()}>
+                    <td className="border border-surface-container px-2 py-2" onDoubleClick={e => e.stopPropagation()}>
                       {daChuyen ? (
-                        <Chip mau={MAU_LOAI[r.loaiVanBan] ?? "bg-[#f5f5f5] text-[#555] border-[#ddd]"}>{r.loaiVanBan}</Chip>
+                        <Chip mau={MAU_LOAI[r.loaiVanBan] ?? "bg-surface-container-low text-on-surface-variant border-surface-container"}>{r.loaiVanBan}</Chip>
                       ) : (
                         <div className="relative">
                           <select value={r.loaiVanBan}
                             onChange={e => onDoiLoai(r.id, e.target.value)}
-                            className="w-full h-[28px] pl-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                            className="w-full h-[28px] pl-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
                             {LOAI_VAN_BAN_THEO_NHOM.map(g => (
                               <optgroup key={g.nhom} label={`— ${g.nhom}`}>
                                 {g.items.map(l => <option key={l} value={l}>{l}</option>)}
                               </optgroup>
                             ))}
                           </select>
-                          <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                          <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                         </div>
                       )}
                     </td>
-                    <td className="border border-[#ddd] px-2 py-2" onDoubleClick={e => e.stopPropagation()}>
+                    <td className="border border-surface-container px-2 py-2" onDoubleClick={e => e.stopPropagation()}>
                       {/* Đã chuyển rồi thì khóa lại — đổi đơn vị sau khi chuyển
                           sẽ khiến nơi đã nhận đơn và nơi ghi trên sổ khác nhau. */}
                       {daChuyen ? (
-                        <span className="text-[#555]">{r.donViXuLy}</span>
+                        <span className="text-on-surface-variant">{r.donViXuLy}</span>
                       ) : (
                         <>
                           <div className="relative">
                             <select value={r.donViXuLy}
                               onChange={e => onDoiDonVi(r.id, e.target.value)}
-                              className={`w-full h-[28px] pl-2 pr-6 text-[12px] border rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]
-                                ${r.donViXuLyTuSua ? "border-[#b45309] text-[#b45309] font-medium" : "border-[#ccc]"}`}>
+                              className={`w-full h-[28px] pl-2 pr-6 text-[12px] border rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary
+                                ${r.donViXuLyTuSua ? "border-[#b45309] text-[#b45309] font-medium" : "border-surface-container-highest"}`}>
                               {DON_VI_XU_LY.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
-                            <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                            <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                           </div>
                           {/* Phân biệt "tự điền" với "người chọn": người duyệt cần
                               biết dòng nào là quyết định của con người. Ô đã sửa tay
@@ -1340,7 +1340,7 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
                         </>
                       )}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2">
+                    <td className="border border-surface-container px-3 py-2">
                       <Chip mau={MAU_TRANG_THAI[r.trangThai]}>{r.trangThai}</Chip>
                     </td>
                   </tr>
@@ -1360,29 +1360,29 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
           onClick={() => setHoiXacNhan(false)}>
           <div className="bg-white rounded-[6px] w-[560px] max-h-[80vh] flex flex-col overflow-hidden shadow-2xl"
             onClick={e => e.stopPropagation()}>
-            <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex items-center justify-between flex-shrink-0">
+            <div className="bg-tertiary text-white px-4 py-2.5 flex items-center justify-between flex-shrink-0">
               <div className="text-[15px] font-bold">Xác nhận chuyển đơn</div>
               <button type="button" onClick={() => setHoiXacNhan(false)}
                 className="text-white/70 hover:text-white"><X size={16} /></button>
             </div>
 
             <div className="p-4 overflow-y-auto">
-              <p className="text-[13px] text-[#333] mb-3">
+              <p className="text-[13px] text-on-surface mb-3">
                 Chuyển <b className="font-semibold">{donSeChuyen.length}</b> đơn sang đơn vị xử lý đã chọn.
                 Sau khi chuyển, đơn vị nhận sẽ thấy đơn trong danh sách của họ.
               </p>
 
-              <div className="border border-[#e0e0e0] rounded-[4px] divide-y divide-[#f0f0f0]">
+              <div className="border border-surface-container-highest rounded-[4px] divide-y divide-[#f0f0f0]">
                 {donSeChuyen.map(r => (
                   <div key={r.id} className="px-3 py-2 flex items-start gap-2">
-                    <FileText size={13} className="text-[#8b1a1a] flex-shrink-0 mt-[2px]" />
+                    <FileText size={13} className="text-error flex-shrink-0 mt-[2px]" />
                     <div className="min-w-0 flex-1">
-                      <div className="text-[12px] text-[#333] leading-snug truncate">{r.trichYeu}</div>
-                      <div className="text-[11px] text-[#888] mt-0.5">
+                      <div className="text-[12px] text-on-surface leading-snug truncate">{r.trichYeu}</div>
+                      <div className="text-[11px] text-on-surface-variant mt-0.5">
                         Nhận {r.ngayNhan} · {r.nguoiGui}
                       </div>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#1a5a96] flex-shrink-0 whitespace-nowrap">
+                    <span className="text-[11px] font-semibold text-primary flex-shrink-0 whitespace-nowrap">
                       → {r.donViXuLy}
                     </span>
                   </div>
@@ -1390,14 +1390,14 @@ function DanhSachVanThu({ rows, onSua, onDoiLoai, onDoiDonVi, onGoiLaiMacDinh, o
               </div>
             </div>
 
-            <div className="border-t border-[#e0e0e0] px-4 py-3 flex justify-end gap-2 flex-shrink-0">
+            <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2 flex-shrink-0">
               <button type="button" onClick={() => setHoiXacNhan(false)}
-                className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[13px] font-medium text-[#333] hover:bg-[#f5f5f5]">
+                className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">
                 Huỷ
               </button>
               <button type="button"
                 onClick={() => { onChuyenDon(daChon); setDaChon([]); setHoiXacNhan(false); }}
-                className="flex items-center gap-1.5 h-[30px] px-4 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-medium transition-colors">
+                className="flex items-center gap-1.5 h-[30px] px-4 rounded-[3px] bg-error hover:bg-error-container text-white text-[13px] font-medium transition-colors">
                 <Send size={13} /> Chuyển {donSeChuyen.length} đơn
               </button>
             </div>

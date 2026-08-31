@@ -255,7 +255,7 @@ function CellVuAn({ c, onThemHoSo }: { c: DonCase; onThemHoSo?: () => void }) {
           )}
           {c.ttv && (
             <span style={{ fontSize: 11, color: TEXT, fontFamily: F, display: "block" }}>
-              TTV: {c.ttv}
+              Công chức nghiên cứu: {c.ttv}
             </span>
           )}
         </div>
@@ -271,7 +271,7 @@ function CellVuAn({ c, onThemHoSo }: { c: DonCase; onThemHoSo?: () => void }) {
           </span>
           {c.ttvGiaiQuyet && (
             <span style={{ fontSize: 11, color: TEXT, fontFamily: F, display: "block" }}>
-              TTV giải quyết: <strong>{c.ttvGiaiQuyet}</strong>
+              Công chức nghiên cứu giải quyết: <strong>{c.ttvGiaiQuyet}</strong>
             </span>
           )}
           {c.tpGiaiQuyet && (
@@ -615,7 +615,7 @@ function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; userRole
 
   const mainTabs = [
     { id: "nhan-vphctp", label: "Nhận THS từ VPHCTP" },
-    { id: "giao-ttv", label: "Giao THS đến TTV" },
+    { id: "giao-ttv", label: "Giao THS đến Công chức nghiên cứu" },
   ] as const;
 
   const giaoCases = [
@@ -794,7 +794,7 @@ function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; userRole
                 <SelectBox placeholder="Giao tiểu hồ sơ" options={["Chưa giao tiểu hồ sơ", "Đã giao tiểu hồ sơ"]} />
               </div>
               <div>
-                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>TTV giải quyết</div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Công chức nghiên cứu giải quyết</div>
                 <SelectBox placeholder="-- Tất cả --" options={THAM_TRA_VIEN_PHONG} />
               </div>
             </div>
@@ -945,8 +945,8 @@ function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; userRole
                   <>
                     <th style={TH_STYLE}>Người giao Vụ GĐ,KT</th>
                     <th style={TH_STYLE}>Ngày Vụ nhận</th>
-                    <th style={TH_STYLE}>TTV nhận</th>
-                    <th style={TH_STYLE}>Ngày TTV nhận</th>
+                    <th style={TH_STYLE}>Công chức nghiên cứu nhận</th>
+                    <th style={TH_STYLE}>Ngày Công chức nghiên cứu nhận</th>
                     <th style={TH_STYLE}>Ghi chú</th>
                   </>
                 ) : (
@@ -1164,26 +1164,26 @@ function Breadcrumb({ extra }: { extra?: string }) {
   );
 }
 
-// ── Cấu hình TTV báo cáo ─────────────────────────────────────────────────────
+// ── Cấu hình Công chức nghiên cứu báo cáo ─────────────────────────────────────────────────────
 
 const CAU_HINH_DATA = [
   { id: 1, hoTen: "Bùi Nguyễn Khánh (TK)", chucDanh: "Thư ký Tòa án", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Tiến Mạnh - Phó Trưởng phòng" },
   { id: 2, hoTen: "Bùi Quang Huy (TK)", chucDanh: "Thư ký Tòa án", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
   { id: 3, hoTen: "Bùi Thị Vân Anh (TP)", chucDanh: "Thẩm phán bậc 1", nghiepVu: "Xử lý nghiệp vụ", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
   { id: 4, hoTen: "Bùi Việt Anh (TP)", chucDanh: "Thẩm phán bậc 2", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 5, hoTen: "Chi Thị Đức (TK)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 6, hoTen: "Chu Thị Thoam (TP)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 7, hoTen: "Chị Thị Nhụng (TTV)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 8, hoTen: "Dương Thảo Phương (TTV)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "" },
+  { id: 5, hoTen: "Chi Thị Đức (TK)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
+  { id: 6, hoTen: "Chu Thị Thoam (TP)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
+  { id: 7, hoTen: "Chị Thị Nhụng (Công chức nghiên cứu)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
+  { id: 8, hoTen: "Dương Thảo Phương (Công chức nghiên cứu)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "" },
   { id: 9, hoTen: "Giáng Tiêu Thọ (TK)", chucDanh: "Thư ký Tòa án", nghiepVu: "Xử lý nghiệp vụ", lanhDao: "" },
   { id: 10, hoTen: "Hoàng Ngô An (TK)", chucDanh: "Thư ký Tòa án", nghiepVu: "Xử lý nghiệp vụ", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 11, hoTen: "Hoàng Ngọc Điệu (TTV)", chucDanh: "TTV chính", nghiepVu: "Giải quyết án", lanhDao: "Trần Quốc Hành - Phó Trưởng phòng" },
-  { id: 12, hoTen: "Hoàng Thanh Thủy (TK)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 13, hoTen: "Hoàng Thị Nhã Phương (TTV)", chucDanh: "TTV", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
-  { id: 14, hoTen: "Lê Thanh Tùng (TTV)", chucDanh: "TTV", nghiepVu: "Xử lý nghiệp vụ", lanhDao: "" },
+  { id: 11, hoTen: "Hoàng Ngọc Điệu (Công chức nghiên cứu)", chucDanh: "Công chức nghiên cứu chính", nghiepVu: "Giải quyết án", lanhDao: "Trần Quốc Hành - Phó Trưởng phòng" },
+  { id: 12, hoTen: "Hoàng Thanh Thủy (TK)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
+  { id: 13, hoTen: "Hoàng Thị Nhã Phương (Công chức nghiên cứu)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Giải quyết án", lanhDao: "Nguyễn Văn Hiền - Phó Trưởng phòng" },
+  { id: 14, hoTen: "Lê Thanh Tùng (Công chức nghiên cứu)", chucDanh: "Công chức nghiên cứu", nghiepVu: "Xử lý nghiệp vụ", lanhDao: "" },
 ];
 
-const CHUC_DANH_OPTIONS = ["Thư ký Tòa án", "Thẩm phán bậc 1", "Thẩm phán bậc 2", "TTV", "TTV chính", "TTV cao cấp"];
+const CHUC_DANH_OPTIONS = ["Thư ký Tòa án", "Thẩm phán bậc 1", "Thẩm phán bậc 2", "Công chức nghiên cứu", "Công chức nghiên cứu chính", "Công chức nghiên cứu cao cấp"];
 const NGHIEP_VU_OPTIONS = ["Giải quyết án", "Xử lý nghiệp vụ", "Báo cáo thống kê"];
 const LANH_DAO_OPTIONS = [
   "Nguyễn Tiến Mạnh - Phó Trưởng phòng",
@@ -1211,7 +1211,7 @@ function CauHinhTTVView() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "auto" }}>
       {/* Breadcrumb */}
       <div style={{ padding: "8px 20px", borderBottom: `1px solid ${BORDER}`, fontSize: 12, color: MUTED, fontFamily: F, flexShrink: 0, background: "#fff" }}>
-        Trang chủ › Quản lý án GĐT/TT › Cấu hình TTV báo cáo
+        Trang chủ › Quản lý án GĐT/TT › Cấu hình Công chức nghiên cứu báo cáo
       </div>
 
       {/* Filter bar */}
@@ -1225,7 +1225,7 @@ function CauHinhTTVView() {
             </select>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 140 }}>
-            <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>TTV</span>
+            <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>Công chức nghiên cứu</span>
             <select style={selSt}>
               <option value="">- Tất cả -</option>
               {CAU_HINH_DATA.map((r) => <option key={r.id}>{r.hoTen}</option>)}
@@ -1274,7 +1274,7 @@ function CauHinhTTVView() {
               <th style={TH_STYLE}>STT</th>
               <th style={TH_STYLE}>Họ và tên</th>
               <th style={TH_STYLE}>Chức danh</th>
-              <th style={TH_STYLE}>Nghiệp vụ TTV</th>
+              <th style={TH_STYLE}>Nghiệp vụ Công chức nghiên cứu</th>
               <th style={TH_STYLE}>Lãnh đạo phụ trách</th>
               <th style={TH_STYLE}>Người thao tác</th>
             </tr>
@@ -1718,7 +1718,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       lanh: detail?.thamPhan || "Nguyễn Biên Thuỳ",
       capTrinh: "Thẩm phán phụ trách",
       vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị GĐT",
-      yKien: "Đồng ý với đề xuất của TTV. Chuyển Lãnh đạo Vụ xem xét trình Chánh án.",
+      yKien: "Đồng ý với đề xuất của Công chức nghiên cứu. Chuyển Lãnh đạo Vụ xem xét trình Chánh án.",
       ngayDuyet: "09/08/2026",
       trangThai: "da-duyet",
       subRows: [] as { label: string; ngayDuyet: string }[],
@@ -1728,7 +1728,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       lanh: "Lãnh đạo Tòa Hình sự",
       capTrinh: "Phó Trưởng phòng",
       vanBan: "Tờ trình xin ý kiến hướng giải quyết",
-      yKien: "Yêu cầu TTV thẩm tra kỹ tình tiết lời khai nhân chứng tại BL 45-50 trước khi báo cáo lại.",
+      yKien: "Yêu cầu Công chức nghiên cứu thẩm tra kỹ tình tiết lời khai nhân chứng tại BL 45-50 trước khi báo cáo lại.",
       ngayDuyet: "06/08/2026",
       trangThai: "tu-choi",
       subRows: [],
@@ -1745,7 +1745,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị Giám đốc thẩm",
       don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`,
       ngayTao: "09/08/2026",
-      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)",
+      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)",
       trangThai: "–",
       daDinhKemHoSo: true,
       soHoSo: 5,
@@ -1767,7 +1767,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       vanBan: "Dự thảo Thông báo trả lời đơn đề nghị",
       don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`,
       ngayTao: "08/08/2026",
-      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)",
+      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)",
       trangThai: "Đã ký số",
       daDinhKemHoSo: true,
       soHoSo: 1,
@@ -1785,7 +1785,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       vanBan: `Tờ trình thẩm tra vụ án số ${toTrinhCount}`,
       don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`,
       ngayTao: "09/08/2026",
-      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)",
+      nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)",
       trangThai: "–",
       daDinhKemHoSo: isAttached,
       soHoSo: count,
@@ -1795,7 +1795,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
 
   const handleKySo = (stt: number) => {
     setVanBanList(prev =>
-      prev.map(r => (r.stt === stt ? { ...r, trangThai: "Đã ký số", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)" } : r))
+      prev.map(r => (r.stt === stt ? { ...r, trangThai: "Đã ký số", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)" } : r))
     );
     alert("Đã ký số văn bản thành công!");
   };

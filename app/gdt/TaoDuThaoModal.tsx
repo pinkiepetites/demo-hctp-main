@@ -1045,7 +1045,7 @@ export function TaoDuThaoModal({
                   <option value="Nguyễn Biên Thuỳ - Thẩm phán TAND thành phố Hà Nội">Nguyễn Biên Thuỳ - Thẩm phán TAND thành phố Hà Nội</option>
                   <option value="Phan Văn Nam - Phó Chánh án TAND thành phố Hà Nội">Phan Văn Nam - Phó Chánh án TAND thành phố Hà Nội</option>
                   <option value="Lê Hoàng Nam - Trưởng phòng">Lê Hoàng Nam - Trưởng phòng</option>
-                  <option value="Lý Thái Phúc - TTV">Lý Thái Phúc - TTV</option>
+                  <option value="Lý Thái Phúc - Công chức nghiên cứu">Lý Thái Phúc - Công chức nghiên cứu</option>
                 </select>
               </div>
 

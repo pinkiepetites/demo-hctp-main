@@ -318,7 +318,7 @@ export function QuanLyKhieuNaiView({
                     <td style={TD_STYLE}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                         <span style={{ fontSize: 11, fontFamily: F }}>
-                          <span style={{ color: MUTED }}>TTV: </span>{row.ttv}
+                          <span style={{ color: MUTED }}>Công chức nghiên cứu: </span>{row.ttv}
                         </span>
                         <span style={{ fontSize: 11, fontFamily: F }}>
                           <span style={{ color: MUTED }}>TP: </span>
@@ -335,7 +335,7 @@ export function QuanLyKhieuNaiView({
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {/* — Trình ký — */}
                         {row.kqgq === "chua-phan-cong"
-                          ? <Badge color="#333333" bg="#f5f5f5">Chưa phân công TTV</Badge>
+                          ? <Badge color="#333333" bg="#f5f5f5">Chưa phân công Công chức nghiên cứu</Badge>
                           : row.kqgq === "trinh-tham-phan"
                             ? <Badge color="#1a5a96" bg="#ccfbf1">Trình Thẩm phán</Badge>
                             : <Badge color="#1a5a96" bg="#e8f4ff">Trình Phó Chánh án</Badge>}

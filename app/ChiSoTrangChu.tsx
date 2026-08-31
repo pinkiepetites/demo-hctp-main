@@ -150,7 +150,7 @@ const OChiSo = ({ nhan, giaTri, phuDe, icon, mauIcon, nenIcon, onClick, children
       <div className="min-w-0">
         <p className="text-[13px] text-[#8a94a6] font-normal mb-1.5">{nhan}</p>
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-[26px] font-bold text-[#1d2e4f] leading-none tracking-tight">{giaTri}</span>
+          <span className="text-[26px] font-bold text-tertiary leading-none tracking-tight">{giaTri}</span>
           {phuDe}
         </div>
       </div>
@@ -204,7 +204,7 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
               Tiến độ giải quyết đơn
             </h3>
             {toiLaAi && (
-              <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
+              <div className="flex items-center bg-surface-container-high rounded-[6px] p-1 border border-[#e2e8f0]">
                 {([["toi", "Của tôi"], ["phong", "Toàn phòng"]] as const).map(([gt, nhan]) => (
                   <button key={gt} type="button" onClick={() => setPham(gt)}
                     aria-pressed={pham === gt}
@@ -241,7 +241,7 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
             onClick={() => mo({ nhan: "Tổng số đơn" })}
           >
             <div className="mt-3.5">
-              <div className="flex h-[8px] rounded-full overflow-hidden bg-[#f1f5f9]">
+              <div className="flex h-[8px] rounded-full overflow-hidden bg-surface-container-high">
                 <div className="h-full bg-[#27ae60] transition-all duration-700"
                   style={{ width: `${cs.tyLeXong}%` }} />
                 {/* Khe 2px màu nền ngăn hai đoạn — không viền, để mực thừa không đè lên dữ liệu */}
@@ -286,14 +286,14 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
           >
             <div className="mt-3.5 rounded-[6px] bg-[#fef2f2] border border-[#fecaca] p-2.5">
               <div className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-1.5 text-[12px] font-semibold text-[#c0392b]">
+                <span className="flex items-center gap-1.5 text-[12px] font-semibold text-error">
                   <AlertTriangle size={13} className="flex-shrink-0" /> Quá hạn giải quyết
                 </span>
                 <span
                   role="link" tabIndex={0}
                   onClick={e => { e.stopPropagation(); mo({ nhan: "Quá hạn giải quyết", tienDo: "qua-han" }); }}
                   onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); mo({ nhan: "Quá hạn giải quyết", tienDo: "qua-han" }); } }}
-                  className="text-[15px] font-bold text-[#c0392b] leading-none hover:underline cursor-pointer"
+                  className="text-[15px] font-bold text-error leading-none hover:underline cursor-pointer"
                 >
                   {cs.quaHan}
                 </span>
@@ -301,11 +301,11 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
               {/* Đồng hồ đo: nền là bậc nhạt của chính dải màu đỏ, không phải xám —
                   để mức độ nghiêm trọng đọc được trên toàn thanh. */}
               <div className="h-[6px] rounded-full bg-[#fadbd8] overflow-hidden mt-2">
-                <div className="h-full bg-[#c0392b] rounded-full transition-all duration-700"
+                <div className="h-full bg-error rounded-full transition-all duration-700"
                   style={{ width: `${cs.tyLeQuaHan}%` }} />
               </div>
               <p className="text-[11px] text-[#94a3b8] mt-1.5 leading-tight">
-                Chiếm <span className="font-semibold text-[#c0392b]">{phanTram(cs.tyLeQuaHan)}</span> số đơn chưa giải quyết
+                Chiếm <span className="font-semibold text-error">{phanTram(cs.tyLeQuaHan)}</span> số đơn chưa giải quyết
                 {cs.sapDenHan > 0 && <> · còn <span className="font-semibold text-[#e67e22]">{cs.sapDenHan}</span> đơn sắp đến hạn</>}
               </p>
             </div>
@@ -338,7 +338,7 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
                 <span className="text-[11px] text-[#64748b] font-medium leading-tight line-clamp-2">{t.nhan}</span>
               </div>
               <div className="flex items-end justify-between">
-                <span className="text-[22px] font-bold text-[#1d2e4f] leading-none tracking-tight">{t.soLuong}</span>
+                <span className="text-[22px] font-bold text-tertiary leading-none tracking-tight">{t.soLuong}</span>
                 <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors mb-0.5" />
               </div>
             </button>

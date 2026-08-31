@@ -117,7 +117,7 @@ export function TaiLieuHoSoView({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showNotes, setShowNotes] = useState<boolean>(false);
   const [notes, setNotes] = useState<Array<{ id: number; page: number; text: string; time: string; author: string }>>([
-    { id: 1, page: 1, text: "Kiểm tra lại đối chiếu bút lục số 14 và lời khai nhân chứng", time: "28/07/2026 14:20", author: "Lý Thái Phúc (TTV)" }
+    { id: 1, page: 1, text: "Kiểm tra lại đối chiếu bút lục số 14 và lời khai nhân chứng", time: "28/07/2026 14:20", author: "Lý Thái Phúc (Công chức nghiên cứu)" }
   ]);
   const [newNoteText, setNewNoteText] = useState("");
   const [favorites, setFavorites] = useState<Record<string, boolean>>({ "ban-an-st": true });
@@ -165,7 +165,7 @@ export function TaiLieuHoSoView({
         page: currentPage,
         text: newNoteText.trim(),
         time: "Hôm nay 15:10",
-        author: "TTV"
+        author: "Công chức nghiên cứu"
       }
     ]);
     setNewNoteText("");
@@ -1009,7 +1009,7 @@ export function TaiLieuHoSoView({
                   </label>
                   <select style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box" }}>
                     <option>Tất cả thành viên</option>
-                    <option>Cá nhân TTV</option>
+                    <option>Cá nhân Công chức nghiên cứu</option>
                     <option>Được chia sẻ</option>
                   </select>
                 </div>

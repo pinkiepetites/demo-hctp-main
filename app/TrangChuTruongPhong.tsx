@@ -79,7 +79,7 @@ export const TieuDeMuc = ({ icon, tieuDe, moTa, phu }: {
   <div className="pt-1">
     <div className="flex items-baseline justify-between gap-3 flex-wrap pb-2.5 border-b-2 border-[#dde3ec]">
       <h2 className="text-[18px] font-bold text-[#0f172a] tracking-tight flex items-center gap-2">
-        <span className="text-[#8b1a1a] flex items-center">{icon}</span>
+        <span className="text-error flex items-center">{icon}</span>
         {tieuDe}
       </h2>
       {phu}
@@ -108,7 +108,7 @@ const TheViec = ({ nhan, giaTri, phuChu, canhBao, icon, mauIcon, nenIcon, onClic
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0 flex-1">
         <p className="text-[13px] text-[#8a94a6] font-normal mb-1.5 leading-snug">{nhan}</p>
-        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight">{giaTri}</span>
+        <span className="text-[28px] font-bold text-tertiary leading-none tracking-tight">{giaTri}</span>
       </div>
       <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 ${nenIcon} ${mauIcon}`}>
         {icon}
@@ -116,7 +116,7 @@ const TheViec = ({ nhan, giaTri, phuChu, canhBao, icon, mauIcon, nenIcon, onClic
     </div>
     <div className="mt-2.5 min-h-[18px]">
       {canhBao
-        ? <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#c0392b] bg-[#fef2f2] border border-[#fecaca] rounded-full px-2 py-0.5">
+        ? <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-error bg-[#fef2f2] border border-[#fecaca] rounded-full px-2 py-0.5">
             <AlertTriangle size={10} className="flex-shrink-0" /> {canhBao}
           </span>
         : <span className="text-[11px] text-[#94a3b8]">{phuChu}</span>}
@@ -134,13 +134,13 @@ const KhungCanhBao = ({ tieuDe, icon, mauIcon, soLuong, trong, onXemTatCa, child
   trong: string; onXemTatCa?: () => void; children: React.ReactNode;
 }) => (
   <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
-    <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between gap-2">
+    <div className="px-5 py-4 border-b border-surface-container-high flex items-center justify-between gap-2">
       <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
         <span className={mauIcon}>{icon}</span>
         {tieuDe}
       </h3>
       {soLuong > 0 && (
-        <span className="bg-[#fee2e2] text-[#c0392b] text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">
+        <span className="bg-[#fee2e2] text-error text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">
           {soLuong}
         </span>
       )}
@@ -154,7 +154,7 @@ const KhungCanhBao = ({ tieuDe, icon, mauIcon, soLuong, trong, onXemTatCa, child
         : children}
     </div>
     {soLuong > 0 && (
-      <div className="p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
+      <div className="p-3 border-t border-surface-container-high bg-[#f8fafc] rounded-b-[8px] text-center">
         <button type="button" onClick={onXemTatCa}
           className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
           Xem tất cả {soLuong} mục
@@ -168,14 +168,14 @@ const DongCanhBao = ({ tieuDe, moTa, nhanPhai, mauNhan, onClick }: {
   tieuDe: string; moTa: string; nhanPhai: string; mauNhan: string; onClick?: () => void;
 }) => (
   <button type="button" onClick={onClick}
-    className="w-full text-left p-3 border border-[#f1f5f9] rounded-[6px] hover:border-[#c0392b]/30 hover:bg-[#fef2f2]/50 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]">
+    className="w-full text-left p-3 border border-surface-container-high rounded-[6px] hover:border-error/30 hover:bg-[#fef2f2]/50 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]">
     <div className="flex items-start justify-between gap-2 mb-1.5">
-      <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-[#c0392b] transition-colors truncate">{tieuDe}</span>
+      <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-error transition-colors truncate">{tieuDe}</span>
       <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-[3px] flex-shrink-0 ${mauNhan}`}>{nhanPhai}</span>
     </div>
     <div className="flex items-center justify-between gap-2">
       <p className="text-[12px] text-[#64748b] line-clamp-1">{moTa}</p>
-      <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-[#c0392b] transition-colors flex-shrink-0" />
+      <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-error transition-colors flex-shrink-0" />
     </div>
   </button>
 );
@@ -217,13 +217,13 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
 
   return (
     <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
-      <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between gap-2">
+      <div className="px-5 py-4 border-b border-surface-container-high flex items-center justify-between gap-2">
         {/* Tên khối phải chứa chữ "hiệu suất": đó là từ người dùng đi tìm, và
             màn mở ra từ đây tên là "Hiệu suất cán bộ kỳ này". Trước đây khối tên
             "Tải việc của phòng" còn màn chi tiết tên "Hiệu suất" — một luồng hai
             tên, tìm mãi không ra. */}
         <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
-          <Gauge size={18} className="text-[#8b1a1a]" />
+          <Gauge size={18} className="text-error" />
           Tải việc &amp; hiệu suất của phòng
         </h3>
         <div className="flex items-center gap-3">
@@ -246,18 +246,18 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
             <div key={c.name}
               className={`flex items-center gap-3.5 px-5 py-3 ${i % 2 === 1 ? "bg-[#f8fafc]" : ""}`}>
               {/* Chữ cái đầu của TÊN (không phải họ) — người Việt gọi nhau bằng tên */}
-              <div className="w-[38px] h-[38px] rounded-full bg-[#1d2e4f] text-white flex items-center justify-center text-[15px] font-semibold flex-shrink-0">
+              <div className="w-[38px] h-[38px] rounded-full bg-tertiary text-white flex items-center justify-center text-[15px] font-semibold flex-shrink-0">
                 {chuCai}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <span className="text-[13px] font-bold text-[#1e293b] truncate">{c.name}</span>
-                  <span className="text-[11px] font-semibold text-[#475569] bg-[#f1f5f9] border border-[#e2e8f0] rounded-[4px] px-2 py-0.5 flex-shrink-0 tabular-nums">
+                  <span className="text-[11px] font-semibold text-[#475569] bg-surface-container-high border border-[#e2e8f0] rounded-[4px] px-2 py-0.5 flex-shrink-0 tabular-nums">
                     Tổng: {c.tong}
                   </span>
                   {quaTai && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#8b1a1a] bg-[#fdeaea] border border-[#f5c6c6] rounded-full px-2 py-0.5 flex-shrink-0">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-error bg-[#fdeaea] border border-[#f5c6c6] rounded-full px-2 py-0.5 flex-shrink-0">
                       <AlertTriangle size={9} /> Tải cao
                     </span>
                   )}
@@ -287,7 +287,7 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
                 {/* Quá hạn là tín hiệu rủi ro, giữ lại dù bản mẫu không có: đây là
                     thứ Trưởng phòng cần thấy nhất khi nhìn vào một cán bộ. */}
                 {!!c.quaHan && c.quaHan > 0 && (
-                  <div className="text-[11px] font-semibold text-[#c0392b] mt-1 tabular-nums">
+                  <div className="text-[11px] font-semibold text-error mt-1 tabular-nums">
                     {c.quaHan} quá hạn
                   </div>
                 )}
@@ -303,7 +303,7 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
       </div>
 
       {/* Hai đoạn màu → bắt buộc có chú giải, không để người đọc tự đoán */}
-      <div className="px-5 py-3 border-t border-[#f1f5f9] bg-white rounded-b-[8px] flex items-center justify-center gap-6 flex-wrap">
+      <div className="px-5 py-3 border-t border-surface-container-high bg-white rounded-b-[8px] flex items-center justify-center gap-6 flex-wrap">
         <span className="flex items-center gap-1.5 text-[12px] text-[#475569]">
           <span className="w-2.5 h-2.5 rounded-[2px]" style={{ background: MAU_DA_XONG }} /> Đã giải quyết xong
         </span>
@@ -457,14 +457,14 @@ export default function TrangChuTruongPhong({
             giaTri={viec.choDuyet}
             phuChu={viec.choDuyet ? "Đang chờ ý kiến duyệt của bạn" : "Không còn văn bản nào chờ duyệt"}
             canhBao={viec.treHan > 0 ? `${viec.treHan} văn bản chờ quá ${HAN_DUYET_VAN_BAN_NGAY} ngày` : undefined}
-            icon={<FileCheck size={20} />} mauIcon="text-[#f39c12]" nenIcon="bg-[#fef3e2]"
+            icon={<FileCheck size={20} />} mauIcon="text-warning" nenIcon="bg-[#fef3e2]"
             onClick={onMoPheDuyet}
           />
           <TheViec
             nhan="Văn bản chờ tôi ký / bút phê"
             giaTri={viec.choKy}
             phuChu={viec.choKy ? "Đã duyệt xong, chờ chữ ký" : "Không còn văn bản nào chờ ký"}
-            icon={<PenLine size={20} />} mauIcon="text-[#1a73e8]" nenIcon="bg-[#e8f4ff]"
+            icon={<PenLine size={20} />} mauIcon="text-primary" nenIcon="bg-info-container"
             onClick={onMoPheDuyet}
           />
           <TheViec
@@ -495,7 +495,7 @@ export default function TrangChuTruongPhong({
         <div className="grid grid-cols-2 gap-5">
           <KhungCanhBao
             tieuDe="Đơn quá hạn giải quyết"
-            icon={<AlertTriangle size={18} />} mauIcon="text-[#c0392b]"
+            icon={<AlertTriangle size={18} />} mauIcon="text-error"
             soLuong={donQuaHan.length}
             trong="Không có đơn nào quá hạn"
             onXemTatCa={() => onMoDanhSachDon?.({ nhan: "Quá hạn giải quyết", tienDo: "qua-han" })}
@@ -508,7 +508,7 @@ export default function TrangChuTruongPhong({
                 // người nhập đơn — nguoiGiuViec() lùi về người nhập khi chưa giao.
                 moTa={`Cán bộ xử lý: ${vietTatTAND(nguoiGiuViec(d) || "chưa phân công")} · ${d.giaiQuyet?.nhan || "Chưa có trạng thái"}`}
                 nhanPhai={nhanQuaHan(soNgayQuaHan(d, homNay))}
-                mauNhan="text-[#c0392b] bg-[#fee2e2]"
+                mauNhan="text-error bg-[#fee2e2]"
                 onClick={() => onMoDanhSachDon?.({ nhan: "Quá hạn giải quyết", tienDo: "qua-han" })}
               />
             ))}
@@ -550,7 +550,7 @@ export default function TrangChuTruongPhong({
                 nhanPhai={soNgay === null ? "Chưa rõ ngày"
                   : soNgay === 0 ? "Trả lại hôm nay"
                   : laVaiTroQuanLy ? `Đã ${soNgay} ngày` : `Chờ ${soNgay} ngày`}
-                mauNhan={soNgay !== null && soNgay > HAN_DUYET_VAN_BAN_NGAY ? "text-[#c0392b] bg-[#fee2e2]" : "text-[#b45309] bg-[#fef3c7]"}
+                mauNhan={soNgay !== null && soNgay > HAN_DUYET_VAN_BAN_NGAY ? "text-error bg-[#fee2e2]" : "text-[#b45309] bg-[#fef3c7]"}
                 onClick={() => onMoDanhSachVanBan?.(locBiTraLai)}
               />
             ))}

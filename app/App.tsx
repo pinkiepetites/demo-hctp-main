@@ -35,24 +35,24 @@ const TRANG_THAI_NHAN: Record<TrangThaiVB, string> = {
   DaBanHanh: "Đã ban hành", DaHuy: "Đã huỷ",
 };
 const TRANG_THAI_CLS: Record<TrangThaiVB, string> = {
-  Nhap: "bg-[#f5f5f5] text-[#666] border-[#ddd]",
-  ChoDuyet: "bg-[#e8f4ff] text-[#1a73e8] border-[#a9c9f4]",
-  ChoKy: "bg-[#fff8e1] text-[#f57f17] border-[#ffe082]",
-  ChoButPhe: "bg-[#f3e8ff] text-[#6d28d9] border-[#d8b4fe]",
-  BiTraLai: "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]",
-  DaBanHanh: "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]",
-  DaHuy: "bg-[#f0f0f0] text-[#999] border-[#ddd]",
+  Nhap: "bg-surface-container-low text-on-surface-variant border-surface-container",
+  ChoDuyet: "bg-info-container text-primary border-surface-variant",
+  ChoKy: "bg-warning-container text-warning border-warning-container",
+  ChoButPhe: "bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim",
+  BiTraLai: "bg-error-container text-error border-error-container",
+  DaBanHanh: "bg-info-container text-primary border-surface-variant",
+  DaHuy: "bg-surface-container text-outline border-surface-container",
 };
 /** Chấm tròn màu trạng thái — dùng ở cột Thông tin giải quyết, nơi cột hẹp nên
  *  pill chữ chiếm nguyên dòng. Màu lấy đúng màu chữ của pill để hai nơi khớp nhau. */
 const CHAM_TRANG_THAI: Record<TrangThaiVB, string> = {
-  Nhap: "bg-[#999]",
-  ChoDuyet: "bg-[#1a73e8]",
-  ChoKy: "bg-[#f57f17]",
-  ChoButPhe: "bg-[#6d28d9]",
-  BiTraLai: "bg-[#c0392b]",
+  Nhap: "bg-outline",
+  ChoDuyet: "bg-primary",
+  ChoKy: "bg-warning",
+  ChoButPhe: "bg-on-tertiary-fixed-variant",
+  BiTraLai: "bg-error",
   DaBanHanh: "bg-[#1a7a45]",
-  DaHuy: "bg-[#ccc]",
+  DaHuy: "bg-surface-container-highest",
 };
 import type { KetQuaTrinhDuyet } from "./components/DocumentNumberingModal";
 import { lyDoDonKhongHopLe, LY_DO_YEU_CAU_BO_SUNG } from "./components/DocumentNumberingModal";
@@ -156,7 +156,7 @@ const useKetLuanLD = () => useSyncExternalStore(dangKyLD, () => phienBanLD, () =
 const Inp = ({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input
     {...props}
-    className={`w-full h-[30px] px-2 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]/20 disabled:bg-[#f5f5f5] ${className}`}
+    className={`w-full h-[30px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:bg-surface-container-low ${className}`}
   />
 );
 
@@ -191,7 +191,7 @@ const useXoaChon = (value: unknown) => {
 
 const NutXoaChon = ({ onClick, right, size = 12 }: { onClick: () => void; right: string; size?: number }) => (
   <button type="button" onClick={onClick} title="Xóa lựa chọn" aria-label="Xóa lựa chọn"
-    className={`absolute ${right} top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#c0392b] transition-colors`}>
+    className={`absolute ${right} top-1/2 -translate-y-1/2 text-outline hover:text-error transition-colors`}>
     <X size={size} />
   </button>
 );
@@ -203,19 +203,19 @@ const Sel = ({ className = "", children, ...props }: React.SelectHTMLAttributes<
       <select
         ref={ref}
         {...props}
-        className={`w-full h-[30px] px-2 ${hienX ? "pr-12" : "pr-7"} text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none ${className}`}
+        className={`w-full h-[30px] px-2 ${hienX ? "pr-12" : "pr-7"} text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary appearance-none ${className}`}
       >
         {children}
       </select>
       {hienX && <NutXoaChon onClick={xoa} right="right-6" size={13} />}
-      <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+      <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
     </div>
   );
 };
 
 const Lbl = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
-  <label className="block text-[13px] font-medium text-[#333] mb-1">
-    {children}{req && <span className="text-[#c0392b] ml-0.5">*</span>}
+  <label className="block text-[13px] font-medium text-on-surface mb-1">
+    {children}{req && <span className="text-error ml-0.5">*</span>}
   </label>
 );
 
@@ -223,21 +223,21 @@ const BtnPrimary = ({ children, onClick, disabled = false, type = "button", clas
   children: React.ReactNode; onClick?: () => void; disabled?: boolean; type?: "button" | "submit"; className?: string;
 }) => (
   <button type={type} onClick={onClick} disabled={disabled}
-    className={`inline-flex items-center gap-1.5 bg-[#8b1a1a] hover:bg-[#6e1414] active:bg-[#5a1010] text-white text-[13px] font-medium px-4 py-[5px] rounded-[3px] border border-[#6e1414] transition-colors ${disabled ? "opacity-60 cursor-not-allowed" : "hover:bg-[#6e1414]"} ${className}`}>
+    className={`inline-flex items-center gap-1.5 bg-error hover:bg-error-container active:bg-[#5a1010] text-white text-[13px] font-medium px-4 py-[5px] rounded-[3px] border border-error-container transition-colors ${disabled ? "opacity-60 cursor-not-allowed" : "hover:bg-error-container"} ${className}`}>
     {children}
   </button>
 );
 
 const BtnSecondary = ({ children, onClick, className = "" }: { children: React.ReactNode; onClick?: () => void; className?: string }) => (
   <button type="button" onClick={onClick}
-    className={`inline-flex items-center gap-1.5 bg-white hover:bg-[#f5f5f5] text-[#333] text-[13px] font-medium px-4 py-[5px] rounded-[3px] border border-[#ccc] transition-colors ${className}`}>
+    className={`inline-flex items-center gap-1.5 bg-white hover:bg-surface-container-low text-on-surface text-[13px] font-medium px-4 py-[5px] rounded-[3px] border border-surface-container-highest transition-colors ${className}`}>
     {children}
   </button>
 );
 
 const BtnAdd = ({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) => (
   <button type="button" onClick={onClick}
-    className="inline-flex items-center gap-1 bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[12px] font-medium px-3 py-[3px] rounded-[3px] border border-[#6e1414] transition-colors whitespace-nowrap">
+    className="inline-flex items-center gap-1 bg-error hover:bg-error-container text-white text-[12px] font-medium px-3 py-[3px] rounded-[3px] border border-error-container transition-colors whitespace-nowrap">
     {children}
   </button>
 );
@@ -250,19 +250,19 @@ const Section = ({
 }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white border border-[#ddd] rounded-[3px]">
+    <div className="bg-white border border-surface-container rounded-[3px]">
       <div
-        className="flex items-center justify-between px-3 py-[7px] border-b border-[#ddd] cursor-pointer select-none hover:bg-[#fafafa]"
+        className="flex items-center justify-between px-3 py-[7px] border-b border-surface-container cursor-pointer select-none hover:bg-surface-bright"
         onClick={() => setOpen(!open)}
       >
         <div className="flex items-center gap-2">
-          <span className="text-[#555] flex-shrink-0">
+          <span className="text-on-surface-variant flex-shrink-0">
             {open
-              ? <span className="inline-block w-[14px] h-[14px] border border-[#888] rounded-[2px] text-center leading-[12px] text-[11px]">−</span>
-              : <span className="inline-block w-[14px] h-[14px] border border-[#888] rounded-[2px] text-center leading-[12px] text-[11px]">+</span>
+              ? <span className="inline-block w-[14px] h-[14px] border border-on-surface-variant rounded-[2px] text-center leading-[12px] text-[11px]">−</span>
+              : <span className="inline-block w-[14px] h-[14px] border border-on-surface-variant rounded-[2px] text-center leading-[12px] text-[11px]">+</span>
             }
           </span>
-          <span className="text-[13px] font-semibold text-[#222]">{title}</span>
+          <span className="text-[13px] font-semibold text-on-surface">{title}</span>
         </div>
         {extra && <div onClick={e => e.stopPropagation()}>{extra}</div>}
       </div>
@@ -277,12 +277,12 @@ const Tbl = ({ headers, children, emptyMsg }: {
 }) => (
   <table className="w-full border-collapse text-[13px]">
     <thead>
-      <tr className="bg-[#f5f5f5]">
+      <tr className="bg-surface-container-low">
         {headers.map((h, i) => (
           // Cột Thao tác giờ chỉ có 2 icon nên ghim hẹp, khỏi ăn chỗ của
           // các cột nội dung. "Thông tin người đứng đơn" / "Thông tin đơn" của
           // bảng Danh sách đơn liên quan đổi size cho nhau theo yêu cầu.
-          <th key={i} className={`border border-[#ddd] px-3 py-[6px] font-semibold text-[#333] whitespace-nowrap ${h === "Thao tác" ? "text-center w-[76px]"
+          <th key={i} className={`border border-surface-container px-3 py-[6px] font-semibold text-on-surface whitespace-nowrap ${h === "Thao tác" ? "text-center w-[76px]"
             : h === "Thông tin người đứng đơn" ? "text-left w-[270px]"
               : h === "Thông tin đơn" ? "text-left w-[447px]"
                 : "text-left"}`}>
@@ -294,7 +294,7 @@ const Tbl = ({ headers, children, emptyMsg }: {
     <tbody>
       {children ?? (
         <tr>
-          <td colSpan={headers.length} className="border border-[#ddd] px-3 py-5 text-center text-[#999] italic text-[13px]">
+          <td colSpan={headers.length} className="border border-surface-container px-3 py-5 text-center text-outline italic text-[13px]">
             {emptyMsg ?? "Không có dữ liệu"}
           </td>
         </tr>
@@ -304,14 +304,14 @@ const Tbl = ({ headers, children, emptyMsg }: {
 );
 
 const Td = ({ children, center }: { children?: React.ReactNode; center?: boolean }) => (
-  <td className={`border border-[#ddd] px-3 py-[5px] ${center ? "text-center" : ""}`}>{children}</td>
+  <td className={`border border-surface-container px-3 py-[5px] ${center ? "text-center" : ""}`}>{children}</td>
 );
 
 const ActionBtn = ({ icon, color = "blue", onClick, title }: {
   icon: React.ReactNode; color?: "blue" | "red"; onClick?: () => void; title?: string;
 }) => (
   <button title={title} onClick={onClick}
-    className={`p-[3px] rounded hover:bg-[#f0f0f0] transition-colors ${color === "blue" ? "text-[#1a5a96] hover:text-[#0d3d6b]" : "text-[#8b1a1a] hover:text-[#6e1414]"}`}>
+    className={`p-[3px] rounded hover:bg-surface-container transition-colors ${color === "blue" ? "text-primary hover:text-[#0d3d6b]" : "text-error hover:text-error-container"}`}>
     {icon}
   </button>
 );
@@ -513,14 +513,14 @@ const ComboNhapChon = ({ value, onChange, nhomGoiY, placeholder, chiTrongDanhMuc
         onChange={e => { onChange(e.target.value); setMo(true); }}
         onFocus={() => setMo(true)}
         placeholder={placeholder}
-        className="w-full h-[30px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] placeholder:text-[#aaa]" />
+        className="w-full h-[30px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary placeholder:text-outline" />
       <button type="button" onClick={() => setMo(m => !m)} tabIndex={-1}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#666]">
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant">
         <ChevronDown size={13} className={`transition-transform ${mo ? "rotate-180" : ""}`} />
       </button>
 
       {mo && (
-        <div className="absolute left-0 right-0 top-[34px] z-50 bg-white border border-[#ccc] rounded-[3px] shadow-lg max-h-[260px] overflow-y-auto">
+        <div className="absolute left-0 right-0 top-[34px] z-50 bg-white border border-surface-container-highest rounded-[3px] shadow-lg max-h-[260px] overflow-y-auto">
           {laMoi && (
             <button type="button" onClick={() => setMo(false)}
               className="w-full text-left px-3 py-2 text-[12px] text-[#1a7a45] bg-[#f3fbf6] hover:bg-[#e8f7ee] border-b border-[#e8f0ea] flex items-center gap-1.5">
@@ -529,19 +529,19 @@ const ComboNhapChon = ({ value, onChange, nhomGoiY, placeholder, chiTrongDanhMuc
             </button>
           )}
           {loc.length === 0 && !laMoi && (
-            <div className="px-3 py-3 text-[12px] text-[#999] italic">Không có gợi ý phù hợp.</div>
+            <div className="px-3 py-3 text-[12px] text-outline italic">Không có gợi ý phù hợp.</div>
           )}
           {loc.map(g => (
             <div key={g.nhom || "_"}>
               {g.nhom && (
-                <div className="px-3 py-1.5 text-[11px] font-semibold text-[#8b1a1a] bg-[#fafafa] border-y border-[#f0f0f0]">
+                <div className="px-3 py-1.5 text-[11px] font-semibold text-error bg-surface-bright border-y border-surface-container">
                   — {g.nhom}
                 </div>
               )}
               {g.items.map(i => (
                 <button key={i} type="button"
                   onClick={() => { onChange(i); setMo(false); }}
-                  className={`w-full text-left px-3 py-1.5 text-[12px] leading-snug hover:bg-[#eaf4ff] transition-colors ${i === value ? "bg-[#eaf4ff] text-[#1a5a96] font-medium" : "text-[#333]"}`}>
+                  className={`w-full text-left px-3 py-1.5 text-[12px] leading-snug hover:bg-[#eaf4ff] transition-colors ${i === value ? "bg-[#eaf4ff] text-primary font-medium" : "text-on-surface"}`}>
                   {i}
                 </button>
               ))}
@@ -606,7 +606,7 @@ const PopupCongVan = ({ onClose, onSave, banDau, nhung = false }: {
       <div className={nhung ? "" : "bg-white rounded-[4px] shadow-2xl w-[700px] max-h-[92vh] flex flex-col border border-[#bbb]"}>
         {/* Header */}
         {!nhung && (
-          <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+          <div className="flex items-center justify-between bg-tertiary px-4 py-[10px] rounded-t-[4px]">
             <span className="text-white text-[14px] font-semibold">{banDau ? "Sửa công văn" : "Thêm mới công văn"}</span>
             <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
               <X size={18} />
@@ -625,7 +625,7 @@ const PopupCongVan = ({ onClose, onSave, banDau, nhung = false }: {
             <Field label="Loại công văn" req>
               <div className="relative">
                 <select value={f.loaiCongVan} onChange={txt("loaiCongVan") as React.ChangeEventHandler<HTMLSelectElement>}
-                  className="w-full h-[30px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none">
+                  className="w-full h-[30px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary appearance-none">
                   <option value="">-- Chọn loại công văn --</option>
                   {(() => {
                     const groups = Array.from(new Set(LOAI_CONG_VAN_OPTIONS.map(o => o.group)));
@@ -643,24 +643,24 @@ const PopupCongVan = ({ onClose, onSave, banDau, nhung = false }: {
                     </>;
                   })()}
                 </select>
-                <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </Field>
           </div>
 
           {/* Checkboxes */}
           <div className="flex items-center gap-6 pt-1">
-            <label className="flex items-center gap-2 text-[13px] text-[#333] cursor-pointer">
+            <label className="flex items-center gap-2 text-[13px] text-on-surface cursor-pointer">
               <input type="checkbox" checked={f.trongNganh} onChange={chk("trongNganh")}
                 className="w-[15px] h-[15px] accent-[#8b1a1a]" />
               Đơn vị gửi trong ngành
             </label>
-            <label className="flex items-center gap-2 text-[13px] text-[#333] cursor-pointer">
+            <label className="flex items-center gap-2 text-[13px] text-on-surface cursor-pointer">
               <input type="checkbox" checked={f.traiGiam} onChange={chk("traiGiam")}
                 className="w-[15px] h-[15px] accent-[#8b1a1a]" />
               Đơn vị là trại giam
             </label>
-            {/* <label className="flex items-center gap-2 text-[13px] text-[#333] cursor-pointer">
+            {/* <label className="flex items-center gap-2 text-[13px] text-on-surface cursor-pointer">
               <input type="checkbox" checked={f.congVanChinh} onChange={chk("congVanChinh")}
                 className="w-[15px] h-[15px] accent-[#8b1a1a]" />
               Công văn chính
@@ -698,20 +698,20 @@ const PopupCongVan = ({ onClose, onSave, banDau, nhung = false }: {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Lbl>Nội dung công văn</Lbl>
-              <a href="#" onClick={e => e.preventDefault()} className="text-[12px] text-[#1a73e8] hover:underline">[Gợi ý]</a>
+              <a href="#" onClick={e => e.preventDefault()} className="text-[12px] text-primary hover:underline">[Gợi ý]</a>
             </div>
             <textarea
               rows={4}
               value={f.noiDungCongVan}
               onChange={e => setF(p => ({ ...p, noiDungCongVan: e.target.value }))}
               placeholder="Nhập nội dung công văn"
-              className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none"
+              className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none"
             />
           </div>
 
           {/* Địa danh trước sáp nhập block */}
-          <div className="border border-[#ddd] rounded-[3px] p-3 bg-[#fafafa]">
-            <label className="flex items-center gap-2 text-[13px] font-medium text-[#333] cursor-pointer mb-3">
+          <div className="border border-surface-container rounded-[3px] p-3 bg-surface-bright">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-on-surface cursor-pointer mb-3">
               <input type="checkbox" checked={f.diaDoanhCu} onChange={chk("diaDoanhCu")}
                 className="w-[15px] h-[15px] accent-[#8b1a1a]" />
               Địa danh trước sáp nhập
@@ -747,7 +747,7 @@ const PopupCongVan = ({ onClose, onSave, banDau, nhung = false }: {
         {/* Footer — chế độ nhúng không có nút riêng, dữ liệu lưu cùng nút Lưu
             của cả màn Thêm mới. */}
         {!nhung && (
-          <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+          <div className="flex justify-end gap-2 px-4 py-3 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
             <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
             <BtnPrimary onClick={handleSave}>Lưu</BtnPrimary>
           </div>
@@ -864,7 +864,7 @@ const NGUOI_CON_NGUOI: NguoiGoiY[] = [
 const DAN_TOC_OPTIONS = ["Kinh", "Tày", "Thái", "Mường", "Khmer", "Hoa", "Nùng", "H'Mông", "Dao", "Khác"];
 const TON_GIAO_OPTIONS = ["Không", "Phật giáo", "Công giáo", "Tin lành", "Cao Đài", "Phật giáo Hòa Hảo", "Hồi giáo", "Khác"];
 const QUOC_TICH_OPTIONS = ["Việt Nam", "Hoa Kỳ", "Nhật Bản", "Hàn Quốc", "Trung Quốc", "Pháp", "Khác"];
-const NGHE_NGHIEP_OPTIONS = ["Nông dân", "Công nhân", "Cán bộ, TTV", "Kinh doanh", "Lao động tự do", "Hưu trí", "Học sinh, sinh viên", "Khác"];
+const NGHE_NGHIEP_OPTIONS = ["Nông dân", "Công nhân", "Cán bộ, Công chức nghiên cứu", "Kinh doanh", "Lao động tự do", "Hưu trí", "Học sinh, sinh viên", "Khác"];
 const TRINH_DO_VH_OPTIONS = ["Tiểu học", "THCS", "THPT", "Khác"];
 const TRINH_DO_DT_OPTIONS = ["Sơ cấp", "Trung cấp", "Cao đẳng", "Đại học", "Thạc sĩ", "Tiến sĩ"];
 const THANH_PHAN_GD_OPTIONS = ["Bình thường", "Chính sách", "Khác"];
@@ -875,14 +875,14 @@ const CAC_DIA_CHI = ["Nơi sinh", "Quê quán", "Nơi đăng kí HKTT", "Nơi t�
 
 // Nhãn + ô nhập dùng riêng trong popup (nhỏ gọn, 12-13px như bản gốc)
 const NDLbl = ({ req, children }: { req?: boolean; children: React.ReactNode }) => (
-  <label className="block text-[12px] text-[#555] mb-[3px] whitespace-nowrap">
-    {req && <span className="text-[#c0392b] mr-1">*</span>}{children}
+  <label className="block text-[12px] text-on-surface-variant mb-[3px] whitespace-nowrap">
+    {req && <span className="text-error mr-1">*</span>}{children}
   </label>
 );
 const NDInp = ({ loi, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { loi?: boolean }) => (
   <input {...props}
     className={`w-full h-[32px] px-2.5 text-[13px] border rounded-[4px] outline-none transition-colors placeholder:text-[#bbb]
-      ${loi ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"} ${props.disabled ? "bg-[#f5f5f5]" : "bg-white"}`} />
+      ${loi ? "border-error" : "border-surface-container focus:border-primary"} ${props.disabled ? "bg-surface-container-low" : "bg-white"}`} />
 );
 const NDSel = ({ loi, placeholder, options, value, onChange, disabled }: {
   loi?: boolean; placeholder: string; options: string[];
@@ -891,11 +891,11 @@ const NDSel = ({ loi, placeholder, options, value, onChange, disabled }: {
   <div className="relative">
     <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
       className={`w-full h-[32px] pl-2.5 pr-7 text-[13px] border rounded-[4px] appearance-none outline-none transition-colors
-        ${loi ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"} ${disabled ? "bg-[#f5f5f5]" : "bg-white"} ${value ? "text-[#222]" : "text-[#bbb]"}`}>
+        ${loi ? "border-error" : "border-surface-container focus:border-primary"} ${disabled ? "bg-surface-container-low" : "bg-white"} ${value ? "text-on-surface" : "text-[#bbb]"}`}>
       <option value="">{placeholder}</option>
-      {options.map(o => <option key={o} className="text-[#222]">{o}</option>)}
+      {options.map(o => <option key={o} className="text-on-surface">{o}</option>)}
     </select>
-    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
   </div>
 );
 
@@ -967,9 +967,9 @@ const NGUOI_THEO_LOAI_AN: Record<string, BoNguoiThamGia> = {
 
 // Một hàng trong bảng người tham gia tố tụng (nguyên đơn / bị đơn / người liên quan)
 const HangNguoiThamGia = ({ n, i, onXoa, onSua }: { n: NguoiDungDon; i: number; onXoa: () => void; onSua?: () => void }) => (
-  <tr className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+  <tr className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
     <Td>
-      <span className="font-medium text-[#1a5a96]">{n.hoTen}</span>
+      <span className="font-medium text-primary">{n.hoTen}</span>
       {n.thongKe.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-1">
           {n.thongKe.map(tk => (
@@ -1068,9 +1068,9 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
       <div className="bg-white rounded-[6px] shadow-2xl border-t-[3px] border-[#27ae60] mx-auto max-w-[1600px]">
 
         {/* Header */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-[#eee]">
-          <button onClick={onDong} className="text-[#888] hover:text-[#333]"><X size={17} /></button>
-          <span className="text-[14px] font-semibold text-[#222]">{tieuDe}</span>
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-surface-container-high">
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface"><X size={17} /></button>
+          <span className="text-[14px] font-semibold text-on-surface">{tieuDe}</span>
         </div>
 
         <div className="px-5 py-4 space-y-4">
@@ -1078,10 +1078,10 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
           {/* Chọn từ bản án */}
           <div className="bg-[#f0f7ff] border border-[#c8def7] rounded-[4px] px-3 py-2.5">
             <div className="flex items-center gap-3">
-              <span className="text-[12px] font-semibold text-[#1d2e4f] whitespace-nowrap">Chọn từ bản án:</span>
+              <span className="text-[12px] font-semibold text-tertiary whitespace-nowrap">Chọn từ bản án:</span>
               <div className="flex-1 relative">
                 <select
-                  className="w-full h-[30px] pl-2 pr-8 text-[12px] border border-[#b8d0ee] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]"
+                  className="w-full h-[30px] pl-2 pr-8 text-[12px] border border-[#b8d0ee] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary"
                   onChange={e => {
                     const idx = parseInt(e.target.value);
                     if (isNaN(idx)) return;
@@ -1102,7 +1102,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                     </option>
                   ))}
                 </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
           </div>
@@ -1113,7 +1113,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
               <NDLbl req>Phân loại người tham gia tố tụng</NDLbl>
               <div className="flex items-center gap-6 h-[32px]">
                 {[["Cá nhân", true], ["Cơ quan/tổ chức", false]].map(([nhan, ca]) => (
-                  <label key={nhan as string} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                  <label key={nhan as string} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                     <input type="radio" name="phanLoaiNTG" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                       checked={laCaNhan === ca} onChange={() => setLaCaNhan(ca as boolean)} />
                     {nhan as string}
@@ -1129,20 +1129,20 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
           </div>
 
           {/* Thông tin con người / tổ chức */}
-          <div className="border border-[#eee] rounded-[4px]">
+          <div className="border border-surface-container-high rounded-[4px]">
             <button type="button" onClick={() => setMoConNguoi(!moConNguoi)}
-              className="w-full flex items-center gap-2 px-3 py-2 bg-[#fafafa] border-b border-[#eee] text-left">
-              <span className="inline-block w-[14px] h-[14px] border border-[#888] rounded-[2px] text-center leading-[12px] text-[11px]">
+              className="w-full flex items-center gap-2 px-3 py-2 bg-surface-bright border-b border-surface-container-high text-left">
+              <span className="inline-block w-[14px] h-[14px] border border-on-surface-variant rounded-[2px] text-center leading-[12px] text-[11px]">
                 {moConNguoi ? "−" : "+"}
               </span>
-              <span className="text-[13px] font-semibold text-[#333]">
+              <span className="text-[13px] font-semibold text-on-surface">
                 {laCaNhan ? "Thông tin con người" : "Thông tin cơ quan/tổ chức"}
               </span>
             </button>
 
             {moConNguoi && (laCaNhan ? (
               <div className="p-3 flex gap-4">
-                <div className="w-[130px] h-[160px] flex-shrink-0 bg-[#f2f2f2] border border-[#e0e0e0] flex items-center justify-center text-[12px] text-[#999]">
+                <div className="w-[130px] h-[160px] flex-shrink-0 bg-[#f2f2f2] border border-surface-container-highest flex items-center justify-center text-[12px] text-outline">
                   Ảnh chân dung
                 </div>
                 <div className="flex-1">
@@ -1153,7 +1153,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                     <div><NDLbl req>Ngày sinh</NDLbl><NDInp type="date" value={g("ngaySinh")} loi={loi(!g("ngaySinh"))} onChange={e => dat("ngaySinh")(e.target.value)} /></div>
                     <div className="col-span-2 grid grid-cols-2 gap-x-4">
                       <div>
-                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] h-[19px] mb-[3px]">
+                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface h-[19px] mb-[3px]">
                           <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                             checked={khongCoCanCuoc} onChange={e => setKhongCoCanCuoc(e.target.checked)} />
                           Không có căn cước
@@ -1169,14 +1169,14 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                   {/* Nút ẩn/hiển thị thông tin nâng cao */}
                   <div className="mb-2">
                     <button type="button" onClick={() => setMoNangCao(!moNangCao)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#ccc] rounded-[3px] bg-white text-[12px] text-[#555] hover:bg-[#fafafa] font-medium transition-colors">
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-surface-container-highest rounded-[3px] bg-white text-[12px] text-on-surface-variant hover:bg-surface-bright font-medium transition-colors">
                       {moNangCao ? "− Ẩn bớt thông tin nâng cao" : "+ Hiển thị thông tin nâng cao"}
                     </button>
                   </div>
 
                   {/* Các thông tin nâng cao */}
                   {moNangCao && (
-                    <div className="grid grid-cols-5 gap-x-4 gap-y-3 border-t border-[#eee] pt-3">
+                    <div className="grid grid-cols-5 gap-x-4 gap-y-3 border-t border-surface-container-high pt-3">
                       <div><NDLbl>Nơi cấp CCCD</NDLbl><NDInp placeholder="Nơi cấp CCCD" disabled={khongCoCanCuoc} value={g("noiCapCCCD")} onChange={e => dat("noiCapCCCD")(e.target.value)} /></div>
                       <div><NDLbl>Dân tộc</NDLbl><NDSel placeholder="Dân tộc" options={DAN_TOC_OPTIONS} value={g("danToc")} onChange={dat("danToc")} /></div>
                       <div><NDLbl>Tôn giáo</NDLbl><NDSel placeholder="Tôn giáo" options={TON_GIAO_OPTIONS} value={g("tonGiao")} onChange={dat("tonGiao")} /></div>
@@ -1196,7 +1196,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                       <div><NDLbl>Số fax</NDLbl><NDInp placeholder="Số fax" value={g("soFax")} onChange={e => dat("soFax")(e.target.value)} /></div>
 
                       <div className="col-span-2 flex items-end gap-3">
-                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] h-[32px] whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface h-[32px] whitespace-nowrap">
                           <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                             checked={laDangVien} onChange={e => setLaDangVien(e.target.checked)} />
                           Là đảng viên
@@ -1208,7 +1208,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                         </div>
                       </div>
                       <div className="flex items-end">
-                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333] h-[32px] whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface h-[32px] whitespace-nowrap">
                           <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                             checked={coTienAn} onChange={e => setCoTienAn(e.target.checked)} />
                           Có tiền án tiền sự
@@ -1216,10 +1216,10 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                       </div>
 
                       <div>
-                        <NDLbl req>TTV, viên chức</NDLbl>
+                        <NDLbl req>Công chức nghiên cứu, viên chức</NDLbl>
                         <div className="flex items-center gap-5 h-[32px]">
                           {["Không", "Có"].map(o => (
-                            <label key={o} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                            <label key={o} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                               <input type="radio" name="congChuc" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                                 checked={congChuc === o} onChange={() => setCongChuc(o)} />
                               {o}
@@ -1231,7 +1231,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                         <NDLbl req>Nghiện ma túy</NDLbl>
                         <div className="flex items-center gap-5 h-[32px]">
                           {["Không", "Có"].map(o => (
-                            <label key={o} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                            <label key={o} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                               <input type="radio" name="nghienMaTuy" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                                 checked={nghienMaTuy === o} onChange={() => setNghienMaTuy(o)} />
                               {o}
@@ -1258,42 +1258,42 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
 
           {/* Danh sách giấy tờ */}
           <div>
-            <div className="text-[12px] font-bold text-[#333] tracking-wide mb-2">DANH SÁCH GIẤY TỜ</div>
+            <div className="text-[12px] font-bold text-on-surface tracking-wide mb-2">DANH SÁCH GIẤY TỜ</div>
             <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#fafafa] text-[#555]">
+                <tr className="bg-surface-bright text-on-surface-variant">
                   {["STT", "Loại giấy tờ", "Số", "Ngày cấp", "Nơi cấp", "Thao tác"].map(h => (
-                    <th key={h} className="border-y border-[#eee] px-2 py-2 font-semibold text-center">{h}</th>
+                    <th key={h} className="border-y border-surface-container-high px-2 py-2 font-semibold text-center">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {giayTo.length === 0 ? (
-                  <tr><td colSpan={6} className="border-b border-[#eee] px-2 py-4 text-center text-[#999]">
+                  <tr><td colSpan={6} className="border-b border-surface-container-high px-2 py-4 text-center text-outline">
                     Chưa có giấy tờ. Nhấn Thêm giấy tờ để bổ sung.
                   </td></tr>
                 ) : giayTo.map((gt, i) => (
                   <tr key={gt.id}>
-                    <td className="border-b border-[#eee] px-2 py-1.5 text-center text-[#666] w-[50px]">{i + 1}</td>
-                    <td className="border-b border-[#eee] px-2 py-1.5 w-[230px]">
+                    <td className="border-b border-surface-container-high px-2 py-1.5 text-center text-on-surface-variant w-[50px]">{i + 1}</td>
+                    <td className="border-b border-surface-container-high px-2 py-1.5 w-[230px]">
                       <NDSel placeholder="Chọn loại giấy tờ" options={LOAI_GIAY_TO_OPTIONS} value={gt.loai}
                         onChange={v => setGiayTo(p => p.map(x => x.id === gt.id ? { ...x, loai: v } : x))} />
                     </td>
-                    <td className="border-b border-[#eee] px-2 py-1.5">
+                    <td className="border-b border-surface-container-high px-2 py-1.5">
                       <NDInp placeholder="Số" value={gt.so}
                         onChange={e => setGiayTo(p => p.map(x => x.id === gt.id ? { ...x, so: e.target.value } : x))} />
                     </td>
-                    <td className="border-b border-[#eee] px-2 py-1.5 w-[160px]">
+                    <td className="border-b border-surface-container-high px-2 py-1.5 w-[160px]">
                       <NDInp type="date" value={gt.ngayCap}
                         onChange={e => setGiayTo(p => p.map(x => x.id === gt.id ? { ...x, ngayCap: e.target.value } : x))} />
                     </td>
-                    <td className="border-b border-[#eee] px-2 py-1.5">
+                    <td className="border-b border-surface-container-high px-2 py-1.5">
                       <NDInp placeholder="Nơi cấp" value={gt.noiCap}
                         onChange={e => setGiayTo(p => p.map(x => x.id === gt.id ? { ...x, noiCap: e.target.value } : x))} />
                     </td>
-                    <td className="border-b border-[#eee] px-2 py-1.5 text-center w-[80px]">
+                    <td className="border-b border-surface-container-high px-2 py-1.5 text-center w-[80px]">
                       <button onClick={() => setGiayTo(p => p.filter(x => x.id !== gt.id))}
-                        className="text-[#c0392b] hover:bg-[#fdecea] rounded p-1"><Trash2 size={13} /></button>
+                        className="text-error hover:bg-[#fdecea] rounded p-1"><Trash2 size={13} /></button>
                     </td>
                   </tr>
                 ))}
@@ -1301,7 +1301,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
             </table>
             <button type="button"
               onClick={() => setGiayTo(p => [...p, { id: Date.now(), loai: "", so: "", ngayCap: "", noiCap: "" }])}
-              className="w-full mt-2 py-2 border border-dashed border-[#ccc] rounded-[4px] text-[12px] text-[#555] hover:bg-[#fafafa] hover:border-[#8b1a1a] hover:text-[#8b1a1a] transition-colors">
+              className="w-full mt-2 py-2 border border-dashed border-surface-container-highest rounded-[4px] text-[12px] text-on-surface-variant hover:bg-surface-bright hover:border-error hover:text-error transition-colors">
               + Thêm giấy tờ
             </button>
           </div>
@@ -1315,12 +1315,12 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
           {/* Địa chỉ */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333]">
+              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface">
                 <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                   checked={diaDanhCu} onChange={e => setDiaDanhCu(e.target.checked)} />
                 Địa danh trước sát nhập
               </label>
-              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333]">
+              <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface">
                 <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                   checked={khongCoTT} onChange={e => setKhongCoTT(e.target.checked)} />
                 Không có thông tin
@@ -1338,7 +1338,7 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
                     <div><NDLbl>Quốc gia</NDLbl><NDSel placeholder="Quốc gia" options={QUOC_TICH_OPTIONS} disabled={khongCoTT} value={dc.quocGia} onChange={datDiaChi(i, "quocGia")} /></div>
                     <button onClick={() => setDiaChis(p => p.map((d, j) => j === i ? { ...d, chiTiet: "", phuongXa: "", tinhTP: "", quocGia: "Việt Nam" } : d))}
                       title="Xóa thông tin dòng này"
-                      className="h-[32px] flex items-center justify-center text-[#c0392b] hover:bg-[#fdecea] rounded">
+                      className="h-[32px] flex items-center justify-center text-error hover:bg-[#fdecea] rounded">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -1352,15 +1352,15 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
             <div>
               <button type="button" onClick={() => setMoThongKe(!moThongKe)}
                 className="flex items-center gap-2 mb-2">
-                <span className="inline-block w-[14px] h-[14px] border border-[#888] rounded-[2px] text-center leading-[12px] text-[11px]">
+                <span className="inline-block w-[14px] h-[14px] border border-on-surface-variant rounded-[2px] text-center leading-[12px] text-[11px]">
                   {moThongKe ? "−" : "+"}
                 </span>
-                <span className="text-[13px] font-semibold text-[#333]">Thông tin thống kê</span>
+                <span className="text-[13px] font-semibold text-on-surface">Thông tin thống kê</span>
               </button>
               {moThongKe && (
                 <div className="grid grid-cols-5 gap-x-4 gap-y-2">
                   {THONG_TIN_THONG_KE.map(tk => (
-                    <label key={tk} className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333]">
+                    <label key={tk} className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a] flex-shrink-0"
                         checked={thongKe.includes(tk)}
                         onChange={e => setThongKe(p => e.target.checked ? [...p, tk] : p.filter(x => x !== tk))} />
@@ -1373,16 +1373,16 @@ const PopupThemNguoiDungDon = ({ onDong, onLuu, tieuDe = "Thêm người đứng
           )}
 
           {daBam && thieu && (
-            <p className="text-[12px] text-[#c0392b]">Vui lòng nhập đủ các trường bắt buộc (đánh dấu *).</p>
+            <p className="text-[12px] text-error">Vui lòng nhập đủ các trường bắt buộc (đánh dấu *).</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-center gap-2 px-5 py-4 border-t border-[#eee]">
+        <div className="flex justify-center gap-2 px-5 py-4 border-t border-surface-container-high">
           <button onClick={luu}
-            className="h-[34px] px-6 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[4px] text-[13px] font-semibold transition-colors">Lưu</button>
+            className="h-[34px] px-6 bg-error hover:bg-error-container text-white rounded-[4px] text-[13px] font-semibold transition-colors">Lưu</button>
           <button onClick={onDong}
-            className="h-[34px] px-6 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[13px] font-medium transition-colors">Đóng</button>
+            className="h-[34px] px-6 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[4px] text-[13px] font-medium transition-colors">Đóng</button>
         </div>
       </div>
     </div>
@@ -1403,6 +1403,7 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
   // ── Inline single-person fields (khi chỉ có ≤1 người) ──
   // Mở từ link "Mã đơn" ở tab mới → điền sẵn người đứng đơn của đơn đó
   const [inHoTen, setInHoTen] = useState(don?.nguoiGui ?? "");
+  const [inLaCaNhan, setInLaCaNhan] = useState(true);
   const [inGioiTinh, setInGioiTinh] = useState("");
   const [inNgaySinh, setInNgaySinh] = useState("");
   const [inCCCD, setInCCCD] = useState("");
@@ -1515,14 +1516,25 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
         /* === Chế độ đơn: hiển thị inline === */
         <div className="p-3">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[13px] font-bold text-[#333] border-l-4 border-[#8b1a1a] pl-2 uppercase">Người đứng đơn</span>
+            <span className="text-[13px] font-bold text-on-surface border-l-4 border-error pl-2 uppercase">Người đứng đơn</span>
             <button type="button"
               onClick={chuyenSangDanhSach}
-              className="inline-flex items-center gap-1 h-[26px] px-2.5 border border-[#ccc] rounded-[3px] text-[11px] text-[#555] hover:bg-white transition-colors">
+              className="inline-flex items-center gap-1 h-[26px] px-2.5 border border-surface-container-highest rounded-[3px] text-[11px] text-on-surface-variant hover:bg-white transition-colors">
               <Plus size={11} /> Thêm người thứ 2
             </button>
           </div>
+          <div className="flex items-center gap-6 mb-3 h-[32px]">
+            {[["Cá nhân", true], ["Cơ quan/tổ chức", false]].map(([nhan, ca]) => (
+              <label key={nhan as string} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
+                <input type="radio" name="inlinePhanLoaiNTG" className="w-[14px] h-[14px] accent-[#8b1a1a]"
+                  checked={inLaCaNhan === ca} onChange={() => setInLaCaNhan(ca as boolean)} />
+                {nhan as string}
+              </label>
+            ))}
+          </div>
           <div className="grid grid-cols-6 gap-x-3 gap-y-2.5">
+            {inLaCaNhan ? (
+              <>
             {/* Họ tên với autocomplete */}
             <div className="col-span-2 relative">
               <Lbl>Họ và tên</Lbl>
@@ -1534,14 +1546,14 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
                 onFocus={() => inHoTen.length >= 1 && setShowHoTenDD(hoTenGợiY.length > 0)}
               />
               {showHoTenDD && (
-                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#ddd] rounded-[3px] shadow-lg mt-0.5 max-h-[180px] overflow-y-auto">
+                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-surface-container rounded-[3px] shadow-lg mt-0.5 max-h-[180px] overflow-y-auto">
                   {(hoTenGợiY as any[]).map((ng, i) => (
                     <button key={i} type="button"
                       onMouseDown={() => applyNguoiGoiY(ng)}
-                      className="w-full text-left px-3 py-2 hover:bg-[#f0f7ff] border-b border-[#f0f0f0] last:border-0">
-                      <div className="text-[12px] font-medium text-[#1d2e4f]">{ng.ten}</div>
-                      <div className="text-[11px] text-[#888] flex gap-3 mt-0.5">
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${ng.nguon === "Bản án" ? "bg-[#fef3e2] text-[#b45309]" : "bg-[#e8f0fe] text-[#1a5a96]"}`}>{ng.nguon}</span>
+                      className="w-full text-left px-3 py-2 hover:bg-[#f0f7ff] border-b border-surface-container last:border-0">
+                      <div className="text-[12px] font-medium text-tertiary">{ng.ten}</div>
+                      <div className="text-[11px] text-on-surface-variant flex gap-3 mt-0.5">
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${ng.nguon === "Bản án" ? "bg-[#fef3e2] text-[#b45309]" : "bg-info-container text-primary"}`}>{ng.nguon}</span>
                         <span>{ng.tuCach}</span>
                         <span>CCCD: {ng.cccd}</span>
                       </div>
@@ -1578,11 +1590,11 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
                   onFocus={() => !khongCoCccd && inCCCD.length >= 3 && setShowCccdDD(cccdGợiY.length > 0)}
                 />
                 <button type="button" disabled={khongCoCccd}
-                  className="flex-shrink-0 flex items-center justify-center w-[30px] h-[30px] border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] disabled:opacity-50 transition-colors">
-                  <Search size={13} className="text-[#555]" />
+                  className="flex-shrink-0 flex items-center justify-center w-[30px] h-[30px] border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low disabled:opacity-50 transition-colors">
+                  <Search size={13} className="text-on-surface-variant" />
                 </button>
               </div>
-              <label className="flex items-center gap-1.5 cursor-pointer mt-1 text-[11px] text-[#555] whitespace-nowrap">
+              <label className="flex items-center gap-1.5 cursor-pointer mt-1 text-[11px] text-on-surface-variant whitespace-nowrap">
                 <input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a]"
                   checked={khongCoCccd} onChange={e => {
                     setKhongCoCccd(e.target.checked);
@@ -1591,13 +1603,13 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
                 Không có thông tin CCCD
               </label>
               {showCccdDD && !khongCoCccd && (
-                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#ddd] rounded-[3px] shadow-lg mt-0.5 max-h-[160px] overflow-y-auto">
+                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-surface-container rounded-[3px] shadow-lg mt-0.5 max-h-[160px] overflow-y-auto">
                   {(cccdGợiY as any[]).map((ng, i) => (
                     <button key={i} type="button"
                       onMouseDown={() => applyNguoiGoiY(ng)}
-                      className="w-full text-left px-3 py-2 hover:bg-[#f0f7ff] border-b border-[#f0f0f0] last:border-0">
-                      <div className="text-[12px] font-medium text-[#333]">{ng.ten} — {ng.cccd}</div>
-                      <div className="text-[11px] text-[#888]">{ng.tuCach}</div>
+                      className="w-full text-left px-3 py-2 hover:bg-[#f0f7ff] border-b border-surface-container last:border-0">
+                      <div className="text-[12px] font-medium text-on-surface">{ng.ten} — {ng.cccd}</div>
+                      <div className="text-[11px] text-on-surface-variant">{ng.tuCach}</div>
                     </button>
                   ))}
                 </div>
@@ -1608,11 +1620,24 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
               <Lbl>Số điện thoại</Lbl>
               <Inp placeholder="Số điện thoại" value={inSdt} onChange={e => setInSdt(e.target.value)} />
             </div>
+            </>
+            ) : (
+              <>
+                <div className="col-span-4 relative">
+                  <Lbl>Tên cơ quan/tổ chức</Lbl>
+                  <Inp placeholder="Tên cơ quan/tổ chức..." value={inHoTen} onChange={e => setInHoTen(e.target.value)} />
+                </div>
+                <div className="col-span-2">
+                  <Lbl>Số điện thoại</Lbl>
+                  <Inp placeholder="Số điện thoại" value={inSdt} onChange={e => setInSdt(e.target.value)} />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Địa chỉ — dùng chung với khối Địa danh trước sáp nhập */}
-          <div className="mt-3 pt-3 border-t border-[#eee]">
-            <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#555] mb-2">
+          <div className="mt-3 pt-3 border-t border-surface-container-high">
+            <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface-variant mb-2">
               <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                 checked={diaDanhCu} onChange={e => setDiaDanhCu(e.target.checked)} />
               Địa danh trước sáp nhập
@@ -1652,19 +1677,19 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
         /* === Chế độ danh sách: ≥2 người === */
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[13px] font-semibold text-[#333]">Danh sách người đứng đơn</span>
+            <span className="text-[13px] font-semibold text-on-surface">Danh sách người đứng đơn</span>
             <BtnAdd onClick={() => setShowThemNDD(true)}><Plus size={12} /> Thêm mới</BtnAdd>
           </div>
           <Tbl headers={["Liên hệ chính", "Họ và tên", "Tư cách tố tụng", "Địa chỉ", "SĐT", "Thao tác"]}
             emptyMsg="Chưa có dữ liệu">
             {nguoiDungDon.length > 0 ? nguoiDungDon.map((n, i) => (
-              <tr key={n.id} className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+              <tr key={n.id} className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
                 <Td center>
                   <input type="radio" name="lienHeChinh" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                     checked={n.lienHeChinh}
                     onChange={() => setNguoiDungDon(p => p.map(x => ({ ...x, lienHeChinh: x.id === n.id })))} />
                 </Td>
-                <Td><span className="font-medium text-[#1a5a96]">{n.hoTen}</span></Td>
+                <Td><span className="font-medium text-primary">{n.hoTen}</span></Td>
                 <Td>{n.tuCach}</Td>
                 <Td>{n.diaChi}</Td>
                 <Td>{n.sdt}</Td>
@@ -1702,13 +1727,13 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
       {/* Nội dung đơn */}
       <div>
         <Lbl req>Nội dung đơn</Lbl>
-        <textarea rows={4} placeholder="Nhập nội dung đơn..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+        <textarea rows={4} placeholder="Nhập nội dung đơn..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
       </div>
 
       {/* Ghi chú */}
       <div>
         <Lbl>Ghi chú</Lbl>
-        <textarea rows={2} placeholder="Nhập ghi chú (nếu có)..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+        <textarea rows={2} placeholder="Nhập ghi chú (nếu có)..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
       </div>
 
       {/* Ý kiến chỉ đạo */}
@@ -1724,7 +1749,7 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
       {yKienChiDao !== "Không" && (
         <div>
           <Lbl req>Nội dung chỉ đạo</Lbl>
-          <textarea rows={3} placeholder="Nhập nội dung chỉ đạo..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+          <textarea rows={3} placeholder="Nhập nội dung chỉ đạo..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
         </div>
       )}
     </div>
@@ -1734,7 +1759,6 @@ const DonFields = ({ don, dienTuDon }: { don?: DonLienQuan | null; dienTuDon?: D
 // ─── Tài khoản đang đăng nhập ────────────────────────────────────────────────
 const NHAN_VAI_TRO: Record<string, string> = {
   "can-bo-tiep-cong-dan": "Cán bộ tiếp công dân",
-  "can-bo-phan-loai": "Cán bộ phân loại",
   "can-bo-thu-ly": "Cán bộ thụ lý",
   "pho-vp": "Phó / Chánh Văn phòng",
   "can-bo-nghiep-vu": "Cán bộ nghiệp vụ",
@@ -1747,7 +1771,6 @@ const NHAN_VAI_TRO: Record<string, string> = {
 };
 const DS_VAI_TRO = [
   "can-bo-tiep-cong-dan",
-  "can-bo-phan-loai",
   "can-bo-thu-ly",
   "pho-vp",
   "can-bo-nghiep-vu",
@@ -1781,39 +1804,39 @@ const KhoiTaiKhoan = ({ vaiTro, onDoiVaiTro }: { vaiTro: string; onDoiVaiTro?: (
   }, [mo]);
 
   return (
-    <div ref={ref} className="relative border-t border-[#e0e0e0] flex-shrink-0">
+    <div ref={ref} className="relative border-t border-surface-container-highest flex-shrink-0">
       {mo && (
-        <div className="absolute bottom-full left-2 right-2 mb-1 bg-white rounded-[4px] shadow-[0_-2px_12px_rgba(0,0,0,0.14)] border border-[#e0e0e0] overflow-hidden">
-          <div className="px-3 py-2.5 bg-[#f7f9fc] border-b border-[#eee]">
-            <div className="text-[13px] font-semibold text-[#1d2e4f]">{TAI_KHOAN.hoTen}</div>
-            <div className="text-[11px] text-[#666] mt-0.5">{TAI_KHOAN.email}</div>
-            <div className="text-[11px] text-[#666]">{TAI_KHOAN.donVi}</div>
+        <div className="absolute bottom-full left-2 right-2 mb-1 bg-white rounded-[4px] shadow-[0_-2px_12px_rgba(0,0,0,0.14)] border border-surface-container-highest overflow-hidden">
+          <div className="px-3 py-2.5 bg-[#f7f9fc] border-b border-surface-container-high">
+            <div className="text-[13px] font-semibold text-tertiary">{TAI_KHOAN.hoTen}</div>
+            <div className="text-[11px] text-on-surface-variant mt-0.5">{TAI_KHOAN.email}</div>
+            <div className="text-[11px] text-on-surface-variant">{TAI_KHOAN.donVi}</div>
           </div>
           {[
             { icon: <Users size={13} />, nhan: "Thông tin tài khoản" },
             { icon: <Settings size={13} />, nhan: "Đổi mật khẩu" },
           ].map(m => (
-            <div key={m.nhan} className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-[#333] hover:bg-[#f5f5f5] cursor-pointer transition-colors">
-              <span className="text-[#666]">{m.icon}</span>{m.nhan}
+            <div key={m.nhan} className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-on-surface hover:bg-surface-container-low cursor-pointer transition-colors">
+              <span className="text-on-surface-variant">{m.icon}</span>{m.nhan}
             </div>
           ))}
 
           {/* Chuyển vai trò — thay cho hộp "Vai trò" nổi ở góc màn hình */}
           {onDoiVaiTro && (
-            <div className="border-t border-[#eee]">
+            <div className="border-t border-surface-container-high">
               <div onClick={() => setMoVaiTro(v => !v)}
-                className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-[#333] hover:bg-[#f5f5f5] cursor-pointer transition-colors">
-                <span className="text-[#666]"><RefreshCw size={13} /></span>
+                className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-on-surface hover:bg-surface-container-low cursor-pointer transition-colors">
+                <span className="text-on-surface-variant"><RefreshCw size={13} /></span>
                 Chuyển vai trò
-                <ChevronDown size={12} className={`ml-auto text-[#888] transition-transform ${moVaiTro ? "rotate-180" : ""}`} />
+                <ChevronDown size={12} className={`ml-auto text-on-surface-variant transition-transform ${moVaiTro ? "rotate-180" : ""}`} />
               </div>
               {moVaiTro && (
-                <div className="bg-[#fafbfc] border-t border-[#f0f0f0] py-1">
+                <div className="bg-[#fafbfc] border-t border-surface-container py-1">
                   {DS_VAI_TRO.map(v => (
                     <div key={v}
                       onClick={() => { onDoiVaiTro(v); setMoVaiTro(false); setMo(false); }}
                       className={`flex items-center gap-2 pl-8 pr-3 py-1.5 text-[12px] cursor-pointer transition-colors ${v === vaiTro
-                        ? "text-[#8b1a1a] font-semibold bg-[#fdeaea]"
+                        ? "text-error font-semibold bg-[#fdeaea]"
                         : "text-[#444] hover:bg-[#f0f2f5]"}`}>
                       {v === vaiTro
                         ? <Check size={12} className="flex-shrink-0" />
@@ -1826,22 +1849,22 @@ const KhoiTaiKhoan = ({ vaiTro, onDoiVaiTro }: { vaiTro: string; onDoiVaiTro?: (
             </div>
           )}
 
-          <div className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-[#c0392b] hover:bg-[#fdecea] cursor-pointer transition-colors border-t border-[#eee]">
+          <div className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-error hover:bg-[#fdecea] cursor-pointer transition-colors border-t border-surface-container-high">
             <ArrowLeft size={13} /> Đăng xuất
           </div>
         </div>
       )}
 
       <div onClick={() => setMo(m => !m)}
-        className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-[#f5f5f5] transition-colors">
-        <div className="w-[32px] h-[32px] flex-shrink-0 rounded-full bg-[#8b1a1a] text-white flex items-center justify-center text-[12px] font-semibold">
+        className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-surface-container-low transition-colors">
+        <div className="w-[32px] h-[32px] flex-shrink-0 rounded-full bg-error text-white flex items-center justify-center text-[12px] font-semibold">
           {chuVietTat(TAI_KHOAN.hoTen)}
         </div>
         <div className="leading-tight min-w-0 flex-1">
-          <div className="text-[13px] font-semibold text-[#1d2e4f] truncate">{TAI_KHOAN.hoTen}</div>
-          <div className="text-[11px] text-[#777] truncate">{NHAN_VAI_TRO[vaiTro] ?? vaiTro}</div>
+          <div className="text-[13px] font-semibold text-tertiary truncate">{TAI_KHOAN.hoTen}</div>
+          <div className="text-[11px] text-on-surface-variant truncate">{NHAN_VAI_TRO[vaiTro] ?? vaiTro}</div>
         </div>
-        <ChevronUp size={13} className={`text-[#888] flex-shrink-0 transition-transform ${mo ? "" : "rotate-180"}`} />
+        <ChevronUp size={13} className={`text-on-surface-variant flex-shrink-0 transition-transform ${mo ? "" : "rotate-180"}`} />
       </div>
     </div>
   );
@@ -1854,7 +1877,7 @@ const MENU_GDT: { nav: string; label: string; icon: React.ReactNode }[] = [
   { nav: "gdt:don-cho-phe-duyet", label: "Nhận đơn và TL vụ án", icon: <Inbox size={13} /> },
   { nav: "gdt:ho-so-khang-nghi", label: "Hồ sơ kháng nghị", icon: <FolderOpen size={13} /> },
   { nav: "gdt:quan-ly-vu-an", label: "Quản lý vụ án", icon: <Gavel size={13} /> },
-  { nav: "gdt:phan-cong-ttv", label: "Phân công TTV", icon: <Users size={13} /> },
+  { nav: "gdt:phan-cong-ttv", label: "Phân công Công chức nghiên cứu", icon: <Users size={13} /> },
   // Màn "Phân công Ủy ban thẩm phán" đã bỏ khỏi menu. Component vẫn còn vì màn
   // Quản lý vụ xét xử GĐT nhúng lại nó ở chế độ chỉ đọc để hiện Danh sách tham mưu.
   { nav: "gdt:quan-ly-vu-xet-xu", label: "Quản lý vụ xét xử GĐT", icon: <Scale size={13} /> },
@@ -1862,7 +1885,7 @@ const MENU_GDT: { nav: string; label: string; icon: React.ReactNode }[] = [
   { nav: "gdt:an-quoc-hoi", label: "Án quốc hội", icon: <Scale size={13} /> },
   { nav: "gdt:an-thoi-hieu", label: "Án thời hiệu", icon: <Clock size={13} /> },
   { nav: "gdt:cong-van-trao-doi", label: "Công văn trao đổi", icon: <Mail size={13} /> },
-  { nav: "gdt:cau-hinh-ttv", label: "Cấu hình TTV báo cáo", icon: <Settings size={13} /> },
+  { nav: "gdt:cau-hinh-ttv", label: "Cấu hình Công chức nghiên cứu báo cáo", icon: <Settings size={13} /> },
 ];
 
 // ─── Sidebar navigation ──────────────────────────────────────────────────────
@@ -1888,13 +1911,13 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
   const SubItem = ({ icon, label, active, nav, badge }: { icon: React.ReactNode; label: string; active?: boolean; nav?: string; badge?: number }) => (
     <div onClick={() => nav && onNav?.(nav)}
       className={`flex items-center gap-2.5 px-4 py-[7px] cursor-pointer text-[13px] transition-colors rounded-[3px] mx-1
-      ${active ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#444] hover:bg-[#f5f5f5]"}`}>
-      <span className={active ? "text-[#8b1a1a]" : "text-[#888]"}>{icon}</span>
+      ${active ? "bg-[#fdeaea] text-error font-semibold" : "text-[#444] hover:bg-surface-container-low"}`}>
+      <span className={active ? "text-error" : "text-on-surface-variant"}>{icon}</span>
       <span className="truncate flex-1">{label}</span>
       {/* Badge đỏ: tín hiệu duy nhất kéo cán bộ vào màn "Danh sách văn bản"
           mỗi sáng. Chỉ hiện khi > 0. */}
       {!!badge && badge > 0 && (
-        <span className="flex-shrink-0 bg-[#8b1a1a] text-white rounded-full text-[10px] font-medium min-w-[16px] h-[16px] leading-[16px] text-center px-1">
+        <span className="flex-shrink-0 bg-error text-white rounded-full text-[10px] font-medium min-w-[16px] h-[16px] leading-[16px] text-center px-1">
           {badge}
         </span>
       )}
@@ -1904,20 +1927,20 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
   const GroupItem = ({ icon, label, open, onToggle }: {
     icon: React.ReactNode; label: string; open: boolean; onToggle: () => void;
   }) => (
-    <div className="flex items-center justify-between px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors"
+    <div className="flex items-center justify-between px-3 py-[8px] cursor-pointer hover:bg-surface-container-low transition-colors"
       onClick={onToggle}>
-      <div className="flex items-center gap-2.5 text-[13px] font-semibold text-[#333]">
-        <span className="text-[#666]">{icon}</span>
+      <div className="flex items-center gap-2.5 text-[13px] font-semibold text-on-surface">
+        <span className="text-on-surface-variant">{icon}</span>
         {label}
       </div>
-      {open ? <ChevronUp size={13} className="text-[#888]" /> : <ChevronDown size={13} className="text-[#888]" />}
+      {open ? <ChevronUp size={13} className="text-on-surface-variant" /> : <ChevronDown size={13} className="text-on-surface-variant" />}
     </div>
   );
 
   return (
-    <div className="w-[230px] flex-shrink-0 bg-white border-r border-[#e0e0e0] flex flex-col h-full overflow-hidden">
+    <div className="w-[230px] flex-shrink-0 bg-white border-r border-surface-container-highest flex flex-col h-full overflow-hidden">
       {/* Logo header */}
-      <div className="flex items-center gap-2.5 px-3 py-3 border-b border-[#eee] flex-shrink-0">
+      <div className="flex items-center gap-2.5 px-3 py-3 border-b border-surface-container-high flex-shrink-0">
         <div className="w-[38px] h-[38px] flex-shrink-0">
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="48" fill="#8b1a1a" />
@@ -1926,21 +1949,22 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
           </svg>
         </div>
         <div className="leading-tight">
-          <div className="text-[10px] text-[#666] font-medium">PHÒNG TIẾP NHẬN VÀ XỬ LÝ CÔNG DÂN</div>
-          <div className="text-[13px] font-bold text-[#1d2e4f]">HỆ THỐNG QUẢN LÝ ÁN</div>
+          <div className="text-[10px] text-on-surface-variant font-medium">PHÒNG TIẾP NHẬN VÀ XỬ LÝ CÔNG DÂN</div>
+          <div className="text-[13px] font-bold text-tertiary">HỆ THỐNG QUẢN LÝ ÁN</div>
         </div>
       </div>
 
       {/* Nav items — cuộn riêng để khối tài khoản luôn nằm đáy */}
       <nav className="flex-1 py-2 space-y-0.5 overflow-y-auto">
         {/* Trang chủ */}
-        <div onClick={() => onNav?.("home")} className={`flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors text-[13px] rounded-[3px] mx-1 ${activePage === "home" ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#333]"}`}>
-          <LayoutList size={15} className={activePage === "home" ? "text-[#8b1a1a]" : "text-[#666]"} />
+        <div onClick={() => onNav?.("home")} className={`flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-surface-container-low transition-colors text-[13px] rounded-[3px] mx-1 ${activePage === "home" ? "bg-[#fdeaea] text-error font-semibold" : "text-on-surface"}`}>
+          <LayoutList size={15} className={activePage === "home" ? "text-error" : "text-on-surface-variant"} />
           <span>Trang chủ</span>
         </div>
 
         {/* Quản lý đơn */}
-        <div>
+        {currentRole !== "can-bo-nghiep-vu" && currentRole !== "lanh-dao-phong" && (
+          <div>
           <GroupItem icon={<FileText size={15} />} label="Quản lý đơn"
             open={quanLyDonOpen} onToggle={() => setQuanLyDonOpen(!quanLyDonOpen)} />
           {quanLyDonOpen && (
@@ -1970,7 +1994,8 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", onDoiVaiTro, vanBa
               )}
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         {/* Quản lý án GĐT/TT */}
         {!["pho-vp", "can-bo-phan-loai", "can-bo-thu-ly", "can-bo-tiep-cong-dan"].includes(currentRole) && (
@@ -2083,8 +2108,8 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
 
   const O = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
     <input {...props}
-      className={`w-full h-[30px] px-2 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8]
-        ${props.disabled ? "bg-[#f5f5f5] border-[#e0e0e0] text-[#aaa]" : "bg-white border-[#ccc] text-[#222]"}`} />
+      className={`w-full h-[30px] px-2 text-[12px] border rounded-[3px] focus:outline-none focus:border-primary
+        ${props.disabled ? "bg-surface-container-low border-surface-container-highest text-outline" : "bg-white border-surface-container-highest text-on-surface"}`} />
   );
 
   return (
@@ -2092,14 +2117,14 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
       <div className="bg-white rounded-[6px] shadow-2xl w-full max-w-[1320px] max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}>
 
-        <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <div className="text-[15px] font-bold">Thêm đơn trùng</div>
           <button onClick={onDong} className="text-white/70 hover:text-white"><X size={16} /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
           {/* Thông tin dùng chung — lấy từ đơn gốc, chỉ đọc */}
-          <div className="text-[13px] font-semibold text-[#333] mb-2">Thông tin đơn</div>
+          <div className="text-[13px] font-semibold text-on-surface mb-2">Thông tin đơn</div>
           <div className="grid grid-cols-4 gap-4 mb-5">
             {[
               ["Người gửi đơn", donGoc.nguoiGui],
@@ -2108,8 +2133,8 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
               ["Tòa xét xử", donGoc.thongTinDon.toaXetXu],
             ].map(([nhan, giaTri]) => (
               <div key={nhan}>
-                <label className="block text-[12px] text-[#888] mb-1">{nhan}:</label>
-                <div className="h-[34px] px-3 flex items-center text-[13px] text-[#333] bg-[#f5f5f5] border border-[#e0e0e0] rounded-[4px]">
+                <label className="block text-[12px] text-on-surface-variant mb-1">{nhan}:</label>
+                <div className="h-[34px] px-3 flex items-center text-[13px] text-on-surface bg-surface-container-low border border-surface-container-highest rounded-[4px]">
                   {giaTri || "—"}
                 </div>
               </div>
@@ -2119,28 +2144,28 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
           {/* Bảng KHÔNG cuộn ngang. 5 cột phụ (số/ngày công văn, đơn vị gửi,
               người ký, chức vụ) chỉ hiện khi có dòng nào tick ô tương ứng —
               trạng thái thường chỉ còn 6 cột nên vừa khít bề ngang. */}
-          <div className="border border-[#ddd] rounded-[4px]">
+          <div className="border border-surface-container rounded-[4px]">
             <table className="w-full table-fixed border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#f5f5f5]">
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[42px] text-center font-semibold text-[#333]">STT</th>
-                  <th className="border-b border-[#ddd] px-2 py-2 text-left font-semibold text-[#333]">Số hiệu đơn</th>
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[130px] text-left font-semibold text-[#333]">Ngày nhận</th>
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[130px] text-left font-semibold text-[#333]">Ngày trên đơn</th>
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[64px] text-center font-semibold text-[#333]">Công văn</th>
+                <tr className="bg-surface-container-low">
+                  <th className="border-b border-surface-container px-2 py-2 w-[42px] text-center font-semibold text-on-surface">STT</th>
+                  <th className="border-b border-surface-container px-2 py-2 text-left font-semibold text-on-surface">Số hiệu đơn</th>
+                  <th className="border-b border-surface-container px-2 py-2 w-[130px] text-left font-semibold text-on-surface">Ngày nhận</th>
+                  <th className="border-b border-surface-container px-2 py-2 w-[130px] text-left font-semibold text-on-surface">Ngày trên đơn</th>
+                  <th className="border-b border-surface-container px-2 py-2 w-[64px] text-center font-semibold text-on-surface">Công văn</th>
                   {coCongVan && <>
-                    <th className="border-b border-[#ddd] px-2 py-2 w-[110px] text-left font-semibold text-[#333]">Số CV</th>
-                    <th className="border-b border-[#ddd] px-2 py-2 w-[130px] text-left font-semibold text-[#333]">Ngày CV</th>
+                    <th className="border-b border-surface-container px-2 py-2 w-[110px] text-left font-semibold text-on-surface">Số CV</th>
+                    <th className="border-b border-surface-container px-2 py-2 w-[130px] text-left font-semibold text-on-surface">Ngày CV</th>
                   </>}
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[74px] text-center font-semibold text-[#333]">Trong ngành</th>
+                  <th className="border-b border-surface-container px-2 py-2 w-[74px] text-center font-semibold text-on-surface">Trong ngành</th>
                   {coTrongNganh && <>
-                    <th className="border-b border-[#ddd] px-2 py-2 text-left font-semibold text-[#333]">Đơn vị gửi</th>
-                    <th className="border-b border-[#ddd] px-2 py-2 w-[120px] text-left font-semibold text-[#333]">Người ký</th>
-                    <th className="border-b border-[#ddd] px-2 py-2 w-[110px] text-left font-semibold text-[#333]">Chức vụ</th>
+                    <th className="border-b border-surface-container px-2 py-2 text-left font-semibold text-on-surface">Đơn vị gửi</th>
+                    <th className="border-b border-surface-container px-2 py-2 w-[120px] text-left font-semibold text-on-surface">Người ký</th>
+                    <th className="border-b border-surface-container px-2 py-2 w-[110px] text-left font-semibold text-on-surface">Chức vụ</th>
                   </>}
-                  <th className="border-b border-[#ddd] px-2 py-2 w-[44px] text-center">
+                  <th className="border-b border-surface-container px-2 py-2 w-[44px] text-center">
                     <button onClick={() => setDong(p => [...p, dongMoi()])} title="Thêm dòng"
-                      className="w-[24px] h-[24px] rounded-full bg-[#8b1a1a] hover:bg-[#6e1414] text-white inline-flex items-center justify-center transition-colors">
+                      className="w-[24px] h-[24px] rounded-full bg-error hover:bg-error-container text-white inline-flex items-center justify-center transition-colors">
                       <Plus size={14} />
                     </button>
                   </th>
@@ -2148,8 +2173,8 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
               </thead>
               <tbody>
                 {dong.map((d, i) => (
-                  <tr key={d.id} className="border-b border-[#f0f0f0] last:border-0">
-                    <td className="px-2 py-2 text-center text-[#666]">{i + 1}</td>
+                  <tr key={d.id} className="border-b border-surface-container last:border-0">
+                    <td className="px-2 py-2 text-center text-on-surface-variant">{i + 1}</td>
                     <td className="px-2 py-2"><O value={d.soHieuDon} onChange={e => dat(d.id, "soHieuDon")(e.target.value)} /></td>
                     <td className="px-2 py-2"><O type="date" value={d.ngayNhan} onChange={e => dat(d.id, "ngayNhan")(e.target.value)} /></td>
                     <td className="px-2 py-2"><O type="date" value={d.ngayTrenDon} onChange={e => dat(d.id, "ngayTrenDon")(e.target.value)} /></td>
@@ -2175,7 +2200,7 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
                         disabled={dong.length === 1}
                         title={dong.length === 1 ? "Phải còn ít nhất một đơn" : "Xoá dòng"}
                         onClick={() => setDong(p => p.filter(x => x.id !== d.id))}
-                        className={`transition-colors ${dong.length === 1 ? "text-[#ddd] cursor-not-allowed" : "text-[#c0392b] hover:text-[#8b1a1a]"}`}>
+                        className={`transition-colors ${dong.length === 1 ? "text-surface-container cursor-not-allowed" : "text-error hover:text-error"}`}>
                         <Trash2 size={14} />
                       </button>
                     </td>
@@ -2185,19 +2210,19 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
             </table>
           </div>
 
-          <div className="mt-2.5 text-[11px] text-[#888] italic">
-            Sẽ tạo <b className="text-[#333] not-italic">{dong.length} đơn</b> mang cùng thông tin bản án
-            của {donGoc.maDon.trim()}, trạng thái <b className="text-[#333] not-italic">Đã thụ lý</b>.
+          <div className="mt-2.5 text-[11px] text-on-surface-variant italic">
+            Sẽ tạo <b className="text-on-surface not-italic">{dong.length} đơn</b> mang cùng thông tin bản án
+            của {donGoc.maDon.trim()}, trạng thái <b className="text-on-surface not-italic">Đã thụ lý</b>.
           </div>
         </div>
 
-        <div className="border-t border-[#e0e0e0] px-5 py-3 flex justify-end gap-2 flex-shrink-0">
+        <div className="border-t border-surface-container-highest px-5 py-3 flex justify-end gap-2 flex-shrink-0">
           <button onClick={() => onLuu(dong)}
-            className="h-[30px] px-4 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[12px] font-medium transition-colors">
+            className="h-[30px] px-4 rounded-[3px] bg-error hover:bg-error-container text-white text-[12px] font-medium transition-colors">
             Lưu
           </button>
           <button onClick={onDong}
-            className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[#333] text-[12px] font-medium hover:bg-[#f5f5f5] transition-colors">
+            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-on-surface text-[12px] font-medium hover:bg-surface-container-low transition-colors">
             Đóng
           </button>
         </div>
@@ -2218,7 +2243,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
   }, [onClose]);
 
   const items: { icon: React.ReactNode; label: string; red?: boolean; divider?: boolean; action?: string }[] = [
-    ...(onPhanCong ? [{ icon: <Users size={13} />, label: "Phân công thụ lý", action: "phancong" }] : []),
+    ...(onPhanCong ? [{ icon: <Users size={13} />, label: "Phân công cán bộ xử lý", action: "phancong" }] : []),
     { icon: <PenLine size={13} />, label: "Sửa", action: "edit" },
     { icon: <Eye size={13} />, label: "Xem chi tiết", action: "view" },
     { icon: <FolderOpen size={13} />, label: "Xem hồ sơ đơn" },
@@ -2238,7 +2263,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
 
   return (
     <div ref={ref}
-      className="absolute right-0 top-full mt-1 z-50 bg-white border border-[#ddd] rounded-[4px] shadow-lg py-1 min-w-[190px]">
+      className="absolute right-0 top-full mt-1 z-50 bg-white border border-surface-container rounded-[4px] shadow-lg py-1 min-w-[190px]">
       {items.map((item, i) => (
         <button key={i} onClick={() => {
           if (item.action === "phancong") { onPhanCong?.(); }
@@ -2254,9 +2279,9 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
           if (item.action === "themketqua") { onThemKetQua?.(); }
           onClose();
         }}
-          className={`w-full flex items-center gap-2.5 px-3 py-[6px] text-[13px] hover:bg-[#f5f5f5] transition-colors text-left
-            ${item.red ? "text-[#c0392b] border-t border-[#eee] mt-1 pt-[7px]" : "text-[#333]"}`}>
-          <span className={item.red ? "text-[#c0392b]" : "text-[#666]"}>{item.icon}</span>
+          className={`w-full flex items-center gap-2.5 px-3 py-[6px] text-[13px] hover:bg-surface-container-low transition-colors text-left
+            ${item.red ? "text-error border-t border-surface-container-high mt-1 pt-[7px]" : "text-on-surface"}`}>
+          <span className={item.red ? "text-error" : "text-on-surface-variant"}>{item.icon}</span>
           {item.label}
         </button>
       ))}
@@ -2388,14 +2413,14 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white rounded-[10px] shadow-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between px-6 pt-5 pb-1 sticky top-0 bg-white z-10">
-          <span className="text-[16px] font-bold text-[#222]">Thêm kết quả giải quyết</span>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+          <span className="text-[16px] font-bold text-on-surface">Thêm kết quả giải quyết</span>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
         </div>
-        <div className="px-6 py-4 space-y-3 text-[13px] text-[#333]">
+        <div className="px-6 py-4 space-y-3 text-[13px] text-on-surface">
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Kết quả giải quyết</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Kết quả giải quyết</label>
             <select value={ketQuaXuLy} onChange={e => { setKetQuaXuLy(e.target.value); setTrangThaiDon(""); setThuLyDon(""); }}
-              className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+              className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
               <option value="">-- Chọn kết quả --</option>
               <option value="Chuyển đơn">Chuyển đơn</option>
               <option value="Trả lại đơn">Trả lại đơn</option>
@@ -2406,9 +2431,9 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
           {ketQuaXuLy === "Chuyển đơn" && (
             <>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Nơi chuyển đến</label>
+                <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Nơi chuyển đến</label>
                 <select value={noiChuyenDen} onChange={e => setNoiChuyenDen(e.target.value)}
-                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
                   <option value="">-- Chọn nơi chuyển --</option>
                   <option value="Nội bộ">Nội bộ</option>
                   <option value="Tòa khác">Tòa khác</option>
@@ -2416,21 +2441,21 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
                 </select>
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Đơn vị nhận</label>
+                <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Đơn vị nhận</label>
                 <input type="text" value={donViChuyenDen} onChange={e => setDonViChuyenDen(e.target.value)}
                   placeholder="Nhập đơn vị nhận..."
-                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Cá nhân nhận</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Cá nhân nhận</label>
                 <input type="text" value={caNhanChuyenDen} onChange={e => setCaNhanChuyenDen(e.target.value)}
                   placeholder="Nhập cán bộ/cá nhân nhận..."
-                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Trạng thái đơn</label>
+                <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Trạng thái đơn</label>
                 <select value={trangThaiDon} onChange={e => { setTrangThaiDon(e.target.value); setThuLyDon(""); setLyDoKhongDu(""); }}
-                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
                   <option value="">-- Chọn trạng thái --</option>
                   <option value="Đơn đủ điều kiện">Đơn đủ điều kiện</option>
                   <option value="Đơn không đủ điều kiện">Đơn không đủ điều kiện</option>
@@ -2440,9 +2465,9 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
               {trangThaiDon === "Đơn đủ điều kiện" && (
                 <>
                   <div>
-                    <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Thụ lý đơn</label>
+                    <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Thụ lý đơn</label>
                     <select value={thuLyDon} onChange={e => setThuLyDon(e.target.value)}
-                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
                       <option value="">-- Chọn --</option>
                       <option value="Thụ lý mới">Thụ lý mới</option>
                       <option value="Đã thụ lý">Đã thụ lý</option>
@@ -2453,15 +2478,15 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
                   {thuLyDon === "Thụ lý mới" && (
                     <>
                       <div>
-                        <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Số thụ lý</label>
+                        <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Số thụ lý</label>
                         <input type="text" value={soThuLy} onChange={e => setSoThuLy(e.target.value)}
                           placeholder="Nhập số thụ lý..."
-                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
                       </div>
                       <div>
-                        <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Ngày thụ lý</label>
+                        <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Ngày thụ lý</label>
                         <input type="date" value={ngayThuLy} onChange={e => setNgayThuLy(e.target.value)}
-                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]" />
+                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
                       </div>
                     </>
                   )}
@@ -2471,9 +2496,9 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
               {trangThaiDon === "Đơn không đủ điều kiện" && (
                 <>
                   <div>
-                    <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do không đủ điều kiện</label>
+                    <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Lý do không đủ điều kiện</label>
                     <select value={lyDoKhongDu} onChange={e => setLyDoKhongDu(e.target.value)}
-                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                      className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
                       <option value="">-- Chọn lý do --</option>
                       <option value="Thiếu Bản án/quyết định có hiệu lực pháp luật">Thiếu Bản án/quyết định có hiệu lực pháp luật</option>
                       <option value="Thiếu thông tin căn cước công dân">Thiếu thông tin căn cước công dân</option>
@@ -2483,10 +2508,10 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
                   </div>
                   {lyDoKhongDu === "Lý do khác" && (
                     <div>
-                      <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do khác</label>
+                      <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Lý do khác</label>
                       <textarea rows={2} value={lyDoKhongDuKhac} onChange={e => setLyDoKhongDuKhac(e.target.value)}
                         placeholder="Nhập lý do khác..."
-                        className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+                        className="w-full border border-surface-container rounded-[6px] px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                     </div>
                   )}
                 </>
@@ -2497,9 +2522,9 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
           {ketQuaXuLy === "Trả lại đơn" && (
             <>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do trả lại</label>
+                <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Lý do trả lại</label>
                 <select value={lyDoTraLai} onChange={e => setLyDoTraLai(e.target.value)}
-                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-[#ddd] focus:border-[#1a5a96]">
+                  className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors border-surface-container focus:border-primary">
                   <option value="">-- Chọn lý do --</option>
                   <option value="Đơn không đủ điều kiện xử lý">Đơn không đủ điều kiện xử lý</option>
                   <option value="Không thuộc thẩm quyền giải quyết">Không thuộc thẩm quyền giải quyết</option>
@@ -2508,30 +2533,30 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
                 </select>
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Yêu cầu trả lại đơn</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Yêu cầu trả lại đơn</label>
                 <textarea rows={2} value={yeuCauTraLai} onChange={e => setYeuCauTraLai(e.target.value)}
                   placeholder="Nhập yêu cầu trả lại đơn..."
-                  className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+                  className="w-full border border-surface-container rounded-[6px] px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
               </div>
             </>
           )}
 
           {ketQuaXuLy === "Lưu theo dõi" && (
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><span className="text-[#c0392b] mr-1">*</span>Lý do lưu theo dõi</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Lý do lưu theo dõi</label>
               <textarea rows={3} value={lyDoLuuTheoDoi} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
                 placeholder="Nhập lý do lưu theo dõi..."
-                className="w-full border border-[#ddd] rounded-[6px] px-3 py-2 text-[13px] text-[#222] focus:outline-none focus:border-[#1a5a96] resize-none" />
+                className="w-full border border-surface-container rounded-[6px] px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
             </div>
           )}
         </div>
-        <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#e0e0e0] sticky bottom-0 bg-white z-10">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-highest sticky bottom-0 bg-white z-10">
           <button onClick={onClose}
-            className="h-[36px] px-5 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[6px] text-[13px] font-medium transition-colors">
+            className="h-[36px] px-5 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[6px] text-[13px] font-medium transition-colors">
             Đóng
           </button>
           <button onClick={handleConfirm} disabled={isDisabled}
-            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[6px] text-[13px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+            className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[6px] text-[13px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
             Xác nhận
           </button>
         </div>
@@ -2568,16 +2593,16 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[6px] shadow-2xl w-[500px] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#eee]">
-          <span className="text-[15px] font-bold text-[#333]">Thêm đơn từ tài liệu OCR</span>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333]"><X size={18} /></button>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-high">
+          <span className="text-[15px] font-bold text-on-surface">Thêm đơn từ tài liệu OCR</span>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface"><X size={18} /></button>
         </div>
 
         {/* Tabs */}
         <div className="px-4 pt-3">
-          <div className="flex bg-[#f5f5f5] p-1 rounded-[4px]">
-            <button onClick={() => setTab(0)} className={`flex-1 py-1.5 text-[13px] font-medium rounded-[3px] transition-colors ${tab === 0 ? "bg-white shadow text-[#1d2e4f]" : "text-[#666] hover:text-[#333]"}`}>Tải file PDF</button>
-            <button onClick={() => setTab(1)} className={`flex-1 py-1.5 text-[13px] font-medium rounded-[3px] transition-colors ${tab === 1 ? "bg-white shadow text-[#1d2e4f]" : "text-[#666] hover:text-[#333]"}`}>Quét từ máy scan</button>
+          <div className="flex bg-surface-container-low p-1 rounded-[4px]">
+            <button onClick={() => setTab(0)} className={`flex-1 py-1.5 text-[13px] font-medium rounded-[3px] transition-colors ${tab === 0 ? "bg-white shadow text-tertiary" : "text-on-surface-variant hover:text-on-surface"}`}>Tải file PDF</button>
+            <button onClick={() => setTab(1)} className={`flex-1 py-1.5 text-[13px] font-medium rounded-[3px] transition-colors ${tab === 1 ? "bg-white shadow text-tertiary" : "text-on-surface-variant hover:text-on-surface"}`}>Quét từ máy scan</button>
           </div>
         </div>
 
@@ -2593,24 +2618,24 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
                 onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={e => { e.preventDefault(); setDragOver(false); accept(e.dataTransfer.files?.[0]); }}
-                className={`border border-dashed rounded-[6px] p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${dragOver ? "border-[#8b1a1a] bg-[#fce4ec]" : "border-[#e91e63] bg-[#fdf2f6] hover:bg-[#fce4ec]"}`}>
+                className={`border border-dashed rounded-[6px] p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${dragOver ? "border-error bg-[#fce4ec]" : "border-[#e91e63] bg-[#fdf2f6] hover:bg-[#fce4ec]"}`}>
                 <div className="w-10 h-10 bg-[#e91e63] rounded-[4px] flex items-center justify-center mb-3">
                   <Archive size={20} className="text-white" />
                 </div>
-                <div className="text-[14px] font-medium text-[#333] mb-1">Click hoặc kéo thả file tài liệu vào đây</div>
-                <div className="text-[12px] text-[#666]">Hỗ trợ file định dạng .pdf</div>
+                <div className="text-[14px] font-medium text-on-surface mb-1">Click hoặc kéo thả file tài liệu vào đây</div>
+                <div className="text-[12px] text-on-surface-variant">Hỗ trợ file định dạng .pdf</div>
               </div>
 
               {/* Selected file */}
               {file ? (
-                <div className="flex items-center gap-2 px-3 py-2 bg-[#f5f5f5] rounded-[4px]">
-                  <FileText size={18} className="text-[#1a73e8] flex-shrink-0" />
-                  <span className="text-[13px] font-medium text-[#333] truncate flex-1">{file.name}</span>
-                  <span className="text-[12px] text-[#888] flex-shrink-0">{file.sizeMB.toFixed(2)} MB</span>
-                  <button onClick={boFile} className="text-[#888] hover:text-[#c0392b] flex-shrink-0"><X size={14} /></button>
+                <div className="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-[4px]">
+                  <FileText size={18} className="text-primary flex-shrink-0" />
+                  <span className="text-[13px] font-medium text-on-surface truncate flex-1">{file.name}</span>
+                  <span className="text-[12px] text-on-surface-variant flex-shrink-0">{file.sizeMB.toFixed(2)} MB</span>
+                  <button onClick={boFile} className="text-on-surface-variant hover:text-error flex-shrink-0"><X size={14} /></button>
                 </div>
               ) : (
-                <div className="text-[12px] text-[#c0392b] flex items-center gap-1">
+                <div className="text-[12px] text-error flex items-center gap-1">
                   <AlertCircle size={12} /> Bắt buộc tải lên 1 file PDF để tiếp tục.
                 </div>
               )}
@@ -2618,15 +2643,15 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
               {/* Fields */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#333] mb-1"><span className="text-[#e91e63]">*</span> Tên tài liệu</label>
+                  <label className="block text-[12px] font-medium text-on-surface mb-1"><span className="text-[#e91e63]">*</span> Tên tài liệu</label>
                   <input value={tenTaiLieu} onChange={e => setTenTaiLieu(e.target.value)}
-                    placeholder="Nhập tên tài liệu" className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                    placeholder="Nhập tên tài liệu" className="w-full h-[32px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
                 </div>
                 <div className="grid grid-cols-2 gap-4 items-end">
                   <div>
-                    <label className="block text-[12px] font-medium text-[#333] mb-1">Loại tài liệu</label>
+                    <label className="block text-[12px] font-medium text-on-surface mb-1">Loại tài liệu</label>
                     <div className="relative">
-                      <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8]">
+                      <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary">
                         <option value="">Chọn loại tài liệu</option>
                         <option value="Quyết định">Quyết định</option>
                         <option value="Công văn">Công văn</option>
@@ -2635,23 +2660,23 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
                         <option value="Tờ trình">Tờ trình</option>
                         <option value="Đơn">Đơn</option>
                       </select>
-                      <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                      <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                     </div>
                   </div>
                   <div className="h-[32px] flex items-center">
-                    <label className="flex items-center gap-2 text-[12px] cursor-pointer text-[#333]">
-                      <input type="checkbox" className="w-3.5 h-3.5 rounded-[3px] border-[#ccc]" /> Tài liệu cá nhân
+                    <label className="flex items-center gap-2 text-[12px] cursor-pointer text-on-surface">
+                      <input type="checkbox" className="w-3.5 h-3.5 rounded-[3px] border-surface-container-highest" /> Tài liệu cá nhân
                     </label>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[12px] font-medium text-[#333] mb-1">Số văn bản</label>
-                    <input placeholder="Nhập số văn bản" className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                    <label className="block text-[12px] font-medium text-on-surface mb-1">Số văn bản</label>
+                    <input placeholder="Nhập số văn bản" className="w-full h-[32px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium text-[#333] mb-1">Ngày văn bản</label>
-                    <input type="date" className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] text-[#888]" />
+                    <label className="block text-[12px] font-medium text-on-surface mb-1">Ngày văn bản</label>
+                    <input type="date" className="w-full h-[32px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary text-on-surface-variant" />
                   </div>
                 </div>
               </div>
@@ -2659,46 +2684,46 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="block text-[12px] font-medium text-[#333] mb-1">Máy quét</label>
+                <label className="block text-[12px] font-medium text-on-surface mb-1">Máy quét</label>
                 <div className="relative flex items-center gap-2">
                   <div className="relative flex-1">
-                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary">
                       <option value="">Chọn máy quét</option>
                     </select>
-                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                   </div>
-                  <button className="h-[32px] w-[32px] flex items-center justify-center border border-[#ccc] rounded-[3px] text-[#666] hover:bg-[#f5f5f5]"><RotateCcw size={14} /></button>
+                  <button className="h-[32px] w-[32px] flex items-center justify-center border border-surface-container-highest rounded-[3px] text-on-surface-variant hover:bg-surface-container-low"><RotateCcw size={14} /></button>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-[#333] mb-1">Độ phân giải (DPI)</label>
+                  <label className="block text-[12px] font-medium text-on-surface mb-1">Độ phân giải (DPI)</label>
                   <div className="relative">
                     <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-[#e91e63] rounded-[3px] appearance-none focus:outline-none">
                       <option>300</option>
                       <option>600</option>
                     </select>
-                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#333] mb-1">Chế độ màu</label>
+                  <label className="block text-[12px] font-medium text-on-surface mb-1">Chế độ màu</label>
                   <div className="relative">
-                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary">
                       <option>Đen trắng</option>
                       <option>Màu</option>
                     </select>
-                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-[#333] mb-1">2 mặt</label>
+                  <label className="block text-[12px] font-medium text-on-surface mb-1">2 mặt</label>
                   <div className="relative">
-                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8]">
+                    <select className="w-full h-[32px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary">
                       <option>Không</option>
                       <option>Có</option>
                     </select>
-                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -2707,17 +2732,17 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#eee]">
+        <div className="flex justify-end gap-2 px-4 py-3 border-t border-surface-container-high">
           {tab === 0 ? (
             <>
-              <button onClick={onClose} className="h-[32px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[13px] font-medium transition-colors">Quay lại</button>
+              <button onClick={onClose} className="h-[32px] px-4 border border-surface-container-highest bg-white text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[13px] font-medium transition-colors">Quay lại</button>
               <button onClick={() => file && onUpload(file)} disabled={!file}
                 className={`h-[32px] px-4 rounded-[3px] text-[13px] font-medium transition-colors text-white ${file ? "bg-[#e91e63] hover:bg-[#d81b60]" : "bg-[#e91e63] opacity-50 cursor-not-allowed"}`}>Tải lên</button>
             </>
           ) : (
             <>
-              <button onClick={onClose} className="h-[32px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[13px] font-medium transition-colors">Hủy</button>
-              <button onClick={() => onUpload({ name: `scan-${Date.now()}.pdf`, sizeMB: 0.12 })} className="h-[32px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[13px] font-medium transition-colors">Bắt đầu quét</button>
+              <button onClick={onClose} className="h-[32px] px-4 border border-surface-container-highest bg-white text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[13px] font-medium transition-colors">Hủy</button>
+              <button onClick={() => onUpload({ name: `scan-${Date.now()}.pdf`, sizeMB: 0.12 })} className="h-[32px] px-4 border border-surface-container-highest bg-white text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[13px] font-medium transition-colors">Bắt đầu quét</button>
             </>
           )}
         </div>
@@ -2731,11 +2756,11 @@ const PopupUploadFile = ({ onClose, onUpload }: { onClose: () => void, onUpload:
 type OcrStatus = "chua" | "dang" | "thanhcong" | "thatbai" | "dahuy";
 
 const OCR_STATUS_META: Record<OcrStatus, { label: string; cls: string; icon: React.ReactNode }> = {
-  chua: { label: "Chưa OCR", cls: "bg-[#f1f3f5] text-[#555] border-[#ccc]", icon: <FileText size={11} /> },
+  chua: { label: "Chưa OCR", cls: "bg-[#f1f3f5] text-on-surface-variant border-surface-container-highest", icon: <FileText size={11} /> },
   dang: { label: "Đang OCR", cls: "bg-[#fff7e6] text-[#92400e] border-[#f59e0b]", icon: <Loader2 size={11} className="animate-spin" /> },
   thanhcong: { label: "OCR thành công", cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#4caf50]", icon: <Check size={11} /> },
-  thatbai: { label: "OCR thất bại", cls: "bg-[#fdecea] text-[#8b1a1a] border-[#e57373]", icon: <AlertCircle size={11} /> },
-  dahuy: { label: "OCR đã hủy", cls: "bg-[#f1f3f5] text-[#555] border-[#ccc]", icon: <Ban size={11} /> },
+  thatbai: { label: "OCR thất bại", cls: "bg-[#fdecea] text-error border-[#e57373]", icon: <AlertCircle size={11} /> },
+  dahuy: { label: "OCR đã hủy", cls: "bg-[#f1f3f5] text-on-surface-variant border-surface-container-highest", icon: <Ban size={11} /> },
 };
 
 const OcrStatusBadge = ({ status, className = "" }: { status: OcrStatus; className?: string }) => {
@@ -2803,77 +2828,77 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
   const thieu = !f.vuAn.trim() || !f.loai || !f.giaiDoan || !f.soBA.trim() || !f.ngayBA || !f.toaAn;
 
   const o = (rong: boolean) =>
-    `w-full h-[36px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors placeholder:text-[#bbb] ${daBam && rong ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`;
-  const Sao = () => <span className="text-[#c0392b] mr-1">*</span>;
+    `w-full h-[36px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors placeholder:text-[#bbb] ${daBam && rong ? "border-error" : "border-surface-container focus:border-primary"}`;
+  const Sao = () => <span className="text-error mr-1">*</span>;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
       <div className="bg-white rounded-[8px] shadow-2xl w-[720px] max-h-[92vh] overflow-y-auto">
         <div className="flex items-start justify-between px-6 pt-5 pb-2">
-          <span className="text-[16px] font-bold text-[#222]">{banDau ? "Sửa bản án / quyết định liên quan" : "Thêm bản án / quyết định liên quan"}</span>
-          <button onClick={onDong} className="text-[#888] hover:text-[#333] -mt-1"><X size={19} /></button>
+          <span className="text-[16px] font-bold text-on-surface">{banDau ? "Sửa bản án / quyết định liên quan" : "Thêm bản án / quyết định liên quan"}</span>
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={19} /></button>
         </div>
 
         <div className="px-6 py-3 space-y-3">
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Vụ án</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Vụ án</label>
             <input value={f.vuAn} onChange={e => dat("vuAn")(e.target.value)}
               placeholder="VD: Nguyễn Văn An kiện UBND tỉnh Bắc Ninh" className={o(!f.vuAn.trim())} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Loại BA/QĐ</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Loại BA/QĐ</label>
               <div className="relative">
                 <select value={f.loai} onChange={e => dat("loai")(e.target.value)}
                   className={`${o(!f.loai)} appearance-none pr-8`}>
                   {LOAI_BA_QD_OPTIONS.map(x => <option key={x}>{x}</option>)}
                 </select>
-                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Giai đoạn</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Giai đoạn</label>
               <div className="relative">
                 <select value={f.giaiDoan} onChange={e => dat("giaiDoan")(e.target.value)}
-                  className={`${o(!f.giaiDoan)} appearance-none pr-8 ${f.giaiDoan ? "text-[#222]" : "text-[#aaa]"}`}>
+                  className={`${o(!f.giaiDoan)} appearance-none pr-8 ${f.giaiDoan ? "text-on-surface" : "text-outline"}`}>
                   <option value="">Chọn giai đoạn</option>
-                  {GIAI_DOAN_OPTIONS.map(x => <option key={x} className="text-[#222]">{x}</option>)}
+                  {GIAI_DOAN_OPTIONS.map(x => <option key={x} className="text-on-surface">{x}</option>)}
                 </select>
-                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Số bản án / quyết định</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Số bản án / quyết định</label>
               <input value={f.soBA} onChange={e => dat("soBA")(e.target.value)}
                 placeholder="VD: 15/2023/HC-ST" className={o(!f.soBA.trim())} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Ngày ra bản án</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Ngày ra bản án</label>
               <input type="date" value={f.ngayBA} onChange={e => dat("ngayBA")(e.target.value)}
                 className={o(!f.ngayBA)} />
             </div>
             <div className="col-span-2">
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Tòa án ra bản án</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Tòa án ra bản án</label>
               <div className="relative">
                 <select value={f.toaAn} onChange={e => dat("toaAn")(e.target.value)}
-                  className={`${o(!f.toaAn)} appearance-none pr-8 ${f.toaAn ? "text-[#222]" : "text-[#aaa]"}`}>
+                  className={`${o(!f.toaAn)} appearance-none pr-8 ${f.toaAn ? "text-on-surface" : "text-outline"}`}>
                   <option value="">Chọn tòa án</option>
-                  {TOA_RA_BA_OPTIONS.map(x => <option key={x} className="text-[#222]">{x}</option>)}
+                  {TOA_RA_BA_OPTIONS.map(x => <option key={x} className="text-on-surface">{x}</option>)}
                 </select>
-                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-6 pt-1">
-            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
               <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                 checked={f.daGiaiQuyet} onChange={e => dat("daGiaiQuyet")(e.target.checked)} />
               Bản án đã giải quyết
             </label>
             {/* Chỉ bản án còn hiệu lực mới đề nghị xem xét GĐT/TT được */}
-            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+            <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
               <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                 checked={f.isDuplicate} onChange={e => dat("isDuplicate")(e.target.checked)} />
               Cho phép đề nghị xem xét GĐT/TT
@@ -2881,13 +2906,13 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
           </div>
 
           {daBam && thieu && (
-            <p className="text-[12px] text-[#c0392b]">Vui lòng nhập đủ các trường bắt buộc (*).</p>
+            <p className="text-[12px] text-error">Vui lòng nhập đủ các trường bắt buộc (*).</p>
           )}
         </div>
 
         <div className="flex justify-end gap-2 px-6 py-4">
           <button onClick={onDong}
-            className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
+            className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
           <button onClick={() => {
             setDaBam(true);
             if (thieu) return;
@@ -2897,7 +2922,7 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
               toaAn: f.toaAn, daGiaiQuyet: f.daGiaiQuyet, isDuplicate: f.isDuplicate,
             });
           }}
-            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
+            className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
         </div>
       </div>
     </div>
@@ -2927,51 +2952,51 @@ const PopupThemDonKem = ({ onDong, onThem, banDau }: {
   const thieu = !ngayNhan;
 
   const oNhap = (rong: boolean) =>
-    `w-full h-[36px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors placeholder:text-[#bbb] ${daBam && rong ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`;
+    `w-full h-[36px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors placeholder:text-[#bbb] ${daBam && rong ? "border-error" : "border-surface-container focus:border-primary"}`;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
       <div className="bg-white rounded-[8px] shadow-2xl w-[780px] overflow-hidden">
         <div className="flex items-start justify-between px-6 pt-5 pb-3">
-          <span className="text-[16px] font-bold text-[#222]">{banDau ? "Sửa đơn thụ lý kèm" : "Thêm đơn thụ lý kèm"}</span>
-          <button onClick={onDong} className="text-[#888] hover:text-[#333] -mt-1"><X size={19} /></button>
+          <span className="text-[16px] font-bold text-on-surface">{banDau ? "Sửa đơn thụ lý kèm" : "Thêm đơn thụ lý kèm"}</span>
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={19} /></button>
         </div>
 
         <div className="px-6">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5">Số hiệu đơn</label>
+              <label className="block text-[13px] text-on-surface mb-1.5">Số hiệu đơn</label>
               <input value={soHieu} onChange={e => setSoHieu(e.target.value)}
                 placeholder="Nhập số hiệu đơn" className={oNhap(false)} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5">
-                <span className="text-[#c0392b] mr-1">*</span>Ngày nhận đơn
+              <label className="block text-[13px] text-on-surface mb-1.5">
+                <span className="text-error mr-1">*</span>Ngày nhận đơn
               </label>
               <input type="date" value={ngayNhan} onChange={e => setNgayNhan(e.target.value)}
                 className={oNhap(!ngayNhan)} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5">Ngày ghi trên đơn</label>
+              <label className="block text-[13px] text-on-surface mb-1.5">Ngày ghi trên đơn</label>
               <input type="date" value={ngayGhi} onChange={e => setNgayGhi(e.target.value)}
                 className={oNhap(false)} />
             </div>
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] mt-4">
+          <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface mt-4">
             <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]"
               checked={laCongVan} onChange={e => setLaCongVan(e.target.checked)} />
             Công văn
           </label>
 
           {daBam && thieu && (
-            <p className="text-[12px] text-[#c0392b] mt-3">Vui lòng chọn Ngày nhận đơn.</p>
+            <p className="text-[12px] text-error mt-3">Vui lòng chọn Ngày nhận đơn.</p>
           )}
         </div>
 
         <div className="flex justify-end gap-2 px-6 py-4 mt-2">
           <button onClick={onDong}
-            className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
+            className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
           <button onClick={() => {
             setDaBam(true);
             if (thieu) return;
@@ -2981,7 +3006,7 @@ const PopupThemDonKem = ({ onDong, onThem, banDau }: {
               ngayGhi: ddmmyyyy(ngayGhi), laCongVan,
             });
           }}
-            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
+            className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
         </div>
       </div>
     </div>
@@ -3006,65 +3031,65 @@ const PopupThemThongBao = ({ onDong, onThem, banDau }: {
   const [daBam, setDaBam] = useState(false);
   const thieu = !loaiKQ || !soTB.trim() || !ngayTB || !toaAn;
 
-  const Sao = () => <span className="text-[#c0392b] mr-1">*</span>;
+  const Sao = () => <span className="text-error mr-1">*</span>;
   const vien = (rong: boolean) =>
-    daBam && rong ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]";
+    daBam && rong ? "border-error" : "border-surface-container focus:border-primary";
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
       <div className="bg-white rounded-[10px] shadow-2xl w-[520px] overflow-hidden">
         <div className="flex items-start justify-between px-6 pt-5 pb-1">
-          <span className="text-[16px] font-bold text-[#222]">{banDau ? "Sửa kết quả giải quyết" : "Thêm kết quả giải quyết"}</span>
-          <button onClick={onDong} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+          <span className="text-[16px] font-bold text-on-surface">{banDau ? "Sửa kết quả giải quyết" : "Thêm kết quả giải quyết"}</span>
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
         </div>
 
         <div className="px-6 py-4 space-y-3">
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Loại kết quả</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Loại kết quả</label>
             <div className="relative">
               <select value={loaiKQ} onChange={e => setLoaiKQ(e.target.value)}
-                className={`w-full h-[38px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none transition-colors ${vien(!loaiKQ)} ${loaiKQ ? "text-[#222]" : "text-[#aaa]"}`}>
+                className={`w-full h-[38px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none transition-colors ${vien(!loaiKQ)} ${loaiKQ ? "text-on-surface" : "text-outline"}`}>
                 <option value="">Chọn loại kết quả</option>
-                {LOAI_KET_QUA_OPTIONS.map(t => <option key={t} className="text-[#222]">{t}</option>)}
+                {LOAI_KET_QUA_OPTIONS.map(t => <option key={t} className="text-on-surface">{t}</option>)}
               </select>
-              <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+              <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             </div>
           </div>
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Số kết quả</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Số kết quả</label>
             <input value={soTB} onChange={e => setSoTB(e.target.value)} placeholder="Nhập số"
               className={`w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors ${vien(!soTB.trim())}`} />
           </div>
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Ngày</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Ngày</label>
             <input type="date" value={ngayTB} onChange={e => setNgayTB(e.target.value)}
               className={`w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors ${vien(!ngayTB)}`} />
           </div>
           <div>
-            <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Tòa án</label>
+            <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Tòa án</label>
             <div className="relative">
               <select value={toaAn} onChange={e => setToaAn(e.target.value)}
-                className={`w-full h-[38px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none transition-colors ${vien(!toaAn)} ${toaAn ? "text-[#222]" : "text-[#aaa]"}`}>
+                className={`w-full h-[38px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none transition-colors ${vien(!toaAn)} ${toaAn ? "text-on-surface" : "text-outline"}`}>
                 <option value="">Chọn tòa án</option>
-                {TOA_AN_OPTIONS.map(t => <option key={t} className="text-[#222]">{t}</option>)}
+                {TOA_AN_OPTIONS.map(t => <option key={t} className="text-on-surface">{t}</option>)}
               </select>
-              <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+              <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             </div>
           </div>
           {daBam && thieu && (
-            <p className="text-[12px] text-[#c0392b]">Vui lòng nhập đủ các trường bắt buộc.</p>
+            <p className="text-[12px] text-error">Vui lòng nhập đủ các trường bắt buộc.</p>
           )}
         </div>
 
         <div className="flex justify-end gap-2 px-6 pb-5">
           <button onClick={onDong}
-            className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
+            className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
           <button onClick={() => {
             setDaBam(true);
             if (thieu) return;
             onThem({ loaiKQ, soTB: soTB.trim(), ngayTB: ngayTB.split("-").reverse().join("/"), toaAn });
           }}
-            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
+            className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
         </div>
       </div>
     </div>
@@ -3146,8 +3171,8 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
   const batBuoc: (keyof typeof f)[] = ["maDon", "ngayNhan", "nguoiGui"];
   const thieu = batBuoc.some(k => !(f[k] as string).trim());
 
-  const Sao = () => <span className="text-[#c0392b] mr-1">*</span>;
-  const vien = (rong: boolean) => daBam && rong ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]";
+  const Sao = () => <span className="text-error mr-1">*</span>;
+  const vien = (rong: boolean) => daBam && rong ? "border-error" : "border-surface-container focus:border-primary";
   const oInput = (rong: boolean) =>
     `w-full h-[36px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors ${vien(rong)}`;
 
@@ -3155,84 +3180,84 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
     <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
       <div className="bg-white rounded-[10px] shadow-2xl w-[640px] max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between px-6 pt-5 pb-1">
-          <span className="text-[16px] font-bold text-[#222]">
+          <span className="text-[16px] font-bold text-on-surface">
             {banGhi ? "Sửa đơn liên quan" : "Thêm đơn liên quan"}
           </span>
-          <button onClick={onDong} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
         </div>
 
         <div className="px-6 py-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Mã đơn</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Mã đơn</label>
               <input value={f.maDon} onChange={e => dat("maDon")(e.target.value)} placeholder="Nhập mã đơn"
                 className={oInput(!f.maDon.trim())} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Ngày nhận</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Ngày nhận</label>
               <input type="date" value={f.ngayNhan} onChange={e => dat("ngayNhan")(e.target.value)}
                 className={oInput(!f.ngayNhan)} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Người gửi đơn</label>
+              <label className="block text-[13px] text-on-surface mb-1.5"><Sao />Người gửi đơn</label>
               <input value={f.nguoiGui} onChange={e => dat("nguoiGui")(e.target.value)} placeholder="Nhập tên người gửi đơn"
                 className={oInput(!f.nguoiGui.trim())} />
             </div>
             <div>
-              <label className="block text-[13px] text-[#333] mb-1.5">Địa chỉ</label>
+              <label className="block text-[13px] text-on-surface mb-1.5">Địa chỉ</label>
               <input value={f.diaChi} onChange={e => dat("diaChi")(e.target.value)} placeholder="Nhập địa chỉ"
                 className={oInput(false)} />
             </div>
           </div>
 
-          <div className="border-t border-[#eee] pt-3">
+          <div className="border-t border-surface-container-high pt-3">
             <div className="text-[13px] font-semibold text-[#444] mb-2">Thông tin đơn</div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Số BA/QĐ</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Số BA/QĐ</label>
                 <input value={f.soBA} onChange={e => dat("soBA")(e.target.value)} placeholder="Nhập số bản án/quyết định"
                   className={oInput(false)} />
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Ngày BA/QĐ</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Ngày BA/QĐ</label>
                 <input type="date" value={f.ngayBA} onChange={e => dat("ngayBA")(e.target.value)}
                   className={oInput(false)} />
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Hình thức</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Hình thức</label>
                 <div className="relative">
                   <select value={f.hinhThuc} onChange={e => dat("hinhThuc")(e.target.value)}
-                    className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.hinhThuc ? "text-[#222]" : "text-[#aaa]"}`}>
+                    className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.hinhThuc ? "text-on-surface" : "text-outline"}`}>
                     <option value="">Chọn hình thức</option>
-                    {HINH_THUC_DON_OPTIONS.map(o => <option key={o} className="text-[#222]">{o}</option>)}
+                    {HINH_THUC_DON_OPTIONS.map(o => <option key={o} className="text-on-surface">{o}</option>)}
                   </select>
-                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Thủ tục giải quyết</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Thủ tục giải quyết</label>
                 <div className="relative">
                   <select value={f.thuTuc} onChange={e => dat("thuTuc")(e.target.value)}
-                    className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.thuTuc ? "text-[#222]" : "text-[#aaa]"}`}>
+                    className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.thuTuc ? "text-on-surface" : "text-outline"}`}>
                     <option value="">Chọn thủ tục</option>
-                    <option className="text-[#222]">Giám đốc thẩm</option>
-                    <option className="text-[#222]">Tái thẩm</option>
+                    <option className="text-on-surface">Giám đốc thẩm</option>
+                    <option className="text-on-surface">Tái thẩm</option>
                   </select>
-                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-[#eee] pt-3">
+          <div className="border-t border-surface-container-high pt-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Người nhập</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Người nhập</label>
                 <input value={f.nguoiNhap} onChange={e => dat("nguoiNhap")(e.target.value)} placeholder="Nhập tên người nhập"
                   className={oInput(false)} />
               </div>
               <div>
-                <label className="block text-[13px] text-[#333] mb-1.5">Trạng thái giải quyết</label>
+                <label className="block text-[13px] text-on-surface mb-1.5">Trạng thái giải quyết</label>
                 <div className="relative">
                   <select value={f.trangThai} onChange={e => {
                     const statusColors: Record<string, string> = {
@@ -3244,28 +3269,28 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
                     setF(p => ({ ...p, trangThai: e.target.value, color: statusColors[e.target.value] || "#7f8c8d" }));
                   }}
                     className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)}`}>
-                    <option className="text-[#222]">Đã thụ lý</option>
-                    <option className="text-[#222]">Chưa đủ điều kiện</option>
-                    <option className="text-[#222]">Thụ lý mới</option>
-                    <option className="text-[#222]">Không thụ lý</option>
+                    <option className="text-on-surface">Đã thụ lý</option>
+                    <option className="text-on-surface">Chưa đủ điều kiện</option>
+                    <option className="text-on-surface">Thụ lý mới</option>
+                    <option className="text-on-surface">Không thụ lý</option>
                   </select>
-                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
             </div>
           </div>
 
           {f.trangThai === "Thụ lý mới" && (
-            <div className="border-t border-[#eee] pt-3">
+            <div className="border-t border-surface-container-high pt-3">
               <div className="text-[13px] font-semibold text-[#444] mb-2">Thông tin thụ lý</div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[12px] text-[#555] mb-1">Số thụ lý</label>
+                  <label className="block text-[12px] text-on-surface-variant mb-1">Số thụ lý</label>
                   <input value={f.stl} onChange={e => dat("stl")(e.target.value)} placeholder="Nhập số thụ lý"
                     className={oInput(false)} />
                 </div>
                 <div>
-                  <label className="block text-[12px] text-[#555] mb-1">Ngày thụ lý</label>
+                  <label className="block text-[12px] text-on-surface-variant mb-1">Ngày thụ lý</label>
                   <input type="date" value={f.ngayThuLy} onChange={e => dat("ngayThuLy")(e.target.value)}
                     className={oInput(false)} />
                 </div>
@@ -3273,18 +3298,18 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
                   <input id="daChuyenVu" type="checkbox" checked={f.daChuyenVu}
                     onChange={e => setF(p => ({ ...p, daChuyenVu: e.target.checked, trangThaiVu: e.target.checked ? p.trangThaiVu : "" }))}
                     className="w-4 h-4" />
-                  <label htmlFor="daChuyenVu" className="text-[12px] text-[#555]">Đơn đã chuyển sang vụ</label>
+                  <label htmlFor="daChuyenVu" className="text-[12px] text-on-surface-variant">Đơn đã chuyển sang vụ</label>
                 </div>
                 {f.daChuyenVu && (
                   <div className="col-span-2">
-                    <label className="block text-[12px] text-[#555] mb-1">Trạng thái vụ</label>
+                    <label className="block text-[12px] text-on-surface-variant mb-1">Trạng thái vụ</label>
                     <div className="relative">
                       <select value={f.trangThaiVu} onChange={e => dat("trangThaiVu")(e.target.value)}
-                        className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.trangThaiVu ? "text-[#222]" : "text-[#aaa]"}`}>
+                        className={`w-full h-[36px] pl-3 pr-8 text-[13px] border rounded-[6px] bg-white appearance-none outline-none ${vien(false)} ${f.trangThaiVu ? "text-on-surface" : "text-outline"}`}>
                         <option value="">Chọn trạng thái vụ</option>
-                        {TRANG_THAI_VU_OPTIONS.map(o => <option key={o} className="text-[#222]">{o}</option>)}
+                        {TRANG_THAI_VU_OPTIONS.map(o => <option key={o} className="text-on-surface">{o}</option>)}
                       </select>
-                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                      <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                     </div>
                   </div>
                 )}
@@ -3293,21 +3318,21 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
           )}
 
           {f.trangThai === "Chưa đủ điều kiện" && (
-            <div className="border-t border-[#eee] pt-3 bg-[#fffbf2] p-3 rounded-[6px]">
+            <div className="border-t border-surface-container-high pt-3 bg-[#fffbf2] p-3 rounded-[6px]">
               <div className="text-[13px] font-semibold text-[#b45309] mb-2">Thông tin yêu cầu bổ sung</div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="block text-[12px] text-[#555] mb-1">Số Yêu cầu bổ sung</label>
+                  <label className="block text-[12px] text-on-surface-variant mb-1">Số Yêu cầu bổ sung</label>
                   <input value={f.ycbsSo} onChange={e => dat("ycbsSo")(e.target.value)} placeholder="Nhập số YCBS"
                     className={oInput(false)} />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-[12px] text-[#555] mb-1">Ý kiến lãnh đạo</label>
+                  <label className="block text-[12px] text-on-surface-variant mb-1">Ý kiến lãnh đạo</label>
                   <input value={f.ycbsLyDo} onChange={e => dat("ycbsLyDo")(e.target.value)} placeholder="Nhập ý kiến lãnh đạo trong đơn"
                     className={oInput(false)} />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-[12px] text-[#555] mb-1">Đã có đơn bổ sung là đơn số</label>
+                  <label className="block text-[12px] text-on-surface-variant mb-1">Đã có đơn bổ sung là đơn số</label>
                   <input value={f.ycbsDonBoSung} onChange={e => dat("ycbsDonBoSung")(e.target.value)} placeholder="Nhập mã đơn bổ sung"
                     className={oInput(false)} />
                 </div>
@@ -3316,13 +3341,13 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
           )}
 
           {daBam && thieu && (
-            <p className="text-[12px] text-[#c0392b]">Vui lòng nhập đủ các trường bắt buộc.</p>
+            <p className="text-[12px] text-error">Vui lòng nhập đủ các trường bắt buộc.</p>
           )}
         </div>
 
         <div className="flex justify-end gap-2 px-6 pb-5">
           <button onClick={onDong}
-            className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
+            className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Hủy</button>
           <button onClick={() => {
             setDaBam(true);
             if (thieu) return;
@@ -3345,7 +3370,7 @@ const PopupThemDonLienQuan = ({ onDong, onThem, banGhi }: {
               ycbsDonBoSung: f.ycbsDonBoSung.trim(),
             });
           }}
-            className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">{banGhi ? "Lưu" : "Thêm"}</button>
+            className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">{banGhi ? "Lưu" : "Thêm"}</button>
         </div>
       </div>
     </div>
@@ -3357,29 +3382,29 @@ const PopupOcrConfirm = ({ file, onBack, onStart }: { file: OcrFile; onBack: () 
   <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4">
     <div className="bg-white rounded-[14px] shadow-2xl w-[560px] overflow-hidden">
       <div className="flex items-start justify-between px-6 pt-5 pb-3">
-        <span className="text-[16px] font-bold text-[#222]">Xác nhận xử lý OCR</span>
-        <button onClick={onBack} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        <span className="text-[16px] font-bold text-on-surface">Xác nhận xử lý OCR</span>
+        <button onClick={onBack} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
       </div>
 
       <div className="px-6">
         <div className="flex items-center gap-3 bg-[#f4f5f7] rounded-[8px] px-4 py-3">
           <FileText size={30} className="text-[#4a90d9] flex-shrink-0" strokeWidth={1.5} />
           <div className="min-w-0">
-            <div className="text-[14px] font-bold text-[#222] truncate">{file.name}</div>
+            <div className="text-[14px] font-bold text-on-surface truncate">{file.name}</div>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[12px] text-[#888]">{file.sizeMB.toFixed(2)} MB</span>
-              <button title="Tải xuống" className="text-[#1a73e8] hover:text-[#0f4c9e]"><Download size={13} /></button>
+              <span className="text-[12px] text-on-surface-variant">{file.sizeMB.toFixed(2)} MB</span>
+              <button title="Tải xuống" className="text-primary hover:text-[#0f4c9e]"><Download size={13} /></button>
             </div>
           </div>
         </div>
-        <p className="text-[13px] text-[#777] mt-4">
+        <p className="text-[13px] text-on-surface-variant mt-4">
           Hệ thống sẽ trích xuất dữ liệu từ tài liệu. Quá trình này có thể mất vài phút.
         </p>
       </div>
 
       <div className="flex justify-end gap-2 px-6 py-4 mt-2">
-        <button onClick={onBack} className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Quay lại</button>
-        <button onClick={onStart} className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Bắt đầu OCR</button>
+        <button onClick={onBack} className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Quay lại</button>
+        <button onClick={onStart} className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Bắt đầu OCR</button>
       </div>
     </div>
   </div>
@@ -3396,19 +3421,19 @@ const PopupOcrProgress = ({ step, onCancel, onClose }: { step: number; onCancel:
   <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4">
     <div className="bg-white rounded-[14px] shadow-2xl w-[650px] overflow-hidden">
       <div className="flex items-start justify-between px-6 pt-5 pb-2">
-        <span className="text-[16px] font-bold text-[#222]">Đang xử lý OCR</span>
-        <button onClick={onClose} title="Đóng" className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        <span className="text-[16px] font-bold text-on-surface">Đang xử lý OCR</span>
+        <button onClick={onClose} title="Đóng" className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
       </div>
 
       <div className="px-6 py-4">
         {/* Spinner */}
         <div className="flex justify-center gap-1.5 mb-3">
           {[0, 1, 2].map(i => (
-            <span key={i} className="w-[9px] h-[9px] rounded-full bg-[#8b1a1a] animate-bounce"
+            <span key={i} className="w-[9px] h-[9px] rounded-full bg-error animate-bounce"
               style={{ animationDelay: `${i * 0.15}s` }} />
           ))}
         </div>
-        <div className="text-center text-[14px] text-[#333] mb-6">Đang OCR tài liệu...</div>
+        <div className="text-center text-[14px] text-on-surface mb-6">Đang OCR tài liệu...</div>
 
         {/* Steps */}
         <div className="flex items-start">
@@ -3421,34 +3446,34 @@ const PopupOcrProgress = ({ step, onCancel, onClose }: { step: number; onCancel:
                     {done ? (
                       <span className="w-[22px] h-[22px] rounded-full border-2 border-[#2e7d32] flex items-center justify-center text-[#2e7d32]"><Check size={13} strokeWidth={3} /></span>
                     ) : doing ? (
-                      <Loader2 size={20} className="text-[#8b1a1a] animate-spin" />
+                      <Loader2 size={20} className="text-error animate-spin" />
                     ) : (
-                      <span className="w-[22px] h-[22px] rounded-full bg-[#e9ecef] text-[#999] text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
+                      <span className="w-[22px] h-[22px] rounded-full bg-[#e9ecef] text-outline text-[11px] font-bold flex items-center justify-center">{i + 1}</span>
                     )}
                   </div>
                   <div className="leading-tight">
-                    <div className={`text-[13px] font-medium ${done || doing ? "text-[#222]" : "text-[#999]"}`}>{s.title}</div>
-                    <div className={`text-[12px] ${done ? "text-[#2e7d32]" : doing ? "text-[#666]" : "text-[#aaa]"}`}>
+                    <div className={`text-[13px] font-medium ${done || doing ? "text-on-surface" : "text-outline"}`}>{s.title}</div>
+                    <div className={`text-[12px] ${done ? "text-[#2e7d32]" : doing ? "text-on-surface-variant" : "text-outline"}`}>
                       {done ? "Hoàn tất" : doing ? s.doing : s.wait}
                     </div>
                   </div>
                 </div>
                 {i < OCR_STEPS.length - 1 && (
-                  <div className={`flex-1 h-px mt-[11px] mx-3 ${i < step ? "bg-[#8b1a1a]" : "bg-[#ddd]"}`} />
+                  <div className={`flex-1 h-px mt-[11px] mx-3 ${i < step ? "bg-error" : "bg-surface-container"}`} />
                 )}
               </div>
             );
           })}
         </div>
 
-        <p className="text-center text-[12px] text-[#888] mt-6 px-6">
+        <p className="text-center text-[12px] text-on-surface-variant mt-6 px-6">
           OCR có thể mất nhiều thời gian với tài liệu lớn. Vui lòng chờ đến khi hệ thống báo OCR thành công.
         </p>
       </div>
 
       <div className="flex justify-end gap-2 px-6 py-4">
-        <button onClick={onCancel} className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Hủy OCR</button>
-        <button onClick={onClose} className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Đóng</button>
+        <button onClick={onCancel} className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Hủy OCR</button>
+        <button onClick={onClose} className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Đóng</button>
       </div>
     </div>
   </div>
@@ -3459,16 +3484,16 @@ const PopupOcrCancelConfirm = ({ onBack, onConfirm }: { onBack: () => void; onCo
   <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
     <div className="bg-white rounded-[14px] shadow-2xl w-[520px] overflow-hidden">
       <div className="flex items-start justify-between px-6 pt-5 pb-3">
-        <span className="text-[16px] font-bold text-[#222]">Xác nhận hủy OCR</span>
-        <button onClick={onBack} className="text-[#888] hover:text-[#333] -mt-1"><X size={20} /></button>
+        <span className="text-[16px] font-bold text-on-surface">Xác nhận hủy OCR</span>
+        <button onClick={onBack} className="text-on-surface-variant hover:text-on-surface -mt-1"><X size={20} /></button>
       </div>
       <div className="px-6 pb-1">
-        <p className="text-[14px] text-[#222] font-medium">Bạn có chắc chắn muốn hủy quá trình OCR?</p>
-        <p className="text-[13px] text-[#777] mt-2">Dữ liệu sẽ không được trích xuất tự động. Bạn có thể thực hiện OCR lại sau.</p>
+        <p className="text-[14px] text-on-surface font-medium">Bạn có chắc chắn muốn hủy quá trình OCR?</p>
+        <p className="text-[13px] text-on-surface-variant mt-2">Dữ liệu sẽ không được trích xuất tự động. Bạn có thể thực hiện OCR lại sau.</p>
       </div>
       <div className="flex justify-end gap-2 px-6 py-4 mt-2">
-        <button onClick={onBack} className="h-[36px] px-5 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[5px] text-[13px] font-medium transition-colors">Quay lại</button>
-        <button onClick={onConfirm} className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Xác nhận hủy</button>
+        <button onClick={onBack} className="h-[36px] px-5 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[5px] text-[13px] font-medium transition-colors">Quay lại</button>
+        <button onClick={onConfirm} className="h-[36px] px-5 bg-error hover:bg-error-container text-white rounded-[5px] text-[13px] font-semibold transition-colors">Xác nhận hủy</button>
       </div>
     </div>
   </div>
@@ -3482,7 +3507,7 @@ const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: num
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-[4px] shadow-xl w-[700px] flex flex-col border border-[#bbb]">
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <FileText size={15} />
             <span className="text-[14px] font-semibold">Tạo Yêu cầu bổ sung</span>
@@ -3493,37 +3518,37 @@ const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: num
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-medium text-[#333] mb-1">Mã đơn</label>
-              <input type="text" value={row?.maDon} disabled className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 text-[#555]" />
+              <label className="block text-[12px] font-medium text-on-surface mb-1">Mã đơn</label>
+              <input type="text" value={row?.maDon} disabled className="w-full h-[32px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] bg-gray-100 text-on-surface-variant" />
             </div>
             <div>
-              <label className="block text-[12px] font-medium text-[#333] mb-1">Người gửi</label>
-              <input type="text" value={row?.nguoiGui} disabled className="w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-gray-100 text-[#555]" />
+              <label className="block text-[12px] font-medium text-on-surface mb-1">Người gửi</label>
+              <input type="text" value={row?.nguoiGui} disabled className="w-full h-[32px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] bg-gray-100 text-on-surface-variant" />
             </div>
           </div>
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-1">Nội dung yêu cầu bổ sung</label>
+            <label className="block text-[12px] font-medium text-on-surface mb-1">Nội dung yêu cầu bổ sung</label>
             <textarea rows={4} placeholder="Nhập nội dung cần bổ sung..." disabled={status !== "tao"}
-              className={`w-full px-2 py-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none ${status !== "tao" ? "bg-gray-100 text-gray-500" : "bg-white"}`} />
+              className={`w-full px-2 py-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary resize-none ${status !== "tao" ? "bg-gray-100 text-gray-500" : "bg-white"}`} />
           </div>
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-1">Lãnh đạo ký</label>
+            <label className="block text-[12px] font-medium text-on-surface mb-1">Lãnh đạo ký</label>
             <div className="relative">
               <select disabled={status !== "tao" && status !== "in"}
-                className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] ${status !== "tao" && status !== "in" ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
+                className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary ${status !== "tao" && status !== "in" ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
                 <option value="">Chọn lãnh đạo ký</option>
                 <option value="1">Lãnh đạo A</option>
                 <option value="2">Lãnh đạo B</option>
               </select>
-              <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+              <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3 border-t border-[#eee] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-surface-container-high bg-surface-bright rounded-b-[4px]">
           <div className="flex items-center gap-2">
             {status === "tao" && (
-              <button onClick={() => setStatus("in")} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+              <button onClick={() => setStatus("in")} className="flex items-center gap-1.5 h-[30px] px-3 bg-tertiary hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
                 <Save size={13} /> Tạo yêu cầu
               </button>
             )}
@@ -3533,7 +3558,7 @@ const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: num
               </button>
             )}
             {status === "ky" && (
-              <button onClick={() => setStatus("gui")} className="flex items-center gap-1.5 h-[30px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+              <button onClick={() => setStatus("gui")} className="flex items-center gap-1.5 h-[30px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors">
                 <PenLine size={13} /> Lãnh đạo ký
               </button>
             )}
@@ -3548,7 +3573,7 @@ const PopupYeuCauBoSung = ({ onClose, donId }: { onClose: () => void, donId: num
               </div>
             )}
           </div>
-          <button onClick={onClose} className="h-[30px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+          <button onClick={onClose} className="h-[30px] px-4 border border-surface-container-highest bg-white text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">
             Đóng
           </button>
         </div>
@@ -3657,23 +3682,23 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
   };
 
   const oNhap = (rongTruong: boolean, bam: boolean = daBam) =>
-    `w-full h-[32px] px-2 text-[13px] border rounded-[3px] focus:outline-none transition-colors ${bam && rongTruong ? "border-[#e57373] bg-[#fffbfb]" : "border-[#ccc] focus:border-[#1a73e8]"}`;
+    `w-full h-[32px] px-2 text-[13px] border rounded-[3px] focus:outline-none transition-colors ${bam && rongTruong ? "border-[#e57373] bg-[#fffbfb]" : "border-surface-container-highest focus:border-primary"}`;
   const Sao = () => <span className="text-red-500 mr-0.5">*</span>;
   const vnDate = (iso: string) => iso ? iso.split("-").reverse().join("/") : "";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white rounded-[6px] shadow-xl w-[760px] max-h-[94vh] overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[#eee]">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-surface-container-high">
           <div>
-            <h2 className="text-[16px] font-bold text-[#333]">Bổ sung tài liệu</h2>
+            <h2 className="text-[16px] font-bold text-on-surface">Bổ sung tài liệu</h2>
             {row && (
-              <div className="text-[12px] text-[#888] mt-0.5">
+              <div className="text-[12px] text-on-surface-variant mt-0.5">
                 {row.maDon.trim()} · {row.nguoiGui}
               </div>
             )}
           </div>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333]">
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface">
             <X size={18} />
           </button>
         </div>
@@ -3681,22 +3706,22 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {/* Mỗi lần chỉ bổ sung một loại tài liệu — bấm "Thêm vào danh sách"
               để lặp lại cho các loại tài liệu khác, tất cả gộp vào bảng bên dưới. */}
-          <div className="border border-[#ddd] rounded-[5px] p-3 bg-[#fafafa] space-y-3">
+          <div className="border border-surface-container rounded-[5px] p-3 bg-surface-bright space-y-3">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Ngày bổ sung</label>
+                <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Ngày bổ sung</label>
                 <input type="date" value={f.ngayBoSung} onChange={e => dat("ngayBoSung")(e.target.value)}
                   className={oNhap(!f.ngayBoSung, daBamThem)} />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Loại tài liệu</label>
+                <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Loại tài liệu</label>
                 <div className="relative">
                   <select value={f.loaiTaiLieu} onChange={e => dat("loaiTaiLieu")(e.target.value)}
                     className={`${oNhap(!f.loaiTaiLieu, daBamThem)} pr-8 appearance-none`}>
                     <option value="">-- Chọn loại tài liệu --</option>
                     {LOAI_TAI_LIEU_BO_SUNG.map(l => <option key={l} value={l}>{l}</option>)}
                   </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
                 {f.loaiTaiLieu === "Khác" && (
                   <input value={f.loaiTaiLieuKhac} onChange={e => dat("loaiTaiLieuKhac")(e.target.value)}
@@ -3708,7 +3733,7 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
 
             {/* Tải tài liệu lên — bổ sung tài liệu mà không có tệp thì không có gì để bổ sung */}
             <div>
-              <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Tài liệu đính kèm</label>
+              <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Tài liệu đính kèm</label>
               <input ref={tepRef} type="file" multiple className="hidden"
                 onChange={e => { nhanTep(e.target.files); e.target.value = ""; }} />
               <div
@@ -3716,35 +3741,35 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
                 onDragOver={e => { e.preventDefault(); setKeoVao(true); }}
                 onDragLeave={() => setKeoVao(false)}
                 onDrop={e => { e.preventDefault(); setKeoVao(false); nhanTep(e.dataTransfer.files); }}
-                className={`border border-dashed rounded-[5px] py-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${keoVao ? "border-[#8b1a1a] bg-[#fdeaea]"
+                className={`border border-dashed rounded-[5px] py-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${keoVao ? "border-error bg-[#fdeaea]"
                   : daBamThem && tepDangSoan.length === 0 ? "border-[#e57373] bg-[#fffbfb]"
-                    : "border-[#ccc] bg-white hover:bg-[#f2f2f2]"}`}>
-                <Upload size={20} className="text-[#8b1a1a] mb-1.5" />
-                <div className="text-[13px] text-[#333]">Bấm hoặc kéo thả tệp vào đây</div>
-                <div className="text-[11px] text-[#888] mt-0.5">Hỗ trợ PDF, ảnh, Word · chọn được nhiều tệp</div>
+                    : "border-surface-container-highest bg-white hover:bg-[#f2f2f2]"}`}>
+                <Upload size={20} className="text-error mb-1.5" />
+                <div className="text-[13px] text-on-surface">Bấm hoặc kéo thả tệp vào đây</div>
+                <div className="text-[11px] text-on-surface-variant mt-0.5">Hỗ trợ PDF, ảnh, Word · chọn được nhiều tệp</div>
               </div>
 
               {tepDangSoan.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {tepDangSoan.map(t => (
-                    <div key={t.id} className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-[#eee] rounded-[3px]">
-                      <FileText size={14} className="text-[#1a73e8] flex-shrink-0" />
-                      <span className="text-[12px] text-[#333] truncate flex-1">{t.ten}</span>
-                      <span className="text-[11px] text-[#888] flex-shrink-0">{coChu(t.kichThuoc)}</span>
+                    <div key={t.id} className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-surface-container-high rounded-[3px]">
+                      <FileText size={14} className="text-primary flex-shrink-0" />
+                      <span className="text-[12px] text-on-surface truncate flex-1">{t.ten}</span>
+                      <span className="text-[11px] text-on-surface-variant flex-shrink-0">{coChu(t.kichThuoc)}</span>
                       <button onClick={() => setTepDangSoan(p => p.filter(x => x.id !== t.id))}
-                        className="text-[#888] hover:text-[#c0392b] flex-shrink-0"><X size={13} /></button>
+                        className="text-on-surface-variant hover:text-error flex-shrink-0"><X size={13} /></button>
                     </div>
                   ))}
                 </div>
               )}
               {daBamThem && tepDangSoan.length === 0 && (
-                <div className="text-[11px] text-[#c0392b] mt-1.5">Tải lên ít nhất một tệp tài liệu.</div>
+                <div className="text-[11px] text-error mt-1.5">Tải lên ít nhất một tệp tài liệu.</div>
               )}
             </div>
 
             <div className="flex justify-end">
               <button onClick={themVaoDanhSach}
-                className="h-[30px] px-3 flex items-center gap-1.5 border border-[#8b1a1a] text-[#8b1a1a] bg-white hover:bg-[#fdeaea] rounded-[3px] text-[12px] font-medium transition-colors">
+                className="h-[30px] px-3 flex items-center gap-1.5 border border-error text-error bg-white hover:bg-[#fdeaea] rounded-[3px] text-[12px] font-medium transition-colors">
                 <Plus size={13} /> Thêm vào danh sách
               </button>
             </div>
@@ -3752,44 +3777,44 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
 
           {/* Bảng các lần bổ sung tài liệu đã thêm */}
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-1">
+            <label className="block text-[12px] font-medium text-on-surface mb-1">
               <Sao /> Danh sách tài liệu đã bổ sung ({danhSachBoSung.length})
             </label>
             {danhSachBoSung.length === 0 ? (
-              <div className={`text-[12px] text-[#999] italic border border-dashed rounded-[3px] py-4 text-center ${daBam && danhSachBoSung.length === 0 ? "border-[#e57373] bg-[#fffbfb]" : "border-[#ccc]"}`}>
+              <div className={`text-[12px] text-outline italic border border-dashed rounded-[3px] py-4 text-center ${daBam && danhSachBoSung.length === 0 ? "border-[#e57373] bg-[#fffbfb]" : "border-surface-container-highest"}`}>
                 Chưa có tài liệu nào được thêm
               </div>
             ) : (
               <table className="w-full border-collapse text-[12px]">
                 <thead>
-                  <tr className="bg-[#f5f5f5]">
-                    <th className="border border-[#ddd] px-2 py-[6px] text-left font-semibold text-[#333]">Loại tài liệu</th>
-                    <th className="border border-[#ddd] px-2 py-[6px] text-left font-semibold text-[#333]">Ngày bổ sung</th>
-                    <th className="border border-[#ddd] px-2 py-[6px] text-left font-semibold text-[#333]">Người tải tài liệu</th>
-                    <th className="border border-[#ddd] px-2 py-[6px] text-left font-semibold text-[#333]">File đính kèm</th>
-                    <th className="border border-[#ddd] px-2 py-[6px] w-[44px]"></th>
+                  <tr className="bg-surface-container-low">
+                    <th className="border border-surface-container px-2 py-[6px] text-left font-semibold text-on-surface">Loại tài liệu</th>
+                    <th className="border border-surface-container px-2 py-[6px] text-left font-semibold text-on-surface">Ngày bổ sung</th>
+                    <th className="border border-surface-container px-2 py-[6px] text-left font-semibold text-on-surface">Người tải tài liệu</th>
+                    <th className="border border-surface-container px-2 py-[6px] text-left font-semibold text-on-surface">File đính kèm</th>
+                    <th className="border border-surface-container px-2 py-[6px] w-[44px]"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {danhSachBoSung.map(d => (
                     <tr key={d.id}>
-                      <td className="border border-[#ddd] px-2 py-[6px] align-top">{d.loaiTaiLieu}</td>
-                      <td className="border border-[#ddd] px-2 py-[6px] align-top whitespace-nowrap">{vnDate(d.ngayBoSung)}</td>
-                      <td className="border border-[#ddd] px-2 py-[6px] align-top whitespace-nowrap">{d.nguoiTai}</td>
-                      <td className="border border-[#ddd] px-2 py-[6px] align-top">
+                      <td className="border border-surface-container px-2 py-[6px] align-top">{d.loaiTaiLieu}</td>
+                      <td className="border border-surface-container px-2 py-[6px] align-top whitespace-nowrap">{vnDate(d.ngayBoSung)}</td>
+                      <td className="border border-surface-container px-2 py-[6px] align-top whitespace-nowrap">{d.nguoiTai}</td>
+                      <td className="border border-surface-container px-2 py-[6px] align-top">
                         <div className="space-y-1">
                           {d.tep.map(t => (
                             <div key={t.id} className="flex items-center gap-1.5">
-                              <FileText size={12} className="text-[#1a73e8] flex-shrink-0" />
-                              <span className="text-[#333] truncate">{t.ten}</span>
-                              <span className="text-[11px] text-[#888] flex-shrink-0">({coChu(t.kichThuoc)})</span>
+                              <FileText size={12} className="text-primary flex-shrink-0" />
+                              <span className="text-on-surface truncate">{t.ten}</span>
+                              <span className="text-[11px] text-on-surface-variant flex-shrink-0">({coChu(t.kichThuoc)})</span>
                             </div>
                           ))}
                         </div>
                       </td>
-                      <td className="border border-[#ddd] px-2 py-[6px] align-top text-center">
+                      <td className="border border-surface-container px-2 py-[6px] align-top text-center">
                         <button onClick={() => xoaDong(d.id)} title="Xóa"
-                          className="text-[#888] hover:text-[#c0392b]"><Trash2 size={14} /></button>
+                          className="text-on-surface-variant hover:text-error"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   ))}
@@ -3799,7 +3824,7 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
           </div>
 
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-2"><Sao /> Kết quả</label>
+            <label className="block text-[12px] font-medium text-on-surface mb-2"><Sao /> Kết quả</label>
             <div className="flex items-center gap-6">
               {([["du", "Đơn đủ điều kiện"], ["chua_du", "Đơn không đủ điều kiện"]] as const).map(([v, nhan]) => (
                 <label key={v} className="flex items-center gap-2 text-[13px] cursor-pointer">
@@ -3815,14 +3840,14 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
               ô "Lý do không đủ điều kiện" ở màn Thêm mới đơn. */}
           {f.ketQua === "chua_du" && (
             <div>
-              <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Lý do không đủ điều kiện</label>
+              <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Lý do không đủ điều kiện</label>
               <div className="relative">
                 <select value={f.lyDoChuaDu} onChange={e => dat("lyDoChuaDu")(e.target.value)}
                   className={`${oNhap(thieuLyDo)} pr-8 appearance-none`}>
                   <option value="">-- Chọn lý do --</option>
                   {LY_DO_YEU_CAU_BO_SUNG.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
-                <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
               {f.lyDoChuaDu === "Lý do khác" && (
                 <input value={f.lyDoChuaDuKhac} onChange={e => dat("lyDoChuaDuKhac")(e.target.value)}
@@ -3837,7 +3862,7 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
           {f.ketQua === "du" && (
             <div className="grid grid-cols-2 gap-4">
               <div className={f.thuLyDon === "Thụ lý mới" ? "" : "col-span-2"}>
-                <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Thụ lý đơn</label>
+                <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Thụ lý đơn</label>
                 <div className="relative">
                   <select value={f.thuLyDon} onChange={e => dat("thuLyDon")(e.target.value)}
                     className={`${oNhap(thieuThuLy)} pr-8 appearance-none`}>
@@ -3847,18 +3872,18 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
                     <option>Xin ý kiến lãnh đạo</option>
                     <option>Không</option>
                   </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               {f.thuLyDon === "Thụ lý mới" && (
                 <>
                   <div>
-                    <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Số thụ lý</label>
+                    <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Số thụ lý</label>
                     <input value={f.soThuLy} onChange={e => dat("soThuLy")(e.target.value)}
                       placeholder="Nhập số thụ lý" className={oNhap(thieuSoThuLy)} />
                   </div>
                   <div>
-                    <label className="block text-[12px] font-medium text-[#333] mb-1"><Sao /> Ngày thụ lý</label>
+                    <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Ngày thụ lý</label>
                     <input type="date" value={f.ngayThuLy} onChange={e => dat("ngayThuLy")(e.target.value)}
                       className={oNhap(thieuNgayThuLy)} />
                   </div>
@@ -3868,21 +3893,21 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
           )}
 
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-1">Ghi chú</label>
+            <label className="block text-[12px] font-medium text-on-surface mb-1">Ghi chú</label>
             <textarea rows={3} placeholder="nhập dữ liệu" value={f.ghiChu}
               onChange={e => dat("ghiChu")(e.target.value)}
-              className="w-full px-2 py-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+              className="w-full px-2 py-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary resize-none" />
           </div>
 
           {daBam && thieu && (
-            <div className="text-[12px] text-[#c0392b]">Vui lòng nhập đủ các trường bắt buộc (*).</div>
+            <div className="text-[12px] text-error">Vui lòng nhập đủ các trường bắt buộc (*).</div>
           )}
         </div>
 
-        <div className="flex justify-end gap-2 px-6 py-3 border-t border-[#eee] bg-[#fafafa]">
-          <button onClick={onClose} className="h-[30px] px-4 border border-[#ccc] bg-white text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">Đóng</button>
-          <button onClick={lamMoi} className="h-[30px] px-4 border border-[#8b1a1a] text-[#8b1a1a] bg-white hover:bg-[#fdeaea] rounded-[3px] text-[12px] font-medium transition-colors">Làm mới</button>
-          <button onClick={luu} className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">Lưu</button>
+        <div className="flex justify-end gap-2 px-6 py-3 border-t border-surface-container-high bg-surface-bright">
+          <button onClick={onClose} className="h-[30px] px-4 border border-surface-container-highest bg-white text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">Đóng</button>
+          <button onClick={lamMoi} className="h-[30px] px-4 border border-error text-error bg-white hover:bg-[#fdeaea] rounded-[3px] text-[12px] font-medium transition-colors">Làm mới</button>
+          <button onClick={luu} className="h-[30px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors">Lưu</button>
         </div>
       </div>
     </div>
@@ -3920,7 +3945,7 @@ const PopupGhepDon = ({
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-[900px] max-h-[85vh] flex flex-col border border-[#bbb]">
         {/* Header */}
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <GitMerge size={15} />
             <span className="text-[14px] font-semibold">Ghép đơn</span>
@@ -3929,29 +3954,29 @@ const PopupGhepDon = ({
         </div>
 
         {/* Đơn hiện tại info bar */}
-        <div className="px-4 pt-3 pb-3 bg-[#f9f9f9] border-b border-[#eee]">
-          <p className="text-[12px] text-[#555] mb-2">Đơn hiện tại</p>
+        <div className="px-4 pt-3 pb-3 bg-surface-bright border-b border-surface-container-high">
+          <p className="text-[12px] text-on-surface-variant mb-2">Đơn hiện tại</p>
           <div className="flex flex-wrap items-center gap-6 text-[12px]">
             <div className="flex items-center gap-2">
-              <span className="text-[#888]">Mã đơn:</span>
-              <span className="font-semibold text-[#1d2e4f]">{donChinh.maDon}</span>
+              <span className="text-on-surface-variant">Mã đơn:</span>
+              <span className="font-semibold text-tertiary">{donChinh.maDon}</span>
             </div>
             {donChinh.soBA && (
               <div className="flex items-center gap-2">
-                <span className="text-[#888]">Số BA:</span>
-                <span className="font-medium text-[#333]">{donChinh.soBA}</span>
+                <span className="text-on-surface-variant">Số BA:</span>
+                <span className="font-medium text-on-surface">{donChinh.soBA}</span>
               </div>
             )}
             {donChinh.ngayBA && (
               <div className="flex items-center gap-2">
-                <span className="text-[#888]">Ngày BA:</span>
-                <span className="text-[#333]">{donChinh.ngayBA}</span>
+                <span className="text-on-surface-variant">Ngày BA:</span>
+                <span className="text-on-surface">{donChinh.ngayBA}</span>
               </div>
             )}
             {donChinh.toaXetXu && (
               <div className="flex items-center gap-2">
-                <span className="text-[#888]">Tòa xét xử:</span>
-                <span className="text-[#333]">{donChinh.toaXetXu}</span>
+                <span className="text-on-surface-variant">Tòa xét xử:</span>
+                <span className="text-on-surface">{donChinh.toaXetXu}</span>
               </div>
             )}
           </div>
@@ -3959,24 +3984,24 @@ const PopupGhepDon = ({
 
         {/* Table — Danh sách đơn có thể ghép */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          <p className="text-[12px] font-semibold text-[#333] mb-2">Danh sách đơn có thể ghép</p>
+          <p className="text-[12px] font-semibold text-on-surface mb-2">Danh sách đơn có thể ghép</p>
           {eligibleCandidates.length === 0 ? (
-            <div className="text-[13px] text-[#999] italic py-4 text-center">Không có đơn có thể ghép</div>
+            <div className="text-[13px] text-outline italic py-4 text-center">Không có đơn có thể ghép</div>
           ) : (
             <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#f5f5f5]">
-                  <th className="border border-[#ddd] px-2 py-[6px] w-[36px]">
+                <tr className="bg-surface-container-low">
+                  <th className="border border-surface-container px-2 py-[6px] w-[36px]">
                     <input type="checkbox"
                       className="w-[13px] h-[13px] accent-[#8b1a1a]"
                       checked={allChecked}
                       onChange={e => setSelected(e.target.checked ? eligibleCandidates.map(r => r.id) : [])} />
                   </th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Mã đơn</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin bản án</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Ngày nhập</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Người nhập</th>
-                  <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Trạng thái</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Mã đơn</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin bản án</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Ngày nhập</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Người nhập</th>
+                  <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
@@ -3984,31 +4009,31 @@ const PopupGhepDon = ({
                   <tr key={r.id}
                     className={`cursor-pointer ${selected.includes(r.id) ? "bg-[#eef3ff]" : i % 2 === 1 ? "bg-[#fbfbfb]" : "bg-white"}`}
                     onClick={() => toggle(r.id)}>
-                    <td className="border border-[#ddd] px-2 py-[6px] text-center">
+                    <td className="border border-surface-container px-2 py-[6px] text-center">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={selected.includes(r.id)} onChange={() => toggle(r.id)}
                         onClick={e => e.stopPropagation()} />
                     </td>
-                    <td className="border border-[#ddd] px-3 py-[6px] align-top">
-                      <div className="font-medium text-[#1a5a96]">{r.maDon}</div>
+                    <td className="border border-surface-container px-3 py-[6px] align-top">
+                      <div className="font-medium text-primary">{r.maDon}</div>
                       {r.cuaToi && (
                         <div className="mt-1 inline-flex items-center rounded-[3px] bg-[#eef7ef] border border-[#c8e3c7] px-2 py-[2px] text-[11px] font-semibold text-[#23632d]">
                           Đơn của tôi
                         </div>
                       )}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-[6px]">
+                    <td className="border border-surface-container px-3 py-[6px]">
                       {r.soBA && (
-                        <div className="leading-snug space-y-[1px] text-[12px] text-[#333]">
-                          <div><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{r.soBA}</span></div>
-                          <div><span className="text-[#888]">Ngày BA: </span><span className="text-[#555]">{r.ngayBA}</span></div>
-                          <div><span className="text-[#888]">Tòa xét xử: </span><span className="text-[#555]">{r.toaBA}</span></div>
+                        <div className="leading-snug space-y-[1px] text-[12px] text-on-surface">
+                          <div><span className="text-on-surface-variant">Số BA: </span><span className="font-medium text-on-surface">{r.soBA}</span></div>
+                          <div><span className="text-on-surface-variant">Ngày BA: </span><span className="text-on-surface-variant">{r.ngayBA}</span></div>
+                          <div><span className="text-on-surface-variant">Tòa xét xử: </span><span className="text-on-surface-variant">{r.toaBA}</span></div>
                         </div>
                       )}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
-                    <td className="border border-[#ddd] px-3 py-[6px] whitespace-nowrap">{r.nguoiNhap ?? "—"}</td>
-                    <td className="border border-[#ddd] px-3 py-[6px]">
+                    <td className="border border-surface-container px-3 py-[6px] whitespace-nowrap">{r.ngayNhap}</td>
+                    <td className="border border-surface-container px-3 py-[6px] whitespace-nowrap">{r.nguoiNhap ?? "—"}</td>
+                    <td className="border border-surface-container px-3 py-[6px]">
                       <span className={`inline-block px-2 py-[2px] rounded text-[11px] font-medium
                           ${r.trangThai === "Chưa đủ điều kiện" ? "bg-[#f9e6e2] text-[#a33a29]" : r.trangThai === "Đã thụ lý" ? "bg-[#e9eff8] text-[#2d4b74]" : "bg-[#eef5f6] text-[#285662]"}`}>
                         {r.trangThai}
@@ -4020,12 +4045,12 @@ const PopupGhepDon = ({
             </table>
           )}
           {selected.length > 0 && (
-            <p className="text-[12px] text-[#1d2e4f] mt-2 font-medium">Đã chọn {selected.length} đơn để ghép.</p>
+            <p className="text-[12px] text-tertiary mt-2 font-medium">Đã chọn {selected.length} đơn để ghép.</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex justify-end gap-2 px-4 py-3 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
           <BtnPrimary
             disabled={selected.length === 0}
@@ -4101,7 +4126,7 @@ const PopupXacNhanGhep = ({
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-[680px] max-h-[90vh] flex flex-col border border-[#bbb]">
         {/* Header */}
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <Check size={15} />
             <span className="text-[14px] font-semibold">Xác nhận ghép đơn</span>
@@ -4112,13 +4137,13 @@ const PopupXacNhanGhep = ({
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
           {/* Hướng dẫn */}
           {hasOthers && !chinhIsMine && (
-            <div className="bg-[#fff8e1] border border-[#f0c040] rounded-[3px] px-3 py-2 text-[12px] text-[#7a5c00]">
+            <div className="bg-warning-container border border-[#f0c040] rounded-[3px] px-3 py-2 text-[12px] text-[#7a5c00]">
               Đơn chính là của người khác. Hệ thống sẽ gửi yêu cầu xác nhận đến người nhập đơn chính.
             </div>
           )}
 
           <div>
-            <p className="text-[12px] font-semibold text-[#333] mb-2">
+            <p className="text-[12px] font-semibold text-on-surface mb-2">
               {showSelection ? "Chọn đơn chính" : "Thông tin yêu cầu ghép"}
             </p>
             <div className="space-y-2">
@@ -4129,8 +4154,8 @@ const PopupXacNhanGhep = ({
                   <div key={d.id}
                     onClick={() => showSelection && !disabled && setDonChinhId(d.id)}
                     className={`border rounded-[3px] px-3 py-2 text-[12px] flex items-start gap-3 transition-colors
-                      ${isChinh ? "border-[#1d2e4f] bg-[#f0f7ff]" : "border-[#ddd] bg-white"}
-                      ${showSelection ? (disabled ? "opacity-50" : "cursor-pointer hover:border-[#8b1a1a] hover:bg-[#fdeaea]") : ""}`}>
+                      ${isChinh ? "border-tertiary bg-[#f0f7ff]" : "border-surface-container bg-white"}
+                      ${showSelection ? (disabled ? "opacity-50" : "cursor-pointer hover:border-error hover:bg-[#fdeaea]") : ""}`}>
                     {showSelection && (
                       <input
                         type="radio"
@@ -4144,9 +4169,9 @@ const PopupXacNhanGhep = ({
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-semibold text-[#1a5a96]">Mã đơn: {d.maDon}</span>
+                        <span className="font-semibold text-primary">Mã đơn: {d.maDon}</span>
                         {isChinh && (
-                          <span className="inline-flex items-center rounded-[3px] bg-[#1d2e4f] text-white text-[10px] font-semibold px-2 py-[2px]">
+                          <span className="inline-flex items-center rounded-[3px] bg-tertiary text-white text-[10px] font-semibold px-2 py-[2px]">
                             Đơn chính
                           </span>
                         )}
@@ -4167,12 +4192,12 @@ const PopupXacNhanGhep = ({
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-[#555] flex flex-wrap gap-x-4 gap-y-[2px]">
-                        <span><span className="text-[#888]">Người gửi: </span>{d.nguoiGui}</span>
-                        {d.nguoiNhap && <span><span className="text-[#888]">Người nhập: </span>{d.nguoiNhap}</span>}
-                        {d.soBA && <span><span className="text-[#888]">Số BA: </span><span className="font-medium text-[#333]">{d.soBA}</span></span>}
-                        {d.ngayBA && <span><span className="text-[#888]">Ngày BA: </span>{d.ngayBA}</span>}
-                        {d.toaBA && <span><span className="text-[#888]">Tòa xét xử: </span>{d.toaBA}</span>}
+                      <div className="text-[11px] text-on-surface-variant flex flex-wrap gap-x-4 gap-y-[2px]">
+                        <span><span className="text-on-surface-variant">Người gửi: </span>{d.nguoiGui}</span>
+                        {d.nguoiNhap && <span><span className="text-on-surface-variant">Người nhập: </span>{d.nguoiNhap}</span>}
+                        {d.soBA && <span><span className="text-on-surface-variant">Số BA: </span><span className="font-medium text-on-surface">{d.soBA}</span></span>}
+                        {d.ngayBA && <span><span className="text-on-surface-variant">Ngày BA: </span>{d.ngayBA}</span>}
+                        {d.toaBA && <span><span className="text-on-surface-variant">Tòa xét xử: </span>{d.toaBA}</span>}
                       </div>
                     </div>
                   </div>
@@ -4184,13 +4209,13 @@ const PopupXacNhanGhep = ({
           {/* Yêu cầu bổ sung liên quan — chỉ khi có đơn có yêu cầu bổ sung */}
           {hasRequestOptions && (
             <div>
-              <p className="text-[12px] font-semibold text-[#333] mb-1.5">
+              <p className="text-[12px] font-semibold text-on-surface mb-1.5">
                 Yêu cầu bổ sung liên quan
-                <span className="ml-1 text-[11px] font-normal text-[#888]">(không bắt buộc)</span>
+                <span className="ml-1 text-[11px] font-normal text-on-surface-variant">(không bắt buộc)</span>
               </p>
-              <div className="border border-[#ddd] rounded-[3px] p-2 space-y-1.5 bg-[#fafafa]">
+              <div className="border border-surface-container rounded-[3px] p-2 space-y-1.5 bg-surface-bright">
                 {selectedYeuCauOptions.map(opt => (
-                  <label key={opt.key} className="flex items-center gap-2 text-[12px] text-[#333] cursor-pointer hover:text-[#8b1a1a]">
+                  <label key={opt.key} className="flex items-center gap-2 text-[12px] text-on-surface cursor-pointer hover:text-error">
                     <input
                       type="checkbox"
                       className="w-[13px] h-[13px] accent-[#8b1a1a]"
@@ -4205,7 +4230,7 @@ const PopupXacNhanGhep = ({
           )}
 
           {/* Tóm tắt luồng */}
-          <div className="bg-[#f5f5f5] rounded-[3px] px-3 py-2 text-[11px] text-[#555] space-y-0.5">
+          <div className="bg-surface-container-low rounded-[3px] px-3 py-2 text-[11px] text-on-surface-variant space-y-0.5">
             {!hasOthers && <div>Tất cả đơn đều của bạn → Ghép ngay sau xác nhận.</div>}
             {hasOthers && !chinhIsMine && (
               <div>Người nhập đơn chính sẽ nhận yêu cầu xác nhận. Sau khi họ xác nhận, ghép đơn sẽ được thực hiện.</div>
@@ -4214,7 +4239,7 @@ const PopupXacNhanGhep = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex justify-end gap-2 px-4 py-3 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           {showRecipientInfo ? (
             <>
               <BtnSecondary onClick={onReject ?? onClose}>Từ chối</BtnSecondary>
@@ -4245,7 +4270,7 @@ type ThoiHieuKey = "khong-xac-dinh" | "trong-han-1-nam" | "qua-3-nam" | "qua-5-n
 const THOI_HIEU: Record<ThoiHieuKey, { nhan: string; cls: string }> = {
   "khong-xac-dinh": {
     nhan: "Không xác định thời hiệu giải quyết",
-    cls: "bg-[#f5f5f5] border-[#d5d5d5] text-[#666]",
+    cls: "bg-surface-container-low border-[#d5d5d5] text-on-surface-variant",
   },
   "trong-han-1-nam": {
     nhan: "Trong thời hạn giải quyết 1 năm",
@@ -4257,7 +4282,7 @@ const THOI_HIEU: Record<ThoiHieuKey, { nhan: string; cls: string }> = {
   },
   "qua-5-nam": {
     nhan: "Quá thời hiệu giải quyết trên 5 năm",
-    cls: "bg-[#fdecea] border-[#e6a5a0] text-[#c0392b]",
+    cls: "bg-[#fdecea] border-[#e6a5a0] text-error",
   },
 };
 
@@ -5200,10 +5225,10 @@ const donTrungThamPhan = (r: DanhSachDonRow, tatCa: DanhSachDonRow[]): DanhSachD
 const oLoc = (v: unknown) =>
   v !== undefined && v !== null && v !== ""
     ? "border-[#7aa7d9] bg-[#eff6fd]"
-    : "border-[#ccc] bg-white";
+    : "border-surface-container-highest bg-white";
 
 const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...props} className={`w-full h-[30px] px-2 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#aaa] transition-colors ${oLoc(props.value)} ${props.className ?? ""}`} />
+  <input {...props} className={`w-full h-[30px] px-2 text-[12px] border rounded-[3px] focus:outline-none focus:border-primary placeholder:text-outline transition-colors ${oLoc(props.value)} ${props.className ?? ""}`} />
 );
 const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => {
   const { ref, hienX, xoa } = useXoaChon(props.value);
@@ -5214,12 +5239,12 @@ const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectEleme
         {children}
       </select>
       {hienX && <NutXoaChon onClick={xoa} right="right-5" size={11} />}
-      <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+      <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
     </div>
   );
 };
 const FLbl = ({ children }: { children: React.ReactNode }) => (
-  <label className="block text-[12px] font-medium text-[#333] mb-[3px] whitespace-nowrap">{children}</label>
+  <label className="block text-[12px] font-medium text-on-surface mb-[3px] whitespace-nowrap">{children}</label>
 );
 // Date range: "Từ ngày → Đến ngày" with calendar icon
 const FDateRange = ({ from, to, onFrom, onTo }: {
@@ -5227,10 +5252,10 @@ const FDateRange = ({ from, to, onFrom, onTo }: {
 }) => (
   <div className="flex items-center gap-1">
     <input type="date" value={from ?? ""} onChange={e => onFrom?.(e.target.value)}
-      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(from)}`} />
-    <span className="text-[#aaa] text-[11px] flex-shrink-0">→</span>
+      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-primary transition-colors ${oLoc(from)}`} />
+    <span className="text-outline text-[11px] flex-shrink-0">→</span>
     <input type="date" value={to ?? ""} onChange={e => onTo?.(e.target.value)}
-      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(to)}`} />
+      className={`flex-1 min-w-0 h-[30px] px-1.5 text-[12px] border rounded-[3px] focus:outline-none focus:border-primary transition-colors ${oLoc(to)}`} />
   </div>
 );
 // Hồ sơ kháng nghị đứng riêng, không thuộc nhóm Đơn hay Công văn: hồ sơ do cấp
@@ -5344,36 +5369,36 @@ const TINH_TP = [
 // min-h cố định + nhãn 1 dòng để các cột luôn ngang hàng nhau
 const TRow = ({ label, bold, children }: { label?: string; bold?: boolean; children?: React.ReactNode }) => (
   <div className="grid grid-cols-[146px_1fr] items-center gap-2 py-[2px] min-h-[30px]">
-    <label className={`text-[12px] leading-tight whitespace-nowrap overflow-hidden text-ellipsis ${bold ? "font-semibold text-[#222]" : "text-[#444]"}`}
+    <label className={`text-[12px] leading-tight whitespace-nowrap overflow-hidden text-ellipsis ${bold ? "font-semibold text-on-surface" : "text-[#444]"}`}
       title={label}>{label}</label>
     <div>{children}</div>
   </div>
 );
 const TInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input {...props}
-    className={`w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#bbb] transition-colors ${oLoc(props.value)} ${props.className ?? ""}`} />
+    className={`w-full h-[26px] px-2 text-[12px] border rounded-[2px] focus:outline-none focus:border-primary placeholder:text-[#bbb] transition-colors ${oLoc(props.value)} ${props.className ?? ""}`} />
 );
 const TSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => {
   const { ref, hienX, xoa } = useXoaChon(props.value);
   return (
     <div className="relative">
       <select ref={ref} {...props}
-        className={`w-full h-[26px] pl-2 ${hienX ? "pr-11" : "pr-6"} text-[12px] border rounded-[2px] appearance-none focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(props.value)}`}>
+        className={`w-full h-[26px] pl-2 ${hienX ? "pr-11" : "pr-6"} text-[12px] border rounded-[2px] appearance-none focus:outline-none focus:border-primary transition-colors ${oLoc(props.value)}`}>
         {children}
       </select>
       {hienX && <NutXoaChon onClick={xoa} right="right-5" size={11} />}
-      <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+      <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
     </div>
   );
 };
 const TDate = ({ value, onChange }: { value?: string; onChange?: (v: string) => void }) => (
   <input type="date" value={value ?? ""} onChange={e => onChange?.(e.target.value)}
-    className={`w-full h-[26px] px-1.5 text-[12px] border rounded-[2px] focus:outline-none focus:border-[#1a73e8] transition-colors ${oLoc(value)}`} />
+    className={`w-full h-[26px] px-1.5 text-[12px] border rounded-[2px] focus:outline-none focus:border-primary transition-colors ${oLoc(value)}`} />
 );
 
 // Single date with calendar placeholder
 const FDate = () => (
-  <input type="date" className="w-full h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]" />
+  <input type="date" className="w-full h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary" />
 );
 
 // ─── Hồ sơ kháng nghị: kết quả xét xử ────────────────────────────────────────
@@ -5457,13 +5482,13 @@ const congNgay = (ngay: string, them: number) => {
 };
 
 const KET_QUA_TRINH_KY: Record<string, { nhan: string; cls: string }> = {
-  "chua-trinh": { nhan: "Chưa trình ký", cls: "bg-[#f5f5f5] text-[#666] border-[#d5d5d5]" },
-  "cho-tp": { nhan: "Chờ trưởng phòng duyệt", cls: "bg-[#eaf4ff] text-[#1a5a96] border-[#c5d8f8]" },
+  "chua-trinh": { nhan: "Chưa trình ký", cls: "bg-surface-container-low text-on-surface-variant border-[#d5d5d5]" },
+  "cho-tp": { nhan: "Chờ trưởng phòng duyệt", cls: "bg-[#eaf4ff] text-primary border-surface-variant" },
   // nhãn được thay bằng "Chờ <chức danh> ký" khi dựng tiến độ
   "cho-ky": { nhan: "Chờ ký", cls: "bg-[#fff3cd] text-[#856404] border-[#ffecb5]" },
-  "cho-so": { nhan: "Đã ký, chờ lấy số", cls: "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]" },
+  "cho-so": { nhan: "Đã ký, chờ lấy số", cls: "bg-info-container text-primary border-surface-variant" },
   "phat-hanh": { nhan: "Đã phát hành", cls: "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]" },
-  "tra-lai": { nhan: "Bị trả lại để chỉnh sửa", cls: "bg-[#fdecea] text-[#c0392b] border-[#e6a5a0]" },
+  "tra-lai": { nhan: "Bị trả lại để chỉnh sửa", cls: "bg-[#fdecea] text-error border-[#e6a5a0]" },
 };
 
 // Suy ra tiến độ từ trạng thái tờ trình của đơn; phần còn lại băm theo id cho đa
@@ -5678,24 +5703,24 @@ const CauHinhPhanCongTP = () => {
       <div className="px-4 py-3">
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-[12px] text-[#666] mb-3">
-          <span className="text-[#1a5a96] cursor-pointer hover:underline">Trang chủ</span>
+        <div className="flex items-center gap-1.5 text-[12px] text-on-surface-variant mb-3">
+          <span className="text-primary cursor-pointer hover:underline">Trang chủ</span>
           <span className="text-[#bbb]">›</span>
-          <span className="text-[#1a5a96] cursor-pointer hover:underline">Quản lý đơn</span>
+          <span className="text-primary cursor-pointer hover:underline">Quản lý đơn</span>
           <span className="text-[#bbb]">›</span>
-          <span className="text-[#333] font-medium">Cấu hình phân công Thẩm phán</span>
+          <span className="text-on-surface font-medium">Cấu hình phân công Thẩm phán</span>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-end border-b border-[#ddd] gap-0 mb-3">
+        <div className="flex items-end border-b border-surface-container gap-0 mb-3">
           {[
             { nhan: "Thông tin thẩm phán", dem: rows.length },
             { nhan: "Nghỉ phép / vắng mặt", dem: nghiPhep.length },
           ].map((t, i) => (
             <button key={t.nhan} onClick={() => setTab(i as 0 | 1)}
-              className={`px-4 py-[7px] text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${tab === i ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#222]"}`}>
+              className={`px-4 py-[7px] text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${tab === i ? "border-error text-error" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}>
               {t.nhan}
-              <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${tab === i ? "bg-[#8b1a1a] text-white" : "bg-[#eee] text-[#666]"}`}>{t.dem}</span>
+              <span className={`ml-1.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${tab === i ? "bg-error text-white" : "bg-surface-container-high text-on-surface-variant"}`}>{t.dem}</span>
             </button>
           ))}
         </div>
@@ -5718,22 +5743,22 @@ const CauHinhPhanCongTP = () => {
                 <FLbl>Chức vụ</FLbl>
                 <div className="relative">
                   <select value={fChucVu} onChange={e => setFChucVu(e.target.value)}
-                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
+                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-surface-container rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                     <option value="">- Tất cả -</option>
                     {chucVuOptions.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               <div className="flex-1 min-w-[150px]">
                 <FLbl>Đơn vị công tác</FLbl>
                 <div className="relative">
                   <select value={fDonVi} onChange={e => setFDonVi(e.target.value)}
-                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
+                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-surface-container rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                     <option value="">- Tất cả -</option>
                     {donViOptions.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
-                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               {/* Hai cột mới của bảng cũng phải lọc được, nếu không cột hiện ra
@@ -5742,24 +5767,24 @@ const CauHinhPhanCongTP = () => {
                 <FLbl>Nhận phân công</FLbl>
                 <div className="relative">
                   <select value={fNhanPC} onChange={e => setFNhanPC(e.target.value)}
-                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
+                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-surface-container rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                     <option value="">- Tất cả -</option>
                     <option value="co">Có nhận</option>
                     <option value="khong">Không nhận</option>
                   </select>
-                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               <div className="flex-1 min-w-[130px]">
                 <FLbl>Tình trạng</FLbl>
                 <div className="relative">
                   <select value={fTinhTrang} onChange={e => setFTinhTrang(e.target.value)}
-                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
+                    className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-surface-container rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                     <option value="">- Tất cả -</option>
                     <option value="lam-viec">Đang làm việc</option>
                     <option value="nghi">Đang nghỉ</option>
                   </select>
-                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                  <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                 </div>
               </div>
               <div className="flex items-end gap-2 flex-shrink-0">
@@ -5767,7 +5792,7 @@ const CauHinhPhanCongTP = () => {
                   hoTen: fHoTen, donVi: fDonVi,
                   chucVu: fChucVu, nhanPC: fNhanPC, tinhTrang: fTinhTrang,
                 })}
-                  className="flex items-center gap-1.5 h-[34px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[4px] text-[12px] font-medium transition-colors flex-shrink-0">
+                  className="flex items-center gap-1.5 h-[34px] px-4 bg-error hover:bg-error-container text-white rounded-[4px] text-[12px] font-medium transition-colors flex-shrink-0">
                   <Search size={13} /> Tìm kiếm
                 </button>
                 <button onClick={() => {
@@ -5775,7 +5800,7 @@ const CauHinhPhanCongTP = () => {
                   setFChucVu(""); setFNhanPC(""); setFTinhTrang("");
                   setLoc(LOC_RONG);
                 }}
-                  className="h-[34px] px-3 border border-[#ccc] rounded-[4px] bg-white hover:bg-[#f5f5f5] text-[12px] text-[#555] transition-colors flex-shrink-0">
+                  className="h-[34px] px-3 border border-surface-container-highest rounded-[4px] bg-white hover:bg-surface-container-low text-[12px] text-on-surface-variant transition-colors flex-shrink-0">
                   ↺
                 </button>
               </div>
@@ -5797,36 +5822,36 @@ const CauHinhPhanCongTP = () => {
               <table className="w-full border-collapse text-[13px] min-w-[1120px]">
                 <thead>
                   <tr className="border-b border-[#e5e5e5]">
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[46px]">STT</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[220px]">Họ và tên</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[46px]">STT</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[220px]">Họ và tên</th>
                     {/* Không còn cột "Chức danh": mọi người trong bảng đều cùng
                         một ngạch thẩm phán, cột chỉ lặp lại một giá trị. Chức vụ
                         (Trưởng phòng, Phó Chánh án…) mới là thứ phân biệt. */}
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[210px]">Chức vụ</th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[300px]">Đơn vị công tác</th>
-                    <th className="px-3 py-2.5 text-center font-semibold text-[#333] w-[110px]"
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[210px]">Chức vụ</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[300px]">Đơn vị công tác</th>
+                    <th className="px-3 py-2.5 text-center font-semibold text-on-surface w-[110px]"
                       title="Thẩm phán có nằm trong diện được phân công đơn hay không">
                       Nhận phân công
                     </th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[150px]"
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[150px]"
                       title="Số vụ đã nhận trong năm nay / tổng số vụ đã nhận từ khi công tác">
                       Đã nhận (năm / tổng)
                     </th>
-                    <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[180px]">Tình trạng</th>
+                    <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[180px]">Tình trạng</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dsHienThi.length === 0 && (
-                    <tr><td colSpan={7} className="px-3 py-10 text-center text-[#888]">Không có thẩm phán nào khớp điều kiện.</td></tr>
+                    <tr><td colSpan={7} className="px-3 py-10 text-center text-on-surface-variant">Không có thẩm phán nào khớp điều kiện.</td></tr>
                   )}
                   {dsHienThi.map((r, i) => {
                     const nghi = dangNghi(r.hoTen, nghiPhep, homNay);
                     return (
-                      <tr key={r.id} className="border-b border-[#eee] hover:bg-[#fafbfc] transition-colors">
-                        <td className="px-3 py-2 text-[#555] align-top">{i + 1}</td>
-                        <td className="px-3 py-2 font-medium text-[#222] align-top">{r.hoTen}</td>
-                        <td className="px-3 py-2 align-top text-[#222]">{r.chucVu || "-"}</td>
-                        <td className="px-3 py-2 align-top text-[#222]">{r.donVi || "-"}</td>
+                      <tr key={r.id} className="border-b border-surface-container-high hover:bg-[#fafbfc] transition-colors">
+                        <td className="px-3 py-2 text-on-surface-variant align-top">{i + 1}</td>
+                        <td className="px-3 py-2 font-medium text-on-surface align-top">{r.hoTen}</td>
+                        <td className="px-3 py-2 align-top text-on-surface">{r.chucVu || "-"}</td>
+                        <td className="px-3 py-2 align-top text-on-surface">{r.donVi || "-"}</td>
                         {/* Ô cao 32px cho thẳng hàng với các ô select cùng dòng */}
                         <td className="px-3 py-2 align-top text-center">
                           <div className="h-[32px] flex items-center justify-center">
@@ -5842,8 +5867,8 @@ const CauHinhPhanCongTP = () => {
                             con số cần đọc hằng ngày là con số của năm nay. */}
                         <td className="px-3 py-2 align-top"
                           title={`${r.daNhan} vụ trong năm nay · tổng ${r.tongDaNhan} vụ từ khi công tác`}>
-                          <span className="text-[13px] font-semibold text-[#222]">{r.daNhan}</span>
-                          <span className="text-[12px] text-[#888]"> / {r.tongDaNhan} vụ</span>
+                          <span className="text-[13px] font-semibold text-on-surface">{r.daNhan}</span>
+                          <span className="text-[12px] text-on-surface-variant"> / {r.tongDaNhan} vụ</span>
                         </td>
                         <td className="px-3 py-2 align-top">
                           {nghi ? (
@@ -5851,7 +5876,7 @@ const CauHinhPhanCongTP = () => {
                               <span className="inline-block px-2 py-[2px] rounded text-[10px] font-medium border bg-[#fef3e2] text-[#b45309] border-[#fcd48a]">
                                 Đang nghỉ · {nghi.loai}
                               </span>
-                              <div className="text-[11px] text-[#666] mt-1">Đến {nghi.denNgay}</div>
+                              <div className="text-[11px] text-on-surface-variant mt-1">Đến {nghi.denNgay}</div>
                             </>
                           ) : (
                             <span className="inline-block px-2 py-[2px] rounded text-[10px] font-medium border bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]">
@@ -5870,11 +5895,11 @@ const CauHinhPhanCongTP = () => {
           <>
             {/* Tab Nghỉ phép */}
             <div className="flex items-center justify-between gap-3">
-              <div className="text-[12px] text-[#666]">
+              <div className="text-[12px] text-on-surface-variant">
                 Thẩm phán trong kỳ nghỉ sẽ bị loại khỏi danh sách phân công tự động trong khoảng thời gian đó.
               </div>
               <button onClick={() => setThemNghi(true)}
-                className="flex items-center gap-1.5 h-[34px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[4px] text-[12px] font-medium transition-colors flex-shrink-0">
+                className="flex items-center gap-1.5 h-[34px] px-4 bg-error hover:bg-error-container text-white rounded-[4px] text-[12px] font-medium transition-colors flex-shrink-0">
                 <Plus size={13} /> Đăng ký nghỉ
               </button>
             </div>
@@ -5885,21 +5910,21 @@ const CauHinhPhanCongTP = () => {
                   <tr className="border-b border-[#e5e5e5]">
                     {["STT", "Thẩm phán", "Loại nghỉ", "Từ ngày", "Đến ngày", "Số ngày",
                       "Vụ đang cầm", "Xử lý vụ đang cầm", "Thao tác"].map(h => (
-                        <th key={h} className="px-3 py-2.5 text-left font-semibold text-[#333] whitespace-nowrap">{h}</th>
+                        <th key={h} className="px-3 py-2.5 text-left font-semibold text-on-surface whitespace-nowrap">{h}</th>
                       ))}
                   </tr>
                 </thead>
                 <tbody>
                   {nghiPhep.length === 0 && (
-                    <tr><td colSpan={9} className="px-3 py-10 text-center text-[#888]">Chưa có đăng ký nghỉ nào.</td></tr>
+                    <tr><td colSpan={9} className="px-3 py-10 text-center text-on-surface-variant">Chưa có đăng ký nghỉ nào.</td></tr>
                   )}
                   {nghiPhep.map((n, i) => {
                     const tu = parseVNDate(n.tuNgay), den = parseVNDate(n.denNgay);
                     const soNgay = tu && den ? Math.max(0, Math.round((den.getTime() - tu.getTime()) / 86400000) + 1) : 0;
                     return (
-                      <tr key={n.id} className="border-b border-[#eee] hover:bg-[#fafbfc] transition-colors">
-                        <td className="px-3 py-2 text-[#555] align-top">{i + 1}</td>
-                        <td className="px-3 py-2 font-medium text-[#222] align-top whitespace-nowrap">{n.thamPhan}</td>
+                      <tr key={n.id} className="border-b border-surface-container-high hover:bg-[#fafbfc] transition-colors">
+                        <td className="px-3 py-2 text-on-surface-variant align-top">{i + 1}</td>
+                        <td className="px-3 py-2 font-medium text-on-surface align-top whitespace-nowrap">{n.thamPhan}</td>
                         <td className="px-3 py-2 align-top whitespace-nowrap">{n.loai}</td>
                         <td className="px-3 py-2 align-top whitespace-nowrap">{n.tuNgay}</td>
                         <td className="px-3 py-2 align-top whitespace-nowrap">{n.denNgay}</td>
@@ -5908,17 +5933,17 @@ const CauHinhPhanCongTP = () => {
                         <td className="px-3 py-2 align-top">
                           <div>{XU_LY_VU_DANG_CAM[n.xuLy]?.split("—")[0].trim()}</div>
                           {n.xuLy === "chuyen-giao" && n.chuyenCho && (
-                            <div className="text-[11px] text-[#1a5a96] mt-0.5">→ {n.chuyenCho}</div>
+                            <div className="text-[11px] text-primary mt-0.5">→ {n.chuyenCho}</div>
                           )}
                         </td>
                         <td className="px-3 py-2 align-top whitespace-nowrap">
                           <div className="flex items-center gap-1">
                             <button onClick={() => setSuaNghi(n)} title="Sửa đăng ký nghỉ"
-                              className="w-[26px] h-[26px] flex items-center justify-center rounded-[3px] border border-[#ddd] text-[#1a5a96] hover:bg-[#eaf4ff] hover:border-[#c5d8f8] transition-colors">
+                              className="w-[26px] h-[26px] flex items-center justify-center rounded-[3px] border border-surface-container text-primary hover:bg-[#eaf4ff] hover:border-surface-variant transition-colors">
                               <Edit2 size={13} />
                             </button>
                             <button onClick={() => setNghiPhep(p => p.filter(x => x.id !== n.id))} title="Xóa đăng ký nghỉ"
-                              className="w-[26px] h-[26px] flex items-center justify-center rounded-[3px] border border-[#ddd] text-[#c0392b] hover:bg-[#fdecea] hover:border-[#f5b7b7] transition-colors">
+                              className="w-[26px] h-[26px] flex items-center justify-center rounded-[3px] border border-surface-container text-error hover:bg-[#fdecea] hover:border-error-container transition-colors">
                               <Trash2 size={13} />
                             </button>
                           </div>
@@ -5991,7 +6016,7 @@ const PopupDangKyNghi = ({ thamPhans, banGhi, onDong, onLuu }: {
   return (
     <div className="fixed inset-0 z-[210] bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[6px] shadow-2xl w-[620px] max-w-[96vw] max-h-[94vh] flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <span className="text-[15px] font-bold">
             {banGhi ? "Sửa đăng ký nghỉ phép / vắng mặt" : "Đăng ký nghỉ phép / vắng mặt"}
           </span>
@@ -6003,40 +6028,40 @@ const PopupDangKyNghi = ({ thamPhans, banGhi, onDong, onLuu }: {
         <div className="px-5 py-4 space-y-3 overflow-y-auto">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <FLbl><span className="text-[#c0392b] mr-1">*</span>Thẩm phán</FLbl>
+              <FLbl><span className="text-error mr-1">*</span>Thẩm phán</FLbl>
               <div className="relative">
                 <select value={thamPhan} onChange={e => setThamPhan(e.target.value)}
-                  className={`w-full h-[34px] pl-2.5 pr-7 text-[12px] border rounded-[4px] bg-white appearance-none focus:outline-none ${loi(!thamPhan) ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`}>
+                  className={`w-full h-[34px] pl-2.5 pr-7 text-[12px] border rounded-[4px] bg-white appearance-none focus:outline-none ${loi(!thamPhan) ? "border-error" : "border-surface-container focus:border-primary"}`}>
                   <option value="">-- Chọn thẩm phán --</option>
                   {thamPhans.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
               <FLbl>Loại nghỉ</FLbl>
               <div className="relative">
                 <select value={loai} onChange={e => setLoai(e.target.value)}
-                  className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-[#ddd] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96]">
+                  className="w-full h-[34px] pl-2.5 pr-7 text-[12px] border border-surface-container rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                   {LOAI_NGHI.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
-                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
-              <FLbl><span className="text-[#c0392b] mr-1">*</span>Từ ngày</FLbl>
+              <FLbl><span className="text-error mr-1">*</span>Từ ngày</FLbl>
               <FInp type="date" value={tuNgay} onChange={e => setTuNgay(e.target.value)} />
             </div>
             <div>
-              <FLbl><span className="text-[#c0392b] mr-1">*</span>Đến ngày</FLbl>
+              <FLbl><span className="text-error mr-1">*</span>Đến ngày</FLbl>
               <FInp type="date" value={denNgay} onChange={e => setDenNgay(e.target.value)} />
-              {saiThuTu && <div className="text-[11px] text-[#c0392b] mt-1">Đến ngày phải sau Từ ngày.</div>}
+              {saiThuTu && <div className="text-[11px] text-error mt-1">Đến ngày phải sau Từ ngày.</div>}
             </div>
           </div>
 
         </div>
 
-        <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e5e5e5] bg-[#fafafa]">
+        <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e5e5e5] bg-surface-bright">
           <BtnSecondary onClick={onDong}>Hủy</BtnSecondary>
           <BtnPrimary onClick={luu}>Lưu</BtnPrimary>
         </div>
@@ -6081,7 +6106,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
       `}</style>
 
       <div className="bg-white rounded-[6px] shadow-2xl w-[1240px] max-w-[96vw] max-h-[94vh] flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <span className="text-[15px] font-bold">In danh sách đơn</span>
           <div className="flex items-center gap-2">
             <button onClick={() => window.print()} disabled={rows.length === 0}
@@ -6116,36 +6141,36 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                 hình thì tiêu đề là manh mối duy nhất còn lại về phạm vi dữ liệu. */}
             <div className="text-center mb-4">
               <div className="text-[17px] font-bold uppercase text-[#111] leading-snug">{tieuDe}</div>
-              {phuDe && <div className="text-[13px] text-[#333] mt-1 italic">{phuDe}</div>}
+              {phuDe && <div className="text-[13px] text-on-surface mt-1 italic">{phuDe}</div>}
             </div>
 
-            <div className="text-[12px] text-[#333] mb-3 leading-relaxed">
+            <div className="text-[12px] text-on-surface mb-3 leading-relaxed">
               <div>
                 <b>Điều kiện lọc:</b>{" "}
                 {moTaBoLoc.length
                   ? moTaBoLoc.join("; ")
-                  : <span className="italic text-[#666]">Không áp dụng bộ lọc — in toàn bộ danh sách.</span>}
+                  : <span className="italic text-on-surface-variant">Không áp dụng bộ lọc — in toàn bộ danh sách.</span>}
               </div>
               <div><b>Tổng cộng:</b> {rows.length} đơn</div>
             </div>
 
             <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#f0f0f0]">
+                <tr className="bg-surface-container">
                   {/* Cột gộp đúng như màn Danh sách đơn — bản in và màn hình đọc
                       giống nhau thì đối chiếu mới nhanh. */}
                   {[["STT", "w-[34px]"], ["Thông tin người gửi / đơn vị gửi", "w-[280px]"],
                   ["Thông tin đơn", "w-[330px]"], ["Số đơn", "w-[46px]"],
                   ["Thông tin giải quyết", "w-[170px]"],
                   ["Người nhập / Sửa", "w-[150px]"]].map(([h, w]) => (
-                    <th key={h} className={`border border-[#999] px-2 py-[6px] text-left font-semibold text-[#222] ${w}`}>{h}</th>
+                    <th key={h} className={`border border-outline px-2 py-[6px] text-left font-semibold text-on-surface ${w}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="border border-[#999] px-2 py-8 text-center text-[#888]">
+                    <td colSpan={6} className="border border-outline px-2 py-8 text-center text-on-surface-variant">
                       Không có đơn nào khớp bộ lọc.
                     </td>
                   </tr>
@@ -6153,15 +6178,15 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                 {rows.map((r, i) => {
                   const d = r.thongTinDon ?? ({} as DanhSachDonRow["thongTinDon"]);
                   const Nhan = ({ children }: { children: React.ReactNode }) =>
-                    <span className="text-[#777]">{children}</span>;
+                    <span className="text-on-surface-variant">{children}</span>;
                   return (
-                    <tr key={r.id} className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
-                      <td className="border border-[#999] px-2 py-[5px] text-center align-top">{i + 1}</td>
+                    <tr key={r.id} className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
+                      <td className="border border-outline px-2 py-[5px] text-center align-top">{i + 1}</td>
 
                       {/* Thông tin người gửi / đơn vị gửi */}
-                      <td className="border border-[#999] px-2 py-[5px] align-top leading-[1.5]">
+                      <td className="border border-outline px-2 py-[5px] align-top leading-[1.5]">
                         <div className="font-medium">{vietTatTAND(r.nguoiDungDon || r.nguoiGui)}</div>
-                        {r.diaChi && <div className="text-[11px] text-[#666]">{vietTatTAND(r.diaChi)}</div>}
+                        {r.diaChi && <div className="text-[11px] text-on-surface-variant">{vietTatTAND(r.diaChi)}</div>}
                         {(r.ngayTrenDon || r.ngayNhap) && (
                           <div className="text-[11px]">
                             {r.ngayTrenDon && <><Nhan>Ngày trên đơn: </Nhan>{r.ngayTrenDon}  </>}
@@ -6181,7 +6206,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                       </td>
 
                       {/* Thông tin đơn */}
-                      <td className="border border-[#999] px-2 py-[5px] align-top leading-[1.5] text-[11px]">
+                      <td className="border border-outline px-2 py-[5px] align-top leading-[1.5] text-[11px]">
                         {(d.soBaqd || d.ngay || d.toaXetXu) && (
                           <div>
                             <Nhan>Số BA/QĐ: </Nhan>{d.soBaqd || "—"}
@@ -6203,17 +6228,17 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                         {d.donViGiaiQuyet && <div><Nhan>Đã chuyển: </Nhan>{vietTatTAND(d.donViGiaiQuyet)}</div>}
                       </td>
 
-                      <td className="border border-[#999] px-2 py-[5px] text-center align-top">{r.soDon ?? 1}</td>
+                      <td className="border border-outline px-2 py-[5px] text-center align-top">{r.soDon ?? 1}</td>
 
                       {/* Thông tin giải quyết */}
-                      <td className="border border-[#999] px-2 py-[5px] align-top leading-[1.5] text-[11px]">
+                      <td className="border border-outline px-2 py-[5px] align-top leading-[1.5] text-[11px]">
                         <div className="font-medium">{r.giaiQuyet?.nhan || "Chưa có"}</div>
                         {r.giaiQuyet?.stl && <div><Nhan>Số: </Nhan>{r.giaiQuyet.stl}</div>}
                         {r.trungVoiDon && <div><Nhan>Trùng với đơn </Nhan>{r.trungVoiDon}</div>}
                       </td>
 
                       {/* Người nhập / Sửa */}
-                      <td className="border border-[#999] px-2 py-[5px] align-top leading-[1.5] text-[11px]">
+                      <td className="border border-outline px-2 py-[5px] align-top leading-[1.5] text-[11px]">
                         {r.nguoiNhap && (
                           <div>
                             <Nhan>Nhập: </Nhan><b>{r.nguoiNhap}</b>
@@ -6221,7 +6246,7 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
                           </div>
                         )}
                         {r.nguoiSua && (
-                          <div className="mt-[3px] pt-[3px] border-t border-dashed border-[#ccc]">
+                          <div className="mt-[3px] pt-[3px] border-t border-dashed border-surface-container-highest">
                             <Nhan>Sửa: </Nhan><b>{r.nguoiSua}</b>
                             <div>{r.ngaySua}{r.gioSua ? ` ${r.gioSua}` : ""}</div>
                           </div>
@@ -6236,8 +6261,8 @@ const PopupInDanhSachDon = ({ rows, moTaBoLoc, onDong, nguoiIn, tieuDe = "DANH S
             {/* Hai khối tách bạch hai vai trò khác nhau:
                   · Trái  — người IN, do hệ thống ghi nhận theo tài khoản đăng nhập
                   · Phải  — người LẬP danh sách, ký tay, có thể không phải người in */}
-            <div className="flex items-start justify-between mt-8 text-[12px] text-[#222]">
-              <div className="italic text-[#555] leading-relaxed">
+            <div className="flex items-start justify-between mt-8 text-[12px] text-on-surface">
+              <div className="italic text-on-surface-variant leading-relaxed">
                 {nguoiIn && (
                   <>
                     <div>Người in danh sách: {nguoiIn.nguoi} — {nguoiIn.chucVu}</div>
@@ -6280,36 +6305,36 @@ const PopupPhanCongCanBo = ({ maDons, danhSachCanBo, taiHienTai, onDong, onXacNh
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4" onClick={onDong}>
       <div className="bg-white rounded-[4px] shadow-xl w-[520px] max-h-[88vh] flex flex-col" onClick={e => e.stopPropagation()}>
 
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0] shrink-0">
-          <span className="flex items-center gap-2 text-[13px] font-semibold text-[#8b1a1a]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest shrink-0">
+          <span className="flex items-center gap-2 text-[13px] font-semibold text-error">
             <Users size={14} /> Phân công cán bộ xử lý
           </span>
-          <button onClick={onDong} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+          <button onClick={onDong} className="text-on-surface-variant hover:text-on-surface"><X size={15} /></button>
         </div>
 
         <div className="px-5 py-4 space-y-4 overflow-y-auto">
 
           {/* Đơn được giao — gom lại, không đổ hết mã ra màn hình */}
           <div>
-            <div className="text-[12px] text-[#333] mb-2">
-              Đang giao <b className="font-semibold text-[#1d2e4f]">{maDons.length}</b> đơn
+            <div className="text-[12px] text-on-surface mb-2">
+              Đang giao <b className="font-semibold text-tertiary">{maDons.length}</b> đơn
             </div>
-            <div className="rounded-[3px] border border-[#e6e6e6] bg-[#fafafa] px-2.5 py-2">
+            <div className="rounded-[3px] border border-[#e6e6e6] bg-surface-bright px-2.5 py-2">
               <div className="flex flex-wrap gap-1">
                 {maHienThi.map(ma => (
-                  <span key={ma} className="inline-block rounded-[3px] bg-white border border-[#dcdcdc] px-1.5 py-[2px] text-[11px] text-[#555]">
+                  <span key={ma} className="inline-block rounded-[3px] bg-white border border-[#dcdcdc] px-1.5 py-[2px] text-[11px] text-on-surface-variant">
                     {ma}
                   </span>
                 ))}
                 {soMaConLai > 0 && (
                   <button type="button" onClick={() => setXemHetMa(true)}
-                    className="inline-block rounded-[3px] border border-dashed border-[#bbb] px-1.5 py-[2px] text-[11px] text-[#1a73e8] hover:bg-[#eef4ff] transition-colors">
+                    className="inline-block rounded-[3px] border border-dashed border-[#bbb] px-1.5 py-[2px] text-[11px] text-primary hover:bg-[#eef4ff] transition-colors">
                     +{soMaConLai} đơn khác
                   </button>
                 )}
                 {xemHetMa && maDons.length > SO_MA_HIEN_GON && (
                   <button type="button" onClick={() => setXemHetMa(false)}
-                    className="inline-block rounded-[3px] border border-dashed border-[#bbb] px-1.5 py-[2px] text-[11px] text-[#888] hover:bg-[#f0f0f0] transition-colors">
+                    className="inline-block rounded-[3px] border border-dashed border-[#bbb] px-1.5 py-[2px] text-[11px] text-on-surface-variant hover:bg-surface-container transition-colors">
                     Thu gọn
                   </button>
                 )}
@@ -6319,27 +6344,27 @@ const PopupPhanCongCanBo = ({ maDons, danhSachCanBo, taiHienTai, onDong, onXacNh
 
           {/* Chọn người nhận — kèm tải công việc hiện tại */}
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-2">
+            <label className="block text-[12px] font-medium text-on-surface mb-2">
               Chọn cán bộ nhận <span className="text-red-500">*</span>
             </label>
-            <div className="rounded-[3px] border border-[#e0e0e0] divide-y divide-[#f0f0f0]">
+            <div className="rounded-[3px] border border-surface-container-highest divide-y divide-[#f0f0f0]">
               {danhSachCanBo.map(ten => {
                 const dangGiu = taiHienTai[ten] ?? 0;
                 const duocChon = canBo === ten;
                 return (
                   <button key={ten} type="button" onClick={() => setCanBo(ten)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${duocChon ? "bg-[#f4f8ff]" : "hover:bg-[#fafafa]"}`}>
-                    <span className={`w-[14px] h-[14px] rounded-full border flex items-center justify-center shrink-0 ${duocChon ? "border-[#1a73e8] bg-[#1a73e8]" : "border-[#bbb]"}`}>
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${duocChon ? "bg-[#f4f8ff]" : "hover:bg-surface-bright"}`}>
+                    <span className={`w-[14px] h-[14px] rounded-full border flex items-center justify-center shrink-0 ${duocChon ? "border-primary bg-primary" : "border-[#bbb]"}`}>
                       {duocChon && <Check size={9} className="text-white" strokeWidth={3} />}
                     </span>
-                    <span className={`flex-1 text-[12px] ${duocChon ? "font-semibold text-[#1d2e4f]" : "text-[#333]"}`}>
+                    <span className={`flex-1 text-[12px] ${duocChon ? "font-semibold text-tertiary" : "text-on-surface"}`}>
                       {ten}
                     </span>
-                    <span className="text-[11px] text-[#888] whitespace-nowrap">
+                    <span className="text-[11px] text-on-surface-variant whitespace-nowrap">
                       {dangGiu === 0 ? "chưa có đơn" : `đang giữ ${dangGiu} đơn`}
                     </span>
                     {duocChon && (
-                      <span className="text-[11px] font-medium text-[#1a73e8] whitespace-nowrap">
+                      <span className="text-[11px] font-medium text-primary whitespace-nowrap">
                         → {dangGiu + maDons.length}
                       </span>
                     )}
@@ -6347,20 +6372,20 @@ const PopupPhanCongCanBo = ({ maDons, danhSachCanBo, taiHienTai, onDong, onXacNh
                 );
               })}
             </div>
-            <p className="mt-2 text-[11px] text-[#888]">
+            <p className="mt-2 text-[11px] text-on-surface-variant">
               Số đơn đang giữ tính trên toàn bộ đơn hiện có, giúp chia việc đều tay.
             </p>
           </div>
 
         </div>
 
-        <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0] shrink-0">
+        <div className="flex justify-end gap-2 px-5 py-3 border-t border-surface-container-highest shrink-0">
           <button onClick={onDong}
-            className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+            className="h-[30px] px-4 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">
             Hủy
           </button>
           <button disabled={!canBo} onClick={() => canBo && onXacNhan(canBo)}
-            className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] disabled:opacity-40 disabled:hover:bg-[#8b1a1a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+            className="h-[30px] px-4 bg-error hover:bg-error-container disabled:opacity-40 disabled:hover:bg-error text-white rounded-[3px] text-[12px] font-medium transition-colors">
             Phân công
           </button>
         </div>
@@ -6403,6 +6428,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [dangPhanCongTP, setDangPhanCongTP] = useState(false);
   const [canBoDuocChon, setCanBoDuocChon] = useState("");
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
+  const [bulkAssignCb, setBulkAssignCb] = useState("");
+  const [draftAssignments, setDraftAssignments] = useState<Record<number, string>>({});
   /** Kết quả lần phân công vừa xong — giữ dạng có cấu trúc để dải thông báo hiện
    *  gọn một dòng, danh sách mã đơn chỉ bung ra khi người dùng muốn xem. */
   const [ketQuaPhanCong, setKetQuaPhanCong] = useState<{ canBo: string; maDons: string[] } | null>(null);
@@ -6892,18 +6919,18 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       <div className="p-3 space-y-3">
 
         {/* Title */}
-        <h2 className="text-[15px] font-semibold text-[#222]">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
+        <h2 className="text-[15px] font-semibold text-on-surface">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
 
         {/* Card */}
-        <div className="bg-white border border-[#ddd] rounded-[3px]">
+        <div className="bg-white border border-surface-container rounded-[3px]">
 
           {/* Tabs — Hồ sơ kháng nghị chỉ có một danh sách duy nhất → không có tabs. */}
           {!khangNghi && (
-            <div className="flex items-end border-b border-[#ddd] px-3 pt-2 gap-0">
+            <div className="flex items-end border-b border-surface-container px-3 pt-2 gap-0">
               {tabs.map((t, i) => (
                 t.label === "Khác" ? null : (
                   <button key={i} onClick={() => { setActiveTab(i); setLocTienDo(""); }}
-                    className={`px-4 py-[7px] text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === i ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#222]"
+                    className={`px-4 py-[7px] text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === i ? "border-error text-error" : "border-transparent text-on-surface-variant hover:text-on-surface"
                       }`}>
                     {t.label}
                   </button>
@@ -6919,7 +6946,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             <div className="flex items-center gap-2 px-3 py-2 bg-[#fff8e6] border-b border-[#f0d9a0] text-[12px] text-[#7a5b00]">
               <Home size={13} className="flex-shrink-0" />
               <span>Đang lọc từ Trang chủ:</span>
-              <span className="inline-flex items-center gap-1.5 bg-white border border-[#e0c274] rounded-full pl-2.5 pr-1 py-0.5 font-semibold text-[#8b1a1a]">
+              <span className="inline-flex items-center gap-1.5 bg-white border border-[#e0c274] rounded-full pl-2.5 pr-1 py-0.5 font-semibold text-error">
                 {boLocTrangChu.nhan}
                 <button
                   type="button"
@@ -6934,7 +6961,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             </div>
           )}
           {/* ── Filter section ── */}
-          <div className="border-b border-[#ddd] px-3 pt-3 pb-2">
+          <div className="border-b border-surface-container px-3 pt-3 pb-2">
             <div className="space-y-2">
               {/* Row 1 — luôn hiện, tối ưu tìm kiếm chung */}
               <div className="grid grid-cols-6 gap-x-3 gap-y-3">
@@ -6951,7 +6978,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 <div><FLbl>Tòa ra bản án / quyết định</FLbl><FSel value={fToaBA} onChange={(e: any) => setFToaBA(e.target.value)}><option value="">Chọn tòa</option>{toaOptions.map(o => <option key={o} value={o}>{vietTatTAND(o)}</option>)}</FSel></div>
                 <div><FLbl>Ngày nhập</FLbl><FDateRange from={fNgayNhapFrom} to={fNgayNhapTo} onFrom={setFNgayNhapFrom} onTo={setFNgayNhapTo} /></div>
                 <div className="col-span-3 flex items-end h-[30px] gap-5">
-                  <label className="flex items-center gap-1.5 text-[12px] text-[#333] cursor-pointer whitespace-nowrap">
+                  <label className="flex items-center gap-1.5 text-[12px] text-on-surface cursor-pointer whitespace-nowrap">
                     <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                       checked={ui("daGiaiQuyetCapCao") === "1"}
                       onChange={e => setUi("daGiaiQuyetCapCao")(e.target.checked ? "1" : "")} />
@@ -6962,13 +6989,13 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
               {/* Các ô còn lại nối tiếp ngay bên dưới — cùng một khối tìm kiếm,
                   không có khung riêng hay tiêu đề phụ, chỉ thu/mở cho đỡ dài. */}
-              <div className="mt-1 pt-2 border-t border-dashed border-[#e0e0e0]">
+              <div className="mt-1 pt-2 border-t border-dashed border-surface-container-highest">
                 <button onClick={() => setMoNangCao(m => !m)}
-                  className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#1a5a96] hover:underline mb-1">
+                  className="inline-flex items-center gap-1.5 text-[12px] font-medium text-primary hover:underline mb-1">
                   <ChevronDown size={13} className={`transition-transform ${moNangCao ? "rotate-180" : ""}`} />
                   {moNangCao ? "Thu gọn điều kiện tìm kiếm" : "Điều kiện tìm kiếm khác"}
                   {!moNangCao && soDieuKienPhu > 0 && (
-                    <span className="min-w-[16px] text-center bg-[#8b1a1a] text-white text-[10px] font-semibold px-1 py-[1px] rounded-full leading-[1.3]">
+                    <span className="min-w-[16px] text-center bg-error text-white text-[10px] font-semibold px-1 py-[1px] rounded-full leading-[1.3]">
                       {soDieuKienPhu}
                     </span>
                   )}
@@ -6980,35 +7007,35 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   <div className="space-y-2 pb-3 mb-2">
                     <div className="grid grid-cols-2 gap-x-7">
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Số BA/QĐ</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Số BA/QĐ</span>
                         <TInp value={fSoBA} onChange={e => setFSoBA(e.target.value)} />
                       </div>
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Ngày BA/QĐ từ ngày</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Ngày BA/QĐ từ ngày</span>
                         <TDate value={fNgayBAFrom} onChange={setFNgayBAFrom} />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-x-7">
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Ngày thụ lý</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Ngày thụ lý</span>
                         <FDateRange from={ui("thuLyTu")} to={ui("thuLyDen")} onFrom={setUi("thuLyTu")} onTo={setUi("thuLyDen")} />
                       </div>
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Số thụ lý</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Số thụ lý</span>
                         <TInp value={ui("soThuLy")} onChange={e => setUi("soThuLy")(e.target.value)} />
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-7">
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Tên cơ quan chuyển đến</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Tên cơ quan chuyển đến</span>
                         <TInp value={ui("coQuanChuyen")} onChange={e => setUi("coQuanChuyen")(e.target.value)} />
                       </div>
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Số CV/PC đến</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Số CV/PC đến</span>
                         <TInp value={ui("soCVPC")} onChange={e => setUi("soCVPC")(e.target.value)} />
                       </div>
                       <div>
-                        <span className="block text-[11px] text-[#666] mb-1">Ngày CV/PC</span>
+                        <span className="block text-[11px] text-on-surface-variant mb-1">Ngày CV/PC</span>
                         <TDate value={ui("ngayCVPC")} onChange={setUi("ngayCVPC")} />
                       </div>
                     </div>
@@ -7120,7 +7147,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             <option>KDTM</option><option>HN-GĐ</option><option>Lao động</option>
                           </TSel>
                           <div>
-                            <span className="block text-[11px] text-[#666] mb-0.5">Thụ lý đơn</span>
+                            <span className="block text-[11px] text-on-surface-variant mb-0.5">Thụ lý đơn</span>
                             <TSel value={fThuLy} onChange={e => setFThuLy(e.target.value)}>
                               <option value="">--Tất cả--</option>
                               <option>Thụ lý mới</option><option>Đã thụ lý</option>
@@ -7137,7 +7164,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         <div className="grid grid-cols-2 gap-2">
                           <TDate value={fNgayBATo} onChange={setFNgayBATo} />
                           <div>
-                            <span className="block text-[11px] text-[#666] mb-0.5">Thủ tục giải quyết</span>
+                            <span className="block text-[11px] text-on-surface-variant mb-0.5">Thủ tục giải quyết</span>
                             <TSel value={ui("thuTuc")} onChange={e => setUi("thuTuc")(e.target.value)}>
                               <option value="">--Tất cả--</option>
                               <option>Giám đốc thẩm</option><option>Tái thẩm</option>
@@ -7209,16 +7236,16 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
               {/* Nhóm nút nằm cuối khối tìm kiếm, sau toàn bộ điều kiện lọc */}
               <div className="flex items-center justify-end gap-2 pt-2.5 mt-1 border-t border-[#e8e8e8]">
                 <button
-                  className="inline-flex items-center gap-1.5 h-[32px] px-5 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] active:bg-[#5a1010] text-white text-[12px] font-semibold whitespace-nowrap shadow-sm transition-colors">
+                  className="inline-flex items-center gap-1.5 h-[32px] px-5 rounded-[4px] bg-error hover:bg-error-container active:bg-[#5a1010] text-white text-[12px] font-semibold whitespace-nowrap shadow-sm transition-colors">
                   <Search size={13} />
                   Tìm kiếm
                 </button>
                 <button onClick={xoaBoLoc}
-                  className="inline-flex items-center gap-1.5 h-[32px] px-3 rounded-[4px] border border-[#ccc] bg-white text-[12px] text-[#555] whitespace-nowrap transition-colors hover:bg-[#f5f5f5] hover:border-[#bbb]">
+                  className="inline-flex items-center gap-1.5 h-[32px] px-3 rounded-[4px] border border-surface-container-highest bg-white text-[12px] text-on-surface-variant whitespace-nowrap transition-colors hover:bg-surface-container-low hover:border-[#bbb]">
                   <RotateCcw size={13} />
                   Làm mới
                   {soBoLocDangApp > 0 && (
-                    <span className="ml-0.5 min-w-[16px] text-center bg-[#8b1a1a] text-white text-[10px] font-semibold px-1 py-[1px] rounded-full leading-[1.3]">
+                    <span className="ml-0.5 min-w-[16px] text-center bg-error text-white text-[10px] font-semibold px-1 py-[1px] rounded-full leading-[1.3]">
                       {soBoLocDangApp}
                     </span>
                   )}
@@ -7228,12 +7255,12 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           </div>
 
           {/* ── Action bar sau tìm kiếm ── */}
-          <div className="flex flex-col gap-0 border-b border-[#ddd]">
+          <div className="flex flex-col gap-0 border-b border-surface-container">
             {/* Loại văn bản đứng cùng hàng với nhóm nút thao tác */}
-            <div className="flex flex-wrap items-center gap-2 px-3 py-2 bg-[#f5f5f5]">
+            <div className="flex flex-wrap items-center gap-2 px-3 py-2 bg-surface-container-low">
               {activeTab !== 1 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-medium text-[#333] whitespace-nowrap">Loại văn bản:</span>
+                  <span className="text-[12px] font-medium text-on-surface whitespace-nowrap">Loại văn bản:</span>
                   <div className="relative">
                     <select
                       value={loaiVanBan}
@@ -7241,14 +7268,14 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         setLoaiVanBan(e.target.value);
                         if (e.target.value !== "Công văn chuyển đơn") setLoaiDon("gdt");
                       }}
-                      className={`h-[30px] px-2 pr-7 text-[12px] border rounded-[3px] appearance-none min-w-[200px] transition-colors ${oLoc(loaiVanBan)} ${loaiVanBan ? "text-[#222]" : "text-[#aaa]"}`}
+                      className={`h-[30px] px-2 pr-7 text-[12px] border rounded-[3px] appearance-none min-w-[200px] transition-colors ${oLoc(loaiVanBan)} ${loaiVanBan ? "text-on-surface" : "text-outline"}`}
                     >
                       {/* disabled+hidden: chỉ làm nhãn gợi ý, không nằm trong danh sách chọn */}
                       <option value="" disabled hidden>Chọn loại văn bản</option>
-                      {/* text-[#222] để danh sách bung ra không bị xám lây từ select */}
-                      {LOAI_VAN_BAN_FILTER.map(o => <option key={o} className="text-[#222]">{o}</option>)}
+                      {/* text-on-surface để danh sách bung ra không bị xám lây từ select */}
+                      {LOAI_VAN_BAN_FILTER.map(o => <option key={o} className="text-on-surface">{o}</option>)}
                     </select>
-                    <ChevronDown size={11} className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${loaiVanBan ? "text-[#888]" : "text-[#ccc]"}`} />
+                    <ChevronDown size={11} className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${loaiVanBan ? "text-on-surface-variant" : "text-surface-container-highest"}`} />
                   </div>
                   {/* Xóa nhanh bộ lọc Loại văn bản */}
                   {loaiVanBan && (
@@ -7256,7 +7283,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       onClick={() => { setLoaiVanBan(""); setLoaiDon("gdt"); }}
                       title="Xóa lọc loại văn bản"
                       aria-label="Xóa lọc loại văn bản"
-                      className="w-[24px] h-[24px] flex items-center justify-center rounded-full text-[#888] hover:text-[#8b1a1a] hover:bg-[#f0e0e0] transition-colors">
+                      className="w-[24px] h-[24px] flex items-center justify-center rounded-full text-on-surface-variant hover:text-error hover:bg-[#f0e0e0] transition-colors">
                       <X size={14} />
                     </button>
                   )}
@@ -7285,14 +7312,64 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   thụ lý, nghiên cứu. Việc phân công THẨM PHÁN là bước sau nữa và
                   có màn riêng vì phải lập tờ trình trình ký. */}
               {activeTab === 1 && currentRole === "pho-vp" && (
-                <BtnPrimary
-                  onClick={() => setShowPhanCong(selectedRows)}
-                  disabled={selectedRows.length === 0}
-                  className="h-[30px] text-[12px] px-3 gap-1"
-                >
-                  <Users size={13} /> Phân công thụ lý
-                  {selectedRows.length > 0 && ` (${selectedRows.length})`}
-                </BtnPrimary>
+                selectedRows.length > 0 ? (
+                  <div className="flex items-center gap-1.5">
+                    <select
+                      value={bulkAssignCb}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setBulkAssignCb(val);
+                        setDraftAssignments(prev => {
+                          const next = { ...prev };
+                          selectedRows.forEach(id => {
+                            if (val) next[id] = val;
+                            else delete next[id];
+                          });
+                          return next;
+                        });
+                      }}
+                      className="h-[30px] text-[12px] border border-[#d32f2f] rounded-[4px] px-2 text-[#c62828] font-semibold bg-[#ffebee] outline-none cursor-pointer"
+                    >
+                      <option value="">-- Chọn cán bộ --</option>
+                      {OFFICERS.map(cb => <option key={cb} value={cb}>{cb}</option>)}
+                    </select>
+                    <BtnPrimary
+                      onClick={() => {
+                        let count = 0;
+                        setRows(prev => prev.map(r => {
+                          if (!selectedRows.includes(r.id)) return r;
+                          const cb = draftAssignments[r.id] || bulkAssignCb;
+                          if (!cb) return r;
+                          count++;
+                          return {
+                            ...r,
+                            nguoiNhap: cb,
+                            giaiQuyet: { nhan: "Chờ xử lý", color: "#f39c12", stl: "", coVanBan: false },
+                            processingHistory: [
+                              ...(r.processingHistory || []),
+                              { date: new Date().toLocaleDateString("vi-VN"), step: "Phân công cán bộ xử lý", actor: "Chánh văn phòng", note: `Phân công cho ${cb}` }
+                            ]
+                          };
+                        }));
+                        triggerNoti(`Đã phân công ${count} đơn.`);
+                        setSelectedRows([]);
+                        setDraftAssignments({});
+                        setBulkAssignCb("");
+                      }}
+                      disabled={Object.keys(draftAssignments).filter(id => selectedRows.includes(Number(id))).length === 0 && !bulkAssignCb}
+                      className="h-[30px] text-[12px] px-3 gap-1 !bg-[#d32f2f] !text-white hover:!bg-[#b71c1c]"
+                    >
+                      <Check size={13} /> Phân công cán bộ
+                    </BtnPrimary>
+                  </div>
+                ) : (
+                  <BtnPrimary
+                    disabled
+                    className="h-[30px] text-[12px] px-3 gap-1 opacity-50"
+                  >
+                    <Users size={13} /> Phân công cán bộ
+                  </BtnPrimary>
+                )
               )}
               {activeTab === 0 && currentRole === "truong-phong" && (
                 <BtnPrimary
@@ -7316,7 +7393,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 title={selectedRows.length
                   ? `In ${selectedRows.length} đơn đang chọn`
                   : "In toàn bộ đơn đang hiển thị theo bộ lọc"}
-                className="flex items-center gap-1.5 h-[30px] px-3 border border-[#1d2e4f] text-[#1d2e4f] hover:bg-[#eef1f5] disabled:opacity-40 disabled:hover:bg-transparent rounded-[3px] text-[12px] font-medium transition-colors">
+                className="flex items-center gap-1.5 h-[30px] px-3 border border-tertiary text-tertiary hover:bg-[#eef1f5] disabled:opacity-40 disabled:hover:bg-transparent rounded-[3px] text-[12px] font-medium transition-colors">
                 <Printer size={13} /> In danh sách
               </button>
               {/* <BtnSecondary className="h-[30px] text-[12px] px-3 gap-1">
@@ -7359,8 +7436,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
             {/* ── Radio group: chỉ hiện khi loại văn bản = Công văn chuyển đơn ── */}
             {loaiVanBan === "Công văn chuyển đơn" && (
               <div className="flex items-center gap-1 px-3 py-[6px] bg-[#fffaf7] border-t border-[#e8d9cc]">
-                <span className="text-[12px] font-medium text-[#c0392b] mr-1 whitespace-nowrap">
-                  Loại đơn<span className="ml-0.5 text-[#c0392b]">*</span>:
+                <span className="text-[12px] font-medium text-error mr-1 whitespace-nowrap">
+                  Loại đơn<span className="ml-0.5 text-error">*</span>:
                 </span>
                 <div className="flex items-center gap-5">
                   <label className="flex items-center gap-1.5 cursor-pointer">
@@ -7372,7 +7449,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       onChange={() => setLoaiDon("gdt")}
                       className="w-[14px] h-[14px] accent-[#8b1a1a]"
                     />
-                    <span className="text-[12px] text-[#222]">Đơn đề nghị GĐT/TT</span>
+                    <span className="text-[12px] text-on-surface">Đơn đề nghị GĐT/TT</span>
                   </label>
                   <label className="flex items-center gap-1.5 cursor-pointer">
                     <input
@@ -7383,7 +7460,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       onChange={() => setLoaiDon("kn")}
                       className="w-[14px] h-[14px] accent-[#8b1a1a]"
                     />
-                    <span className="text-[12px] text-[#222]">Đơn khiếu nại tố cáo trong tố tụng</span>
+                    <span className="text-[12px] text-on-surface">Đơn khiếu nại tố cáo trong tố tụng</span>
                   </label>
                   <label className="flex items-center gap-1.5 cursor-pointer">
                     <input
@@ -7394,7 +7471,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       onChange={() => setLoaiDon("tb")}
                       className="w-[14px] h-[14px] accent-[#8b1a1a]"
                     />
-                    <span className="text-[12px] text-[#222]">Thông báo phát hiện vi phạm pháp luật</span>
+                    <span className="text-[12px] text-on-surface">Thông báo phát hiện vi phạm pháp luật</span>
                   </label>
                 </div>
               </div>
@@ -7403,11 +7480,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
 
           {/* Tổng số bản ghi — đặt ngay trên bảng, dưới thanh Loại văn bản, kèm
               số đơn để thấy quy mô danh sách trước khi cuộn xuống bảng. */}
-          <div className="flex items-center px-3 py-2 border-b border-[#ddd] bg-[#fafafa]">
-            <span className="text-[12px] text-[#666]">
-              Tổng cộng <b className="text-[#1d2e4f]">{rows.length}</b> bản ghi
+          <div className="flex items-center px-3 py-2 border-b border-surface-container bg-surface-bright">
+            <span className="text-[12px] text-on-surface-variant">
+              Tổng cộng <b className="text-tertiary">{rows.length}</b> bản ghi
               {!khangNghi && filteredRows.length > 0 && (
-                <span className="text-[#999]"> · <b className="text-[#1d2e4f]">{tongSoDon}</b> số đơn</span>
+                <span className="text-outline"> · <b className="text-tertiary">{tongSoDon}</b> số đơn</span>
               )}
             </span>
           </div>
@@ -7417,8 +7494,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           <div className="overflow-x-auto">
             <table className="w-full table-fixed border-collapse text-[12px]">
               <thead>
-                <tr className="bg-[#f5f5f5]">
-                  <th className="border border-[#ddd] px-2 py-[9px] text-center font-semibold text-[#333] w-[3%]">
+                <tr className="bg-surface-container-low">
+                  <th className="border border-surface-container px-2 py-[9px] text-center font-semibold text-on-surface w-[3%]">
                     <div className="flex items-center justify-center gap-1.5">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={filteredRows.length > 0 && selectedRows.length === filteredRows.length}
@@ -7428,30 +7505,30 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </th>
                   {/* Cột người gửi ôm thêm Hình thức đơn + thông tin công văn nên
                       cần rộng hơn; cột Thông tin đơn nhẹ đi thì thu lại. */}
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[32%]">Thông tin người gửi / đơn vị gửi</th>
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[26%]">Thông tin đơn</th>
-                  {khangNghi && <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[20%]">Đơn vị giải quyết</th>}
+                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[32%]">Thông tin người gửi / đơn vị gửi</th>
+                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[26%]">Thông tin đơn</th>
+                  {khangNghi && <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[20%]">Đơn vị giải quyết</th>}
                   {!khangNghi && (
-                    <th className="border border-[#ddd] px-3 py-[9px] text-center font-semibold text-[#333] w-[5%]">
+                    <th className="border border-surface-container px-3 py-[9px] text-center font-semibold text-on-surface w-[5%]">
                       <div>Số đơn</div>
                       {filteredRows.length > 0 && (
-                        <div className="font-normal text-[#666]">({tongSoDon})</div>
+                        <div className="font-normal text-on-surface-variant">({tongSoDon})</div>
                       )}
                     </th>
                   )}
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[19%]">Thông tin giải quyết</th>
-                  <th className="border border-[#ddd] px-3 py-[9px] text-left font-semibold text-[#333] w-[10%]">
+                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[19%]">Thông tin giải quyết</th>
+                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[10%]">
                     {currentRole === "pho-vp" && activeTab === 1 ? "Người được phân công" : "Người nhập / Sửa"}
                   </th>
-                  <th className="border border-[#ddd] px-1 py-[9px] text-center font-semibold text-[#333] w-[5%]">Thao tác</th>
+                  <th className="border border-surface-container px-1 py-[9px] text-center font-semibold text-on-surface w-[5%]">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="border border-[#ddd] px-3 py-10 text-center text-[#888]">
+                    <td colSpan={7} className="border border-surface-container px-3 py-10 text-center text-on-surface-variant">
                       <div className="flex flex-col items-center gap-1.5">
-                        <Search size={22} className="text-[#ccc]" />
+                        <Search size={22} className="text-surface-container-highest" />
                         <span className="text-[13px]">Không có đơn nào khớp bộ lọc.</span>
                         {/* Nêu rõ vì sao rỗng: lấy lý do của chính đơn đầu tiên bị
                             loại, để cán bộ biết cần sửa gì thay vì tưởng lỗi. */}
@@ -7465,7 +7542,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           );
                         })()}
                         {soBoLocDangApp > 0 && (
-                          <button onClick={xoaBoLoc} className="text-[12px] text-[#1a5a96] hover:underline">Làm mới</button>
+                          <button onClick={xoaBoLoc} className="text-[12px] text-primary hover:underline">Làm mới</button>
                         )}
                       </div>
                     </td>
@@ -7477,9 +7554,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   // Đơn liên quan đã cầm thẩm phán → đơn này là "Thụ lý mới trùng TP"
                   const trungTP = trungTPMap[row.id];
                   return (
-                    <tr key={row.id} className={`align-top ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
+                    <tr key={row.id} className={`align-top ${i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
                       {/* STT */}
-                      <td className="border border-[#ddd] px-2 py-2.5 text-center align-top">
+                      <td className="border border-surface-container px-2 py-2.5 text-center align-top">
                         <div className="flex items-center justify-center gap-1.5">
                           <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                             checked={selectedRows.includes(row.id)}
@@ -7490,32 +7567,32 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Người gửi */}
-                      <td className="border border-[#ddd] px-3 py-2.5 align-top">
+                      <td className="border border-surface-container px-3 py-2.5 align-top">
                         {(() => {
                           const diaChi = khangNghi ? donViKhangNghi(row.id).diaChi : row.diaChi;
                           const ngayTrenDon = row.ngayTrenDon || d.ngayCV;
                           return (
                             <div className="space-y-[5px] leading-[1.5] text-[12px]">
                               <div>
-                                <span className="text-[#666]">{row.nguoiDungDon ? "Người đứng đơn: " : "Người gửi: "}</span>
-                                <span className="font-semibold text-[#1a5a96] hover:underline cursor-pointer">
+                                <span className="text-on-surface-variant">{row.nguoiDungDon ? "Người đứng đơn: " : "Người gửi: "}</span>
+                                <span className="font-semibold text-primary hover:underline cursor-pointer">
                                   {vietTatTAND(khangNghi ? donViKhangNghi(row.id).ten : (row.nguoiDungDon || row.nguoiGui))}
                                 </span>
                               </div>
                               {diaChi && (
-                                <div><span className="text-[#666]">Địa chỉ: </span><span className="font-semibold">{vietTatTAND(diaChi)}</span></div>
+                                <div><span className="text-on-surface-variant">Địa chỉ: </span><span className="font-semibold">{vietTatTAND(diaChi)}</span></div>
                               )}
                               {/* Từng cặp bọc nowrap để nhãn không bị tách khỏi giá trị khi xuống dòng */}
                               {(ngayTrenDon || row.ngayNhap) && (
                                 <div className="flex flex-wrap gap-x-4">
-                                  {ngayTrenDon && <span className="whitespace-nowrap"><span className="text-[#666]">Ngày trên đơn: </span>{ngayTrenDon}</span>}
-                                  {row.ngayNhap && <span className="whitespace-nowrap"><span className="text-[#666]">Ngày tòa nhận: </span>{row.ngayNhap}</span>}
+                                  {ngayTrenDon && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Ngày trên đơn: </span>{ngayTrenDon}</span>}
+                                  {row.ngayNhap && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Ngày tòa nhận: </span>{row.ngayNhap}</span>}
                                 </div>
                               )}
                               {(row.maDon || row.soHieuDon) && (
                                 <div className="flex flex-wrap gap-x-4">
-                                  {row.maDon && <span className="whitespace-nowrap"><span className="text-[#666]">Mã đơn: </span><span className="font-semibold">{row.maDon}</span></span>}
-                                  {row.soHieuDon && <span className="whitespace-nowrap"><span className="text-[#666]">Số hiệu: </span>{row.soHieuDon}</span>}
+                                  {row.maDon && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Mã đơn: </span><span className="font-semibold">{row.maDon}</span></span>}
+                                  {row.soHieuDon && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Số hiệu: </span>{row.soHieuDon}</span>}
                                 </div>
                               )}
                               {/* Hình thức đơn — chuyển từ cột Thông tin đơn sang đây,
@@ -7523,7 +7600,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                   đến bằng đường nào, không phải nội dung bản án. */}
                               {(row.thongTinDon?.hinhThuc || row.loaiHinhThuc) && (
                                 <div>
-                                  <span className="text-[#666]">Hình thức đơn: </span>
+                                  <span className="text-on-surface-variant">Hình thức đơn: </span>
                                   <span className="font-semibold">{row.thongTinDon?.hinhThuc || row.loaiHinhThuc}</span>
                                 </div>
                               )}
@@ -7531,22 +7608,22 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                   đây: nó nói về đường đi của đơn tới tòa, cùng nhóm với
                                   Hình thức đơn / Hình thức tiếp nhận. */}
                               {d.loaiCV && (
-                                <div><span className="text-[#666]">Loại CV: </span><span className="font-semibold">{d.loaiCV}</span></div>
+                                <div><span className="text-on-surface-variant">Loại CV: </span><span className="font-semibold">{d.loaiCV}</span></div>
                               )}
                               {(d.soCV || d.ngayCV) && (
                                 <div className="flex flex-wrap gap-x-4">
-                                  {d.soCV && <span className="whitespace-nowrap"><span className="text-[#666]">Số CV: </span>{d.soCV}</span>}
-                                  {d.ngayCV && <span className="whitespace-nowrap"><span className="text-[#666]">Ngày CV: </span>{d.ngayCV}</span>}
+                                  {d.soCV && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Số CV: </span>{d.soCV}</span>}
+                                  {d.ngayCV && <span className="whitespace-nowrap"><span className="text-on-surface-variant">Ngày CV: </span>{d.ngayCV}</span>}
                                 </div>
                               )}
                               {/* Hình thức tiếp nhận — trước là cột riêng, gộp về đây
                                   vì đây là cách người gửi đưa đơn tới tòa. */}
                               {!khangNghi && row.hinhThucTiepNhan && (
                                 <div className="flex items-center gap-1.5">
-                                  <span className="text-[#666]">Hình thức tiếp nhận: </span>
+                                  <span className="text-on-surface-variant">Hình thức tiếp nhận: </span>
                                   <span className={`inline-block px-2 py-[2px] rounded-sm text-[10px] font-medium border ${row.hinhThucTiepNhan === "Trực tiếp" ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
                                     : row.hinhThucTiepNhan === "Bưu điện" ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"
-                                      : "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]"
+                                      : "bg-info-container text-primary border-surface-variant"
                                     }`}>
                                     {row.hinhThucTiepNhan}
                                   </span>
@@ -7558,7 +7635,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         {/* Tag phân biệt hồ sơ kháng nghị với đơn thường — hai loại
                             này giờ nằm chung một danh sách. */}
                         {row.laKhangNghi && (
-                          <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-[3px] rounded-[3px] border text-[10px] font-semibold leading-[1.4] bg-[#f3e8ff] text-[#6d28d9] border-[#d8b4fe]">
+                          <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-[3px] rounded-[3px] border text-[10px] font-semibold leading-[1.4] bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim">
                             <Gavel size={10} className="flex-shrink-0" />
                             Hồ sơ kháng nghị
                           </div>
@@ -7572,37 +7649,38 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Thông tin đơn */}
-                      <td className="border border-[#ddd] px-3 py-2.5 align-top">
+                      <td className="border border-surface-container px-3 py-2.5 align-top">
                         <div className="space-y-[5px] leading-[1.5] text-[12px]">
                           {/* Số BA/QĐ — ngày — tòa gộp một dòng. Không tách "Ngày" thành
                               nhãn riêng nữa vì bên dưới còn dòng bản án gốc, hai dòng cùng
                               cặp nhãn Số/Ngày đọc ra như bị lặp. */}
                           {(d.soBaqd || d.ngay || d.toaXetXu) && (
                             <div>
-                              <span className="text-[#666]">Số BA/QĐ: </span>
+                              <span className="text-on-surface-variant">Số BA/QĐ: </span>
                               <span className="font-semibold">{d.soBaqd || "—"}</span>
                               {d.ngay && <span className="font-semibold italic"> · {d.ngay}</span>}
                               {d.toaXetXu && <span className="font-semibold"> · {vietTatTAND(d.toaXetXu)}</span>}
                             </div>
                           )}
+
                           {row.baGoc && (
                             <div>
-                              <span className="text-[#666]">Bản án sơ thẩm gốc: </span>
+                              <span className="text-on-surface-variant">Bản án sơ thẩm gốc: </span>
                               <span className="font-semibold">{row.baGoc.so}</span>
                               <span className="font-semibold italic"> · {row.baGoc.ngay}</span>
                             </div>
                           )}
-                          {d.thuTuc && <div><span className="text-[#666]">Thủ tục giải quyết: </span><span className="font-semibold">{d.thuTuc}</span></div>}
+                          {d.thuTuc && <div><span className="text-on-surface-variant">Thủ tục giải quyết: </span><span className="font-semibold">{d.thuTuc}</span></div>}
                           {/* "Hình thức đơn" và thông tin công văn chuyển đơn (Số CV /
                               Ngày CV / Loại CV) đã chuyển sang cột Thông tin người gửi —
                               chúng nói về đường đi của đơn, không phải nội dung bản án. */}
                           {/* Trùng với "Người gửi" ở cột bên cạnh thì bỏ, chỉ hiện khi thực sự khác */}
                           {d.donViGui && norm(d.donViGui) !== norm(row.nguoiDungDon || row.nguoiGui) && (
-                            <div><span className="text-[#666]">Đơn vị gửi: </span><span className="font-semibold">{vietTatTAND(d.donViGui)}</span></div>
+                            <div><span className="text-on-surface-variant">Đơn vị gửi: </span><span className="font-semibold">{vietTatTAND(d.donViGui)}</span></div>
                           )}
                           {/* Nhãn giữ nguyên "Thẩm phán"; chỉ chức danh trong ngoặc
                               rút thành "TP" cho vừa cột. */}
-                          {d.thamPhan && <div><span className="text-[#666]">Thẩm phán: </span><span className="font-semibold text-[#333]">{(thamPhanGon(vietTatTAND(d.thamPhan)))}</span></div>}
+                          {d.thamPhan && <div><span className="text-on-surface-variant">Thẩm phán: </span><span className="font-semibold text-on-surface">{(thamPhanGon(vietTatTAND(d.thamPhan)))}</span></div>}
                           {/* Ở màn Hồ sơ kháng nghị, đơn vị giải quyết tách thành cột riêng.
                               Có "(Số: ...)" nghĩa là đã chuyển sang vụ chuyên môn.
                               Đơn đã trả lại thì không còn "chưa chuyển/đã chuyển" nữa —
@@ -7614,17 +7692,17 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {!khangNghi && row.giaiQuyet?.nhan === "Trả lại đơn" ? (
                             <div>
                               {row.giaiQuyet.nguoiTra && (
-                                <div><span className="text-[#666]">Người trả: </span><span className="font-semibold">{row.giaiQuyet.nguoiTra}</span></div>
+                                <div><span className="text-on-surface-variant">Người trả: </span><span className="font-semibold">{row.giaiQuyet.nguoiTra}</span></div>
                               )}
                               {row.giaiQuyet.ngayTra && (
-                                <div><span className="text-[#666]">Ngày trả: </span><span className="font-semibold">{row.giaiQuyet.ngayTra}</span></div>
+                                <div><span className="text-on-surface-variant">Ngày trả: </span><span className="font-semibold">{row.giaiQuyet.ngayTra}</span></div>
                               )}
                             </div>
                           ) : !khangNghi && d.donViGiaiQuyet && (() => {
                             const daChuyen = daChuyenVu(row);
                             return (
                               <div>
-                                <span className={daChuyen ? "font-semibold text-[#c0392b]" : "font-semibold text-[#1a5a96]"}>
+                                <span className={daChuyen ? "font-semibold text-error" : "font-semibold text-primary"}>
                                   {daChuyen ? "Đã chuyển: " : "Chưa chuyển: "}
                                 </span>
                                 <span className="font-semibold">{vietTatTAND(d.donViGiaiQuyet)}</span>
@@ -7636,59 +7714,59 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {(() => {
                             const ngay = ngayDuyetToTrinh(vanBanList ?? [], row.maDon) ?? row.ngayChuyen;
                             return ngay
-                              ? <div><span className="text-[#666]">Ngày chuyển: </span><span>{ngay}</span></div>
+                              ? <div><span className="text-on-surface-variant">Ngày chuyển: </span><span>{ngay}</span></div>
                               : null;
                           })()}
-                          {row.ghiChu && <div><span className="text-[#666]">Ghi chú: </span><span>{row.ghiChu}</span></div>}
+                          {row.ghiChu && <div><span className="text-on-surface-variant">Ghi chú: </span><span>{row.ghiChu}</span></div>}
                         </div>
                       </td>
 
                       {/* Đơn vị giải quyết — cột riêng của màn Hồ sơ kháng nghị */}
                       {khangNghi && (
-                        <td className="border border-[#ddd] px-3 py-2.5 align-top">
-                          {d.donViGiaiQuyet && <div className="text-[12px] text-[#333] leading-[1.5]">{vietTatTAND(d.donViGiaiQuyet)}</div>}
-                          <div className="text-[11px] text-[#666] mt-1 leading-[1.5]">
-                            <span className="text-[#888]">Nơi nhận kèm: </span>{vietTatTAND(donViKhangNghi(row.id).noiNhan)}
+                        <td className="border border-surface-container px-3 py-2.5 align-top">
+                          {d.donViGiaiQuyet && <div className="text-[12px] text-on-surface leading-[1.5]">{vietTatTAND(d.donViGiaiQuyet)}</div>}
+                          <div className="text-[11px] text-on-surface-variant mt-1 leading-[1.5]">
+                            <span className="text-on-surface-variant">Nơi nhận kèm: </span>{vietTatTAND(donViKhangNghi(row.id).noiNhan)}
                           </div>
                         </td>
                       )}
 
                       {/* Số đơn */}
                       {!khangNghi && (
-                        <td className="border border-[#ddd] px-2 py-2.5 text-center font-medium align-top">{row.soDon || ""}</td>
+                        <td className="border border-surface-container px-2 py-2.5 text-center font-medium align-top">{row.soDon || ""}</td>
                       )}
 
 
                       {/* Thông tin giải quyết — chỉ chữ, không tô nền màu, để mắt
                           không bị các pill kéo sự chú ý khỏi nội dung xung quanh. */}
-                      <td className="border border-[#ddd] px-3 py-2.5 leading-[1.5] align-top">
+                      <td className="border border-surface-container px-3 py-2.5 leading-[1.5] align-top">
                         {khangNghi ? (() => {
                           const kn = ketQuaKhangNghi(row.id);
                           return (
                             <>
-                              <span className="text-[12px] font-semibold text-[#333]">
+                              <span className="text-[12px] font-semibold text-on-surface">
                                 {kn.trangThai}
                               </span>
                               {kn.ketQua && (
-                                <div className="text-[12px] text-[#333] mt-1 leading-snug">
-                                  <span className="text-[#888]">Kết quả: </span>{kn.ketQua}
+                                <div className="text-[12px] text-on-surface mt-1 leading-snug">
+                                  <span className="text-on-surface-variant">Kết quả: </span>{kn.ketQua}
                                 </div>
                               )}
                             </>
                           );
                         })() : (<>
                           {row.traLai ? (
-                            <span className="text-[12px] font-semibold text-[#333]">
+                            <span className="text-[12px] font-semibold text-on-surface">
                               {row.traLai.status === "pendingApproval" ? "Trả lại - chờ TP duyệt" : "Đã trả lại HCTP"}
                             </span>
                           ) : autoMergeMap[row.id] ? (
-                            <span className="text-[12px] font-semibold text-[#333]">
+                            <span className="text-[12px] font-semibold text-on-surface">
                               {autoMergeMap[row.id]}
                             </span>
                           ) : row.waitingForProcessing ? (
                             <span
                               onClick={() => onEditRow?.(row.id)}
-                              className="text-[12px] font-semibold text-[#333] cursor-pointer hover:underline"
+                              className="text-[12px] font-semibold text-on-surface cursor-pointer hover:underline"
                             >
                               Chờ xử lý
                             </span>
@@ -7697,39 +7775,39 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                nhãn — nếu chỉ ghi Thụ lý mới thì cán bộ sẽ đem đi phân công
                                lại, trong khi hồ sơ đã ở tay thẩm phán của đơn liên quan. */
                             <>
-                              <span className="text-[12px] font-semibold text-[#333]"
+                              <span className="text-[12px] font-semibold text-on-surface"
                                 title={`Cùng bản án với đơn ${trungTP.maDon.trim()} — đơn đó đã phân công thẩm phán và đã chuyển vụ`}>
                                 Thụ lý mới trùng TP
                               </span>
                               {g.stl && (
-                                <div className="text-[12px] text-[#333] mt-1">
-                                  <span className="text-[#888]">Số thụ lý: </span>{g.stl}
+                                <div className="text-[12px] text-on-surface mt-1">
+                                  <span className="text-on-surface-variant">Số thụ lý: </span>{g.stl}
                                 </div>
                               )}
                               {g.ngayThuLy && (
-                                <div className="text-[12px] text-[#333]">
-                                  <span className="text-[#888]">Ngày thụ lý: </span>{g.ngayThuLy}
+                                <div className="text-[12px] text-on-surface">
+                                  <span className="text-on-surface-variant">Ngày thụ lý: </span>{g.ngayThuLy}
                                 </div>
                               )}
                             </>
                           ) : g.nhan ? (
                             <>
-                              <span className="text-[12px] font-semibold text-[#333]">
+                              <span className="text-[12px] font-semibold text-on-surface">
                                 {g.nhan}
                               </span>
                               {g.nhan === "Thụ lý mới" && g.stl && (
-                                <div className="text-[12px] text-[#333] mt-1">
-                                  <span className="text-[#888]">Số thụ lý: </span>{g.stl}
+                                <div className="text-[12px] text-on-surface mt-1">
+                                  <span className="text-on-surface-variant">Số thụ lý: </span>{g.stl}
                                 </div>
                               )}
                               {g.nhan === "Thụ lý mới" && g.ngayThuLy && (
-                                <div className="text-[12px] text-[#333]">
-                                  <span className="text-[#888]">Ngày thụ lý: </span>{g.ngayThuLy}
+                                <div className="text-[12px] text-on-surface">
+                                  <span className="text-on-surface-variant">Ngày thụ lý: </span>{g.ngayThuLy}
                                 </div>
                               )}
                             </>
                           ) : (
-                            <span className="text-[12px] font-medium text-[#888]">
+                            <span className="text-[12px] font-medium text-on-surface-variant">
                               Chưa có
                             </span>
                           )}
@@ -7762,12 +7840,12 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             <div className="mt-1.5 pt-1.5 border-t border-dashed border-[#e8e8e8]">
                               <div className="flex items-center gap-1.5">
                                 <span className={`w-[7px] h-[7px] rounded-full flex-shrink-0 ${row.khangNghi.trangThai === "Đã xét xử" ? "bg-[#1a7a45]" : "bg-[#e67e22]"}`} />
-                                <span className="text-[11px] font-medium text-[#1d2e4f]">{row.khangNghi.trangThai}</span>
+                                <span className="text-[11px] font-medium text-tertiary">{row.khangNghi.trangThai}</span>
                               </div>
                               {row.khangNghi.ketQua && (
-                                <div className="text-[10px] text-[#777] mt-[1px] leading-snug">{row.khangNghi.ketQua}</div>
+                                <div className="text-[10px] text-on-surface-variant mt-[1px] leading-snug">{row.khangNghi.ketQua}</div>
                               )}
-                              <div className="text-[10px] text-[#888] mt-[1px]">Nơi nhận kèm: {vietTatTAND(row.khangNghi.noiNhan)}</div>
+                              <div className="text-[10px] text-on-surface-variant mt-[1px]">Nơi nhận kèm: {vietTatTAND(row.khangNghi.noiNhan)}</div>
                             </div>
                           )}
                           {(() => {
@@ -7775,7 +7853,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             if (!dsVB.length) return null;
                             return (
                               <div className="mt-1.5 pt-1.5 border-t border-dashed border-[#e8e8e8] space-y-1.5">
-                                <div className="text-[10px] font-semibold text-[#888] uppercase tracking-wide">
+                                <div className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-wide">
                                   Văn bản trình ký ({dsVB.length})
                                 </div>
                                 {dsVB.map(vb => (
@@ -7784,11 +7862,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                     className="group w-full text-left flex items-start gap-1.5 hover:bg-[#f4f8fd] rounded-[3px] px-1 -mx-1 py-0.5 transition-colors">
                                     <span className={`w-[7px] h-[7px] rounded-full flex-shrink-0 mt-[5px] ${CHAM_TRANG_THAI[vb.trangThai]}`} />
                                     <span className="min-w-0 flex-1 leading-snug">
-                                      <span className="text-[11px] font-medium text-[#1d2e4f] group-hover:text-[#1a5a96]">
+                                      <span className="text-[11px] font-medium text-tertiary group-hover:text-primary">
                                         {vb.soVanBan && <span className="font-mono">{vb.soVanBan} </span>}
                                         {vb.loaiVanBan}
                                       </span>
-                                      <span className="text-[10px] text-[#888]"> · {TRANG_THAI_NHAN[vb.trangThai]}</span>
+                                      <span className="text-[10px] text-on-surface-variant"> · {TRANG_THAI_NHAN[vb.trangThai]}</span>
                                       {!vb.soVanBan && (
                                         <span className="text-[10px] text-[#b45309]"> · chưa cấp số</span>
                                       )}
@@ -7818,7 +7896,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                     </div>
                                     <button
                                       onClick={() => setShowHuyGhep(row.id)}
-                                      className="flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[10px] font-medium border border-[#c0392b] text-[#c0392b] hover:bg-[#fdecea] transition-colors whitespace-nowrap ml-auto">
+                                      className="flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[10px] font-medium border border-error text-error hover:bg-[#fdecea] transition-colors whitespace-nowrap ml-auto">
                                       <X size={9} /> Hủy ghép
                                     </button>
                                   </div>
@@ -7831,11 +7909,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                       <span>Đơn chính nhóm ghép</span>
                                     </div>
                                     <div className="text-[10px] text-[#444] leading-normal">
-                                      <span className="font-medium text-[#666]">Đơn kèm:</span>{" "}
+                                      <span className="font-medium text-on-surface-variant">Đơn kèm:</span>{" "}
                                       {donKems.map((dk, idx) => (
                                         <span key={dk.id}>
                                           {idx > 0 && ", "}
-                                          <span className="font-semibold underline text-[#1a5a96]" title={dk.nguoiGui}>{dk.maDon}</span>
+                                          <span className="font-semibold underline text-primary" title={dk.nguoiGui}>{dk.maDon}</span>
                                         </span>
                                       ))}
                                     </div>
@@ -7854,7 +7932,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                     Chờ xác nhận chuyển đơn
                                   </span>
                                 </div>
-                                <div className="text-[9.5px] text-[#666] leading-tight">
+                                <div className="text-[9.5px] text-on-surface-variant leading-tight">
                                   <div><span className="font-semibold">Từ:</span> {ts.fromOfficer}</div>
                                   <div><span className="font-semibold">Đến:</span> {ts.toOfficer}</div>
                                   <div><span className="font-semibold">Lý do:</span> {ts.reason}</div>
@@ -7941,7 +8019,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                         });
                                         triggerNoti(`Đã từ chối nhận đơn ${row.maDon} từ cán bộ ${ts.fromOfficer}.`);
                                       }}
-                                      className="px-1.5 py-[2px] rounded text-[9.5px] font-semibold bg-[#c0392b] text-white hover:bg-[#a93226] transition-colors whitespace-nowrap">
+                                      className="px-1.5 py-[2px] rounded text-[9.5px] font-semibold bg-error text-white hover:bg-[#a93226] transition-colors whitespace-nowrap">
                                       Từ chối
                                     </button>
                                   </div>
@@ -7955,7 +8033,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       {/* Người nhập / Sửa — hai đầu của vòng đời đơn: ai lập ban
                           đầu, ai động vào sau cùng. Trùng tên thì kèm năm sinh
                           trong ngoặc (chữ mờ) để phân biệt. */}
-                      <td className="border border-[#ddd] px-3 py-2.5 align-top">
+                      <td className="border border-surface-container px-3 py-2.5 align-top">
                         {(() => {
                           const TenCB = ({ ten, ghiDe }: { ten?: string; ghiDe?: string }) => {
                             if (!ten) return null;
@@ -7964,7 +8042,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               <span className="font-medium">
                                 {ten}
                                 {tenCanBoTrungLap.has(ten) && nam && (
-                                  <span className="font-normal text-[#aaa]"> ({nam})</span>
+                                  <span className="font-normal text-outline"> ({nam})</span>
                                 )}
                               </span>
                             );
@@ -7975,55 +8053,51 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                                 <>
                                   <div className="text-[12px]">
                                     {!(currentRole === "pho-vp" && activeTab === 1) && (
-                                      <span className="text-[#888]">Nhập: </span>
+                                      <span className="text-on-surface-variant">Nhập: </span>
                                     )}
                                     {currentRole === "pho-vp" && activeTab === 1 && row.nguoiNhap === "Chưa phân công" ? (
                                       <select
-                                        className="h-[22px] px-1 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[2px] text-[11px] font-medium focus:outline-none cursor-pointer max-w-[120px]"
-                                        value=""
+                                        className="h-[22px] px-1 border border-primary text-primary bg-white rounded-[2px] text-[11px] font-medium focus:outline-none cursor-pointer max-w-[120px]"
+                                        value={draftAssignments[row.id] || ""}
+                                        onClick={(e) => e.stopPropagation()}
                                         onChange={(e) => {
                                           const val = e.target.value;
-                                          if (!val) return;
-                                          setRows(prev => prev.map(r => r.id === row.id ? {
-                                            ...r,
-                                            nguoiNhap: val,
-                                            processingHistory: [
-                                              ...(r.processingHistory || []),
-                                              {
-                                                date: new Date().toLocaleDateString("vi-VN"),
-                                                step: "Phân công cán bộ",
-                                                actor: "Chánh Văn Phòng",
-                                                note: `Phân công cán bộ thụ lý: ${val}`
-                                              }
-                                            ]
-                                          } : r));
-                                          triggerNoti(`Đã phân công đơn ${row.maDon} cho ${val}`);
+                                          if (!val) {
+                                            setDraftAssignments(prev => {
+                                              const next = { ...prev };
+                                              delete next[row.id];
+                                              return next;
+                                            });
+                                            return;
+                                          }
+                                          if (!selectedRows.includes(row.id)) {
+                                            setSelectedRows(prev => [...prev, row.id]);
+                                          }
+                                          setDraftAssignments(prev => ({ ...prev, [row.id]: val }));
                                         }}
                                       >
-                                        <option value="" disabled hidden>Chọn cán bộ...</option>
-                                        {OFFICERS.map(cb => (
-                                          <option key={cb} value={cb}>{cb}</option>
-                                        ))}
+                                        <option value="">-- Chưa phân công --</option>
+                                        {OFFICERS.map(cb => <option key={cb} value={cb}>{cb}</option>)}
                                       </select>
                                     ) : (
                                       <TenCB ten={row.nguoiNhap} ghiDe={row.nguoiNhapNgaySinh} />
                                     )}
                                   </div>
                                   {row.ngayNhap && (
-                                    <div className="text-[11px] text-[#666] whitespace-nowrap">
+                                    <div className="text-[11px] text-on-surface-variant whitespace-nowrap">
                                       {row.ngayNhap}{row.gioNhap ? ` ${row.gioNhap}` : ""}
                                     </div>
                                   )}
                                 </>
                               )}
                               {row.nguoiSua && (
-                                <div className="pt-[5px] mt-[5px] border-t border-dashed border-[#eee]">
+                                <div className="pt-[5px] mt-[5px] border-t border-dashed border-surface-container-high">
                                   <div className="text-[12px]">
-                                    <span className="text-[#888]">Sửa: </span>
+                                    <span className="text-on-surface-variant">Sửa: </span>
                                     <TenCB ten={row.nguoiSua} ghiDe={row.nguoiSuaNgaySinh} />
                                   </div>
                                   {row.ngaySua && (
-                                    <div className="text-[11px] text-[#666] whitespace-nowrap">
+                                    <div className="text-[11px] text-on-surface-variant whitespace-nowrap">
                                       {row.ngaySua}{row.gioSua ? ` ${row.gioSua}` : ""}
                                     </div>
                                   )}
@@ -8035,11 +8109,11 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </td>
 
                       {/* Thao tác */}
-                      <td className="border border-[#ddd] px-2 py-2.5 text-center align-top">
+                      <td className="border border-surface-container px-2 py-2.5 text-center align-top">
                         <div className="relative inline-block">
                           <button
                             onClick={(e) => { e.stopPropagation(); setOpenMenu(openMenu === row.id ? null : row.id); }}
-                            className="w-[28px] h-[28px] flex items-center justify-center rounded border border-[#ddd] hover:bg-[#f0f0f0] text-[#555]">
+                            className="w-[28px] h-[28px] flex items-center justify-center rounded border border-surface-container hover:bg-surface-container text-on-surface-variant">
                             <span className="text-[16px] leading-none tracking-tighter">···</span>
                           </button>
                           {openMenu === row.id && (
@@ -8083,27 +8157,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-[#ddd] bg-[#fafafa]">
-            <span className="text-[12px] text-[#666]">
+          <div className="flex items-center justify-between px-3 py-2 border-t border-surface-container bg-surface-bright">
+            <span className="text-[12px] text-on-surface-variant">
               {filteredRows.length === 0
                 ? "Không có bản ghi nào"
-                : <>Hiển thị 1-{filteredRows.length} trong tổng <b className="text-[#1d2e4f]">{filteredRows.length}</b> bản ghi</>}
+                : <>Hiển thị 1-{filteredRows.length} trong tổng <b className="text-tertiary">{filteredRows.length}</b> bản ghi</>}
               {soBoLocDangApp > 0 && filteredRows.length !== rows.length && (
-                <span className="text-[#8b1a1a]"> (đã lọc từ {rows.length} bản ghi)</span>
+                <span className="text-error"> (đã lọc từ {rows.length} bản ghi)</span>
               )}
             </span>
             <div className="flex items-center gap-1">
-              <button className="w-[28px] h-[28px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee] text-[12px]">‹</button>
-              <button className="w-[28px] h-[28px] flex items-center justify-center border border-[#8b1a1a] rounded bg-[#8b1a1a] text-white text-[12px]">1</button>
-              <button className="w-[28px] h-[28px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee] text-[12px]">2</button>
-              <button className="w-[28px] h-[28px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee] text-[12px]">›</button>
+              <button className="w-[28px] h-[28px] flex items-center justify-center border border-surface-container rounded text-on-surface-variant hover:bg-surface-container-high text-[12px]">‹</button>
+              <button className="w-[28px] h-[28px] flex items-center justify-center border border-error rounded bg-error text-white text-[12px]">1</button>
+              <button className="w-[28px] h-[28px] flex items-center justify-center border border-surface-container rounded text-on-surface-variant hover:bg-surface-container-high text-[12px]">2</button>
+              <button className="w-[28px] h-[28px] flex items-center justify-center border border-surface-container rounded text-on-surface-variant hover:bg-surface-container-high text-[12px]">›</button>
               <div className="relative ml-2">
-                <select className="h-[28px] px-2 pr-6 text-[12px] border border-[#ddd] rounded bg-white appearance-none">
+                <select className="h-[28px] px-2 pr-6 text-[12px] border border-surface-container rounded bg-white appearance-none">
                   <option>10 / trang</option>
                   <option>20 / trang</option>
                   <option>50 / trang</option>
                 </select>
-                <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
           </div>
@@ -8142,21 +8216,21 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-[4px] shadow-xl w-[420px]">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
-                <span className="text-[13px] font-semibold text-[#8b1a1a]">Hủy ghép đơn</span>
-                <button onClick={() => setShowHuyGhep(null)} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
+                <span className="text-[13px] font-semibold text-error">Hủy ghép đơn</span>
+                <button onClick={() => setShowHuyGhep(null)} className="text-on-surface-variant hover:text-on-surface"><X size={15} /></button>
               </div>
               <div className="px-5 py-4 space-y-3 text-[12px]">
-                <p className="text-[#333]">Bạn có chắc chắn muốn hủy ghép đơn <span className="font-semibold text-[#1d2e4f]">{row.maDon}</span> với đơn <span className="font-semibold text-[#1d2e4f]">{ghepVoi}</span>?</p>
-                <p className="text-[11px] text-[#888]">Sau khi hủy, hai đơn sẽ được tách độc lập và không còn liên kết với nhau.</p>
+                <p className="text-on-surface">Bạn có chắc chắn muốn hủy ghép đơn <span className="font-semibold text-tertiary">{row.maDon}</span> với đơn <span className="font-semibold text-tertiary">{ghepVoi}</span>?</p>
+                <p className="text-[11px] text-on-surface-variant">Sau khi hủy, hai đơn sẽ được tách độc lập và không còn liên kết với nhau.</p>
                 <div>
-                  <label className="block text-[11px] font-medium text-[#555] mb-1">Lý do hủy ghép <span className="text-red-500">*</span></label>
-                  <textarea rows={3} placeholder="Nhập lý do hủy ghép đơn..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                  <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Lý do hủy ghép <span className="text-red-500">*</span></label>
+                  <textarea rows={3} placeholder="Nhập lý do hủy ghép đơn..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-primary resize-none" />
                 </div>
               </div>
-              <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+              <div className="flex justify-end gap-2 px-5 py-3 border-t border-surface-container-highest">
                 <button onClick={() => setShowHuyGhep(null)}
-                  className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">
                   Hủy
                 </button>
                 <button
@@ -8178,7 +8252,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     triggerNoti(`Đơn [${row.maDon}] của ${row.nguoiGui} đã hủy ghép với đơn [${matchRow?.maDon || ghepVoi}] của ${matchRow?.nguoiGui || "không xác định"}`);
                     setShowHuyGhep(null);
                   }}
-                  className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors">
                   Xác nhận hủy ghép
                 </button>
               </div>
@@ -8222,21 +8296,21 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-[4px] shadow-xl w-[480px]">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
-                <span className="text-[13px] font-semibold text-[#8b1a1a]">Cảnh báo hủy số thụ lý</span>
-                <button onClick={() => setShowHuySoThuLy(null)} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
+                <span className="text-[13px] font-semibold text-error">Cảnh báo hủy số thụ lý</span>
+                <button onClick={() => setShowHuySoThuLy(null)} className="text-on-surface-variant hover:text-on-surface"><X size={15} /></button>
               </div>
-              <div className="px-5 py-4 space-y-3 text-[12px] text-[#333] leading-relaxed">
+              <div className="px-5 py-4 space-y-3 text-[12px] text-on-surface leading-relaxed">
                 <div className="bg-[#fff3cd] border border-[#ffeeba] rounded px-3 py-2.5 text-[#856404] font-medium">
                   Hủy số thụ lý sẽ làm mất số thụ lý của đơn này. Số thụ lý này chỉ có thể cấp cho đơn thụ lý mới khác trong cùng ngày hôm nay. Nếu để qua ngày, số thụ lý sẽ bị trống.
                 </div>
                 <p>
-                  Sau khi hủy, đơn <strong className="text-[#1d2e4f]">{row.maDon}</strong> sẽ chuyển sang trạng thái <strong>Không thụ lý</strong>.
+                  Sau khi hủy, đơn <strong className="text-tertiary">{row.maDon}</strong> sẽ chuyển sang trạng thái <strong>Không thụ lý</strong>.
                 </p>
               </div>
-              <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+              <div className="flex justify-end gap-2 px-5 py-3 border-t border-surface-container-highest">
                 <button onClick={() => setShowHuySoThuLy(null)}
-                  className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">
                   Hủy bỏ
                 </button>
                 <button
@@ -8269,7 +8343,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     triggerNoti(`Đơn ${row.maDon} đã hủy số thụ lý thành công và chuyển sang trạng thái Không thụ lý.`);
                     setShowHuySoThuLy(null);
                   }}
-                  className="h-[30px] px-4 bg-[#c0392b] hover:bg-[#a63022] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 bg-error hover:bg-[#a63022] text-white rounded-[3px] text-[12px] font-medium transition-colors">
                   Xác nhận hủy
                 </button>
               </div>
@@ -8315,9 +8389,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-[4px] shadow-xl w-[480px]">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
-                <span className="text-[13px] font-semibold text-[#8b1a1a]">Chuyển quyền quản lý đơn</span>
-                <button onClick={() => { setShowChuyenDon(null); setChuyenDonOfficer(""); setChuyenDonReason(""); }} className="text-[#888] hover:text-[#333]"><X size={15} /></button>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
+                <span className="text-[13px] font-semibold text-error">Chuyển quyền quản lý đơn</span>
+                <button onClick={() => { setShowChuyenDon(null); setChuyenDonOfficer(""); setChuyenDonReason(""); }} className="text-on-surface-variant hover:text-on-surface"><X size={15} /></button>
               </div>
               <div className="px-5 py-4 space-y-3 text-[12px]">
                 {isDonKem ? (
@@ -8326,17 +8400,17 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-1 bg-[#f9f9f9] p-3 border border-[#eee] rounded-sm">
-                      <div><span className="text-[#666]">Mã đơn cần chuyển: </span><span className="font-semibold text-[#1d2e4f]">{row.maDon}</span></div>
-                      <div><span className="text-[#666]">Người gửi: </span><span className="text-[#333]">{row.nguoiGui}</span></div>
-                      <div><span className="text-[#666]">Cán bộ xử lý hiện tại: </span><span className="font-medium text-[#333]">{row.nguoiNhap}</span></div>
+                    <div className="space-y-1 bg-surface-bright p-3 border border-surface-container-high rounded-sm">
+                      <div><span className="text-on-surface-variant">Mã đơn cần chuyển: </span><span className="font-semibold text-tertiary">{row.maDon}</span></div>
+                      <div><span className="text-on-surface-variant">Người gửi: </span><span className="text-on-surface">{row.nguoiGui}</span></div>
+                      <div><span className="text-on-surface-variant">Cán bộ xử lý hiện tại: </span><span className="font-medium text-on-surface">{row.nguoiNhap}</span></div>
                       {isDonChinh && (
                         <div className="mt-2 pt-2 border-t border-[#e6e6e6]">
                           <span className="font-bold text-[#b45309]">Cảnh báo chuyển nhóm đơn (BR-06):</span>
-                          <p className="text-[11px] text-[#666] mt-0.5">
+                          <p className="text-[11px] text-on-surface-variant mt-0.5">
                             Đơn này là <strong>Đơn chính</strong> của nhóm. Khi chuyển, toàn bộ các đơn kèm dưới đây sẽ được chuyển cùng sang cán bộ mới:
                           </p>
-                          <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-[#555]">
+                          <ul className="list-disc pl-4 mt-1 space-y-0.5 text-[11px] text-on-surface-variant">
                             {nhomDonKem.map(dk => (
                               <li key={dk.id}><strong>{dk.maDon}</strong> ({dk.nguoiGui})</li>
                             ))}
@@ -8346,31 +8420,31 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#555] mb-1">Chọn cán bộ nhận <span className="text-red-500">*</span></label>
+                      <label className="block text-[11px] font-semibold text-on-surface-variant mb-1">Chọn cán bộ nhận <span className="text-red-500">*</span></label>
                       <div className="relative">
                         <select value={chuyenDonOfficer} onChange={e => setChuyenDonOfficer(e.target.value)}
-                          className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                          className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] bg-white appearance-none focus:outline-none focus:border-primary">
                           <option value="">-- Chọn cán bộ nhận --</option>
                           {allOfficers.filter(name => name !== row.nguoiNhap).map(name => (
                             <option key={name} value={name}>{name}</option>
                           ))}
                         </select>
-                        <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                        <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#555] mb-1">Lý do chuyển đơn <span className="text-red-500">*</span></label>
+                      <label className="block text-[11px] font-semibold text-on-surface-variant mb-1">Lý do chuyển đơn <span className="text-red-500">*</span></label>
                       <textarea rows={3} value={chuyenDonReason} onChange={e => setChuyenDonReason(e.target.value)}
                         placeholder="Nhập lý do chuyển quyền quản lý đơn..."
-                        className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                        className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-primary resize-none" />
                     </div>
                   </>
                 )}
               </div>
-              <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+              <div className="flex justify-end gap-2 px-5 py-3 border-t border-surface-container-highest">
                 <button onClick={() => { setShowChuyenDon(null); setChuyenDonOfficer(""); setChuyenDonReason(""); }}
-                  className="h-[30px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">
                   Đóng
                 </button>
                 {!isDonKem && (
@@ -8412,7 +8486,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       setChuyenDonReason("");
                     }}
                     disabled={!chuyenDonOfficer || !chuyenDonReason.trim()}
-                    className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    className="h-[30px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
                     Xác nhận chuyển
                   </button>
                 )}
@@ -8432,25 +8506,25 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
             <div className="bg-white rounded-[6px] shadow-2xl w-[400px] overflow-hidden flex flex-col">
-              <div className="px-4 py-3 border-b border-[#eee] flex items-center justify-between bg-[#f8f9fa]">
-                <h3 className="text-[15px] font-semibold text-[#1d2e4f]">Phân công thụ lý {isBulk && `(${count} đơn)`}</h3>
-                <button onClick={() => setShowPhanCong(null)} className="text-[#666] hover:text-[#c0392b] transition-colors"><X size={16} /></button>
+              <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between bg-surface-container-low">
+                <h3 className="text-[15px] font-semibold text-tertiary">Phân công cán bộ xử lý {isBulk && `(${count} đơn)`}</h3>
+                <button onClick={() => setShowPhanCong(null)} className="text-on-surface-variant hover:text-error transition-colors"><X size={16} /></button>
               </div>
               <div className="p-4 space-y-4 bg-white">
                 {!isBulk && row && (
                   <div>
-                    <div className="text-[12px] font-medium text-[#555] mb-1">Mã đơn</div>
-                    <div className="text-[13px] text-[#222] font-semibold">{row.maDon}</div>
+                    <div className="text-[12px] font-medium text-on-surface-variant mb-1">Mã đơn</div>
+                    <div className="text-[13px] text-on-surface font-semibold">{row.maDon}</div>
                   </div>
                 )}
                 {isBulk && (
-                  <div className="text-[13px] text-[#333] mb-2">Đang chọn <span className="font-semibold text-[#1a73e8]">{count}</span> đơn để phân công.</div>
+                  <div className="text-[13px] text-on-surface mb-2">Đang chọn <span className="font-semibold text-primary">{count}</span> đơn để phân công.</div>
                 )}
                 <div>
-                  <div className="text-[12px] font-medium text-[#555] mb-1">Cán bộ thụ lý</div>
+                  <div className="text-[12px] font-medium text-on-surface-variant mb-1">Cán bộ thụ lý</div>
                   <select
                     id="cb_thuly_select"
-                    className="w-full h-[32px] px-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]"
+                    className="w-full h-[32px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary"
                   >
                     <option value="">-- Chọn cán bộ thụ lý --</option>
                     <option value="Nguyễn Văn A">Nguyễn Văn A</option>
@@ -8459,9 +8533,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   </select>
                 </div>
               </div>
-              <div className="px-4 py-3 border-t border-[#eee] flex items-center justify-end gap-2 bg-[#f8f9fa]">
+              <div className="px-4 py-3 border-t border-surface-container-high flex items-center justify-end gap-2 bg-surface-container-low">
                 <button onClick={() => setShowPhanCong(null)}
-                  className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[#333] text-[12px] font-medium hover:bg-[#f5f5f5] transition-colors">
+                  className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-on-surface text-[12px] font-medium hover:bg-surface-container-low transition-colors">
                   Hủy
                 </button>
                 <button
@@ -8479,7 +8553,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                         giaiQuyet: { nhan: "Chờ xử lý", color: "#f39c12", stl: "", coVanBan: false },
                         processingHistory: [
                           ...(r.processingHistory ?? []),
-                          { date: new Date().toLocaleDateString("vi-VN"), step: "Phân công thụ lý", actor: "Chánh văn phòng", note: `Phân công cho ${cb}` }
+                          { date: new Date().toLocaleDateString("vi-VN"), step: "Phân công cán bộ xử lý", actor: "Chánh văn phòng", note: `Phân công cho ${cb}` }
                         ]
                       };
                     }));
@@ -8491,7 +8565,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     }
                     setShowPhanCong(null);
                   }}
-                  className="h-[30px] px-4 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+                  className="h-[30px] px-4 bg-primary hover:bg-[#1557b0] text-white rounded-[3px] text-[12px] font-medium transition-colors">
                   Xác nhận
                 </button>
               </div>
@@ -8623,27 +8697,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       {historyRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-[4px] shadow-xl w-full max-w-[560px] max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
               <div>
-                <div className="text-[14px] font-semibold text-[#1d2e4f]">Lịch sử xử lý HCTP</div>
-                <div className="text-[12px] text-[#666]">{historyRow.maDon} · {historyRow.nguoiGui}</div>
+                <div className="text-[14px] font-semibold text-tertiary">Lịch sử xử lý HCTP</div>
+                <div className="text-[12px] text-on-surface-variant">{historyRow.maDon} · {historyRow.nguoiGui}</div>
               </div>
-              <button onClick={() => setHistoryRow(null)} className="text-[#888] hover:text-[#333]"><X size={18} /></button>
+              <button onClick={() => setHistoryRow(null)} className="text-on-surface-variant hover:text-on-surface"><X size={18} /></button>
             </div>
             <div className="p-4 space-y-3 overflow-y-auto max-h-[calc(90vh-112px)]">
               {historyRow.processingHistory?.map((item, idx) => (
                 <div key={idx} className="rounded-[4px] bg-[#f8fafc] border border-[#d6e4ef] p-3">
-                  <div className="text-[12px] text-[#1d2e4f] font-semibold">{item.date}</div>
-                  <div className="text-[13px] font-medium text-[#333]">{item.step}</div>
-                  <div className="text-[12px] text-[#555]">{item.actor}{item.note ? ` · ${item.note}` : ""}</div>
+                  <div className="text-[12px] text-tertiary font-semibold">{item.date}</div>
+                  <div className="text-[13px] font-medium text-on-surface">{item.step}</div>
+                  <div className="text-[12px] text-on-surface-variant">{item.actor}{item.note ? ` · ${item.note}` : ""}</div>
                 </div>
               )) ?? (
-                  <div className="text-[12px] text-[#666]">Không có lịch sử xử lý.</div>
+                  <div className="text-[12px] text-on-surface-variant">Không có lịch sử xử lý.</div>
                 )}
             </div>
-            <div className="flex justify-end px-4 py-3 border-t border-[#e0e0e0]">
+            <div className="flex justify-end px-4 py-3 border-t border-surface-container-highest">
               <button onClick={() => setHistoryRow(null)}
-                className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium">
+                className="h-[30px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium">
                 Đóng
               </button>
             </div>
@@ -8657,29 +8731,29 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
             <div className="bg-white rounded-[4px] shadow-xl w-full max-w-[600px] max-h-[90vh] overflow-hidden">
-              <div className="flex items-start justify-between px-4 py-3 border-b border-[#e0e0e0]">
+              <div className="flex items-start justify-between px-4 py-3 border-b border-surface-container-highest">
                 <div>
-                  <div className="text-[14px] font-semibold text-[#1d2e4f]">Tiến độ trình ký văn bản</div>
-                  <div className="text-[12px] text-[#666]">{trinhKyRow.maDon} · {trinhKyRow.nguoiGui}</div>
+                  <div className="text-[14px] font-semibold text-tertiary">Tiến độ trình ký văn bản</div>
+                  <div className="text-[12px] text-on-surface-variant">{trinhKyRow.maDon} · {trinhKyRow.nguoiGui}</div>
                 </div>
-                <button onClick={() => setTrinhKyRow(null)} className="text-[#888] hover:text-[#333]"><X size={18} /></button>
+                <button onClick={() => setTrinhKyRow(null)} className="text-on-surface-variant hover:text-on-surface"><X size={18} /></button>
               </div>
 
               {/* Kết quả cuối + thanh tiến độ */}
-              <div className="px-4 py-3 bg-[#f8fafc] border-b border-[#e0e0e0]">
+              <div className="px-4 py-3 bg-[#f8fafc] border-b border-surface-container-highest">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[12px] text-[#555]">Kết quả hiện tại:</span>
+                  <span className="text-[12px] text-on-surface-variant">Kết quả hiện tại:</span>
                   <span className={`inline-block px-2 py-[3px] rounded text-[11px] font-semibold border ${tk.cls}`}>
                     {tk.ketQua}
                   </span>
-                  {tk.soVanBan && <span className="text-[12px] text-[#555]">· Số VB: <span className="font-medium text-[#333]">{tk.soVanBan}</span></span>}
+                  {tk.soVanBan && <span className="text-[12px] text-on-surface-variant">· Số VB: <span className="font-medium text-on-surface">{tk.soVanBan}</span></span>}
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="flex-1 h-[6px] rounded-full bg-[#e4e9ef] overflow-hidden">
                     <div className="h-full bg-[#27ae60] transition-all"
                       style={{ width: `${(soXong / tk.buocs.length) * 100}%` }} />
                   </div>
-                  <span className="text-[11px] text-[#666] whitespace-nowrap">{soXong}/{tk.buocs.length} bước</span>
+                  <span className="text-[11px] text-on-surface-variant whitespace-nowrap">{soXong}/{tk.buocs.length} bước</span>
                 </div>
               </div>
 
@@ -8688,8 +8762,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   const mau = {
                     xong: { vien: "border-[#a9debb]", nen: "bg-[#e8f7ee]", chu: "text-[#1a7a45]", icon: <Check size={13} /> },
                     dang: { vien: "border-[#ffecb5]", nen: "bg-[#fff8e6]", chu: "text-[#856404]", icon: <Clock size={13} /> },
-                    cho: { vien: "border-[#e0e0e0]", nen: "bg-white", chu: "text-[#999]", icon: <Clock size={13} /> },
-                    tuchoi: { vien: "border-[#e6a5a0]", nen: "bg-[#fdecea]", chu: "text-[#c0392b]", icon: <X size={13} /> },
+                    cho: { vien: "border-surface-container-highest", nen: "bg-white", chu: "text-outline", icon: <Clock size={13} /> },
+                    tuchoi: { vien: "border-[#e6a5a0]", nen: "bg-[#fdecea]", chu: "text-error", icon: <X size={13} /> },
                   }[b.trangThai];
                   return (
                     <div key={i} className="flex gap-3">
@@ -8704,27 +8778,27 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                       </div>
                       <div className="pb-4 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-[13px] font-medium ${b.trangThai === "cho" ? "text-[#999]" : "text-[#333]"}`}>
+                          <span className={`text-[13px] font-medium ${b.trangThai === "cho" ? "text-outline" : "text-on-surface"}`}>
                             {i + 1}. {b.ten}
                           </span>
                           <span className={`text-[10px] px-1.5 py-[1px] rounded border ${mau.vien} ${mau.nen} ${mau.chu}`}>
                             {{ xong: "Hoàn thành", dang: "Đang xử lý", cho: "Chờ", tuchoi: "Trả lại" }[b.trangThai]}
                           </span>
                         </div>
-                        <div className="text-[12px] text-[#555] mt-0.5">
-                          {b.vaiTro}: <span className="text-[#333]">{b.nguoi}</span>
-                          {b.thoiGian && <span className="text-[#888]"> · {b.thoiGian}</span>}
+                        <div className="text-[12px] text-on-surface-variant mt-0.5">
+                          {b.vaiTro}: <span className="text-on-surface">{b.nguoi}</span>
+                          {b.thoiGian && <span className="text-on-surface-variant"> · {b.thoiGian}</span>}
                         </div>
-                        {b.ghiChu && <div className="text-[11px] text-[#c0392b] mt-0.5">{b.ghiChu}</div>}
+                        {b.ghiChu && <div className="text-[11px] text-error mt-0.5">{b.ghiChu}</div>}
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className="flex justify-end px-4 py-3 border-t border-[#e0e0e0]">
+              <div className="flex justify-end px-4 py-3 border-t border-surface-container-highest">
                 <button onClick={() => setTrinhKyRow(null)}
-                  className="h-[30px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium">
+                  className="h-[30px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium">
                   Đóng
                 </button>
               </div>
@@ -8863,14 +8937,14 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
 
   const SelectField = ({ label, value, onChange, placeholder, disabled }: { label: string; value: string; onChange: (v: string) => void; placeholder: string, disabled?: boolean }) => (
     <div className="flex-1">
-      <label className="block text-[12px] font-medium text-[#333] mb-1">{label}</label>
+      <label className="block text-[12px] font-medium text-on-surface mb-1">{label}</label>
       <div className="relative">
         <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-          className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] appearance-none focus:outline-none focus:border-[#1a73e8] ${disabled ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
+          className={`w-full h-[32px] px-2 pr-7 text-[12px] border border-surface-container-highest rounded-[3px] appearance-none focus:outline-none focus:border-primary ${disabled ? "bg-gray-100 text-gray-500" : "bg-white"}`}>
           <option value="">{placeholder}</option>
           {(label === "Loại văn bản" ? LOAI_VAN_BAN_OPTIONS : NGUOI_OPTIONS).map(o => <option key={o} value={o}>{o}</option>)}
         </select>
-        <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+        <ChevronDown size={11} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
       </div>
     </div>
   );
@@ -8879,7 +8953,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-[960px] max-h-[90vh] flex flex-col border border-[#bbb]">
         {/* Header */}
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-4 py-[10px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-4 py-[10px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white">
             <FileText size={15} />
             <span className="text-[14px] font-semibold">Lưu văn bản & in báo cáo</span>
@@ -8891,13 +8965,13 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
           {/* Fields row */}
           <div className="flex items-end gap-3">
             <SelectField label="Loại văn bản" value={loai} onChange={setLoai} placeholder="Chọn loại văn bản" disabled={status === "da_ky"} />
-            <SelectField label="Người duyệt" value={nguoiDuyet} onChange={setNguoiDuyet} placeholder="Chọn người duyệt" disabled={status === "da_ky"} />
+
             <SelectField label="Người ký" value={nguoiKy} onChange={setNguoiKy} placeholder="Chọn người ký" disabled={status === "da_ky"} />
             {loai === "Tờ trình" && (
               <div className="flex-1">
-                <label className="block text-[12px] font-medium text-[#333] mb-1">Số tờ trình</label>
+                <label className="block text-[12px] font-medium text-on-surface mb-1">Số tờ trình</label>
                 <input type="text" value={soToTrinh} onChange={e => setSoToTrinh(e.target.value)} disabled={status === "da_ky"}
-                  className={`w-full h-[32px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] ${status === "da_ky" ? "bg-gray-100 text-gray-500" : "bg-white"}`}
+                  className={`w-full h-[32px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary ${status === "da_ky" ? "bg-gray-100 text-gray-500" : "bg-white"}`}
                   placeholder="Nhập số tờ trình..." />
               </div>
             )}
@@ -8911,12 +8985,12 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
           {/* Table */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[13px] font-semibold text-[#333]">
+              <p className="text-[13px] font-semibold text-on-surface">
                 Danh sách công văn ({localRows.length})
               </p>
               <div className="flex items-center gap-2">
                 {status === "tao_van_ban" && (
-                  <button onClick={() => setStatus("lay_so")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                  <button onClick={() => setStatus("lay_so")} className="flex items-center gap-1.5 h-[28px] px-3 bg-tertiary hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <Save size={12} /> Tạo văn bản
                   </button>
                 )}
@@ -8931,12 +9005,12 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                   </button>
                 )}
                 {status === "duyet" && (
-                  <button onClick={() => setStatus("trinh_ky")} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                  <button onClick={() => setStatus("trinh_ky")} className="flex items-center gap-1.5 h-[28px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <Check size={12} /> Duyệt
                   </button>
                 )}
                 {status === "trinh_ky" && (
-                  <button onClick={() => { setStatus("da_ky"); if (onCreateToTrinh) { onCreateToTrinh({ id: String(Math.floor(Math.random() * 1000) + 100), tenVuAn: "-", noiDung: "Thông báo phân công", loai: "Thông báo", nguoiDeXuat: "Phó Chánh Văn Phòng", ngayDeXuat: new Date().toLocaleString("vi-VN"), trangThai: "Chờ duyệt", yKienLanhDao: "", danhSachDon: initialRows }); } }} className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+                  <button onClick={() => { setStatus("da_ky"); if (onCreateToTrinh) { onCreateToTrinh({ id: String(Math.floor(Math.random() * 1000) + 100), tenVuAn: "-", noiDung: "Thông báo phân công", loai: "Thông báo", nguoiDeXuat: "Phó Chánh Văn Phòng", ngayDeXuat: new Date().toLocaleString("vi-VN"), trangThai: "Chờ duyệt", yKienLanhDao: "", danhSachDon: initialRows }); } }} className="flex items-center gap-1.5 h-[28px] px-3 bg-tertiary hover:bg-[#15223a] text-white rounded-[3px] text-[11px] font-medium transition-colors">
                     <PenLine size={12} /> Trình ký
                   </button>
                 )}
@@ -8949,7 +9023,7 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
             </div>
             {/* Cảnh báo đơn không hợp lệ + bỏ tất cả bằng 1 nút */}
             {invalidRows.length > 0 && (
-              <div className="flex items-start gap-2 px-3 py-2 mb-3 bg-[#fdecea] border border-[#e57373] rounded-[3px] text-[12px] text-[#8b1a1a]">
+              <div className="flex items-start gap-2 px-3 py-2 mb-3 bg-[#fdecea] border border-[#e57373] rounded-[3px] text-[12px] text-error">
                 <AlertCircle size={14} className="flex-shrink-0 mt-[1px]" />
                 <div className="min-w-0">
                   <div>
@@ -8961,14 +9035,14 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                 </div>
                 <button
                   onClick={removeInvalidRows}
-                  className="ml-auto flex-shrink-0 inline-flex items-center gap-1 h-[26px] px-2.5 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[11px] font-semibold transition-colors whitespace-nowrap">
+                  className="ml-auto flex-shrink-0 inline-flex items-center gap-1 h-[26px] px-2.5 rounded-[3px] bg-error hover:bg-error-container text-white text-[11px] font-semibold transition-colors whitespace-nowrap">
                   <Trash2 size={11} /> Bỏ {invalidRows.length} đơn không hợp lệ
                 </button>
               </div>
             )}
 
             {localRows.length === 0 ? (
-              <div className="border border-[#ddd] rounded-[3px] py-8 text-center text-[12px] text-[#999]">
+              <div className="border border-surface-container rounded-[3px] py-8 text-center text-[12px] text-outline">
                 Chưa có đơn nào
               </div>
             ) : (
@@ -8976,20 +9050,20 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                 {(Object.entries(groupedRows) as [string, typeof localRows][]).map(([groupName, gRows]) => (
                   <div key={groupName}>
                     {loai === "Tờ trình" && (
-                      <div className="bg-[#e8f0fe] text-[#1a5a96] font-semibold text-[13px] px-3 py-1.5 rounded-t-[3px] border border-[#c5d8f8] border-b-0">
+                      <div className="bg-info-container text-primary font-semibold text-[13px] px-3 py-1.5 rounded-t-[3px] border border-surface-variant border-b-0">
                         Thẩm phán: {groupName} ({gRows.length} đơn)
                       </div>
                     )}
                     <table className="w-full border-collapse text-[12px]">
                       <thead>
-                        <tr className="bg-[#f5f5f5]">
-                          <th className="border border-[#ddd] px-2 py-[6px] text-center font-semibold text-[#333] w-[36px]">STT</th>
-                          <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[90px]">Số công văn</th>
-                          <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin người gửi</th>
-                          <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin đơn</th>
-                          <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Người duyệt</th>
-                          <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Người ký</th>
-                          <th className="border border-[#ddd] px-2 py-[6px] text-center font-semibold text-[#333] w-[90px]">Thao tác</th>
+                        <tr className="bg-surface-container-low">
+                          <th className="border border-surface-container px-2 py-[6px] text-center font-semibold text-on-surface w-[36px]">STT</th>
+                          <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[90px]">Số công văn</th>
+                          <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin người gửi</th>
+                          <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin đơn</th>
+
+                          <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[110px]">Người ký</th>
+                          <th className="border border-surface-container px-2 py-[6px] text-center font-semibold text-on-surface w-[90px]">Thao tác</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -8997,34 +9071,34 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                           const d = row.thongTinDon;
                           const lyDo = lyDoKhongHopLe(row);
                           return (
-                            <tr key={row.id} className={`align-top ${lyDo ? "bg-[#fdf3f2]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                              <td className="border border-[#ddd] px-2 py-2 text-center">
+                            <tr key={row.id} className={`align-top ${lyDo ? "bg-[#fdf3f2]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
+                              <td className="border border-surface-container px-2 py-2 text-center">
                                 <div>{i + 1}</div>
-                                {lyDo && <AlertCircle size={12} className="mx-auto mt-1 text-[#c0392b]" />}
+                                {lyDo && <AlertCircle size={12} className="mx-auto mt-1 text-error" />}
                               </td>
-                              <td className="border border-[#ddd] px-3 py-2">
+                              <td className="border border-surface-container px-3 py-2">
                                 {loai === "Tờ trình" ? (
-                                  <span className="text-[#999] font-bold">—</span>
+                                  <span className="text-outline font-bold">—</span>
                                 ) : status !== "tao_van_ban" && status !== "lay_so" ? (
                                   <div className="space-y-1.5">
-                                    <div className="font-medium text-[#1d2e4f] text-[11px] mb-1">{getSoCongVan(row.id, i)}</div>
+                                    <div className="font-medium text-tertiary text-[11px] mb-1">{getSoCongVan(row.id, i)}</div>
                                     {/* Combobox chọn công văn kèm theo (cho loại khác Tờ trình) */}
                                     <div className="relative">
                                       <button
                                         onClick={() => setOpenDropRow(openDropRow === row.id ? null : row.id)}
-                                        className="flex items-center justify-between w-full h-[26px] px-2 border border-[#ccc] rounded-[3px] bg-white text-[11px] text-[#333] hover:border-[#1a73e8] transition-colors">
-                                        <span className="truncate text-[#666]">
+                                        className="flex items-center justify-between w-full h-[26px] px-2 border border-surface-container-highest rounded-[3px] bg-white text-[11px] text-on-surface hover:border-primary transition-colors">
+                                        <span className="truncate text-on-surface-variant">
                                           {(selectedCongVan[row.id] ?? []).length === 0
                                             ? "Văn bản kèm theo..."
                                             : `${(selectedCongVan[row.id] ?? []).length} văn bản`}
                                         </span>
-                                        <ChevronDown size={10} className="shrink-0 text-[#888] ml-1" />
+                                        <ChevronDown size={10} className="shrink-0 text-on-surface-variant ml-1" />
                                       </button>
                                       {openDropRow === row.id && (
-                                        <div className="absolute left-0 top-[28px] z-50 bg-white border border-[#ccc] rounded-[3px] shadow-lg w-[220px]">
+                                        <div className="absolute left-0 top-[28px] z-50 bg-white border border-surface-container-highest rounded-[3px] shadow-lg w-[220px]">
                                           {CONG_VAN_OPTIONS.map(opt => (
                                             <label key={opt}
-                                              className="flex items-center gap-2 px-2 py-[5px] hover:bg-[#f0f7ff] cursor-pointer text-[11px] text-[#333]">
+                                              className="flex items-center gap-2 px-2 py-[5px] hover:bg-[#f0f7ff] cursor-pointer text-[11px] text-on-surface">
                                               <input type="checkbox"
                                                 className="w-[12px] h-[12px] accent-[#8b1a1a] shrink-0"
                                                 checked={(selectedCongVan[row.id] ?? []).includes(opt)}
@@ -9044,29 +9118,29 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                                     ))}
                                   </div>
                                 ) : (
-                                  <span className="text-[#999]">—</span>
+                                  <span className="text-outline">—</span>
                                 )}
                               </td>
-                              <td className="border border-[#ddd] px-3 py-2">
+                              <td className="border border-surface-container px-3 py-2">
                                 {loai === "Tờ trình" ? (
                                   <div className="space-y-1.5">
-                                    <div className="font-semibold text-[#8b1a1a]">Tờ trình</div>
+                                    <div className="font-semibold text-error">Tờ trình</div>
                                     <div className="relative">
                                       <button
                                         onClick={() => setOpenDropRow(openDropRow === row.id ? null : row.id)}
-                                        className="flex items-center justify-between w-full h-[26px] px-2 border border-[#ccc] rounded-[3px] bg-[#fffaf7] text-[11px] text-[#333] hover:border-[#8b1a1a] transition-colors">
-                                        <span className="truncate text-[#666]">
+                                        className="flex items-center justify-between w-full h-[26px] px-2 border border-surface-container-highest rounded-[3px] bg-[#fffaf7] text-[11px] text-on-surface hover:border-error transition-colors">
+                                        <span className="truncate text-on-surface-variant">
                                           {(selectedCongVan[row.id] ?? []).length === 0
                                             ? "Văn bản kèm theo..."
                                             : `${(selectedCongVan[row.id] ?? []).length} văn bản`}
                                         </span>
-                                        <ChevronDown size={10} className="shrink-0 text-[#888] ml-1" />
+                                        <ChevronDown size={10} className="shrink-0 text-on-surface-variant ml-1" />
                                       </button>
                                       {openDropRow === row.id && (
-                                        <div className="absolute left-0 top-[28px] z-50 bg-white border border-[#ccc] rounded-[3px] shadow-lg w-[220px]">
+                                        <div className="absolute left-0 top-[28px] z-50 bg-white border border-surface-container-highest rounded-[3px] shadow-lg w-[220px]">
                                           {CONG_VAN_OPTIONS.map(opt => (
                                             <label key={opt}
-                                              className="flex items-center gap-2 px-2 py-[5px] hover:bg-[#fff5f5] cursor-pointer text-[11px] text-[#333]">
+                                              className="flex items-center gap-2 px-2 py-[5px] hover:bg-[#fff5f5] cursor-pointer text-[11px] text-on-surface">
                                               <input type="checkbox"
                                                 className="w-[12px] h-[12px] accent-[#8b1a1a] shrink-0"
                                                 checked={(selectedCongVan[row.id] ?? []).includes(opt)}
@@ -9080,84 +9154,71 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
                                     {(selectedCongVan[row.id] ?? []).map((cv, ci) => (
                                       <button key={ci} onClick={onXemBieuMau}
                                         className="flex items-center gap-1 text-left w-full group mt-1">
-                                        <FileText size={10} className="text-[#8b1a1a] shrink-0" />
-                                        <span className="text-[10px] text-[#8b1a1a] group-hover:underline leading-snug truncate">{cv}</span>
+                                        <FileText size={10} className="text-error shrink-0" />
+                                        <span className="text-[10px] text-error group-hover:underline leading-snug truncate">{cv}</span>
                                       </button>
                                     ))}
                                   </div>
                                 ) : (
                                   <>
-                                    <div className="font-medium text-[#1a5a96] leading-snug">{row.nguoiGui}</div>
-                                    <div className="text-[11px] text-[#666] mt-0.5 leading-snug">{row.diaChi}</div>
+                                    <div className="font-medium text-primary leading-snug">{row.nguoiGui}</div>
+                                    <div className="text-[11px] text-on-surface-variant mt-0.5 leading-snug">{row.diaChi}</div>
                                   </>
                                 )}
                               </td>
-                              <td className="border border-[#ddd] px-3 py-2">
+                              <td className="border border-surface-container px-3 py-2">
                                 <div className="space-y-[2px] leading-snug">
                                   {lyDo && (
                                     <div className="mb-1">
-                                      <span className="inline-flex items-center gap-1 bg-[#fdecea] text-[#8b1a1a] border border-[#e57373] text-[10px] font-bold px-1.5 py-[2px] rounded-sm">
+                                      <span className="inline-flex items-center gap-1 bg-[#fdecea] text-error border border-[#e57373] text-[10px] font-bold px-1.5 py-[2px] rounded-sm">
                                         <AlertCircle size={10} /> Không hợp lệ
                                       </span>
                                       <span className="ml-1.5 text-[11px] text-[#a94442]">{lyDo}</span>
                                     </div>
                                   )}
-                                  <div><span className="text-[#888]">Thông tin giải quyết: </span><span>{row.giaiQuyet.nhan || "—"}</span></div>
-                                  <div><span className="text-[#888]">Người đứng đơn: </span><span>{row.nguoiGui}</span></div>
-                                  <div><span className="text-[#888]">Ngày trên đơn: </span><span>{d.ngayCV}</span></div>
-                                  <div><span className="text-[#888]">Ngày nhận: </span><span>{row.ngayNhap}</span></div>
-                                  <div><span className="text-[#888]">Mã đơn: </span><span className="font-medium text-[#1a5a96]">{row.maDon}</span></div>
-                                  <div><span className="text-[#888]">Hình thức: </span><span>{d.hinhThuc}</span></div>
-                                  <div><span className="text-[#888]">Số BA/QĐ: </span><span>{d.soBaqd}</span></div>
-                                  <div><span className="text-[#888]">Ngày: </span><span>{d.ngay}</span></div>
-                                  <div><span className="text-[#888]">Thủ tục giải quyết: </span><span>{d.thuTuc}</span></div>
-                                  <div><span className="text-[#888]">Thẩm phán: </span><span>{d.thamPhan || "—"}</span></div>
+                                  <div><span className="text-on-surface-variant">Thông tin giải quyết: </span><span>{row.giaiQuyet.nhan || "—"}</span></div>
+                                  <div><span className="text-on-surface-variant">Người đứng đơn: </span><span>{row.nguoiGui}</span></div>
+                                  <div><span className="text-on-surface-variant">Ngày trên đơn: </span><span>{d.ngayCV}</span></div>
+                                  <div><span className="text-on-surface-variant">Ngày nhận: </span><span>{row.ngayNhap}</span></div>
+                                  <div><span className="text-on-surface-variant">Mã đơn: </span><span className="font-medium text-primary">{row.maDon}</span></div>
+                                  <div><span className="text-on-surface-variant">Hình thức: </span><span>{d.hinhThuc}</span></div>
+                                  <div><span className="text-on-surface-variant">Số BA/QĐ: </span><span>{d.soBaqd}</span></div>
+                                  <div><span className="text-on-surface-variant">Ngày: </span><span>{d.ngay}</span></div>
+                                  <div><span className="text-on-surface-variant">Thủ tục giải quyết: </span><span>{d.thuTuc}</span></div>
+                                  <div><span className="text-on-surface-variant">Thẩm phán: </span><span>{d.thamPhan || "—"}</span></div>
                                   <div className="mt-1">
-                                    <span className="inline-block px-1.5 py-[1px] rounded text-[10px] bg-[#e8f0fe] text-[#1a5a96] border border-[#c5d8f8]">Chưa chuyển</span>
-                                    <span className="text-[#888] ml-1 text-[11px]">{d.donViGiaiQuyet}</span>
+                                    <span className="inline-block px-1.5 py-[1px] rounded text-[10px] bg-info-container text-primary border border-surface-variant">Chưa chuyển</span>
+                                    <span className="text-on-surface-variant ml-1 text-[11px]">{d.donViGiaiQuyet}</span>
                                   </div>
                                 </div>
                               </td>
-                              <td className="border border-[#ddd] px-2 py-2">
-                                {loai === "Tờ trình" ? (
-                                  <select
-                                    value={nguoiDuyetRow[row.id] ?? nguoiDuyet}
-                                    onChange={(e) => setNguoiDuyetRow({ ...nguoiDuyetRow, [row.id]: e.target.value })}
-                                    className="w-full h-[26px] px-1 text-[11px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]"
-                                  >
-                                    <option value="">Chọn người duyệt...</option>
-                                    {NGUOI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                                  </select>
-                                ) : (
-                                  <div className="text-[11px] text-[#555]">{nguoiDuyet || "—"}</div>
-                                )}
-                              </td>
-                              <td className="border border-[#ddd] px-2 py-2">
+
+                              <td className="border border-surface-container px-2 py-2">
                                 {loai === "Tờ trình" ? (
                                   <select
                                     value={nguoiKyRow[row.id] ?? nguoiKy}
                                     onChange={(e) => setNguoiKyRow({ ...nguoiKyRow, [row.id]: e.target.value })}
-                                    className="w-full h-[26px] px-1 text-[11px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]"
+                                    className="w-full h-[26px] px-1 text-[11px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary"
                                   >
                                     <option value="">Chọn người ký...</option>
                                     {NGUOI_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                                   </select>
                                 ) : (
-                                  <div className="text-[11px] text-[#555]">{nguoiKy || "—"}</div>
+                                  <div className="text-[11px] text-on-surface-variant">{nguoiKy || "—"}</div>
                                 )}
                               </td>
-                              <td className="border border-[#ddd] px-2 py-2">
+                              <td className="border border-surface-container px-2 py-2">
                                 <div className="flex flex-col items-center gap-1">
                                   {/* Xem biểu mẫu */}
                                   <button
                                     onClick={onXemBieuMau}
-                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium bg-[#e8f0fe] text-[#1a5a96] border border-[#c5d8f8] hover:bg-[#d0e3fc] transition-colors whitespace-nowrap">
+                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium bg-info-container text-primary border border-surface-variant hover:bg-[#d0e3fc] transition-colors whitespace-nowrap">
                                     <Eye size={11} /> Xem biểu mẫu
                                   </button>
                                   {/* Xóa */}
                                   <button
                                     onClick={() => removeRow(row.id)}
-                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
+                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-error hover:bg-[#fdecea] transition-colors">
                                     <Trash2 size={11} /> Xóa
                                   </button>
                                 </div>
@@ -9175,14 +9236,14 @@ const PopupLuuSoVanBan = ({ rows: initialRows, onClose, onXemBieuMau, currentRol
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           {/* Nút sau khi lưu */}
           {status !== "tao_van_ban" ? (
             <div className="flex items-center gap-2">
               <button className="flex items-center gap-1.5 h-[32px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[12px] font-medium transition-colors">
                 <ArrowDownToLine size={13} /> Lấy số
               </button>
-              <button className="flex items-center gap-1.5 h-[32px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+              <button className="flex items-center gap-1.5 h-[32px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors">
                 <Send size={13} /> Trình ký
               </button>
             </div>
@@ -9218,20 +9279,20 @@ const PopupTraLaiDon = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-[480px] max-w-full border border-[#bbb]">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
           <div>
-            <div className="text-[15px] font-semibold text-[#1d2e4f]">Trả lại đơn</div>
-            <div className="text-[12px] text-[#555]">Đang trả lại {count} đơn đã chọn</div>
+            <div className="text-[15px] font-semibold text-tertiary">Trả lại đơn</div>
+            <div className="text-[12px] text-on-surface-variant">Đang trả lại {count} đơn đã chọn</div>
           </div>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333]"><X size={16} /></button>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface"><X size={16} /></button>
         </div>
         <div className="px-4 py-4 space-y-4 text-[12px]">
           <div className="flex flex-col gap-3">
-            <label className="flex items-center gap-2 text-[12px] text-[#333]">
+            <label className="flex items-center gap-2 text-[12px] text-on-surface">
               <input type="checkbox" className="w-[14px] h-[14px] accent-[#8b1a1a]" checked={suaDon} onChange={() => setSuaDon(prev => !prev)} />
               Sửa đơn
             </label>
-            <label className="flex flex-col gap-2 text-[12px] text-[#333]">
+            <label className="flex flex-col gap-2 text-[12px] text-on-surface">
               <span className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -9249,38 +9310,38 @@ const PopupTraLaiDon = ({
               </span>
               {tachDon && (
                 <div className="grid grid-cols-[120px_1fr] gap-2 items-center">
-                  <label className="text-[12px] text-[#333]">Số đơn muốn tách</label>
+                  <label className="text-[12px] text-on-surface">Số đơn muốn tách</label>
                   <input
                     type="text"
                     value={tachSoDon}
                     onChange={e => setTachSoDon(e.target.value)}
                     placeholder="Nhập số đơn"
-                    className="w-full h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8]"
+                    className="w-full h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary"
                   />
                 </div>
               )}
             </label>
           </div>
           <div>
-            <label className="block text-[12px] font-medium text-[#333] mb-1">Lý do trả lại <span className="text-red-500">*</span></label>
+            <label className="block text-[12px] font-medium text-on-surface mb-1">Lý do trả lại <span className="text-red-500">*</span></label>
             <textarea
               value={reason}
               onChange={e => onChangeReason(e.target.value)}
               rows={5}
-              className="w-full border border-[#ccc] rounded-[3px] px-2 py-2 text-[12px] focus:outline-none focus:border-[#1a73e8] resize-none"
+              className="w-full border border-surface-container-highest rounded-[3px] px-2 py-2 text-[12px] focus:outline-none focus:border-primary resize-none"
               placeholder="Nhập lý do trả lại đơn..."
             />
           </div>
         </div>
-        <div className="flex justify-end gap-2 px-4 py-3 border-t border-[#e0e0e0]">
+        <div className="flex justify-end gap-2 px-4 py-3 border-t border-surface-container-highest">
           <button onClick={onClose}
-            className="h-[34px] px-4 border border-[#ccc] text-[#444] rounded-[3px] text-[12px] hover:bg-[#f5f5f5]">
+            className="h-[34px] px-4 border border-surface-container-highest text-[#444] rounded-[3px] text-[12px] hover:bg-surface-container-low">
             Hủy
           </button>
           <button
             disabled={!reason.trim()}
             onClick={onConfirm}
-            className="h-[34px] px-4 rounded-[3px] text-[12px] font-medium text-white bg-[#8b1a1a] hover:bg-[#6e1414] disabled:bg-[#ccc] disabled:cursor-not-allowed"
+            className="h-[34px] px-4 rounded-[3px] text-[12px] font-medium text-white bg-error hover:bg-error-container disabled:bg-surface-container-highest disabled:cursor-not-allowed"
           >
             Xác nhận trả lại
           </button>
@@ -9350,20 +9411,20 @@ const ProtoRow = ({
   trangThai: string; trangThaiColor?: string;
   extra?: React.ReactNode; showAction?: boolean;
 }) => (
-  <div className="border border-[#ddd] rounded-[3px] p-2.5 bg-white text-[12px]">
+  <div className="border border-surface-container rounded-[3px] p-2.5 bg-white text-[12px]">
     <div className="flex items-start justify-between gap-2">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap mb-1">
-          <span className="font-semibold text-[#1d2e4f] text-[11px]">Mã {maDon}</span>
+          <span className="font-semibold text-tertiary text-[11px]">Mã {maDon}</span>
           <span className="px-1.5 py-[1px] rounded text-[9px] font-medium text-white"
             style={{ backgroundColor: trangThaiColor }}>{trangThai}</span>
         </div>
         <div className="text-[#444] text-[11px] leading-snug mb-0.5">{nguoiGui}</div>
-        <div className="text-[#aaa] text-[10px]">Nhập: {ngayNhap}</div>
+        <div className="text-outline text-[10px]">Nhập: {ngayNhap}</div>
         {extra && <div className="mt-1.5">{extra}</div>}
       </div>
       {showAction && (
-        <button className="w-[24px] h-[24px] flex items-center justify-center rounded border border-[#ddd] hover:bg-[#f0f0f0] text-[#555] text-[12px] flex-shrink-0">···</button>
+        <button className="w-[24px] h-[24px] flex items-center justify-center rounded border border-surface-container hover:bg-surface-container text-on-surface-variant text-[12px] flex-shrink-0">···</button>
       )}
     </div>
   </div>
@@ -9405,13 +9466,13 @@ const PrototypeGhepDon = () => {
             <div className="space-y-2">
               <ProtoMergeBadge maDon="7025" />
               <div className="border border-[#b0d4e8] rounded-[3px] bg-[#f0f7ff] p-2">
-                <div className="font-semibold text-[#1d2e4f] text-[11px] mb-1.5 flex items-center gap-1">
+                <div className="font-semibold text-tertiary text-[11px] mb-1.5 flex items-center gap-1">
                   <List size={11} /> Danh sách đơn thụ lý kèm
                 </div>
-                <div className="flex items-center gap-2 bg-white border border-[#e0e0e0] rounded px-2 py-1 text-[11px]">
+                <div className="flex items-center gap-2 bg-white border border-surface-container-highest rounded px-2 py-1 text-[11px]">
                   <GitMerge size={11} className="text-[#27ae60]" />
-                  <span className="font-medium text-[#333]">Mã 7025</span>
-                  <span className="text-[#666]">— Nguyễn Thị Hoa</span>
+                  <span className="font-medium text-on-surface">Mã 7025</span>
+                  <span className="text-on-surface-variant">— Nguyễn Thị Hoa</span>
                   <span className="ml-auto px-1.5 py-[1px] rounded text-[9px] bg-[#e67e22] text-white font-medium">Chưa đủ ĐK</span>
                 </div>
               </div>
@@ -9456,26 +9517,26 @@ const PrototypeGhepDon = () => {
   const renderPopupGhep = () => (
     <div className="absolute inset-0 bg-black/30 flex items-start justify-center z-10 pt-6 px-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-full max-w-[500px] border border-[#bbb]">
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-3 py-[9px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-3 py-[9px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white text-[13px] font-semibold">
             <GitMerge size={13} /> Ghép đơn
           </div>
           <button onClick={() => goStep(0)} className="text-white/70 hover:text-white"><X size={15} /></button>
         </div>
-        <div className="px-3 pt-2 pb-1 bg-[#f9f9f9] border-b border-[#eee]">
-          <p className="text-[11px] text-[#555] mb-0.5">Đơn chính</p>
-          <p className="text-[12px] font-semibold text-[#1d2e4f]">Mã 7031 — Tòa án nhân dân khu vực 4 - Hà Nội</p>
+        <div className="px-3 pt-2 pb-1 bg-surface-bright border-b border-surface-container-high">
+          <p className="text-[11px] text-on-surface-variant mb-0.5">Đơn chính</p>
+          <p className="text-[12px] font-semibold text-tertiary">Mã 7031 — Tòa án nhân dân khu vực 4 - Hà Nội</p>
         </div>
         <div className="px-3 py-2.5">
-          <p className="text-[11px] text-[#555] mb-1.5">Chọn đơn để ghép vào (chưa đủ điều kiện, chưa được ghép):</p>
+          <p className="text-[11px] text-on-surface-variant mb-1.5">Chọn đơn để ghép vào (chưa đủ điều kiện, chưa được ghép):</p>
           <table className="w-full text-[11px] border-collapse">
             <thead>
-              <tr className="bg-[#f5f5f5]">
-                <th className="border border-[#ddd] px-2 py-[5px] w-7"><input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a]" /></th>
-                <th className="border border-[#ddd] px-2 py-[5px] text-left font-semibold">Mã</th>
-                <th className="border border-[#ddd] px-2 py-[5px] text-left font-semibold">Người gửi</th>
-                <th className="border border-[#ddd] px-2 py-[5px] text-left font-semibold">Ngày nhập</th>
-                <th className="border border-[#ddd] px-2 py-[5px] text-left font-semibold">Trạng thái</th>
+              <tr className="bg-surface-container-low">
+                <th className="border border-surface-container px-2 py-[5px] w-7"><input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a]" /></th>
+                <th className="border border-surface-container px-2 py-[5px] text-left font-semibold">Mã</th>
+                <th className="border border-surface-container px-2 py-[5px] text-left font-semibold">Người gửi</th>
+                <th className="border border-surface-container px-2 py-[5px] text-left font-semibold">Ngày nhập</th>
+                <th className="border border-surface-container px-2 py-[5px] text-left font-semibold">Trạng thái</th>
               </tr>
             </thead>
             <tbody>
@@ -9484,23 +9545,23 @@ const PrototypeGhepDon = () => {
                 { id: "7022", nguoi: "TAND khu vực 4 - Hà Nội", ngay: "15/07", checked: false },
                 { id: "7019", nguoi: "Trần Văn Bình", ngay: "12/07", checked: false },
               ].map((r, i) => (
-                <tr key={i} className={r.checked ? "bg-[#fdeaea]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
-                  <td className="border border-[#ddd] px-2 py-[5px] text-center">
+                <tr key={i} className={r.checked ? "bg-[#fdeaea]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
+                  <td className="border border-surface-container px-2 py-[5px] text-center">
                     <input type="checkbox" className="w-[12px] h-[12px] accent-[#8b1a1a]" defaultChecked={r.checked} />
                   </td>
-                  <td className="border border-[#ddd] px-2 py-[5px] font-medium text-[#1a5a96]">{r.id}</td>
-                  <td className="border border-[#ddd] px-2 py-[5px]">{r.nguoi}</td>
-                  <td className="border border-[#ddd] px-2 py-[5px] text-[#888]">{r.ngay}</td>
-                  <td className="border border-[#ddd] px-2 py-[5px]">
+                  <td className="border border-surface-container px-2 py-[5px] font-medium text-primary">{r.id}</td>
+                  <td className="border border-surface-container px-2 py-[5px]">{r.nguoi}</td>
+                  <td className="border border-surface-container px-2 py-[5px] text-on-surface-variant">{r.ngay}</td>
+                  <td className="border border-surface-container px-2 py-[5px]">
                     <span className="px-1.5 py-[1px] rounded text-[9px] font-medium bg-[#e67e22] text-white">Chưa đủ ĐK</span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="text-[11px] text-[#1d2e4f] mt-1.5 font-medium">Đã chọn 1 đơn để ghép.</p>
+          <p className="text-[11px] text-tertiary mt-1.5 font-medium">Đã chọn 1 đơn để ghép.</p>
         </div>
-        <div className="flex justify-end gap-2 px-3 py-2 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex justify-end gap-2 px-3 py-2 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           <BtnSecondary onClick={() => goStep(0)}>Hủy</BtnSecondary>
           <BtnPrimary onClick={() => goStep(2)}><GitMerge size={12} /> Tiếp tục</BtnPrimary>
         </div>
@@ -9511,7 +9572,7 @@ const PrototypeGhepDon = () => {
   const renderPopupXacNhan = () => (
     <div className="absolute inset-0 bg-black/30 flex items-start justify-center z-10 pt-6 px-4">
       <div className="bg-white rounded-[4px] shadow-2xl w-full max-w-[460px] border border-[#bbb]">
-        <div className="flex items-center justify-between bg-[#1d2e4f] px-3 py-[9px] rounded-t-[4px]">
+        <div className="flex items-center justify-between bg-tertiary px-3 py-[9px] rounded-t-[4px]">
           <div className="flex items-center gap-2 text-white text-[13px] font-semibold">
             <Check size={13} /> Xác nhận ghép đơn
           </div>
@@ -9521,18 +9582,18 @@ const PrototypeGhepDon = () => {
           <div className={`px-3 py-2 rounded border text-[11px] font-medium ${th === 1 ? "bg-[#e8f5e9] border-[#81c784] text-[#2e7d32]" : "bg-[#fff3cd] border-[#ffc107] text-[#856404]"}`}>
             {th === 1 ? "✓ TH1: Cùng 1 cán bộ — Chỉ cần xác nhận của cán bộ A để ghép ngay" : "⚠ TH2: 2 cán bộ khác nhau — Sau khi A xác nhận, cán bộ B cần xác nhận để hoàn tất"}
           </div>
-          <div className="border border-[#ddd] rounded p-2 bg-[#f0f7ff]">
-            <p className="text-[11px] text-[#888] mb-0.5">Đơn chính</p>
-            <span className="font-semibold text-[#1d2e4f]">Mã 7031</span>
-            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
+          <div className="border border-surface-container rounded p-2 bg-[#f0f7ff]">
+            <p className="text-[11px] text-on-surface-variant mb-0.5">Đơn chính</p>
+            <span className="font-semibold text-tertiary">Mã 7031</span>
+            <span className="text-on-surface-variant ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
           </div>
-          <div className="border border-[#ddd] rounded p-2 bg-white">
-            <p className="text-[11px] text-[#888] mb-0.5">Đơn được ghép vào</p>
-            <span className="font-semibold text-[#1a5a96]">Mã 7025</span>
-            <span className="text-[#666] ml-2 text-[11px]">Nguyễn Thị Hoa — Chưa đủ ĐK</span>
+          <div className="border border-surface-container rounded p-2 bg-white">
+            <p className="text-[11px] text-on-surface-variant mb-0.5">Đơn được ghép vào</p>
+            <span className="font-semibold text-primary">Mã 7025</span>
+            <span className="text-on-surface-variant ml-2 text-[11px]">Nguyễn Thị Hoa — Chưa đủ ĐK</span>
           </div>
         </div>
-        <div className="flex justify-end gap-2 px-3 py-2 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex justify-end gap-2 px-3 py-2 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           <BtnSecondary onClick={() => goStep(1)}>Hủy</BtnSecondary>
           <BtnPrimary onClick={() => goStep(th === 1 ? 3 : 3)}><Check size={12} /> Xác nhận ghép đơn</BtnPrimary>
         </div>
@@ -9553,20 +9614,20 @@ const PrototypeGhepDon = () => {
           <div className="bg-[#fff3cd] border border-[#ffc107] rounded px-3 py-2 text-[11px] font-medium text-[#856404]">
             Cán bộ A gửi yêu cầu ghép đơn của bạn vào đơn chính. Bạn có muốn xác nhận?
           </div>
-          <div className="border border-[#ddd] rounded p-2 bg-[#f0f7ff]">
-            <p className="text-[11px] text-[#888] mb-0.5">Đơn chính (Cán bộ A)</p>
-            <span className="font-semibold text-[#1d2e4f]">Mã 7031</span>
-            <span className="text-[#666] ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
+          <div className="border border-surface-container rounded p-2 bg-[#f0f7ff]">
+            <p className="text-[11px] text-on-surface-variant mb-0.5">Đơn chính (Cán bộ A)</p>
+            <span className="font-semibold text-tertiary">Mã 7031</span>
+            <span className="text-on-surface-variant ml-2 text-[11px]">Tòa án nhân dân khu vực 4 - Hà Nội</span>
             <div className="mt-0.5"><span className="px-1.5 py-[1px] rounded text-[9px] font-medium bg-[#e67e22] text-white">Thụ lý mới</span></div>
           </div>
           <div className="border border-[#2980b9] rounded p-2 bg-[#f0f7ff]">
-            <p className="text-[11px] text-[#888] mb-0.5">Đơn của bạn (Cán bộ B)</p>
+            <p className="text-[11px] text-on-surface-variant mb-0.5">Đơn của bạn (Cán bộ B)</p>
             <span className="font-semibold text-[#2980b9]">Mã 7025</span>
-            <span className="text-[#666] ml-2 text-[11px]">Nguyễn Thị Hoa</span>
+            <span className="text-on-surface-variant ml-2 text-[11px]">Nguyễn Thị Hoa</span>
             <div className="mt-0.5"><span className="px-1.5 py-[1px] rounded text-[9px] font-medium bg-[#e67e22] text-white">Chưa đủ ĐK</span></div>
           </div>
         </div>
-        <div className="flex justify-end gap-2 px-3 py-2 border-t border-[#ddd] bg-[#f9f9f9] rounded-b-[4px]">
+        <div className="flex justify-end gap-2 px-3 py-2 border-t border-surface-container bg-surface-bright rounded-b-[4px]">
           <BtnSecondary onClick={() => goStep(3)}>Từ chối</BtnSecondary>
           <BtnPrimary onClick={() => goStep(5)}><Check size={12} /> Xác nhận ghép đơn</BtnPrimary>
         </div>
@@ -9577,15 +9638,15 @@ const PrototypeGhepDon = () => {
   return (
     <div className="bg-[#eef1f5] min-h-full flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-[#ddd] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-white border-b border-surface-container px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div>
-          <h2 className="text-[14px] font-semibold text-[#222]">Prototype · Luồng Ghép đơn</h2>
-          <p className="text-[11px] text-[#888]">Mô phỏng tương tác theo SRS — BR-01 đến BR-04</p>
+          <h2 className="text-[14px] font-semibold text-on-surface">Prototype · Luồng Ghép đơn</h2>
+          <p className="text-[11px] text-on-surface-variant">Mô phỏng tương tác theo SRS — BR-01 đến BR-04</p>
         </div>
-        <div className="flex items-center gap-1 bg-[#f0f0f0] rounded-[4px] p-[3px]">
+        <div className="flex items-center gap-1 bg-surface-container rounded-[4px] p-[3px]">
           {([1, 2] as const).map(t => (
             <button key={t} onClick={() => handleTHChange(t)}
-              className={`px-3 py-[5px] rounded-[3px] text-[12px] font-medium transition-all ${th === t ? "bg-white shadow text-[#1d2e4f] border border-[#ccc]" : "text-[#666] hover:text-[#333]"}`}>
+              className={`px-3 py-[5px] rounded-[3px] text-[12px] font-medium transition-all ${th === t ? "bg-white shadow text-tertiary border border-surface-container-highest" : "text-on-surface-variant hover:text-on-surface"}`}>
               {t === 1 ? "TH1: Cùng cán bộ" : "TH2: Khác cán bộ"}
             </button>
           ))}
@@ -9595,15 +9656,15 @@ const PrototypeGhepDon = () => {
       <div className="flex flex-1 gap-4 p-4 overflow-auto">
         {/* Step navigator */}
         <div className="w-[185px] flex-shrink-0 space-y-3">
-          <div className="bg-white border border-[#ddd] rounded-[4px] overflow-hidden">
-            <div className="px-3 py-2 bg-[#f5f5f5] border-b border-[#ddd]">
-              <span className="text-[12px] font-semibold text-[#333]">Các bước</span>
+          <div className="bg-white border border-surface-container rounded-[4px] overflow-hidden">
+            <div className="px-3 py-2 bg-surface-container-low border-b border-surface-container">
+              <span className="text-[12px] font-semibold text-on-surface">Các bước</span>
             </div>
             <div className="p-2 space-y-0.5">
               {steps.map((s, i) => (
                 <button key={i} onClick={() => goStep(i)}
-                  className={`w-full text-left px-2 py-[7px] rounded-[3px] text-[12px] flex items-center gap-2 transition-colors ${step === i ? "bg-[#fdeaea] text-[#8b1a1a] font-semibold" : "text-[#555] hover:bg-[#f5f5f5]"}`}>
-                  <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 ${step === i ? "bg-[#8b1a1a] text-white" : i < step ? "bg-[#27ae60] text-white" : "bg-[#e0e0e0] text-[#888]"}`}>
+                  className={`w-full text-left px-2 py-[7px] rounded-[3px] text-[12px] flex items-center gap-2 transition-colors ${step === i ? "bg-[#fdeaea] text-error font-semibold" : "text-on-surface-variant hover:bg-surface-container-low"}`}>
+                  <span className={`w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0 ${step === i ? "bg-error text-white" : i < step ? "bg-[#27ae60] text-white" : "bg-surface-container-highest text-on-surface-variant"}`}>
                     {i < step ? "✓" : i + 1}
                   </span>
                   <span className="leading-tight text-[11px]">{s.label}</span>
@@ -9613,16 +9674,16 @@ const PrototypeGhepDon = () => {
           </div>
           <div className="flex gap-1.5">
             <button onClick={() => goStep(step - 1)} disabled={step === 0}
-              className="flex-1 py-[6px] text-[11px] border border-[#ccc] rounded-[3px] bg-white text-[#555] hover:bg-[#f5f5f5] disabled:opacity-40 disabled:cursor-not-allowed">← Trước</button>
+              className="flex-1 py-[6px] text-[11px] border border-surface-container-highest rounded-[3px] bg-white text-on-surface-variant hover:bg-surface-container-low disabled:opacity-40 disabled:cursor-not-allowed">← Trước</button>
             <button onClick={() => goStep(step + 1)} disabled={step === maxStep}
-              className="flex-1 py-[6px] text-[11px] bg-[#1d2e4f] text-white rounded-[3px] hover:bg-[#16253d] disabled:opacity-40 disabled:cursor-not-allowed">Tiếp →</button>
+              className="flex-1 py-[6px] text-[11px] bg-tertiary text-white rounded-[3px] hover:bg-[#16253d] disabled:opacity-40 disabled:cursor-not-allowed">Tiếp →</button>
           </div>
         </div>
 
         {/* Content area */}
         <div className="flex-1 space-y-3 min-w-0 flex flex-col">
           {/* Step description */}
-          <div className="bg-[#1d2e4f] rounded-[4px] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
+          <div className="bg-tertiary rounded-[4px] px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
             <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">{step + 1}</span>
             <div>
               <p className="text-white font-semibold text-[12px]">{steps[step].label}</p>
@@ -9633,11 +9694,11 @@ const PrototypeGhepDon = () => {
           {/* Dual panel */}
           <div className="relative flex gap-3 flex-1" style={{ minHeight: 280 }}>
             {/* A panel */}
-            <div className="flex-1 bg-white border border-[#ddd] rounded-[4px] p-3">
-              <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#eee]">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#1d2e4f] flex-shrink-0" />
-                <span className="text-[12px] font-bold text-[#1d2e4f]">Cán bộ A</span>
-                {th === 1 && <span className="text-[9px] bg-[#eee] text-[#666] px-1.5 py-[1px] rounded-full ml-1">Quản lý cả 2 đơn</span>}
+            <div className="flex-1 bg-white border border-surface-container rounded-[4px] p-3">
+              <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-surface-container-high">
+                <div className="w-2.5 h-2.5 rounded-full bg-tertiary flex-shrink-0" />
+                <span className="text-[12px] font-bold text-tertiary">Cán bộ A</span>
+                {th === 1 && <span className="text-[9px] bg-surface-container-high text-on-surface-variant px-1.5 py-[1px] rounded-full ml-1">Quản lý cả 2 đơn</span>}
               </div>
               <div className="space-y-2">{renderARows()}</div>
             </div>
@@ -9645,7 +9706,7 @@ const PrototypeGhepDon = () => {
             {/* B panel (TH2) */}
             {th === 2 && (
               <div className="flex-1 bg-white border border-[#2980b9]/40 rounded-[4px] p-3">
-                <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-[#eee]">
+                <div className="flex items-center gap-2 mb-2.5 pb-2 border-b border-surface-container-high">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#2980b9] flex-shrink-0" />
                   <span className="text-[12px] font-bold text-[#2980b9]">Cán bộ B</span>
                 </div>
@@ -9659,13 +9720,13 @@ const PrototypeGhepDon = () => {
           </div>
 
           {/* BR notes */}
-          <div className="bg-white border border-[#ddd] rounded-[4px] p-3 flex-shrink-0">
-            <p className="text-[11px] font-semibold text-[#333] mb-1.5">Quy tắc nghiệp vụ áp dụng</p>
+          <div className="bg-white border border-surface-container rounded-[4px] p-3 flex-shrink-0">
+            <p className="text-[11px] font-semibold text-on-surface mb-1.5">Quy tắc nghiệp vụ áp dụng</p>
             <div className="space-y-1">
               {protoBRNotes(step, th).map((n, i) => (
                 <div key={i} className="flex items-start gap-2 text-[11px]">
-                  <span className="font-bold text-[#8b1a1a] flex-shrink-0 min-w-[70px]">{n.br}</span>
-                  <span className="text-[#555]">{n.text}</span>
+                  <span className="font-bold text-error flex-shrink-0 min-w-[70px]">{n.br}</span>
+                  <span className="text-on-surface-variant">{n.text}</span>
                 </div>
               ))}
             </div>
@@ -9721,34 +9782,34 @@ Nơi nhận:
   return (
     <div className="flex flex-col h-full bg-[#eef1f5]">
       {/* Toolbar */}
-      <div className="bg-white border-b border-[#ddd] px-4 py-2 flex items-center gap-2 flex-wrap">
-        <button onClick={onBack} className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline mr-2">
+      <div className="bg-white border-b border-surface-container px-4 py-2 flex items-center gap-2 flex-wrap">
+        <button onClick={onBack} className="flex items-center gap-1 text-[12px] text-primary hover:underline mr-2">
           <ChevronRight size={13} className="rotate-180" /> Quay lại
         </button>
-        <div className="h-4 w-px bg-[#ddd] mr-1" />
+        <div className="h-4 w-px bg-surface-container mr-1" />
         {["B", "I", "U"].map(f => (
-          <button key={f} className="w-[26px] h-[26px] rounded border border-[#ccc] text-[12px] font-bold hover:bg-[#f0f0f0] flex items-center justify-center">
+          <button key={f} className="w-[26px] h-[26px] rounded border border-surface-container-highest text-[12px] font-bold hover:bg-surface-container flex items-center justify-center">
             {f}
           </button>
         ))}
-        <div className="h-4 w-px bg-[#ddd] mx-1" />
-        <select className="h-[26px] px-1 text-[12px] border border-[#ccc] rounded-[2px] bg-white">
+        <div className="h-4 w-px bg-surface-container mx-1" />
+        <select className="h-[26px] px-1 text-[12px] border border-surface-container-highest rounded-[2px] bg-white">
           <option>Times New Roman</option><option>Arial</option>
         </select>
-        <select className="h-[26px] px-1 text-[12px] border border-[#ccc] rounded-[2px] bg-white w-[52px]">
+        <select className="h-[26px] px-1 text-[12px] border border-surface-container-highest rounded-[2px] bg-white w-[52px]">
           {[10, 11, 12, 13, 14].map(s => <option key={s}>{s}</option>)}
         </select>
         <div className="flex-1" />
         <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#27ae60] hover:bg-[#1e8449] text-white rounded-[3px] text-[12px] font-medium transition-colors">
           <ArrowDownToLine size={12} /> Lấy số
         </button>
-        <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+        <button className="flex items-center gap-1.5 h-[28px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[12px] font-medium transition-colors">
           <Send size={12} /> Trình ký
         </button>
         <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#2980b9] hover:bg-[#1a6a9a] text-white rounded-[3px] text-[12px] font-medium transition-colors">
           <Download size={12} /> Tải xuống
         </button>
-        <button className="flex items-center gap-1.5 h-[28px] px-3 bg-[#1d2e4f] hover:bg-[#162440] text-white rounded-[3px] text-[12px] font-medium transition-colors">
+        <button className="flex items-center gap-1.5 h-[28px] px-3 bg-tertiary hover:bg-[#162440] text-white rounded-[3px] text-[12px] font-medium transition-colors">
           <Save size={12} /> Lưu
         </button>
       </div>
@@ -9760,7 +9821,7 @@ Nơi nhận:
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}
-            className="absolute inset-0 w-full h-full resize-none p-[80px] text-[13px] font-['Times_New_Roman',serif] leading-relaxed text-[#222] focus:outline-none bg-transparent"
+            className="absolute inset-0 w-full h-full resize-none p-[80px] text-[13px] font-['Times_New_Roman',serif] leading-relaxed text-on-surface focus:outline-none bg-transparent"
             style={{ fontFamily: "'Times New Roman', Times, serif" }}
           />
         </div>
@@ -9809,27 +9870,27 @@ const DanhSachBieuMau = ({
   return (
     <div className="bg-[#eef1f5] min-h-full flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-[#ddd] px-4 py-3">
-        <div className="flex items-center gap-2 text-[13px] text-[#666] mb-2">
-          <span className="hover:text-[#1a5a96] cursor-pointer" onClick={onBack}>Trang chủ</span>
+      <div className="bg-white border-b border-surface-container px-4 py-3">
+        <div className="flex items-center gap-2 text-[13px] text-on-surface-variant mb-2">
+          <span className="hover:text-primary cursor-pointer" onClick={onBack}>Trang chủ</span>
           <ChevronRight size={12} />
-          <span className="hover:text-[#1a5a96] cursor-pointer" onClick={onBack}>Quản lý đơn</span>
+          <span className="hover:text-primary cursor-pointer" onClick={onBack}>Quản lý đơn</span>
           <ChevronRight size={12} />
-          <span className="text-[#333]">Danh sách biểu mẫu đơn</span>
+          <span className="text-on-surface">Danh sách biểu mẫu đơn</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onBack} className="text-[#555] hover:text-[#222] p-1 rounded hover:bg-[#f0f0f0]">
+          <button onClick={onBack} className="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container">
             <ChevronRight size={18} className="rotate-180" />
           </button>
-          <h1 className="text-[16px] font-semibold text-[#222]">Danh sách biểu mẫu</h1>
+          <h1 className="text-[16px] font-semibold text-on-surface">Danh sách biểu mẫu</h1>
         </div>
       </div>
 
       <div className="flex-1 p-4 space-y-4">
         {/* Thông tin đơn */}
-        <div className="bg-white border border-[#ddd] rounded-[4px]">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#eee]">
-            <span className="text-[13px] font-semibold text-[#333]">Thông tin đơn</span>
+        <div className="bg-white border border-surface-container rounded-[4px]">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-surface-container-high">
+            <span className="text-[13px] font-semibold text-on-surface">Thông tin đơn</span>
             <span className="px-3 py-[3px] rounded-full border border-[#e67e22] text-[12px] font-medium text-[#e67e22]">
               • {row.giaiQuyet.nhan}
             </span>
@@ -9838,9 +9899,9 @@ const DanhSachBieuMau = ({
             <table className="w-full text-[13px]">
               <tbody>
                 {infoLeft.map(({ label, value }) => (
-                  <tr key={label} className="border-b border-[#f5f5f5] last:border-0">
-                    <td className="px-4 py-2.5 text-[#888] w-[160px] whitespace-nowrap">{label}</td>
-                    <td className="px-4 py-2.5 font-medium text-[#222]">{value}</td>
+                  <tr key={label} className="border-b border-surface-container-low last:border-0">
+                    <td className="px-4 py-2.5 text-on-surface-variant w-[160px] whitespace-nowrap">{label}</td>
+                    <td className="px-4 py-2.5 font-medium text-on-surface">{value}</td>
                   </tr>
                 ))}
               </tbody>
@@ -9848,9 +9909,9 @@ const DanhSachBieuMau = ({
             <table className="w-full text-[13px]">
               <tbody>
                 {infoRight.map(({ label, value }) => (
-                  <tr key={label} className="border-b border-[#f5f5f5] last:border-0">
-                    <td className="px-4 py-2.5 text-[#1a5a96] w-[200px] whitespace-nowrap">{label}</td>
-                    <td className="px-4 py-2.5 font-medium text-[#222]">{value}</td>
+                  <tr key={label} className="border-b border-surface-container-low last:border-0">
+                    <td className="px-4 py-2.5 text-primary w-[200px] whitespace-nowrap">{label}</td>
+                    <td className="px-4 py-2.5 font-medium text-on-surface">{value}</td>
                   </tr>
                 ))}
               </tbody>
@@ -9860,10 +9921,10 @@ const DanhSachBieuMau = ({
 
         {/* Toolbar */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center border border-[#ccc] rounded-[3px] bg-white overflow-hidden h-[32px]">
+          <div className="flex items-center border border-surface-container-highest rounded-[3px] bg-white overflow-hidden h-[32px]">
             <input type="text" placeholder="Nhập từ khóa tìm kiếm"
               className="px-3 text-[12px] outline-none w-[220px] h-full" />
-            <button className="w-[32px] h-[32px] bg-[#8b1a1a] flex items-center justify-center text-white flex-shrink-0">
+            <button className="w-[32px] h-[32px] bg-error flex items-center justify-center text-white flex-shrink-0">
               <Search size={13} />
             </button>
           </div>
@@ -9874,25 +9935,25 @@ const DanhSachBieuMau = ({
           <BtnPrimary className="text-[12px] py-[5px] px-3 gap-1.5">
             <Plus size={13} /> Thêm biểu mẫu
           </BtnPrimary>
-          <button className="w-[32px] h-[32px] border border-[#ccc] rounded-[3px] bg-white flex items-center justify-center text-[#555] hover:bg-[#f5f5f5]">
+          <button className="w-[32px] h-[32px] border border-surface-container-highest rounded-[3px] bg-white flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low">
             <RefreshCw size={13} />
           </button>
         </div>
 
         {/* Table */}
-        <div className="bg-white border border-[#ddd] rounded-[4px] overflow-hidden">
+        <div className="bg-white border border-surface-container rounded-[4px] overflow-hidden">
           <table className="w-full border-collapse text-[13px]">
             <thead>
-              <tr className="bg-[#f5f5f5] border-b border-[#ddd]">
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[50px]">STT</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Tên quyết định</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Số QĐ</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333] whitespace-nowrap">Ngày ra QĐ</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[190px]">Tiến trình</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Người ký</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Trạng thái</th>
-                <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Người tạo</th>
-                <th className="px-3 py-2.5 text-center font-semibold text-[#333]">Thao tác</th>
+              <tr className="bg-surface-container-low border-b border-surface-container">
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[50px]">STT</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Tên quyết định</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Số QĐ</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface whitespace-nowrap">Ngày ra QĐ</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[190px]">Tiến trình</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Người ký</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Trạng thái</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Người tạo</th>
+                <th className="px-3 py-2.5 text-center font-semibold text-on-surface">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -9900,28 +9961,28 @@ const DanhSachBieuMau = ({
                 const nguoiKy = vb.luongKy.find(b => b.vaiTro === "ky");
                 return (
                   <tr key={vb.id} onClick={() => setChonId(vb.id)}
-                    className={`border-b border-[#f0f0f0] hover:bg-[#f0f7ff] cursor-pointer ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                    <td className="px-3 py-2.5 text-[#1a5a96] font-medium">{i + 1}</td>
-                    <td className="px-3 py-2.5 font-semibold text-[#222]">{vb.loaiVanBan}</td>
+                    className={`border-b border-surface-container hover:bg-[#f0f7ff] cursor-pointer ${i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
+                    <td className="px-3 py-2.5 text-primary font-medium">{i + 1}</td>
+                    <td className="px-3 py-2.5 font-semibold text-on-surface">{vb.loaiVanBan}</td>
                     <td className="px-3 py-2.5">
                       {vb.soVanBan
-                        ? <span className="text-[#1a5a96] hover:underline font-mono text-[12px]">{vb.soVanBan}</span>
-                        : <span className="text-[#888] italic text-[12px]">— chưa số —</span>}
+                        ? <span className="text-primary hover:underline font-mono text-[12px]">{vb.soVanBan}</span>
+                        : <span className="text-on-surface-variant italic text-[12px]">— chưa số —</span>}
                     </td>
-                    <td className="px-3 py-2.5 text-[#555] whitespace-nowrap">
+                    <td className="px-3 py-2.5 text-on-surface-variant whitespace-nowrap">
                       {vb.ngayBanHanh ?? vb.ngayCapSo ?? "—"}
                     </td>
                     <td className="px-3 py-2.5"><TienTrinhGon vb={vb} /></td>
-                    <td className="px-3 py-2.5 font-medium text-[#333]">{nguoiKy?.nguoi ?? "—"}</td>
+                    <td className="px-3 py-2.5 font-medium text-on-surface">{nguoiKy?.nguoi ?? "—"}</td>
                     <td className="px-3 py-2.5">
                       <span className={`inline-block px-2 py-[2px] rounded-full text-[10px] font-medium border ${TRANG_THAI_CLS[vb.trangThai]}`}>
                         {TRANG_THAI_NHAN[vb.trangThai]}
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 text-[#555]">{vb.nguoiTao}</td>
+                    <td className="px-3 py-2.5 text-on-surface-variant">{vb.nguoiTao}</td>
                     <td className="px-3 py-2.5 text-center">
                       <button onClick={(e) => { e.stopPropagation(); setChonId(vb.id); }} title="Xem chi tiết & lịch sử"
-                        className="text-[#555] hover:text-[#8b1a1a] transition-colors">
+                        className="text-on-surface-variant hover:text-error transition-colors">
                         <FileText size={16} />
                       </button>
                     </td>
@@ -9930,9 +9991,9 @@ const DanhSachBieuMau = ({
               })}
               {vanBanCuaDon.length === 0 && (
                 <tr><td colSpan={9} className="py-12 text-center">
-                  <FileText size={24} className="mx-auto mb-2 text-[#ccc]" />
-                  <div className="text-[13px] text-[#666]">Đơn {row.maDon.trim()} chưa có văn bản nào.</div>
-                  <div className="text-[12px] text-[#888] mt-1">
+                  <FileText size={24} className="mx-auto mb-2 text-surface-container-highest" />
+                  <div className="text-[13px] text-on-surface-variant">Đơn {row.maDon.trim()} chưa có văn bản nào.</div>
+                  <div className="text-[12px] text-on-surface-variant mt-1">
                     Lập văn bản từ màn Danh sách đơn — nút “Lưu số văn bản và in báo cáo”.
                   </div>
                 </td></tr>
@@ -9940,11 +10001,11 @@ const DanhSachBieuMau = ({
             </tbody>
           </table>
           {/* Pagination */}
-          <div className="flex items-center justify-end px-4 py-2.5 border-t border-[#eee] text-[12px] text-[#666] gap-2">
+          <div className="flex items-center justify-end px-4 py-2.5 border-t border-surface-container-high text-[12px] text-on-surface-variant gap-2">
             <span>Hiển thị {vanBanCuaDon.length ? `1-${vanBanCuaDon.length}` : "0"} / {vanBanCuaDon.length}</span>
-            <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee]">‹</button>
-            <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#8b1a1a] rounded bg-[#8b1a1a] text-white">1</button>
-            <button className="w-[26px] h-[26px] flex items-center justify-center border border-[#ddd] rounded text-[#666] hover:bg-[#eee]">›</button>
+            <button className="w-[26px] h-[26px] flex items-center justify-center border border-surface-container rounded text-on-surface-variant hover:bg-surface-container-high">‹</button>
+            <button className="w-[26px] h-[26px] flex items-center justify-center border border-error rounded bg-error text-white">1</button>
+            <button className="w-[26px] h-[26px] flex items-center justify-center border border-surface-container rounded text-on-surface-variant hover:bg-surface-container-high">›</button>
           </div>
         </div>
       </div>
@@ -10103,15 +10164,15 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3">
       {/* Tabs */}
-      <div className="bg-white rounded-[4px] border border-[#ddd] overflow-hidden">
-        <div className="flex border-b border-[#ddd]">
+      <div className="bg-white rounded-[4px] border border-surface-container overflow-hidden">
+        <div className="flex border-b border-surface-container">
           {tabs.map((t, i) => (
             <button key={i} onClick={() => { setTab(i as 0 | 1); setSelectedRows([]); setEditingRow(null); }}
               className={`flex items-center gap-1.5 px-4 py-[9px] text-[13px] font-medium transition-colors border-b-2 -mb-px
-                ${tab === i ? "border-[#8b1a1a] text-[#8b1a1a] bg-white" : "border-transparent text-[#666] hover:text-[#333] bg-[#fafafa]"}`}>
+                ${tab === i ? "border-error text-error bg-white" : "border-transparent text-on-surface-variant hover:text-on-surface bg-surface-bright"}`}>
               {t.label}
               <span className={`inline-flex items-center justify-center min-w-[18px] h-[17px] px-1 rounded-full text-[10px] font-semibold
-                ${tab === i ? "bg-[#8b1a1a] text-white" : "bg-[#e5e5e5] text-[#666]"}`}>
+                ${tab === i ? "bg-error text-white" : "bg-[#e5e5e5] text-on-surface-variant"}`}>
                 {t.count}
               </span>
             </button>
@@ -10151,53 +10212,53 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                     hiệu lực của TAND khu vực, nên ô này lọc theo tòa ĐÃ RA bản án
                     bị đề nghị — trước đây là danh sách TANDTC/TAND cấp cao và
                     cũng chưa nối vào bộ lọc. */}
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Tòa án ra bản án/QĐ</label>
+              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Tòa án ra bản án/QĐ</label>
               <div className="relative">
                 <select value={toaBAFilter} onChange={e => setToaBAFilter(e.target.value)}
-                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
                   <option value="">Tất cả tòa án</option>
                   {toaBAOptions.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Ngày nhập đơn</label>
+              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Ngày nhập đơn</label>
               <div className="flex items-center gap-1">
-                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
-                <span className="text-[#888] text-[11px]">—</span>
-                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
+                <span className="text-on-surface-variant text-[11px]">—</span>
+                <input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Hình thức</label>
+              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Hình thức</label>
               <div className="relative">
                 <select value={hinhThucFilter} onChange={e => setHinhThucFilter(e.target.value)}
-                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
                   <option value="">Tất cả hình thức</option>
                   {optionsHinhThucDonPhanCong()}
                 </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#555] mb-1">Người nhập đơn</label>
+              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Người nhập đơn</label>
               <div className="relative">
-                <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
                   <option value="">-- Chọn người nhập đơn --</option>
                   {["Vũ Văn Yên", "Lê Thị Hà", "Phùng Trâm Anh"].map(n => <option key={n}>{n}</option>)}
                 </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
               </div>
             </div>
           </div>
 
           {/* Loại án checkboxes */}
           <div>
-            <label className="block text-[11px] font-medium text-[#555] mb-1.5">Loại án</label>
+            <label className="block text-[11px] font-medium text-on-surface-variant mb-1.5">Loại án</label>
             <div className="flex flex-wrap gap-x-5 gap-y-2">
               {LOAI_AN_OPTIONS.map(la => (
-                <label key={la} className="flex items-center gap-1.5 cursor-pointer text-[12px] text-[#333]">
+                <label key={la} className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
                   <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                     checked={loaiAnFilter.includes(la)} onChange={() => toggleLoaiAn(la)} />
                   {la}
@@ -10215,21 +10276,21 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
           sách thẩm phán. Thêm một khối nữa là nói cùng một chuyện ba lần. */}
 
       {/* Table */}
-      <div className="bg-white rounded-[4px] border border-[#ddd] overflow-hidden">
+      <div className="bg-white rounded-[4px] border border-surface-container overflow-hidden">
         {/* Thanh thao tác — nút "Danh sách thẩm phán" dùng chung cho cả 2 tab
             nên chỉ khai báo một lần; phần bên phải mới đổi theo tab. */}
-        <div className="px-4 py-[9px] border-b border-[#ddd] flex items-center justify-between gap-3">
+        <div className="px-4 py-[9px] border-b border-surface-container flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[13px] font-semibold text-[#1d2e4f]">
+            <span className="text-[13px] font-semibold text-tertiary">
               {tab === 0 ? "Danh sách chờ phân công" : "Kết quả phân công"}
             </span>
             {/* Số đơn đang chọn nằm ngay cạnh tiêu đề — trước đây cán bộ chọn
                 thẩm phán xong mới biết mình chưa tick đơn nào. */}
             {tab === 0 && selectedRows.length > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-[2px] rounded-[3px] text-[11px] font-medium bg-[#e8f0fe] text-[#1a5a96] border border-[#c5d8f8]">
+              <span className="inline-flex items-center gap-1.5 px-2 py-[2px] rounded-[3px] text-[11px] font-medium bg-info-container text-primary border border-surface-variant">
                 Đã chọn {selectedRows.length} đơn
                 <button onClick={() => setSelectedRows([])}
-                  className="text-[#1a5a96]/70 hover:text-[#1a5a96]" title="Bỏ chọn tất cả">
+                  className="text-primary/70 hover:text-primary" title="Bỏ chọn tất cả">
                   <X size={11} />
                 </button>
               </span>
@@ -10238,7 +10299,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-              className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-[#8b1a1a] text-[#8b1a1a] hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
+              className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-error text-error hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
             >
               <Users size={12} />
               <span className="leading-none">Danh sách thẩm phán</span>
@@ -10249,7 +10310,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                  không phải để quyết. */
               laChanhAn ? (
                 <>
-                  <span className="text-[12px] font-medium text-[#555]">Chỉ định cho:</span>
+                  <span className="text-[12px] font-medium text-on-surface-variant">Chỉ định cho:</span>
                   <div className="relative w-[210px]">
                     <select
                       value=""
@@ -10258,24 +10319,24 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                       onChange={(e) => { if (e.target.value) setShowLyDoPopup({ show: true, thamPhan: e.target.value }); e.target.value = ""; }}
                       className={`w-full h-[28px] px-2 pr-6 text-[12px] border rounded-[3px] appearance-none focus:outline-none
                       ${selectedRows.length === 0
-                          ? "border-[#ddd] bg-[#f5f5f5] text-[#999] cursor-not-allowed"
-                          : "border-[#ccc] bg-white focus:border-[#1a73e8]"}`}
+                          ? "border-surface-container bg-surface-container-low text-outline cursor-not-allowed"
+                          : "border-surface-container-highest bg-white focus:border-primary"}`}
                     >
                       <option value="">-- Chọn thẩm phán --</option>
                       {/* Kèm số đơn đang giữ để không dồn việc vào một người. */}
                       {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
                     </select>
-                    <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                    <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                   </div>
                 </>
               ) : (
-                <span className="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-[3px] text-[11px] font-medium bg-[#f1f5f9] text-[#64748b] border border-[#e2e8f0]">
+                <span className="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-[3px] text-[11px] font-medium bg-surface-container-high text-[#64748b] border border-[#e2e8f0]">
                   <Ban size={12} className="flex-shrink-0" />
                   Chỉ Chánh án phân công được
                 </span>
               )
             ) : (
-              <button className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[11px] font-medium transition-colors">
+              <button className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[11px] font-medium transition-colors">
                 <Search size={12} />
                 <span className="leading-none">Tìm kiếm</span>
               </button>
@@ -10285,9 +10346,9 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-[12px]">
             <thead>
-              <tr className="bg-[#f5f5f5]">
+              <tr className="bg-surface-container-low">
                 {tab === 0 && (
-                  <th className="border border-[#ddd] px-2 py-[6px] text-center w-[30px]">
+                  <th className="border border-surface-container px-2 py-[6px] text-center w-[30px]">
                     <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                       checked={selectedRows.length === filtered.length && filtered.length > 0}
                       onChange={toggleSelectAll}
@@ -10295,53 +10356,53 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                     />
                   </th>
                 )}
-                <th className="border border-[#ddd] px-2 py-[6px] text-center font-semibold text-[#333] w-[36px]">STT</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[130px]">Số thụ lý</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[95px]">Ngày thụ lý</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin người đứng đơn</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Thông tin BA/QĐ đề nghị GĐT, TT</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[130px]">Loại án</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Hình thức đơn</th>
-                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[160px]">Thẩm phán</th>
+                <th className="border border-surface-container px-2 py-[6px] text-center font-semibold text-on-surface w-[36px]">STT</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[130px]">Số thụ lý</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[95px]">Ngày thụ lý</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin người đứng đơn</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin BA/QĐ đề nghị GĐT, TT</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[130px]">Loại án</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[110px]">Hình thức đơn</th>
+                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[160px]">Thẩm phán</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={tab === 0 ? 9 : 8} className="border border-[#ddd] px-4 py-10 text-center text-[#999]">
+                  <td colSpan={tab === 0 ? 9 : 8} className="border border-surface-container px-4 py-10 text-center text-outline">
                     {tab === 0 ? "Không còn đơn nào chờ phân công" : "Chưa có đơn nào được phân công"}
                   </td>
                 </tr>
               ) : filtered.map((row, i) => (
                 <tr key={row.id}
-                  className={`align-top ${selectedRows.includes(row.id) ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
+                  className={`align-top ${selectedRows.includes(row.id) ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
                   {tab === 0 && (
-                    <td className="border border-[#ddd] px-2 py-2 text-center">
+                    <td className="border border-surface-container px-2 py-2 text-center">
                       <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
                         checked={selectedRows.includes(row.id)}
                         onChange={() => toggleSelectRow(row.id)}
                       />
                     </td>
                   )}
-                  <td className="border border-[#ddd] px-2 py-2 text-center text-[#666]">{i + 1}</td>
-                  <td className="border border-[#ddd] px-3 py-2 font-medium text-[#1a5a96]">{row.soThuLy}</td>
-                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{row.ngayThuLy}</td>
-                  <td className="border border-[#ddd] px-3 py-2">
-                    <div className="font-medium text-[#1d2e4f] leading-snug">{row.nguoiDungDon}</div>
-                    <div className="text-[11px] text-[#888] mt-0.5 leading-snug">{row.diaChi}</div>
+                  <td className="border border-surface-container px-2 py-2 text-center text-on-surface-variant">{i + 1}</td>
+                  <td className="border border-surface-container px-3 py-2 font-medium text-primary">{row.soThuLy}</td>
+                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{row.ngayThuLy}</td>
+                  <td className="border border-surface-container px-3 py-2">
+                    <div className="font-medium text-tertiary leading-snug">{row.nguoiDungDon}</div>
+                    <div className="text-[11px] text-on-surface-variant mt-0.5 leading-snug">{row.diaChi}</div>
                   </td>
-                  <td className="border border-[#ddd] px-3 py-2">
+                  <td className="border border-surface-container px-3 py-2">
                     <div className="space-y-[2px] leading-snug">
-                      <div><span className="text-[#888]">Số BA: </span><span className="font-medium">{row.soBA}</span></div>
-                      <div><span className="text-[#888]">Ngày: </span><span>{row.ngayBA}</span></div>
-                      <div><span className="text-[#888]">Tòa xét xử: </span><span>{row.toaBA}</span></div>
+                      <div><span className="text-on-surface-variant">Số BA: </span><span className="font-medium">{row.soBA}</span></div>
+                      <div><span className="text-on-surface-variant">Ngày: </span><span>{row.ngayBA}</span></div>
+                      <div><span className="text-on-surface-variant">Tòa xét xử: </span><span>{row.toaBA}</span></div>
                     </div>
                   </td>
-                  <td className="border border-[#ddd] px-3 py-2">
-                    <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-[#e8f0fe] text-[#1a5a96] border border-[#c5d8f8]">{row.loaiAn}</span>
+                  <td className="border border-surface-container px-3 py-2">
+                    <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-info-container text-primary border border-surface-variant">{row.loaiAn}</span>
                   </td>
-                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{row.hinhThuc}</td>
-                  <td className="border border-[#ddd] px-3 py-2">
+                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{row.hinhThuc}</td>
+                  <td className="border border-surface-container px-3 py-2">
                     {tab === 1 ? (
                       /* Đơn đã có Thông báo phân công: quyết định đã gửi sang Phòng GĐKT
                          & THA. Sửa lặng lẽ ở đây sẽ khiến nơi nhận và hồ sơ nói hai
@@ -10350,7 +10411,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                       row.thongBao && !coQuyenDoiThamPhan ? (
                         <div className="space-y-1">
                           <div className="flex items-center gap-1.5">
-                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-[#999]"}`}>
+                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-outline"}`}>
                               {assignMap[row.id] || "—"}
                             </span>
                             <Ban size={11} className="text-[#b45309] flex-shrink-0" />
@@ -10368,38 +10429,38 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                               <>
                                 {/* Thẩm phán mới */}
                                 <div>
-                                  <label className="block text-[10px] text-[#888] mb-0.5">Thẩm phán</label>
+                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">Thẩm phán</label>
                                   <div className="relative">
                                     <select value={assignMap[row.id] ?? ""}
                                       onChange={e => setAssignMap(p => ({ ...p, [row.id]: e.target.value }))}
-                                      className="w-full h-[26px] px-2 pr-6 text-[11px] border border-[#1a73e8] rounded-[3px] bg-white appearance-none focus:outline-none">
+                                      className="w-full h-[26px] px-2 pr-6 text-[11px] border border-primary rounded-[3px] bg-white appearance-none focus:outline-none">
                                       <option value="">-- Chọn thẩm phán --</option>
                                       {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
                                     </select>
-                                    <ChevronDown size={9} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                                    <ChevronDown size={9} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                                   </div>
                                 </div>
                                 {/* Ngày sửa */}
                                 <div>
-                                  <label className="block text-[10px] text-[#888] mb-0.5">Ngày sửa</label>
+                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">Ngày sửa</label>
                                   <input type="date" value={currentEditForm.ngaySua}
                                     onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), ngaySua: e.target.value } }))}
-                                    className="w-full h-[26px] px-2 text-[11px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                                    className="w-full h-[26px] px-2 text-[11px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
                                 </div>
                                 {/* Lý do — BẮT BUỘC. Đổi thẩm phán giữa chừng là thay đổi
                               có hệ quả tố tụng, hồ sơ phải giải trình được vì sao. */}
                                 <div>
-                                  <label className="block text-[10px] text-[#888] mb-0.5">
-                                    Lý do sửa phân công <span className="text-[#8b1a1a]">*</span>
+                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">
+                                    Lý do sửa phân công <span className="text-error">*</span>
                                   </label>
                                   <textarea value={currentEditForm.lyDo}
                                     onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), lyDo: e.target.value } }))}
                                     placeholder="Nhập lý do..."
                                     rows={2}
                                     className={`w-full px-2 py-1 text-[11px] border rounded-[3px] focus:outline-none resize-none
-                                ${currentEditForm.lyDo.trim().length >= 10 ? "border-[#ccc] focus:border-[#1a73e8]" : "border-[#8b1a1a]"}`} />
+                                ${currentEditForm.lyDo.trim().length >= 10 ? "border-surface-container-highest focus:border-primary" : "border-error"}`} />
                                   {currentEditForm.lyDo.trim().length < 10 && (
-                                    <div className="text-[10px] text-[#8b1a1a] mt-0.5 leading-snug">
+                                    <div className="text-[10px] text-error mt-0.5 leading-snug">
                                       Nhập lý do để lưu (tối thiểu 10 ký tự).
                                     </div>
                                   )}
@@ -10420,7 +10481,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                                     <Check size={10} /> Lưu
                                   </button>
                                   <button onClick={() => setEditingRow(null)}
-                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-[#666] hover:bg-[#f0f0f0] transition-colors">
+                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                                     <X size={10} /> Hủy
                                   </button>
                                 </div>
@@ -10431,11 +10492,11 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                       ) : (
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between gap-2">
-                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-[#999]"}`}>
+                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-outline"}`}>
                               {assignMap[row.id] || "—"}
                             </span>
                             <button onClick={() => startEdit(row.id)}
-                              className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-[#1a5a96] hover:bg-[#e8f0fe] transition-colors whitespace-nowrap">
+                              className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-primary hover:bg-info-container transition-colors whitespace-nowrap">
                               <Pencil size={10} /> Sửa
                             </button>
                           </div>
@@ -10473,7 +10534,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
 
                           {/* Việc chuyển tiếp cho HCTP sau khi Chánh án đổi người */}
                           {canTBThayDoi[row.id] && (
-                            <div className="flex items-start gap-1 text-[10px] text-[#8b1a1a] bg-[#fdf2f2] border border-[#f0c8c8] rounded-[3px] px-1.5 py-1 leading-snug">
+                            <div className="flex items-start gap-1 text-[10px] text-error bg-[#fdf2f2] border border-[#f0c8c8] rounded-[3px] px-1.5 py-1 leading-snug">
                               <AlertCircle size={10} className="flex-shrink-0 mt-[1px]" />
                               <span>HCTP cần lập <b className="font-semibold">Thông báo thay đổi phân công</b> gửi Phòng GĐKT &amp; THA.</span>
                             </div>
@@ -10483,7 +10544,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                     ) : (
                       /* Tab Chờ phân công: nói rõ "chưa phân công" thay vì một
                          gạch ngang trống, để không bị đọc nhầm là thiếu dữ liệu. */
-                      <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-[#f2f2f2] text-[#888] border border-[#e0e0e0]">
+                      <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-[#f2f2f2] text-on-surface-variant border border-surface-container-highest">
                         Chưa phân công
                       </span>
                     )}
@@ -10505,7 +10566,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
           onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}>
           <div className="bg-white rounded-[6px] w-[520px] overflow-hidden shadow-2xl"
             onClick={e => e.stopPropagation()}>
-            <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="bg-tertiary text-white px-4 py-2.5 flex items-center justify-between">
               <div className="text-[15px] font-bold">Lý do phân công thẩm phán</div>
               <button onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}
                 className="text-white/70 hover:text-white"><X size={16} /></button>
@@ -10513,8 +10574,8 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
 
             <div className="p-4">
               <div className="text-[12px] leading-relaxed mb-3.5">
-                <span className="text-[#666]">Phân công cho: </span>
-                <b className="text-[#333]">{showLyDoPopup.thamPhan}</b>
+                <span className="text-on-surface-variant">Phân công cho: </span>
+                <b className="text-on-surface">{showLyDoPopup.thamPhan}</b>
                 {/* Cảnh báo dồn việc — người ký cần thấy trước khi xác nhận, chứ
                     không phải sau khi đơn đã sang tay thẩm phán. */}
                 {hasHighLoad(showLyDoPopup.thamPhan) && (
@@ -10523,8 +10584,8 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                   </span>
                 )}
                 <br />
-                <span className="text-[#666]">Áp dụng cho: </span>
-                <b className="text-[#333]">
+                <span className="text-on-surface-variant">Áp dụng cho: </span>
+                <b className="text-on-surface">
                   {selectedRows.length > 0 ? `${selectedRows.length} vụ án đã chọn` : "chưa chọn vụ án nào"}
                 </b>
               </div>
@@ -10534,12 +10595,12 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
               </label>
               <textarea value={lyDoChiDinh} onChange={e => setLyDoChiDinh(e.target.value)} rows={3} autoFocus
                 placeholder="Ghi chú thêm nếu cần, ví dụ: Thẩm phán đã thụ lý vụ án liên quan…"
-                className="w-full border border-[#ccc] rounded-[3px] px-2.5 py-2 text-[12px] leading-relaxed resize-none focus:outline-none focus:border-[#1a73e8]" />
+                className="w-full border border-surface-container-highest rounded-[3px] px-2.5 py-2 text-[12px] leading-relaxed resize-none focus:outline-none focus:border-primary" />
             </div>
 
-            <div className="border-t border-[#e0e0e0] px-4 py-3 flex justify-end gap-2">
+            <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2">
               <button onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}
-                className="h-[28px] px-3 rounded-[3px] border border-[#ccc] text-[12px] font-medium text-[#333] hover:bg-[#f5f5f5]">
+                className="h-[28px] px-3 rounded-[3px] border border-surface-container-highest text-[12px] font-medium text-on-surface hover:bg-surface-container-low">
                 Huỷ
               </button>
               <button
@@ -10557,7 +10618,7 @@ const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "
                 }}
                 className={`h-[28px] px-3 rounded-[3px] text-[12px] font-medium text-white transition-colors
                   ${selectedRows.length === 0
-                    ? "bg-[#d9c4c4] cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#6e1414]"}`}>
+                    ? "bg-[#d9c4c4] cursor-not-allowed" : "bg-error hover:bg-error-container"}`}>
                 Xác nhận phân công
               </button>
             </div>
@@ -10577,19 +10638,19 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
   const [diaChiTruoc, setDiaChiTruoc] = useState(false);
 
   const FLbl = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
-    <label className="block text-[11px] font-medium text-[#555] mb-1">
+    <label className="block text-[11px] font-medium text-on-surface-variant mb-1">
       {children}{req && <span className="text-red-500 ml-0.5">*</span>}
     </label>
   );
   const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-    <input {...props} className="w-full h-[28px] border border-[#ccc] rounded-[3px] px-2 text-[12px] text-[#222] focus:outline-none focus:border-[#1a73e8]" />
+    <input {...props} className="w-full h-[28px] border border-surface-container-highest rounded-[3px] px-2 text-[12px] text-on-surface focus:outline-none focus:border-primary" />
   );
   const FSel = ({ children }: { children: React.ReactNode }) => (
     <div className="relative">
-      <select className="w-full h-[28px] border border-[#ccc] rounded-[3px] px-2 pr-6 text-[12px] text-[#222] appearance-none focus:outline-none focus:border-[#1a73e8] bg-white">
+      <select className="w-full h-[28px] border border-surface-container-highest rounded-[3px] px-2 pr-6 text-[12px] text-on-surface appearance-none focus:outline-none focus:border-primary bg-white">
         {children}
       </select>
-      <ChevronDown size={9} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+      <ChevronDown size={9} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
     </div>
   );
   const Row2 = ({ children }: { children: React.ReactNode }) => (
@@ -10599,10 +10660,10 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
     <div className="grid grid-cols-3 gap-x-4 gap-y-3">{children}</div>
   );
   const SectionHdr = ({ children }: { children: React.ReactNode }) => (
-    <div className="text-[11px] font-semibold text-[#1d2e4f] uppercase tracking-wide pt-2 pb-1 border-b border-[#e0e0e0] mb-2">{children}</div>
+    <div className="text-[11px] font-semibold text-tertiary uppercase tracking-wide pt-2 pb-1 border-b border-surface-container-highest mb-2">{children}</div>
   );
   const Chk = ({ checked, onChange, children }: { checked: boolean; onChange: (v: boolean) => void; children: React.ReactNode }) => (
-    <label className="flex items-center gap-2 cursor-pointer text-[12px] text-[#333]">
+    <label className="flex items-center gap-2 cursor-pointer text-[12px] text-on-surface">
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="w-[13px] h-[13px] accent-[#1d2e4f]" />
       {children}
     </label>
@@ -10612,9 +10673,9 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-[4px] shadow-xl w-[820px] max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e0e0e0]">
-          <span className="text-[13px] font-semibold text-[#1d2e4f]">Thêm bị cáo</span>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333] transition-colors"><X size={16} /></button>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-highest">
+          <span className="text-[13px] font-semibold text-tertiary">Thêm bị cáo</span>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors"><X size={16} /></button>
         </div>
 
         {/* Body */}
@@ -10622,7 +10683,7 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
 
           {/* Phân loại */}
           <div className="flex items-center gap-6">
-            <span className="text-[11px] font-medium text-[#555]">Phân loại người tham gia tố tụng</span>
+            <span className="text-[11px] font-medium text-on-surface-variant">Phân loại người tham gia tố tụng</span>
             <label className="flex items-center gap-1.5 cursor-pointer text-[12px]">
               <input type="radio" name="phanloai" value="canhan" checked={phanLoai === "canhan"} onChange={() => setPhanLoai("canhan")} className="accent-[#1d2e4f]" />
               Cá nhân
@@ -10653,8 +10714,8 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
           <div className="flex gap-4">
             {/* Ảnh */}
             <div className="flex flex-col items-center gap-2">
-              <div className="w-[80px] h-[100px] border border-dashed border-[#ccc] rounded-[3px] flex flex-col items-center justify-center text-[#bbb] cursor-pointer hover:border-[#1a73e8] transition-colors text-center px-1">
-                <Upload size={18} className="text-[#ccc]" />
+              <div className="w-[80px] h-[100px] border border-dashed border-surface-container-highest rounded-[3px] flex flex-col items-center justify-center text-[#bbb] cursor-pointer hover:border-primary transition-colors text-center px-1">
+                <Upload size={18} className="text-surface-container-highest" />
                 <span className="text-[10px] mt-1 leading-tight">Ảnh chân dung</span>
               </div>
             </div>
@@ -10720,23 +10781,23 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
 
           {/* Danh sách giấy tờ */}
           <SectionHdr>Danh sách giấy tờ</SectionHdr>
-          <div className="border border-[#e0e0e0] rounded-[3px] overflow-hidden">
+          <div className="border border-surface-container-highest rounded-[3px] overflow-hidden">
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-[#f5f5f5] border-b border-[#e0e0e0]">
+                <tr className="bg-surface-container-low border-b border-surface-container-highest">
                   {["STT", "Loại giấy tờ", "Số", "Ngày cấp", "Nơi cấp", "Thao tác"].map(h => (
-                    <th key={h} className="px-3 py-[6px] text-left font-semibold text-[#333] border-r last:border-r-0 border-[#e0e0e0]">{h}</th>
+                    <th key={h} className="px-3 py-[6px] text-left font-semibold text-on-surface border-r last:border-r-0 border-surface-container-highest">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <tr><td colSpan={6} className="text-center text-[#aaa] py-4 italic">Chưa có giấy tờ. Nhấn Thêm giấy tờ để bổ sung.</td></tr>
+                <tr><td colSpan={6} className="text-center text-outline py-4 italic">Chưa có giấy tờ. Nhấn Thêm giấy tờ để bổ sung.</td></tr>
               </tbody>
             </table>
           </div>
           <div>
             <FLbl>Ghi chú</FLbl>
-            <textarea rows={2} placeholder="Ghi chú..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-[#1a73e8] resize-none" />
+            <textarea rows={2} placeholder="Ghi chú..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] focus:outline-none focus:border-primary resize-none" />
           </div>
 
           {/* Địa danh */}
@@ -10757,38 +10818,38 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
 
           {/* Thông tin quan hệ */}
           <SectionHdr>Thông tin quan hệ</SectionHdr>
-          <div className="border border-[#e0e0e0] rounded-[3px] overflow-hidden">
+          <div className="border border-surface-container-highest rounded-[3px] overflow-hidden">
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-[#f5f5f5] border-b border-[#e0e0e0]">
+                <tr className="bg-surface-container-low border-b border-surface-container-highest">
                   {["STT", "Họ tên", "Ngày sinh", "Giới tính", "CCCD/CMT", "Quan hệ", "Nơi ở hiện nay", "Chú thích", "Thao tác"].map(h => (
-                    <th key={h} className="px-2 py-[5px] text-left font-semibold text-[#333] border-r last:border-r-0 border-[#e0e0e0]">{h}</th>
+                    <th key={h} className="px-2 py-[5px] text-left font-semibold text-on-surface border-r last:border-r-0 border-surface-container-highest">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <tr><td colSpan={9} className="text-center text-[#aaa] py-4 italic">Không có dữ liệu</td></tr>
+                <tr><td colSpan={9} className="text-center text-outline py-4 italic">Không có dữ liệu</td></tr>
               </tbody>
             </table>
           </div>
 
           {/* Thông tin tội danh */}
           <SectionHdr>Thông tin tội danh</SectionHdr>
-          <div className="border border-[#e0e0e0] rounded-[3px] overflow-hidden">
+          <div className="border border-surface-container-highest rounded-[3px] overflow-hidden">
             <table className="w-full text-[11px]">
               <thead>
-                <tr className="bg-[#f5f5f5] border-b border-[#e0e0e0]">
+                <tr className="bg-surface-container-low border-b border-surface-container-highest">
                   {["STT", "Điều", "Khoản", "Điểm", "Bộ luật TTHS", "Tội danh chính", "Thao tác"].map(h => (
-                    <th key={h} className="px-3 py-[5px] text-left font-semibold text-[#333] border-r last:border-r-0 border-[#e0e0e0]">{h}</th>
+                    <th key={h} className="px-3 py-[5px] text-left font-semibold text-on-surface border-r last:border-r-0 border-surface-container-highest">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                <tr><td colSpan={7} className="text-center text-[#aaa] py-4 italic">Không có dữ liệu</td></tr>
+                <tr><td colSpan={7} className="text-center text-outline py-4 italic">Không có dữ liệu</td></tr>
               </tbody>
             </table>
           </div>
-          <p className="text-[11px] text-[#999] italic">Chọn một tội danh để xem hoặc thêm hình phạt.</p>
+          <p className="text-[11px] text-outline italic">Chọn một tội danh để xem hoặc thêm hình phạt.</p>
 
           {/* Thông tin thống kê */}
           <SectionHdr>Thông tin thống kê</SectionHdr>
@@ -10800,7 +10861,7 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#e0e0e0]">
+        <div className="flex justify-end gap-2 px-5 py-3 border-t border-surface-container-highest">
           <BtnSecondary onClick={onClose}>Hủy</BtnSecondary>
           <BtnPrimary>Lưu</BtnPrimary>
         </div>
@@ -10848,11 +10909,11 @@ const THAM_PHAN_DATA = [
 ];
 
 const LOAI_COLOR: Record<string, string> = {
-  "Hình sự": "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]",
-  "Dân sự": "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]",
+  "Hình sự": "bg-error-container text-error border-error-container",
+  "Dân sự": "bg-info-container text-primary border-surface-variant",
   "Hành chính": "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]",
   "KDTM": "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]",
-  "Hôn nhân GĐ": "bg-[#f3e8ff] text-[#6d28d9] border-[#d8b4fe]",
+  "Hôn nhân GĐ": "bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim",
   "Lao động": "bg-[#f0fdf4] text-[#166534] border-[#86efac]",
 };
 
@@ -10872,62 +10933,62 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-[4px] shadow-xl w-[860px] max-h-[88vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[#e0e0e0]">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-surface-container-highest">
           <div className="flex items-center gap-2">
-            <Users size={15} className="text-[#1d2e4f]" />
-            <span className="text-[13px] font-semibold text-[#1d2e4f]">Danh sách thẩm phán đang giải quyết vụ việc</span>
+            <Users size={15} className="text-tertiary" />
+            <span className="text-[13px] font-semibold text-tertiary">Danh sách thẩm phán đang giải quyết vụ việc</span>
           </div>
-          <button onClick={onClose} className="text-[#888] hover:text-[#333] transition-colors"><X size={16} /></button>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors"><X size={16} /></button>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-[#f0f0f0] bg-[#fafafa]">
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-surface-container bg-surface-bright">
           <div className="relative flex-1 max-w-[280px]">
-            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#aaa]" />
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-outline" />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm theo tên thẩm phán..."
-              className="w-full h-[30px] pl-7 pr-3 text-[12px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]"
+              className="w-full h-[30px] pl-7 pr-3 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary"
             />
           </div>
           <div className="relative">
             <select value={filterLoai} onChange={e => setFilterLoai(e.target.value)}
-              className="h-[30px] pl-2 pr-7 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+              className="h-[30px] pl-2 pr-7 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
               <option value="">-- Tất cả loại án --</option>
               {loaiOptions.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
-            <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+            <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
           </div>
-          <span className="text-[11px] text-[#888] ml-auto">{filtered.length} thẩm phán</span>
+          <span className="text-[11px] text-on-surface-variant ml-auto">{filtered.length} thẩm phán</span>
         </div>
 
         {/* Body */}
         <div className="overflow-y-auto flex-1">
           <table className="w-full text-[12px] border-collapse">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-[#f5f5f5] border-b border-[#ddd]">
+              <tr className="bg-surface-container-low border-b border-surface-container">
                 {/* Không còn cột "Bậc": chỉ có một loại thẩm phán nên bậc không
                     còn là tiêu chí để chọn người phân công. */}
-                <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0] w-[200px]">Thẩm phán</th>
-                <th className="px-4 py-[8px] text-left font-semibold text-[#333] border-r border-[#e0e0e0]">Vụ việc đang giải quyết</th>
-                <th className="px-4 py-[8px] text-center font-semibold text-[#333] w-[90px]">Tổng số đơn</th>
+                <th className="px-4 py-[8px] text-left font-semibold text-on-surface border-r border-surface-container-highest w-[200px]">Thẩm phán</th>
+                <th className="px-4 py-[8px] text-left font-semibold text-on-surface border-r border-surface-container-highest">Vụ việc đang giải quyết</th>
+                <th className="px-4 py-[8px] text-center font-semibold text-on-surface w-[90px]">Tổng số đơn</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((tp, idx) => (
-                <tr key={tp.id} className={idx % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+                <tr key={tp.id} className={idx % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
                   <td className="px-4 py-3 border-r border-[#e8e8e8] align-top">
-                    <div className="font-medium text-[#1d2e4f]">{tp.hoTen}</div>
+                    <div className="font-medium text-tertiary">{tp.hoTen}</div>
                   </td>
                   <td className="px-4 py-3 border-r border-[#e8e8e8] align-top">
                     <div className="space-y-1.5">
                       {tp.donang.filter(d => !filterLoai || d.loai === filterLoai).map(d => (
                         <div key={d.maVu} className="flex items-start gap-2">
-                          <span className={`flex-shrink-0 inline-block px-1.5 py-[2px] rounded-sm text-[10px] font-medium border ${LOAI_COLOR[d.loai] ?? "bg-[#f5f5f5] text-[#555] border-[#ddd]"}`}>
+                          <span className={`flex-shrink-0 inline-block px-1.5 py-[2px] rounded-sm text-[10px] font-medium border ${LOAI_COLOR[d.loai] ?? "bg-surface-container-low text-on-surface-variant border-surface-container"}`}>
                             {d.loai}
                           </span>
-                          <span className="text-[#333] leading-snug">
-                            <span className="font-medium text-[#555] mr-1">{d.maVu}</span>
+                          <span className="text-on-surface leading-snug">
+                            <span className="font-medium text-on-surface-variant mr-1">{d.maVu}</span>
                             {d.tenVu}
                           </span>
                         </div>
@@ -10935,27 +10996,27 @@ const PopupThamPhan = ({ onClose }: { onClose: () => void }) => {
                     </div>
                   </td>
                   <td className="px-4 py-3 align-top text-center">
-                    <span className={`inline-flex items-center justify-center w-[32px] h-[32px] rounded-full text-[13px] font-bold border-2 ${tp.donang.length >= 4 ? "bg-[#fde8e8] text-[#8b1a1a] border-[#f5b7b7]" : tp.donang.length >= 2 ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]" : "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"}`}>
+                    <span className={`inline-flex items-center justify-center w-[32px] h-[32px] rounded-full text-[13px] font-bold border-2 ${tp.donang.length >= 4 ? "bg-error-container text-error border-error-container" : tp.donang.length >= 2 ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]" : "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"}`}>
                       {tp.donang.length}
                     </span>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={3} className="text-center text-[#aaa] italic py-8">Không tìm thấy thẩm phán phù hợp</td></tr>
+                <tr><td colSpan={3} className="text-center text-outline italic py-8">Không tìm thấy thẩm phán phù hợp</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-3 border-t border-[#e0e0e0] bg-[#fafafa] text-[11px] text-[#888]">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-surface-container-highest bg-surface-bright text-[11px] text-on-surface-variant">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#e8f7ee] border-2 border-[#a9debb] inline-block" /> 1 đơn</span>
             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#fef3e2] border-2 border-[#fcd48a] inline-block" /> 2–3 đơn</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#fde8e8] border-2 border-[#f5b7b7] inline-block" /> Từ 4 đơn trở lên</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-error-container border-2 border-error-container inline-block" /> Từ 4 đơn trở lên</span>
           </div>
-          <button onClick={onClose} className="h-[28px] px-4 border border-[#ccc] text-[#555] hover:bg-[#f5f5f5] rounded-[3px] text-[12px] font-medium transition-colors">Đóng</button>
+          <button onClick={onClose} className="h-[28px] px-4 border border-surface-container-highest text-on-surface-variant hover:bg-surface-container-low rounded-[3px] text-[12px] font-medium transition-colors">Đóng</button>
         </div>
       </div>
     </div>
@@ -10978,15 +11039,15 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
     <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
       <div className="bg-white rounded-[8px] shadow-2xl w-[1300px] max-w-[95vw] max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#eee] flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-surface-container-high flex-shrink-0">
           <div className="flex flex-col">
-            <div className="text-[11px] text-[#666] flex items-center gap-1 font-medium">
-              <span>Trang chủ</span> / <span>Công tác lãnh đạo</span> / <span>Phê duyệt đề xuất</span> / <span className="font-semibold text-[#8b1a1a]">Ý kiến lãnh đạo</span>
+            <div className="text-[11px] text-on-surface-variant flex items-center gap-1 font-medium">
+              <span>Trang chủ</span> / <span>Công tác lãnh đạo</span> / <span>Phê duyệt đề xuất</span> / <span className="font-semibold text-error">Ý kiến lãnh đạo</span>
             </div>
-            <h2 className="text-[18px] font-bold text-[#1d2e4f] mt-1">Lãnh đạo phê duyệt ý kiến</h2>
-            <div className="text-[12px] text-[#888] font-semibold mt-0.5">VA26-001201 - Vụ giải quyết đơn 5777</div>
+            <h2 className="text-[18px] font-bold text-tertiary mt-1">Lãnh đạo phê duyệt ý kiến</h2>
+            <div className="text-[12px] text-on-surface-variant font-semibold mt-0.5">VA26-001201 - Vụ giải quyết đơn 5777</div>
           </div>
-          <button onClick={onClose} className="h-[32px] px-3 bg-white border border-[#ccc] hover:bg-gray-50 text-[12px] font-medium rounded text-[#333] flex items-center gap-1 transition-colors">
+          <button onClick={onClose} className="h-[32px] px-3 bg-white border border-surface-container-highest hover:bg-gray-50 text-[12px] font-medium rounded text-on-surface flex items-center gap-1 transition-colors">
             <ArrowLeft size={14} /> Quay lại
           </button>
         </div>
@@ -10995,33 +11056,33 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
         <div className="flex-1 overflow-hidden flex flex-row">
 
           {/* LEFT: Processing Panel */}
-          <div className="w-[50%] border-r border-[#eee] overflow-y-auto p-5 bg-[#fbfbfb] flex flex-col">
+          <div className="w-[50%] border-r border-surface-container-high overflow-y-auto p-5 bg-[#fbfbfb] flex flex-col">
 
 
             {/* Tabs */}
-            <div className="flex items-center gap-6 border-b border-[#eee] mb-4 flex-shrink-0">
+            <div className="flex items-center gap-6 border-b border-surface-container-high mb-4 flex-shrink-0">
               {["Ý kiến lãnh đạo", isToTrinh ? "Thông tin tờ trình" : "Thông tin văn bản"].map((tab, i) => (
                 <button key={tab} onClick={() => setActiveTab(i)}
-                  className={`pb-2 text-[14px] font-medium transition-colors border-b-2 -mb-[1px] ${activeTab === i ? "border-[#8b1a1a] text-[#8b1a1a]" : "border-transparent text-[#555] hover:text-[#333]"
+                  className={`pb-2 text-[14px] font-medium transition-colors border-b-2 -mb-[1px] ${activeTab === i ? "border-error text-error" : "border-transparent text-on-surface-variant hover:text-on-surface"
                     }`}>
                   {tab}
                 </button>
               ))}
             </div>
 
-            <div className="flex-1 flex flex-col border border-[#eee] bg-white rounded-[4px] p-4 shadow-sm min-h-[350px]">
+            <div className="flex-1 flex flex-col border border-surface-container-high bg-white rounded-[4px] p-4 shadow-sm min-h-[350px]">
               {activeTab === 0 && (
                 isToTrinh ? (
                   // ──────────────── TỜ TRÌNH LAYOUT ────────────────
                   <div className="flex flex-col h-full flex-1">
                     {/* Collapsible Accordion Header */}
                     <div className="border border-[#e2e8f0] rounded-[6px] bg-white mb-3 shadow-sm overflow-hidden flex-shrink-0">
-                      <div className="p-3 bg-white flex items-center justify-between border-b border-[#eee]">
+                      <div className="p-3 bg-white flex items-center justify-between border-b border-surface-container-high">
                         <div className="flex flex-col">
-                          <span className="text-[13px] font-bold text-[#1d2e4f] flex items-center gap-1">
+                          <span className="text-[13px] font-bold text-tertiary flex items-center gap-1">
                             <ChevronDown size={14} /> Thông báo phân công thẩm phán - Số 112/2026/TB-TAND-HN
                           </span>
-                          <span className="text-[11px] text-[#666] ml-4.5">TLM: 5467614 - Ngày TL: 18/06/2026</span>
+                          <span className="text-[11px] text-on-surface-variant ml-4.5">TLM: 5467614 - Ngày TL: 18/06/2026</span>
                         </div>
                       </div>
 
@@ -11029,12 +11090,12 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                         {/* Light blue proposal opinion box */}
                         <div className="bg-[#eaf4fe] border border-[#bee2ff] rounded-[4px] p-3">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[12px] font-bold text-[#1a5a96]">Ý kiến đề xuất | Phó chánh văn phòng - Nguyễn Mạnh Hùng</span>
-                            <button className="text-[11px] text-[#1a5a96] hover:underline font-medium flex items-center gap-0.5">
+                            <span className="text-[12px] font-bold text-primary">Ý kiến đề xuất | Phó chánh văn phòng - Nguyễn Mạnh Hùng</span>
+                            <button className="text-[11px] text-primary hover:underline font-medium flex items-center gap-0.5">
                               <HistoryIcon size={11} /> Xem diễn biến
                             </button>
                           </div>
-                          <div className="text-[12px] text-[#333] font-medium">
+                          <div className="text-[12px] text-on-surface font-medium">
                             Đồng ý, trình Phó Chánh án Nguyễn Hải Trâm
                           </div>
                         </div>
@@ -11042,58 +11103,58 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                         {/* Leadership opinion content textarea */}
                         <div className="border border-[#e2e8f0] rounded-[4px] p-3 bg-white">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-[12px] font-bold text-[#333]">Ý kiến lãnh đạo</span>
-                            <button className="text-[#888] hover:text-[#555]"><RotateCcw size={13} /></button>
+                            <span className="text-[12px] font-bold text-on-surface">Ý kiến lãnh đạo</span>
+                            <button className="text-on-surface-variant hover:text-on-surface-variant"><RotateCcw size={13} /></button>
                           </div>
                           <div className="border-t border-dashed border-[#e2e8f0] pt-2">
                             <div className="flex items-center gap-1 mb-1">
                               <span className="text-red-500 font-bold text-[12px]">*</span>
-                              <span className="text-[11px] font-semibold text-[#666]">Nội dung ý kiến lãnh đạo</span>
+                              <span className="text-[11px] font-semibold text-on-surface-variant">Nội dung ý kiến lãnh đạo</span>
                             </div>
                             <textarea
                               defaultValue="Lãnh đạo đề xuất ý kiến:"
-                              className="w-full p-2.5 text-[12px] border border-[#ccc] rounded-[4px] focus:outline-none focus:border-[#8b1a1a] min-h-[90px] resize-none"
+                              className="w-full p-2.5 text-[12px] border border-surface-container-highest rounded-[4px] focus:outline-none focus:border-error min-h-[90px] resize-none"
                             />
-                            <div className="text-right text-[10px] text-[#888] mt-1">24 / 4000</div>
+                            <div className="text-right text-[10px] text-on-surface-variant mt-1">24 / 4000</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="bg-[#f0f5fa] rounded-[6px] border border-[#d6e4f0] overflow-hidden mt-auto flex-shrink-0">
-                      <div className="px-4 py-2 bg-[#e6eff8] border-b border-[#d6e4f0] text-[13px] font-bold text-[#1d2e4f]">
+                      <div className="px-4 py-2 bg-[#e6eff8] border-b border-[#d6e4f0] text-[13px] font-bold text-tertiary">
                         Đề xuất trình tiếp
                       </div>
                       <div className="p-4 grid grid-cols-2 gap-6 bg-white">
                         <div>
-                          <label className="block text-[12px] text-[#666] mb-1.5 font-medium">Cấp trình tiếp</label>
+                          <label className="block text-[12px] text-on-surface-variant mb-1.5 font-medium">Cấp trình tiếp</label>
                           <div className="relative">
-                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-[#ccc] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-surface-container-highest rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                               <option value="">Chọn cấp trình tiếp</option>
                               <option value="1">Lãnh đạo tòa</option>
                               <option value="2">Chánh án</option>
                             </select>
-                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-[12px] text-[#666] mb-1.5 font-medium">Người đề xuất trình</label>
+                          <label className="block text-[12px] text-on-surface-variant mb-1.5 font-medium">Người đề xuất trình</label>
                           <div className="relative">
-                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-[#ccc] rounded-[4px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+                            <select className="w-full h-[32px] pl-3 pr-8 text-[13px] border border-surface-container-highest rounded-[4px] bg-white appearance-none focus:outline-none focus:border-primary">
                               <option value="">Chọn người đề xuất trình</option>
                               <option value="1">Nguyễn Văn A</option>
                               <option value="2">Trần Thị B</option>
                             </select>
-                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+                            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                           </div>
                         </div>
                       </div>
 
-                      <div className="px-4 py-3 border-t border-[#eee] bg-white flex items-center justify-end gap-2 flex-wrap">
-                        <button className="h-[32px] px-3 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[12px] font-medium transition-colors">
+                      <div className="px-4 py-3 border-t border-surface-container-high bg-white flex items-center justify-end gap-2 flex-wrap">
+                        <button className="h-[32px] px-3 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[4px] text-[12px] font-medium transition-colors">
                           Chỉnh sửa Word
                         </button>
-                        <button className="h-[32px] px-3 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[12px] font-medium transition-colors">
+                        <button className="h-[32px] px-3 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[4px] text-[12px] font-medium transition-colors">
                           Lưu
                         </button>
                         <button className="h-[32px] px-3 bg-[#d81b60] hover:bg-[#c2185b] text-white rounded-[4px] text-[12px] font-medium transition-colors shadow-sm">
@@ -11109,23 +11170,23 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                   // ──────────────── NORMAL SIGNING LAYOUT ────────────────
                   <div className="flex flex-col h-full flex-1 justify-between">
                     <div>
-                      <label className="block text-[13px] font-bold text-[#1d2e4f] mb-2">Ý kiến chỉ đạo / Phê duyệt</label>
+                      <label className="block text-[13px] font-bold text-tertiary mb-2">Ý kiến chỉ đạo / Phê duyệt</label>
                       <textarea
                         placeholder="Nhập ý kiến chỉ đạo hoặc nhận xét của Lãnh đạo đối với văn bản/quyết định này..."
-                        className="w-full p-3 text-[13px] border border-[#ccc] rounded-[4px] focus:outline-none focus:border-[#8b1a1a] min-h-[140px] resize-none"
+                        className="w-full p-3 text-[13px] border border-surface-container-highest rounded-[4px] focus:outline-none focus:border-error min-h-[140px] resize-none"
                       />
                     </div>
 
                     <div className="bg-[#fcfcfc] border border-[#e2e8f0] p-4 rounded-[6px] mt-4">
-                      <div className="text-[12px] text-[#555] mb-2 font-medium">Thông tin ký số:</div>
-                      <div className="text-[13px] text-[#333]">Người ký: <span className="font-semibold">Phạm Văn Nha</span> (Phó Chánh Văn phòng)</div>
+                      <div className="text-[12px] text-on-surface-variant mb-2 font-medium">Thông tin ký số:</div>
+                      <div className="text-[13px] text-on-surface">Người ký: <span className="font-semibold">Phạm Văn Nha</span> (Phó Chánh Văn phòng)</div>
                     </div>
 
-                    <div className="px-4 py-3 border-t border-[#eee] bg-white flex items-center justify-end gap-3 mt-6">
-                      <button className="h-[32px] px-4 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[13px] font-medium transition-colors">
+                    <div className="px-4 py-3 border-t border-surface-container-high bg-white flex items-center justify-end gap-3 mt-6">
+                      <button className="h-[32px] px-4 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[4px] text-[13px] font-medium transition-colors">
                         Chỉnh sửa Word
                       </button>
-                      <button className="h-[32px] px-4 border border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5] rounded-[4px] text-[13px] font-medium transition-colors">
+                      <button className="h-[32px] px-4 border border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low rounded-[4px] text-[13px] font-medium transition-colors">
                         Lưu ý kiến
                       </button>
                       <button className="h-[32px] px-4 bg-[#27ae60] hover:bg-[#219653] text-white rounded-[4px] text-[13px] font-medium transition-colors shadow-sm">
@@ -11141,25 +11202,25 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
               {activeTab === 1 && (
                 <div className="flex flex-col h-full flex-1 gap-4 overflow-y-auto">
                   <div className="border border-[#e2e8f0] rounded-[6px] p-4 bg-white shadow-sm flex flex-col flex-1">
-                    <div className="text-[12px] font-bold text-[#1d2e4f] mb-2 uppercase tracking-wider">Cấu trúc tài liệu trình ký</div>
-                    <div className="text-[11px] text-[#666] mb-3 italic">
+                    <div className="text-[12px] font-bold text-tertiary mb-2 uppercase tracking-wider">Cấu trúc tài liệu trình ký</div>
+                    <div className="text-[11px] text-on-surface-variant mb-3 italic">
                       Lưu ý: Một tờ trình bao gồm nhiều danh sách đơn đề xuất. Mỗi Thẩm phán cấu thành một danh sách riêng biệt.
                     </div>
 
-                    <div className="border border-[#eee] rounded-[4px] bg-white overflow-hidden text-[12px] flex-1">
+                    <div className="border border-surface-container-high rounded-[4px] bg-white overflow-hidden text-[12px] flex-1">
 
                       {/* LEVEL 1: Tờ trình duy nhất */}
                       <div className="flex flex-col">
-                        <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2.5 px-3 cursor-pointer ${selectedNodeId === "to-trinh-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                        <div className={`flex items-center hover:bg-surface-bright border-b border-surface-container-high py-2.5 px-3 cursor-pointer ${selectedNodeId === "to-trinh-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                           onClick={() => setSelectedNodeId("to-trinh-1")}
                         >
-                          <button onClick={(e) => { e.stopPropagation(); setToTrinhExpanded(!toTrinhExpanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                          <button onClick={(e) => { e.stopPropagation(); setToTrinhExpanded(!toTrinhExpanded); }} className="p-1 hover:bg-surface-container-high rounded mr-1">
                             {toTrinhExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                           </button>
-                          <FileText size={15} className="text-[#8b1a1a] mr-2 flex-shrink-0" />
+                          <FileText size={15} className="text-error mr-2 flex-shrink-0" />
                           <div className="flex flex-col">
-                            <span className="font-bold text-[#1d2e4f]">{docType} phân công TP - Số 112/2026/TTr-TAND-HN</span>
-                            <span className="text-[9px] text-[#666]">Số lượng: 3 Danh sách | 4 Đơn trình duyệt</span>
+                            <span className="font-bold text-tertiary">{docType} phân công TP - Số 112/2026/TTr-TAND-HN</span>
+                            <span className="text-[9px] text-on-surface-variant">Số lượng: 3 Danh sách | 4 Đơn trình duyệt</span>
                           </div>
                         </div>
 
@@ -11167,40 +11228,40 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                           <div className="flex flex-col">
 
                             {/* LEVEL 2: Danh sách 1 (Thẩm phán Bùi Ngọc Lâm - Vụ GĐKT Dân sự) */}
-                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                            <div className={`flex items-center hover:bg-surface-bright border-b border-surface-container-high py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-1" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                               onClick={() => setSelectedNodeId("danh-sach-1")}
                             >
-                              <button onClick={(e) => { e.stopPropagation(); setD1Expanded(!d1Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                              <button onClick={(e) => { e.stopPropagation(); setD1Expanded(!d1Expanded); }} className="p-1 hover:bg-surface-container-high rounded mr-1">
                                 {d1Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                               </button>
-                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <FileText size={15} className="text-primary mr-2 flex-shrink-0" />
                               <div className="flex flex-col">
-                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Dân sự)</span>
-                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND khu vực 4 - Hà Nội</span>
+                                <span className="font-semibold text-on-surface">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Dân sự)</span>
+                                <span className="text-[9px] text-on-surface-variant">Đơn vị chuyển đến: TAND khu vực 4 - Hà Nội</span>
                               </div>
 
                             </div>
 
                             {d1Expanded && (
-                              <div className="flex flex-col bg-[#fafafa]">
+                              <div className="flex flex-col bg-surface-bright">
                                 {/* LEVEL 3: Các Đơn thuộc Danh sách 1 */}
-                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7031" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                <div className={`flex items-center hover:bg-surface-container-low border-b border-surface-container-high py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7031" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                                   onClick={() => setSelectedNodeId("don-7031")}
                                 >
-                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <FileText size={14} className="text-on-surface-variant mr-2 flex-shrink-0" />
                                   <div className="flex flex-col">
-                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7031) - Bùi Phương Thảo</span>
-                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001201 | Ngày nhận: 18/06/2026</span>
+                                    <span className="font-medium text-on-surface">Đơn đề nghị GĐT/TT (7031) - Bùi Phương Thảo</span>
+                                    <span className="text-[10px] text-on-surface-variant">Mã thụ lý: VA26-001201 | Ngày nhận: 18/06/2026</span>
                                   </div>
 
                                 </div>
-                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7034" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                <div className={`flex items-center hover:bg-surface-container-low border-b border-surface-container-high py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7034" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                                   onClick={() => setSelectedNodeId("don-7034")}
                                 >
-                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <FileText size={14} className="text-on-surface-variant mr-2 flex-shrink-0" />
                                   <div className="flex flex-col">
-                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7034) - Lê Văn D</span>
-                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001204 | Ngày nhận: 21/06/2026</span>
+                                    <span className="font-medium text-on-surface">Đơn đề nghị GĐT/TT (7034) - Lê Văn D</span>
+                                    <span className="text-[10px] text-on-surface-variant">Mã thụ lý: VA26-001204 | Ngày nhận: 21/06/2026</span>
                                   </div>
 
                                 </div>
@@ -11208,30 +11269,30 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                             )}
 
                             {/* LEVEL 2: Danh sách 2 (Thẩm phán Bùi Ngọc Lâm - Vụ GĐKT Hình sự) */}
-                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-2" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                            <div className={`flex items-center hover:bg-surface-bright border-b border-surface-container-high py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-2" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                               onClick={() => setSelectedNodeId("danh-sach-2")}
                             >
-                              <button onClick={(e) => { e.stopPropagation(); setD2Expanded(!d2Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                              <button onClick={(e) => { e.stopPropagation(); setD2Expanded(!d2Expanded); }} className="p-1 hover:bg-surface-container-high rounded mr-1">
                                 {d2Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                               </button>
-                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <FileText size={15} className="text-primary mr-2 flex-shrink-0" />
                               <div className="flex flex-col">
-                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Hình sự)</span>
-                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Lạng Sơn</span>
+                                <span className="font-semibold text-on-surface">Danh sách đơn - TP. Bùi Ngọc Lâm (Vụ GĐKT Hình sự)</span>
+                                <span className="text-[9px] text-on-surface-variant">Đơn vị chuyển đến: TAND tỉnh Lạng Sơn</span>
                               </div>
 
                             </div>
 
                             {d2Expanded && (
-                              <div className="flex flex-col bg-[#fafafa]">
+                              <div className="flex flex-col bg-surface-bright">
                                 {/* LEVEL 3: Các Đơn thuộc Danh sách 2 */}
-                                <div className={`flex items-center hover:bg-[#f5f5f5] border-b border-[#eee] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7033" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                <div className={`flex items-center hover:bg-surface-container-low border-b border-surface-container-high py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7033" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                                   onClick={() => setSelectedNodeId("don-7033")}
                                 >
-                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <FileText size={14} className="text-on-surface-variant mr-2 flex-shrink-0" />
                                   <div className="flex flex-col">
-                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7033) - Trần Thị B</span>
-                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001203 | Ngày nhận: 20/06/2026</span>
+                                    <span className="font-medium text-on-surface">Đơn đề nghị GĐT/TT (7033) - Trần Thị B</span>
+                                    <span className="text-[10px] text-on-surface-variant">Mã thụ lý: VA26-001203 | Ngày nhận: 20/06/2026</span>
                                   </div>
 
                                 </div>
@@ -11239,30 +11300,30 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                             )}
 
                             {/* LEVEL 2: Danh sách 3 (Thẩm phán Nguyễn Văn C - Vụ GĐKT Hành chính) */}
-                            <div className={`flex items-center hover:bg-[#f9f9f9] border-b border-[#eee] py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-3" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                            <div className={`flex items-center hover:bg-surface-bright border-b border-surface-container-high py-2 px-3 pl-8 cursor-pointer ${selectedNodeId === "danh-sach-3" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                               onClick={() => setSelectedNodeId("danh-sach-3")}
                             >
-                              <button onClick={(e) => { e.stopPropagation(); setD3Expanded(!d3Expanded); }} className="p-1 hover:bg-[#eee] rounded mr-1">
+                              <button onClick={(e) => { e.stopPropagation(); setD3Expanded(!d3Expanded); }} className="p-1 hover:bg-surface-container-high rounded mr-1">
                                 {d3Expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                               </button>
-                              <FileText size={15} className="text-[#1a5a96] mr-2 flex-shrink-0" />
+                              <FileText size={15} className="text-primary mr-2 flex-shrink-0" />
                               <div className="flex flex-col">
-                                <span className="font-semibold text-[#333]">Danh sách đơn - TP. Nguyễn Văn C (Vụ GĐKT Hành chính)</span>
-                                <span className="text-[9px] text-[#666]">Đơn vị chuyển đến: TAND tỉnh Bắc Giang</span>
+                                <span className="font-semibold text-on-surface">Danh sách đơn - TP. Nguyễn Văn C (Vụ GĐKT Hành chính)</span>
+                                <span className="text-[9px] text-on-surface-variant">Đơn vị chuyển đến: TAND tỉnh Bắc Giang</span>
                               </div>
 
                             </div>
 
                             {d3Expanded && (
-                              <div className="flex flex-col bg-[#fafafa]">
+                              <div className="flex flex-col bg-surface-bright">
                                 {/* LEVEL 3: Các Đơn thuộc Danh sách 3 */}
-                                <div className={`flex items-center hover:bg-[#f5f5f5] py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7032" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
+                                <div className={`flex items-center hover:bg-surface-container-low py-2 px-3 pl-16 cursor-pointer ${selectedNodeId === "don-7032" ? "bg-[#eaf4fe] hover:bg-[#eaf4fe]" : ""}`}
                                   onClick={() => setSelectedNodeId("don-7032")}
                                 >
-                                  <FileText size={14} className="text-[#666] mr-2 flex-shrink-0" />
+                                  <FileText size={14} className="text-on-surface-variant mr-2 flex-shrink-0" />
                                   <div className="flex flex-col">
-                                    <span className="font-medium text-[#333]">Đơn đề nghị GĐT/TT (7032) - Nguyễn Văn A</span>
-                                    <span className="text-[10px] text-[#666]">Mã thụ lý: VA26-001202 | Ngày nhận: 19/06/2026</span>
+                                    <span className="font-medium text-on-surface">Đơn đề nghị GĐT/TT (7032) - Nguyễn Văn A</span>
+                                    <span className="text-[10px] text-on-surface-variant">Mã thụ lý: VA26-001202 | Ngày nhận: 19/06/2026</span>
                                   </div>
 
                                 </div>
@@ -11281,25 +11342,25 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
           </div>
 
           {/* RIGHT: Document Preview Panel */}
-          <div className="w-[50%] bg-[#f0f0f0] overflow-y-auto flex flex-col items-center py-6 px-4 gap-4">
+          <div className="w-[50%] bg-surface-container overflow-y-auto flex flex-col items-center py-6 px-4 gap-4">
             {/* Toolbar */}
-            <div className="w-full max-w-[520px] flex items-center justify-between bg-white border border-[#ccc] rounded px-3 py-2 shadow-sm flex-shrink-0">
-              <span className="text-[12px] font-bold text-[#1d2e4f] flex items-center gap-1.5">
-                <FileText size={14} className="text-[#1a5a96]" /> Xem trước tài liệu ({
+            <div className="w-full max-w-[520px] flex items-center justify-between bg-white border border-surface-container-highest rounded px-3 py-2 shadow-sm flex-shrink-0">
+              <span className="text-[12px] font-bold text-tertiary flex items-center gap-1.5">
+                <FileText size={14} className="text-primary" /> Xem trước tài liệu ({
                   selectedNodeId.startsWith("to-trinh-") ? "Tờ trình" : selectedNodeId.startsWith("danh-sach-") ? "Danh sách phụ lục" : "Chi tiết Đơn"
                 })
               </span>
               <div className="flex items-center gap-2">
-                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Phóng to"><ZoomIn size={14} className="text-[#666]" /></button>
-                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Thu nhỏ"><ZoomOut size={14} className="text-[#666]" /></button>
-                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Xoay"><RotateCcw size={14} className="text-[#666]" /></button>
-                <button className="p-1 hover:bg-[#eee] rounded transition-colors" title="Tải về"><Download size={14} className="text-[#666]" /></button>
+                <button className="p-1 hover:bg-surface-container-high rounded transition-colors" title="Phóng to"><ZoomIn size={14} className="text-on-surface-variant" /></button>
+                <button className="p-1 hover:bg-surface-container-high rounded transition-colors" title="Thu nhỏ"><ZoomOut size={14} className="text-on-surface-variant" /></button>
+                <button className="p-1 hover:bg-surface-container-high rounded transition-colors" title="Xoay"><RotateCcw size={14} className="text-on-surface-variant" /></button>
+                <button className="p-1 hover:bg-surface-container-high rounded transition-colors" title="Tải về"><Download size={14} className="text-on-surface-variant" /></button>
               </div>
             </div>
 
             {selectedNodeId.startsWith("to-trinh-") ? (
               /* MẪU PREVIEW TỜ TRÌNH */
-              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-7 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-[#000]">
+              <div className="w-full max-w-[520px] bg-white border border-surface-container-highest shadow-md rounded p-7 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-on-surface">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                   <div className="text-center w-[160px]">
@@ -11342,7 +11403,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-start mt-10 pt-4 border-t border-dashed border-[#eee]">
+                <div className="flex justify-between items-start mt-10 pt-4 border-t border-dashed border-surface-container-high">
                   <div className="text-[9px] leading-relaxed">
                     <span className="font-bold block">Nơi nhận:</span>
                     - Như kính trình;<br />
@@ -11352,13 +11413,13 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                     <div className="font-bold">KT. CHÁNH VĂN PHÒNG</div>
                     <div className="font-bold uppercase">PHÓ CHÁNH VĂN PHÒNG</div>
                     <div className="h-[45px]"></div>
-                    <div className="font-bold text-[#1d2e4f] text-[11px] underline">Phạm Văn Nha</div>
+                    <div className="font-bold text-tertiary text-[11px] underline">Phạm Văn Nha</div>
                   </div>
                 </div>
               </div>
             ) : selectedNodeId.startsWith("danh-sach-") ? (
               /* MẪU DANH SÁCH */
-              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-5 relative min-h-[580px] font-sans text-[10px] text-[#000]">
+              <div className="w-full max-w-[520px] bg-white border border-surface-container-highest shadow-md rounded p-5 relative min-h-[580px] font-sans text-[10px] text-on-surface">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="text-center">
@@ -11487,7 +11548,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
               </div>
             ) : (
               /* MẪU ĐƠN */
-              <div className="w-full max-w-[520px] bg-white border border-[#ccc] shadow-md rounded p-8 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-[#000]">
+              <div className="w-full max-w-[520px] bg-white border border-surface-container-highest shadow-md rounded p-8 relative min-h-[580px] font-serif text-[11px] leading-relaxed text-on-surface">
                 {/* Top note */}
                 <div className="absolute right-6 top-4 text-[9px] font-mono text-gray-500 italic">YLBS. đơn</div>
 
@@ -11540,7 +11601,7 @@ const PopupLanhDaoPheDuyetYkien = ({ onClose, initialLoaiDeXuat }: { onClose: ()
                     + Bản án phúc thẩm số: 120/2026/DS-ST ngày 26-01-2026 của Tòa án nhân dân tỉnh Tây Ninh và bản án sơ thẩm số: 122/2025/DS-ST ngày 22-9-2025 của Tòa án nhân dân khu vực 11-Tây Ninh với những nội dung và nhận định như sau:
                   </p>
 
-                  <div className="border-t border-[#eee] pt-2 mt-4">
+                  <div className="border-t border-surface-container-high pt-2 mt-4">
                     <span className="font-bold block mb-1">Về vấn đề trước khi tôi khởi kiện:</span>
                     <p className="text-[10px] text-[#444] italic">
                       Tháng 4 năm 2024, tôi có khởi kiện ông Phạm Văn Bốn và bà Nguyễn Thị Đào số tiền 700.000.000 đồng. Đến ngày 21-8-2024, Tòa án nhân dân huyện Dương Minh Châu xét xử vụ án bằng bản án dân sự sơ thẩm số: 118/2024/DS-ST buộc các bên thực thi trách nhiệm...
@@ -12172,10 +12233,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#eef1f5] font-['Be_Vietnam_Pro',system-ui,sans-serif] text-[13px] text-[#222]">
+    <div className="min-h-screen bg-[#eef1f5] font-['Be_Vietnam_Pro',system-ui,sans-serif] text-[13px] text-on-surface">
 
       {/* ── Top navigation bar ───────────────────────────────────────────── */}
-      <div className="bg-[#1d2e4f] text-white flex items-center h-[46px] px-3 gap-3 shadow-md">
+      <div className="bg-tertiary text-white flex items-center h-[46px] px-3 gap-3 shadow-md">
         <div className="flex items-center gap-2 mr-4">
           <div className="w-[30px] h-[30px] bg-white/20 rounded flex items-center justify-center">
             <Menu size={16} />
@@ -12207,22 +12268,22 @@ export default function App() {
             <button onClick={() => setShowNoti(!showNoti)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white relative">
               <Bell size={16} />
               {notifications.some(n => !n.read) && (
-                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] bg-[#e74c3c] rounded-full border border-[#1d2e4f]" />
+                <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] bg-[#e74c3c] rounded-full border border-tertiary" />
               )}
             </button>
             {showNoti && (
-              <div className="absolute right-0 top-full mt-2 w-[320px] bg-white rounded-[4px] shadow-lg border border-[#ddd] z-50 text-[#333] overflow-hidden">
-                <div className="flex items-center justify-between px-3 py-2 bg-[#f9f9f9] border-b border-[#eee]">
+              <div className="absolute right-0 top-full mt-2 w-[320px] bg-white rounded-[4px] shadow-lg border border-surface-container z-50 text-on-surface overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-surface-bright border-b border-surface-container-high">
                   <span className="font-semibold text-[13px]">Thông báo</span>
-                  <button onClick={() => setNotifications(p => p.map(n => ({ ...n, read: true })))} className="text-[11px] text-[#1a5a96] hover:underline">Đánh dấu đã đọc</button>
+                  <button onClick={() => setNotifications(p => p.map(n => ({ ...n, read: true })))} className="text-[11px] text-primary hover:underline">Đánh dấu đã đọc</button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto">
                   {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-[#888] text-[12px]">Không có thông báo nào</div>
+                    <div className="p-4 text-center text-on-surface-variant text-[12px]">Không có thông báo nào</div>
                   ) : notifications.map(n => (
-                    <div key={n.id} onClick={() => setNotifications(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))} className={`p-3 border-b border-[#f5f5f5] last:border-0 hover:bg-[#fafafa] cursor-pointer transition-colors ${!n.read ? 'bg-[#f0f7ff]' : ''}`}>
+                    <div key={n.id} onClick={() => setNotifications(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))} className={`p-3 border-b border-surface-container-low last:border-0 hover:bg-surface-bright cursor-pointer transition-colors ${!n.read ? 'bg-[#f0f7ff]' : ''}`}>
                       <p className="text-[12px] leading-snug">{n.text}</p>
-                      <span className="text-[10px] text-[#888] mt-1 block">{n.time}</span>
+                      <span className="text-[10px] text-on-surface-variant mt-1 block">{n.time}</span>
                     </div>
                   ))}
                 </div>
@@ -12288,7 +12349,7 @@ export default function App() {
         <div className="flex-1 flex flex-col overflow-hidden">
 
           {/* Breadcrumb */}
-          <div className="bg-white border-b border-[#ddd] px-4 py-[6px] flex items-center gap-1 text-[12px] text-[#666] flex-shrink-0">
+          <div className="bg-white border-b border-surface-container px-4 py-[6px] flex items-center gap-1 text-[12px] text-on-surface-variant flex-shrink-0">
             {/* Module Quản lý án GĐT/TT tự vẽ breadcrumb riêng bên trong từng màn
                 của nó ("Trang chủ / Quản lý án GĐT/TT / …"), nên ở đây phải im.
                 Trước đây không có nhánh cho view "gdt" nên nó rơi vào nhánh mặc
@@ -12296,66 +12357,66 @@ export default function App() {
                 — sai màn, lại chồng thành hai breadcrumb. Cụm icon bên phải vẫn
                 giữ vì nó dùng chung cho mọi màn. */}
             {view !== "gdt" && <>
-              <span className="text-[#1a5a96] hover:underline cursor-pointer">Trang chủ</span>
+              <span className="text-primary hover:underline cursor-pointer">Trang chủ</span>
               <ChevronRight size={12} />
               {/* Nhóm cha đổi theo màn — trước đây cứng "Quản lý đơn" nên màn nào
                 cũng bị xếp nhầm vào nhóm đó. */}
-              <span className="text-[#1a5a96] hover:underline cursor-pointer">
+              <span className="text-primary hover:underline cursor-pointer">
                 {view === "to_tham_phan" ? "Cấu hình chung" : "Quản lý đơn"}
               </span>
               <ChevronRight size={12} />
               {view === "to_tham_phan"
-                ? <span className="text-[#333]">Danh sách Ủy ban Thẩm phán</span>
+                ? <span className="text-on-surface">Danh sách Ủy ban Thẩm phán</span>
                 : donChiTietTabMoi
-                  ? <span className="text-[#333]">Chi tiết đơn {donChiTietTabMoi.maDon}</span>
+                  ? <span className="text-on-surface">Chi tiết đơn {donChiTietTabMoi.maDon}</span>
                   : view === "home"
-                    ? <span className="text-[#333]">Tổng quan</span>
+                    ? <span className="text-on-surface">Tổng quan</span>
                     : view === "tiepnhan_don_lienthong"
-                      ? <span className="text-[#333]">Tiếp nhận đơn liên thông</span>
+                      ? <span className="text-on-surface">Tiếp nhận đơn liên thông</span>
                       : view === "list"
-                        ? <span className="text-[#333]">Danh sách đơn</span>
+                        ? <span className="text-on-surface">Danh sách đơn</span>
                         : view === "prototype"
                           ? <>
-                            <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                            <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                             <ChevronRight size={12} />
-                            <span className="text-[#333]">Prototype: Ghép đơn</span>
+                            <span className="text-on-surface">Prototype: Ghép đơn</span>
                           </>
                           : view === "bieumau"
                             ? <>
-                              <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                              <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                               <ChevronRight size={12} />
-                              <span className="text-[#333]">Danh sách biểu mẫu đơn</span>
+                              <span className="text-on-surface">Danh sách biểu mẫu đơn</span>
                             </>
                             : view === "wordeditor"
                               ? <>
-                                <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                                <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                                 <ChevronRight size={12} />
-                                <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
+                                <span className="text-on-surface">Chỉnh sửa biểu mẫu</span>
                               </>
                               : view === "phancong"
-                                ? <span className="text-[#333]">Phân công thẩm phán</span>
+                                ? <span className="text-on-surface">Phân công thẩm phán</span>
                                 : view === "phe_duyet"
                                   ? <>
-                                    <span className="text-[#1a5a96] hover:underline cursor-pointer">Công tác lãnh đạo</span>
+                                    <span className="text-primary hover:underline cursor-pointer">Công tác lãnh đạo</span>
                                     <ChevronRight size={12} />
-                                    <span className="text-[#333]">Phê duyệt đề xuất</span>
+                                    <span className="text-on-surface">Phê duyệt đề xuất</span>
                                   </>
                                   : view === "van_ban_trinh_ky"
                                     ? <>
-                                      <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                                      <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                                       <ChevronRight size={12} />
-                                      <span className="text-[#333]">Danh sách văn bản</span>
+                                      <span className="text-on-surface">Danh sách văn bản</span>
                                     </>
                                     : view === "hieu_suat_chi_tiet"
                                       ? <>
-                                        <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Hiệu suất cán bộ kỳ này</span>
+                                        <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("home")}>Hiệu suất cán bộ kỳ này</span>
                                         <ChevronRight size={12} />
-                                        <span className="text-[#333]">Xem chi tiết</span>
+                                        <span className="text-on-surface">Xem chi tiết</span>
                                       </>
                                       : <>
-                                        <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                                        <span className="text-primary hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                                         <ChevronRight size={12} />
-                                        <span className="text-[#333]">Thêm mới</span>
+                                        <span className="text-on-surface">Thêm mới</span>
                                       </>
               }
             </>}
@@ -12364,10 +12425,10 @@ export default function App() {
                 sau khi bỏ ô chọn tài khoản phân quyền chỉ còn là một dải trắng
                 rỗng, nên gộp vào breadcrumb cho đỡ tốn một tầng chiều cao. */}
             <div className="ml-auto flex items-center gap-3">
-              <Search size={16} className="text-[#666] cursor-pointer hover:text-[#333] transition-colors" />
-              <Grid3X3 size={16} className="text-[#666] cursor-pointer hover:text-[#333] transition-colors" />
-              <Moon size={16} className="text-[#666] cursor-pointer hover:text-[#333] transition-colors" />
-              <div className="w-[26px] h-[26px] rounded-full bg-[#ccc] flex items-center justify-center text-[12px] font-semibold text-[#333] cursor-pointer">
+              <Search size={16} className="text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors" />
+              <Grid3X3 size={16} className="text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors" />
+              <Moon size={16} className="text-on-surface-variant cursor-pointer hover:text-on-surface transition-colors" />
+              <div className="w-[26px] h-[26px] rounded-full bg-surface-container-highest flex items-center justify-center text-[12px] font-semibold text-on-surface cursor-pointer">
                 A
               </div>
             </div>
@@ -12508,7 +12569,7 @@ export default function App() {
                 {/* Banner trạng thái OCR — chỉ ở luồng Thêm mới */}
                 {editingRowId === null && ocrStatus !== "thanhcong" && (
                   <div className={`flex items-center gap-2 px-3 py-2 rounded-[3px] text-[12px] border ${ocrStatus === "dang" ? "bg-[#fffbeb] border-[#f59e0b] text-[#92400e]"
-                    : ocrStatus === "thatbai" ? "bg-[#fdecea] border-[#e57373] text-[#8b1a1a]"
+                    : ocrStatus === "thatbai" ? "bg-[#fdecea] border-[#e57373] text-error"
                       : "bg-[#f5f7fa] border-[#ccd3dd] text-[#4a5568]"}`}>
                     <OcrStatusBadge status={ocrStatus} />
                     <span className="truncate">
@@ -12530,7 +12591,7 @@ export default function App() {
                         </>
                       ) : (
                         <button onClick={reOcr}
-                          className="inline-flex items-center gap-1 h-[24px] px-2 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[11px] font-medium transition-colors">
+                          className="inline-flex items-center gap-1 h-[24px] px-2 rounded-[3px] bg-error hover:bg-error-container text-white text-[11px] font-medium transition-colors">
                           <RefreshCw size={11} /> {ocrStatus === "chua" ? "Thực hiện OCR" : "Thực hiện OCR lại"}
                         </button>
                       )}
@@ -12572,7 +12633,7 @@ export default function App() {
                       <Lbl req>Hình thức đơn</Lbl>
                       <div className="relative">
                         <select value={hinhThuc} onChange={e => setHinhThuc(e.target.value)}
-                          className="w-full h-[30px] px-2 pr-7 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none">
+                          className="w-full h-[30px] px-2 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] bg-white focus:outline-none focus:border-primary appearance-none">
                           <option value="">-- Chọn hình thức --</option>
                           <optgroup label="— Đơn">
                             <option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option>
@@ -12594,7 +12655,7 @@ export default function App() {
                             <option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option>
                           </optgroup>
                         </select>
-                        <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
+                        <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
                       </div>
                     </div>
                     <div>
@@ -12647,8 +12708,8 @@ export default function App() {
                     {canBiThu && (
                       <div className="col-span-3 border border-[#d6e4f0] bg-[#f7fbff] rounded-[4px] p-3 mb-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[12px] font-semibold text-[#1a5a96]">Thông tin bì thư</span>
-                          <span className="text-[11px] text-[#888]">— nhập mã bì thư để lấy dữ liệu từ hệ thống bưu chính</span>
+                          <span className="text-[12px] font-semibold text-primary">Thông tin bì thư</span>
+                          <span className="text-[11px] text-on-surface-variant">— nhập mã bì thư để lấy dữ liệu từ hệ thống bưu chính</span>
                         </div>
                         <div className="grid grid-cols-3 gap-4 items-end">
                           <div>
@@ -12684,8 +12745,8 @@ export default function App() {
                     {/* Radio group cho CV chuyển đơn */}
                     {hinhThuc === "CV chuyển đơn" && (
                       <div className="col-span-3 flex items-center gap-1 px-3 py-[6px] bg-[#fffaf7] border border-[#e8d9cc] rounded mb-1">
-                        <span className="text-[12px] font-medium text-[#c0392b] mr-1 whitespace-nowrap">
-                          Loại đơn<span className="ml-0.5 text-[#c0392b]">*</span>:
+                        <span className="text-[12px] font-medium text-error mr-1 whitespace-nowrap">
+                          Loại đơn<span className="ml-0.5 text-error">*</span>:
                         </span>
                         <div className="flex items-center gap-5">
                           <label className="flex items-center gap-1.5 cursor-pointer">
@@ -12697,7 +12758,7 @@ export default function App() {
                               onChange={(e) => setLoaiDonChuyenDon(e.target.value)}
                               className="w-[14px] h-[14px] accent-[#8b1a1a]"
                             />
-                            <span className="text-[12px] text-[#222]">Đơn đề nghị GĐT/TT</span>
+                            <span className="text-[12px] text-on-surface">Đơn đề nghị GĐT/TT</span>
                           </label>
                           <label className="flex items-center gap-1.5 cursor-pointer">
                             <input
@@ -12708,7 +12769,7 @@ export default function App() {
                               onChange={(e) => setLoaiDonChuyenDon(e.target.value)}
                               className="w-[14px] h-[14px] accent-[#8b1a1a]"
                             />
-                            <span className="text-[12px] text-[#222]">Đơn khiếu nại tố cáo trong tố tụng</span>
+                            <span className="text-[12px] text-on-surface">Đơn khiếu nại tố cáo trong tố tụng</span>
                           </label>
                           <label className="flex items-center gap-1.5 cursor-pointer">
                             <input
@@ -12719,7 +12780,7 @@ export default function App() {
                               onChange={(e) => setLoaiDonChuyenDon(e.target.value)}
                               className="w-[14px] h-[14px] accent-[#8b1a1a]"
                             />
-                            <span className="text-[12px] text-[#222]">Thông báo phát hiện vi phạm pháp luật</span>
+                            <span className="text-[12px] text-on-surface">Thông báo phát hiện vi phạm pháp luật</span>
                           </label>
                         </div>
                       </div>
@@ -12728,12 +12789,12 @@ export default function App() {
                     {/* Các checkbox thêm khi hinhThuc === "CV khác" */}
                     {hinhThuc === "CV khác" && (
                       <div className="flex flex-col gap-2 pb-1">
-                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                           <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                             checked={coBanAnLienQuan} onChange={e => setCoBanAnLienQuan(e.target.checked)} />
                           Có bản án/quyết định liên quan
                         </label>
-                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                           <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                             checked={coCongVanPhucDap} onChange={e => setCoCongVanPhucDap(e.target.checked)} />
                           Có công văn phúc đáp
@@ -12776,14 +12837,14 @@ export default function App() {
                             <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Loại đơn / Nội dung khiếu kiện</Lbl>
                             <div className="flex items-center gap-5 h-[30px]">
                               {["Đơn khiếu nại", "Đơn tố cáo"].map(opt => (
-                                <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                                <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                                   <input type="radio" name="loaiDonKhieuNai" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                                     checked={loaiDonKhieuNai === opt}
                                     onChange={() => setLoaiDonKhieuNai(opt)} />
                                   {opt}
                                 </label>
                               ))}
-                              <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] border-l pl-4 border-[#ddd]">
+                              <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface border-l pl-4 border-surface-container">
                                 <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                                   checked={khieuNaiToCaoHanhVi}
                                   onChange={e => setKhieuNaiToCaoHanhVi(e.target.checked)} />
@@ -12800,7 +12861,7 @@ export default function App() {
                           <Lbl req>Nội dung hành vi bị khiếu nại/Tố cáo</Lbl>
                           <textarea rows={3} placeholder="Nhập hành vi bị khiếu nại/tố cáo..."
                             value={hanhViBiKhieuNai} onChange={e => setHanhViBiKhieuNai(e.target.value)}
-                            className={`w-full border rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none ${hanhViBiKhieuNai ? "border-[#ccc]" : "border-[#e57373]"}`} />
+                            className={`w-full border rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none ${hanhViBiKhieuNai ? "border-surface-container-highest" : "border-[#e57373]"}`} />
                         </div>
                       )}
 
@@ -12835,7 +12896,7 @@ export default function App() {
                         </div>
                         <div className="flex items-end gap-2 mt-1">
                           <button onClick={traCuuBanAn}
-                            className="flex-shrink-0 flex items-center gap-1.5 h-[30px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors whitespace-nowrap">
+                            className="flex-shrink-0 flex items-center gap-1.5 h-[30px] px-3 bg-tertiary hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors whitespace-nowrap">
                             <Search size={12} /> Tra cứu
                           </button>
 
@@ -12847,7 +12908,7 @@ export default function App() {
                             được gì. Nhãn rút ngắn còn "1 năm / 3 năm / 5 năm" vì
                             tiêu đề trường đã nói rõ đang nói về thời hiệu. */}
                       <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                        <span className="text-[13px] font-medium text-[#333] whitespace-nowrap">
+                        <span className="text-[13px] font-medium text-on-surface whitespace-nowrap">
                           Thời hiệu giải quyết
                         </span>
                         {([
@@ -12857,7 +12918,7 @@ export default function App() {
                           ["khong-xac-dinh", "Không xác định thời hiệu"],
                         ] as [ThoiHieuKey, string][]).map(([ma, nhan]) => (
                           <label key={ma}
-                            className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                            className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                             <input type="radio" name="thoiHieuGiaiQuyet" value={ma}
                               className="w-[14px] h-[14px] accent-[#8b1a1a]"
                               checked={thoiHieuForm === ma}
@@ -12869,7 +12930,7 @@ export default function App() {
 
                       <div className="flex items-center gap-3 flex-wrap">
                         {loaiAnForm === "Hình sự" && (
-                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                          <label className="flex items-center gap-3 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                             <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                               checked={xulychuynhuong} onChange={e => setXulychuynhuong(e.target.checked)} />
                             Áp dụng biện pháp XLCH
@@ -12887,17 +12948,17 @@ export default function App() {
                         ) : (
                           <table className="w-full border-collapse text-[12px]">
                             <thead>
-                              <tr className="bg-[#f5f5f5]">
+                              <tr className="bg-surface-container-low">
                                 {["STT", "Đề nghị xem xét", "Vụ án", "Nguồn vụ án", "Loại BA/QĐ", "Giai đoạn", "Số bản án", "Ngày ra bản án", "Tòa án ra bản án", "Trạng thái bản án", "Thao tác"].map(h => (
-                                  <th key={h} className={`border border-[#ddd] px-3 py-[6px] font-semibold text-[#333] whitespace-nowrap ${h === "Thao tác" ? "text-center w-[76px]" : "text-left"}`}>{h}</th>
+                                  <th key={h} className={`border border-surface-container px-3 py-[6px] font-semibold text-on-surface whitespace-nowrap ${h === "Thao tác" ? "text-center w-[76px]" : "text-left"}`}>{h}</th>
                                 ))}
                               </tr>
                             </thead>
                             <tbody>
                               {BA_SEARCH_RESULTS.map((r, i) => (
-                                <tr key={r.id} className={`align-top ${selectedVuAnGoc === r.id ? "bg-[#e8f7ee]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                                  <td className="border border-[#ddd] px-3 py-2 text-center text-[#666]">{i + 1}</td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-center">
+                                <tr key={r.id} className={`align-top ${selectedVuAnGoc === r.id ? "bg-[#e8f7ee]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
+                                  <td className="border border-surface-container px-3 py-2 text-center text-on-surface-variant">{i + 1}</td>
+                                  <td className="border border-surface-container px-3 py-2 text-center">
                                     {/* Cùng name với bảng kết quả giải quyết:
                                           chỉ được đề nghị xem xét 1 bản án HOẶC
                                           1 kết quả giải quyết, không được cả hai */}
@@ -12906,8 +12967,8 @@ export default function App() {
                                       checked={deNghiBanAn === r.id}
                                       onChange={() => { setDeNghiBanAn(r.id); setDeNghiKetQua(null); }} />
                                   </td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#1a5a96]">{r.vuAn}</td>
-                                  <td className="border border-[#ddd] px-3 py-2">
+                                  <td className="border border-surface-container px-3 py-2 text-primary">{r.vuAn}</td>
+                                  <td className="border border-surface-container px-3 py-2">
                                     <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-semibold ${r.nguon === "QLA"
                                       ? "bg-[#e0f2fe] text-[#0369a1]"
                                       : r.nguon === "Kho số hóa"
@@ -12917,16 +12978,16 @@ export default function App() {
                                       {r.nguon}
                                     </span>
                                   </td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.loai}</td>
-                                  <td className="border border-[#ddd] px-3 py-2">
-                                    <span className={`inline-block px-1.5 py-[2px] rounded text-[10px] font-medium border ${r.giaiDoan === "Sơ thẩm" ? "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]" : "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"}`}>
+                                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{r.loai}</td>
+                                  <td className="border border-surface-container px-3 py-2">
+                                    <span className={`inline-block px-1.5 py-[2px] rounded text-[10px] font-medium border ${r.giaiDoan === "Sơ thẩm" ? "bg-info-container text-primary border-surface-variant" : "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"}`}>
                                       {r.giaiDoan}
                                     </span>
                                   </td>
-                                  <td className="border border-[#ddd] px-3 py-2 font-medium">{r.soBA}</td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.ngayBA}</td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.toaAn}</td>
-                                  <td className="border border-[#ddd] px-3 py-2">
+                                  <td className="border border-surface-container px-3 py-2 font-medium">{r.soBA}</td>
+                                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{r.ngayBA}</td>
+                                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{r.toaAn}</td>
+                                  <td className="border border-surface-container px-3 py-2">
                                     {/* Bản án thêm tay có cờ daGiaiQuyet riêng;
                                           dữ liệu tra cứu thì suy theo giai đoạn. */}
                                     {(() => {
@@ -12934,14 +12995,14 @@ export default function App() {
                                       return (
                                         <span className={`inline-block px-1.5 py-[2px] rounded text-[10px] font-medium border ${xong
                                           ? "bg-[#e8f7ee] text-[#1a7a45] border-[#a9debb]"
-                                          : "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]"
+                                          : "bg-info-container text-primary border-surface-variant"
                                           }`}>
                                           {xong ? "Đã giải quyết" : "Đang giải quyết"}
                                         </span>
                                       );
                                     })()}
                                   </td>
-                                  <td className="border border-[#ddd] px-3 py-2">
+                                  <td className="border border-surface-container px-3 py-2">
                                     <div className="flex items-center justify-center gap-0.5">
                                       {/* Dòng thêm tay: sửa ngay trong popup.
                                             Dòng từ Kho số hóa: chỉ đổ ngược lên
@@ -12983,7 +13044,7 @@ export default function App() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[13px] font-semibold text-[#444]">Danh sách kết quả giải quyết liên quan</span>
-                            <span className="text-[11px] text-[#888] italic">
+                            <span className="text-[11px] text-on-surface-variant italic">
                               — chỉ được đề nghị xem xét 1 bản án/quyết định hoặc 1 kết quả giải quyết
                             </span>
                           </div>
@@ -12992,7 +13053,7 @@ export default function App() {
                         <Tbl headers={["STT", "Đề nghị xem xét", "Loại kết quả", "Số kết quả", "Ngày", "Tòa án", "Thao tác"]}
                           emptyMsg="Chưa có dữ liệu">
                           {thongBaoTraLoi.length > 0 ? thongBaoTraLoi.map((tb, i) => (
-                            <tr key={tb.id} className={deNghiKetQua === tb.id ? "bg-[#e8f7ee]" : i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+                            <tr key={tb.id} className={deNghiKetQua === tb.id ? "bg-[#e8f7ee]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
                               <Td center>{i + 1}</Td>
                               <Td center>
                                 <input type="radio" name="deNghiXemXet"
@@ -13033,7 +13094,7 @@ export default function App() {
                         ) : (
                           <table className="w-full table-fixed border-collapse text-[12px]">
                             <thead>
-                              <tr className="bg-[#f5f5f5]">
+                              <tr className="bg-surface-container-low">
                                 {/* MỌI cột đều ghim bề rộng: bỏ trống một cột thì cột đó nuốt
                                       hết chỗ thừa và bị kéo ngang cả nghìn pixel trong khi chữ
                                       nằm dồn bên trái. Ghim đủ 5 cột thì phần thừa chia đều theo
@@ -13042,7 +13103,7 @@ export default function App() {
                                       ô không cắt mà đẩy cột phình ra, vì bảng auto-layout co
                                       giãn theo nội dung không xuống dòng được. */}
                                 {["STT", "Thông tin người đứng đơn", "Thông tin đơn", "Người nhập", "Trạng thái"].map(h => (
-                                  <th key={h} className={`border border-[#ddd] px-2.5 py-[5px] text-left font-semibold text-[#333] whitespace-nowrap ${h === "STT" ? "w-[34px] text-center"
+                                  <th key={h} className={`border border-surface-container px-2.5 py-[5px] text-left font-semibold text-on-surface whitespace-nowrap ${h === "STT" ? "w-[34px] text-center"
                                     : h === "Thông tin người đứng đơn" ? "w-[240px]"
                                       : h === "Thông tin đơn" ? "w-[230px]"
                                         : h === "Người nhập" ? "w-[120px]"
@@ -13052,9 +13113,9 @@ export default function App() {
                             </thead>
                             <tbody>
                               {donLienQuanRows.map((r, i) => (
-                                <tr key={r.id} className={`align-top ${i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}`}>
-                                  <td className="border border-[#ddd] px-2.5 py-1.5 text-center text-[#666]">{i + 1}</td>
-                                  <td className="border border-[#ddd] px-2.5 py-1.5">
+                                <tr key={r.id} className={`align-top ${i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
+                                  <td className="border border-surface-container px-2.5 py-1.5 text-center text-on-surface-variant">{i + 1}</td>
+                                  <td className="border border-surface-container px-2.5 py-1.5">
                                     {/* Mã đơn và ngày nhận đứng chung một dòng — hai mẩu
                                           ngắn, tách ra hai dòng chỉ tốn chiều cao.
                                           span chứ không phải button: button không kế thừa
@@ -13062,32 +13123,32 @@ export default function App() {
                                     <div className="flex items-baseline gap-1.5">
                                       <span onClick={() => moTabChiTietDon(r)}
                                         title="Mở chi tiết đơn ở tab mới"
-                                        className="font-medium text-[#1a5a96] underline cursor-pointer">
+                                        className="font-medium text-primary underline cursor-pointer">
                                         {r.maDon}
                                       </span>
-                                      <span className="text-[10px] text-[#888] whitespace-nowrap">Nhận {r.ngayNhan}</span>
+                                      <span className="text-[10px] text-on-surface-variant whitespace-nowrap">Nhận {r.ngayNhan}</span>
                                     </div>
-                                    <div className="text-[#333] leading-tight truncate" title={r.nguoiGui}>{r.nguoiGui}</div>
-                                    <div className="text-[10px] text-[#777] leading-tight truncate" title={r.diaChi}>{r.diaChi}</div>
+                                    <div className="text-on-surface leading-tight truncate" title={r.nguoiGui}>{r.nguoiGui}</div>
+                                    <div className="text-[10px] text-on-surface-variant leading-tight truncate" title={r.diaChi}>{r.diaChi}</div>
                                   </td>
-                                  <td className="border border-[#ddd] px-2.5 py-1.5">
+                                  <td className="border border-surface-container px-2.5 py-1.5">
                                     {/* 4 dòng nhãn:giá trị gộp còn 2: số và ngày BA/QĐ đi
                                           liền nhau, hình thức và thủ tục cũng vậy. */}
                                     <div className="leading-tight">
-                                      <span className="text-[#666]">BA/QĐ: </span>
-                                      <span className="font-medium text-[#333]">{r.soBA || "—"}</span>
-                                      {r.ngayBA && <span className="text-[#888]"> · ngày {r.ngayBA}</span>}
+                                      <span className="text-on-surface-variant">BA/QĐ: </span>
+                                      <span className="font-medium text-on-surface">{r.soBA || "—"}</span>
+                                      {r.ngayBA && <span className="text-on-surface-variant"> · ngày {r.ngayBA}</span>}
                                     </div>
-                                    <div className="text-[10px] text-[#777] leading-tight truncate mt-[1px]"
+                                    <div className="text-[10px] text-on-surface-variant leading-tight truncate mt-[1px]"
                                       title={`Hình thức: ${r.hinhThuc || "—"} · Thủ tục: ${r.thuTuc || "—"}`}>
                                       {r.hinhThuc || "—"} · {r.thuTuc || "—"}
                                     </div>
                                   </td>
-                                  <td className="border border-[#ddd] px-2.5 py-1.5">
-                                    <div className="text-[#333] leading-tight truncate" title={r.nguoiNhap}>{r.nguoiNhap}</div>
-                                    <div className="text-[10px] text-[#777] leading-tight">Nhập {r.ngayNhap}</div>
+                                  <td className="border border-surface-container px-2.5 py-1.5">
+                                    <div className="text-on-surface leading-tight truncate" title={r.nguoiNhap}>{r.nguoiNhap}</div>
+                                    <div className="text-[10px] text-on-surface-variant leading-tight">Nhập {r.ngayNhap}</div>
                                   </td>
-                                  <td className="border border-[#ddd] px-2.5 py-1.5">
+                                  <td className="border border-surface-container px-2.5 py-1.5">
                                     {r.trangThai ? (
                                       <div className="space-y-1">
                                         {/* Trạng thái là thứ đọc trước tiên trong ô này nên cho
@@ -13095,7 +13156,7 @@ export default function App() {
                                               trạng thái dùng ở các màn khác — thay vì một dòng
                                               chữ đậm lẫn vào phần chi tiết bên dưới. */}
                                         <div className="flex items-center gap-1.5 flex-wrap">
-                                          <span className="inline-flex items-center gap-1 px-1.5 py-[1px] rounded-full bg-[#f1f3f6] border border-[#e2e6ec] text-[10px] font-semibold text-[#333] whitespace-nowrap">
+                                          <span className="inline-flex items-center gap-1 px-1.5 py-[1px] rounded-full bg-[#f1f3f6] border border-[#e2e6ec] text-[10px] font-semibold text-on-surface whitespace-nowrap">
                                             <span className="w-[5px] h-[5px] rounded-full flex-shrink-0"
                                               style={{ background: r.color || "#94a3b8" }} />
                                             {r.trangThai}
@@ -13108,7 +13169,7 @@ export default function App() {
                                             ) : (
                                               <button type="button" onClick={() => chonLamDonTrung(r, `${r.id}-trung`)}
                                                 title="Lấy đơn này làm đơn trùng"
-                                                className="px-1.5 py-[1px] rounded-full border border-[#e0c7c4] text-[#8b1a1a] text-[10px] font-medium hover:bg-[#fdecea] hover:border-[#8b1a1a] transition-colors">
+                                                className="px-1.5 py-[1px] rounded-full border border-[#e0c7c4] text-error text-[10px] font-medium hover:bg-[#fdecea] hover:border-error transition-colors">
                                                 Chọn làm đơn trùng
                                               </button>
                                             )
@@ -13124,14 +13185,14 @@ export default function App() {
                                             {(r.stl || r.ngayThuLy) && (
                                               <div>
                                                 <span className="text-[#8a94a6]">Số thụ lý </span>
-                                                <span className="text-[#333] font-medium">{r.stl || "—"}</span>
+                                                <span className="text-on-surface font-medium">{r.stl || "—"}</span>
                                                 {r.ngayThuLy && <span className="text-[#8a94a6]"> · thụ lý ngày {r.ngayThuLy}</span>}
                                               </div>
                                             )}
                                             {r.daChuyenVu && (r.trangThaiVu || r.thamPhan) && (
                                               <div className="truncate" title={`Trạng thái vụ: ${r.trangThaiVu ?? "—"} · Thẩm phán: ${r.thamPhan ?? "—"}`}>
                                                 <span className="text-[#8a94a6]">Vụ </span>
-                                                <span className="font-medium text-[#333]">{r.trangThaiVu || "—"}</span>
+                                                <span className="font-medium text-on-surface">{r.trangThaiVu || "—"}</span>
                                                 {r.thamPhan && <span className="text-[#8a94a6]"> · {r.thamPhan}</span>}
                                               </div>
                                             )}
@@ -13166,7 +13227,7 @@ export default function App() {
                                                 {ycbss.map(l => (
                                                   <div key={l.i} className="leading-[1.45]">
                                                     <div className="flex items-baseline gap-1">
-                                                      <span className="px-1 rounded-sm bg-[#fdecea] text-[#c0392b] text-[9px] font-bold flex-shrink-0">
+                                                      <span className="px-1 rounded-sm bg-[#fdecea] text-error text-[9px] font-bold flex-shrink-0">
                                                         YCBS {l.i}
                                                       </span>
                                                       {/* Dữ liệu để sẵn dạng "Số 089/TB-TA, 15/11/2023"
@@ -13174,7 +13235,7 @@ export default function App() {
                                                       {l.so && <span className="text-[9.5px] text-[#8a94a6] truncate min-w-0" title={`Số và ngày thông báo YCBS: ${l.so}`}>TB {l.so}</span>}
                                                     </div>
                                                     {l.lyDo && (
-                                                      <div className="text-[10.5px] text-[#666] truncate" title={l.lyDo}>{l.lyDo}</div>
+                                                      <div className="text-[10.5px] text-on-surface-variant truncate" title={l.lyDo}>{l.lyDo}</div>
                                                     )}
                                                   </div>
                                                 ))}
@@ -13204,7 +13265,7 @@ export default function App() {
                                               ) : (
                                                 <button type="button" onClick={() => chonLamDonBoSung(r, `${r.id}-alone`)}
                                                   title="Chọn làm đơn bổ sung cho đơn này"
-                                                  className="px-1.5 py-[1px] rounded-full border border-[#e0c7c4] text-[#8b1a1a] text-[10px] font-medium hover:bg-[#fdecea] hover:border-[#8b1a1a] transition-colors">
+                                                  className="px-1.5 py-[1px] rounded-full border border-[#e0c7c4] text-error text-[10px] font-medium hover:bg-[#fdecea] hover:border-error transition-colors">
                                                   Chọn làm đơn BS
                                                 </button>
                                               )}
@@ -13213,7 +13274,7 @@ export default function App() {
                                         })()}
                                       </div>
                                     ) : (
-                                      <span className="text-[#999]">—</span>
+                                      <span className="text-outline">—</span>
                                     )}
                                   </td>
                                 </tr>
@@ -13242,7 +13303,7 @@ export default function App() {
                     {isKhangNghi ? (
                       /* ── Hồ sơ kháng nghị GĐT,TT: thông tin QĐKN ── */
                       <div className="space-y-3">
-                        <p className="text-[12px] font-semibold text-[#1d2e4f]">Thông tin Quyết định kháng nghị</p>
+                        <p className="text-[12px] font-semibold text-tertiary">Thông tin Quyết định kháng nghị</p>
                         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                           <div>
                             <Lbl req>Số QĐKN</Lbl>
@@ -13273,7 +13334,7 @@ export default function App() {
                         </div>
                         <div>
                           <Lbl req>Nội dung đơn</Lbl>
-                          <textarea rows={4} placeholder="Nhập nội dung đơn..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[12px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                          <textarea rows={4} placeholder="Nhập nội dung đơn..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                         </div>
                       </div>
                     ) : isDon ? (
@@ -13298,7 +13359,7 @@ export default function App() {
                             emptyMsg="Chưa có công văn"
                           >
                             {congVans.length > 0 ? congVans.map((cv, i) => (
-                              <tr key={cv.id} className={i % 2 === 1 ? "bg-[#fafafa]" : ""}>
+                              <tr key={cv.id} className={i % 2 === 1 ? "bg-surface-bright" : ""}>
                                 <Td center>{i + 1}</Td>
                                 <Td>{cv.loai}</Td>
                                 <Td>{cv.so}</Td>
@@ -13328,7 +13389,7 @@ export default function App() {
                             )) : undefined}
                           </Tbl>
                           {congVans.length === 0 && (
-                            <p className="text-center text-[#999] italic text-[13px] py-2">
+                            <p className="text-center text-outline italic text-[13px] py-2">
                               Chưa có công văn. Nhấn "Thêm mới" để thêm.
                             </p>
                           )}
@@ -13349,9 +13410,9 @@ export default function App() {
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 <Lbl req>Nội dung chỉ đạo</Lbl>
-                                <a href="#" onClick={e => e.preventDefault()} className="text-[12px] text-[#1a73e8] hover:underline">[Gợi ý]</a>
+                                <a href="#" onClick={e => e.preventDefault()} className="text-[12px] text-primary hover:underline">[Gợi ý]</a>
                               </div>
-                              <textarea rows={3} placeholder="Nhập nội dung chỉ đạo" className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                              <textarea rows={3} placeholder="Nhập nội dung chỉ đạo" className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                             </div>
                           )}
                         </>}
@@ -13370,15 +13431,15 @@ export default function App() {
                     <Tbl headers={["STT", "Số đơn", "Ngày tiếp nhận", "Ngày ghi trên đơn", "Loại văn bản", "Thao tác"]}
                       emptyMsg="Chưa có đơn thụ lý kèm">
                       {donThuLyKem.length > 0 ? donThuLyKem.map((dk, i) => (
-                        <tr key={dk.id} className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+                        <tr key={dk.id} className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
                           <Td center>{i + 1}</Td>
-                          <Td><span className="font-medium text-[#1a5a96]">{dk.soHieu || "— chưa có số —"}</span></Td>
+                          <Td><span className="font-medium text-primary">{dk.soHieu || "— chưa có số —"}</span></Td>
                           <Td>{dk.ngayNhan}</Td>
                           <Td>{dk.ngayGhi || "—"}</Td>
                           <Td>
                             <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-medium border ${dk.laCongVan
                               ? "bg-[#fef3e2] text-[#b45309] border-[#fcd48a]"
-                              : "bg-[#e8f0fe] text-[#1a5a96] border-[#c5d8f8]"}`}>
+                              : "bg-info-container text-primary border-surface-variant"}`}>
                               {dk.laCongVan ? "Công văn" : "Đơn"}
                             </span>
                           </Td>
@@ -13411,13 +13472,13 @@ export default function App() {
                       bỏ ô lọc cùng tên ở khối tìm kiếm. */}
                     <div className="flex items-center gap-6 flex-wrap mb-2">
                       {!["Đơn khác", "CV khác"].includes(hinhThuc) && (
-                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                        <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                           <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                             checked={xinHoanThiHanhAn} onChange={e => setXinHoanThiHanhAn(e.target.checked)} />
                           Xin hoãn thi hành án
                         </label>
                       )}
-                      <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                      <label className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface whitespace-nowrap">
                         <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
                           checked={coNoiDungToCao} onChange={e => setCoNoiDungToCao(e.target.checked)} />
                         Có nội dung tố cáo
@@ -13428,7 +13489,7 @@ export default function App() {
                       <div className="mb-3">
                         <Lbl req>Nội dung tố cáo</Lbl>
                         <textarea rows={3} placeholder="Nhập nội dung tố cáo..."
-                          className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                          className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                       </div>
                     )}
 
@@ -13481,7 +13542,7 @@ export default function App() {
                           <Lbl req>Lý do lưu theo dõi</Lbl>
                           <textarea rows={2} placeholder="Nhập lý do lưu theo dõi đơn thư..."
                             value={lyDoLuuTheoDoi} onChange={e => setLyDoLuuTheoDoi(e.target.value)}
-                            className="w-full border border-[#ccc] rounded-[3px] px-2.5 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                            className="w-full border border-surface-container-highest rounded-[3px] px-2.5 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                         </div>
                       )}
 
@@ -13504,7 +13565,7 @@ export default function App() {
                                 <option value="">-- Chọn cá nhân --</option>
                                 <option>Trưởng phòng - {donViChuyenDen}</option>
                                 <option>Phó Trưởng phòng - {donViChuyenDen}</option>
-                                <option>TTV - {donViChuyenDen}</option>
+                                <option>Công chức nghiên cứu - {donViChuyenDen}</option>
                               </Sel>
                             </div>
                           )}
@@ -13527,11 +13588,11 @@ export default function App() {
                               const goiY = TOA_KHAC_OPTIONS.filter(t => contains(t, donViChuyenDen));
                               if (!goiY.length) return null;
                               return (
-                                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-[#ddd] rounded-[3px] shadow-lg mt-0.5 max-h-[220px] overflow-y-auto">
+                                <div className="absolute z-50 top-full left-0 right-0 bg-white border border-surface-container rounded-[3px] shadow-lg mt-0.5 max-h-[220px] overflow-y-auto">
                                   {goiY.map(t => (
                                     <button key={t} type="button"
                                       onMouseDown={() => { setDonViChuyenDen(t); setShowDonViChuyenDenDD(false); }}
-                                      className="w-full text-left px-3 py-2 text-[13px] hover:bg-[#f0f7ff] border-b border-[#f0f0f0] last:border-0">
+                                      className="w-full text-left px-3 py-2 text-[13px] hover:bg-[#f0f7ff] border-b border-surface-container last:border-0">
                                       {t}
                                     </button>
                                   ))}
@@ -13543,7 +13604,7 @@ export default function App() {
                             <Lbl req>Chuyển đến</Lbl>
                             <div className="flex items-center gap-4 h-[30px]">
                               {["Tòa án", "Chánh án"].map(opt => (
-                                <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333]">
+                                <label key={opt} className="flex items-center gap-2 cursor-pointer text-[13px] text-on-surface">
                                   <input type="radio" name="chanhAnHoacToaAnOpt" className="w-[14px] h-[14px] accent-[#8b1a1a]"
                                     checked={chanhAnHoacToaAn === opt}
                                     onChange={() => setChanhAnHoacToaAn(opt)} />
@@ -13617,7 +13678,7 @@ export default function App() {
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn không đủ điều kiện" && lyDoKhongDu === "Lý do khác" && (
                             <div className="col-span-2">
                               <Lbl req>Lý do khác</Lbl>
-                              <textarea rows={2} placeholder="Nhập lý do khác..." className="w-full border border-[#ccc] rounded-[3px] px-2 py-1.5 text-[13px] text-[#222] focus:outline-none focus:border-[#1a73e8] resize-none" />
+                              <textarea rows={2} placeholder="Nhập lý do khác..." className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[13px] text-on-surface focus:outline-none focus:border-primary resize-none" />
                             </div>
                           )}
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (
@@ -13649,24 +13710,24 @@ export default function App() {
                           <Lbl>Lịch sử</Lbl>
                           <table className="w-full border-collapse text-[12px]">
                             <thead>
-                              <tr className="bg-[#f5f5f5]">
-                                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333]">Nội dung</th>
-                                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[180px]">Thao tác</th>
-                                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[140px]">Người tạo</th>
-                                <th className="border border-[#ddd] px-3 py-[6px] text-left font-semibold text-[#333] w-[110px]">Ngày chuyển đơn</th>
+                              <tr className="bg-surface-container-low">
+                                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Nội dung</th>
+                                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[180px]">Thao tác</th>
+                                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[140px]">Người tạo</th>
+                                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[110px]">Ngày chuyển đơn</th>
                               </tr>
                             </thead>
                             <tbody>
                               {editingRow.processingHistory?.length ? editingRow.processingHistory.map((item, idx) => (
-                                <tr key={idx} className={idx % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
-                                  <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.note || item.step}</td>
-                                  <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.step}</td>
-                                  <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.actor}</td>
-                                  <td className="border border-[#ddd] px-3 py-[6px] text-[#333]">{item.date}</td>
+                                <tr key={idx} className={idx % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
+                                  <td className="border border-surface-container px-3 py-[6px] text-on-surface">{item.note || item.step}</td>
+                                  <td className="border border-surface-container px-3 py-[6px] text-on-surface">{item.step}</td>
+                                  <td className="border border-surface-container px-3 py-[6px] text-on-surface">{item.actor}</td>
+                                  <td className="border border-surface-container px-3 py-[6px] text-on-surface">{item.date}</td>
                                 </tr>
                               )) : (
                                 <tr>
-                                  <td colSpan={4} className="border border-[#ddd] px-3 py-4 text-center text-[#999] italic">
+                                  <td colSpan={4} className="border border-surface-container px-3 py-4 text-center text-outline italic">
                                     Chưa có lịch sử.
                                   </td>
                                 </tr>
@@ -13694,7 +13755,7 @@ export default function App() {
                       <div className="col-span-2">
                         <Lbl req>Trích yếu</Lbl>
                         <textarea
-                          className="w-full min-h-[80px] p-2 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8] resize-y"
+                          className="w-full min-h-[80px] p-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary resize-y"
                           placeholder="Nhập trích yếu công văn phúc đáp"
                         />
                       </div>
@@ -13764,9 +13825,9 @@ export default function App() {
                               </div>
                               <Tbl headers={["Họ và tên", "Năm sinh", "Địa chỉ", "Thao tác"]} emptyMsg="Chưa có dữ liệu">
                                 {nguoiLienQuan.length > 0 ? nguoiLienQuan.map((n, i) => (
-                                  <tr key={n.id} className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
+                                  <tr key={n.id} className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
                                     <Td>
-                                      <span className="font-medium text-[#1a5a96]">{n.hoTen}</span>
+                                      <span className="font-medium text-primary">{n.hoTen}</span>
                                       {n.thongKe.length > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-1">
                                           {n.thongKe.map(tk => (
@@ -13803,19 +13864,19 @@ export default function App() {
                                 emptyMsg="Chưa có bị cáo"
                               >
                                 {biCao.length > 0 ? biCao.map((n, i) => (
-                                  <tr key={n.id} className={i % 2 === 1 ? "bg-[#fafafa]" : "bg-white"}>
-                                    <Td><span className="font-medium text-[#1a5a96]">{n.hoTen}</span></Td>
+                                  <tr key={n.id} className={i % 2 === 1 ? "bg-surface-bright" : "bg-white"}>
+                                    <Td><span className="font-medium text-primary">{n.hoTen}</span></Td>
                                     <Td>{n.namSinh}</Td>
                                     <Td>{n.diaChi}</Td>
                                     <Td>
                                       {n.toiDanh ?? "—"}
                                       {n.dieuKhoan && (
-                                        <span className="text-[#666]"> ({n.dieuKhoan})</span>
+                                        <span className="text-on-surface-variant"> ({n.dieuKhoan})</span>
                                       )}
                                     </Td>
                                     <Td center>
                                       <button onClick={() => setBiCao(p => p.filter(x => x.id !== n.id))}
-                                        className="inline-flex items-center gap-1 px-2 py-[3px] rounded text-[11px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
+                                        className="inline-flex items-center gap-1 px-2 py-[3px] rounded text-[11px] font-medium text-error hover:bg-[#fdecea] transition-colors">
                                         <Trash2 size={11} /> Xóa
                                       </button>
                                     </Td>
@@ -13845,7 +13906,7 @@ export default function App() {
                 <div className="flex justify-end gap-2 pb-2 pt-1">
                   <BtnSecondary>Hủy</BtnSecondary>
                   {thuLyDon !== "Đã thụ lý" && thuLyDon !== "Thụ lý mới" && (
-                    <button className="flex items-center gap-1.5 h-[30px] px-3 border border-[#1d2e4f] text-[#1d2e4f] hover:bg-[#eef1f5] rounded-[3px] text-[12px] font-medium transition-colors">
+                    <button className="flex items-center gap-1.5 h-[30px] px-3 border border-tertiary text-tertiary hover:bg-[#eef1f5] rounded-[3px] text-[12px] font-medium transition-colors">
                       <Save size={13} /> Lưu nháp
                     </button>
                   )}
@@ -13856,15 +13917,15 @@ export default function App() {
             </div>
 
             {/* RIGHT: PDF Viewer panel */}
-            {showPDF && <div className="flex-1 flex flex-col bg-[#404040] border-l border-[#333]">
+            {showPDF && <div className="flex-1 flex flex-col bg-[#404040] border-l border-on-surface">
               {/* PDF toolbar */}
-              <div className="bg-[#323232] flex items-center justify-between px-3 py-[7px] border-b border-[#555] gap-3">
+              <div className="bg-[#323232] flex items-center justify-between px-3 py-[7px] border-b border-on-surface-variant gap-3">
                 <div className="flex items-center gap-2">
                   <button onClick={() => setShowPDF(false)}
                     className="text-white/60 hover:text-white transition-colors p-1 rounded" title="Ẩn tài liệu">
                     <ChevronRight size={15} />
                   </button>
-                  <button className="flex items-center gap-1.5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[12px] px-3 py-[4px] rounded-[3px] border border-[#6e1414] transition-colors">
+                  <button className="flex items-center gap-1.5 bg-error hover:bg-error-container text-white text-[12px] px-3 py-[4px] rounded-[3px] border border-error-container transition-colors">
                     <Upload size={13} /> Tải lên
                   </button>
                   <button className="text-white/60 hover:text-white transition-colors p-1 rounded">
@@ -13905,35 +13966,35 @@ export default function App() {
                       <p>Kính gửi: <span className="font-semibold">TÒA ÁN NHÂN DÂN THÀNH PHỐ HÀ NỘI</span></p>
                       <div className="flex gap-2">
                         <span className="whitespace-nowrap">Họ và tên:</span>
-                        <span className="flex-1 border-b border-dotted border-[#999]">&nbsp;</span>
+                        <span className="flex-1 border-b border-dotted border-outline">&nbsp;</span>
                       </div>
                       <div className="flex gap-2">
                         <span className="whitespace-nowrap">Địa chỉ:</span>
-                        <span className="flex-1 border-b border-dotted border-[#999]">&nbsp;</span>
+                        <span className="flex-1 border-b border-dotted border-outline">&nbsp;</span>
                       </div>
                       <div className="flex gap-2">
                         <span className="whitespace-nowrap">Điện thoại:</span>
-                        <span className="flex-1 border-b border-dotted border-[#999]">&nbsp;</span>
+                        <span className="flex-1 border-b border-dotted border-outline">&nbsp;</span>
                       </div>
 
                       <p className="font-semibold mt-4">I. NỘI DUNG VỤ VIỆC:</p>
                       <div className="space-y-2">
                         {Array.from({ length: 8 }).map((_, i) => (
-                          <div key={i} className="border-b border-dotted border-[#ccc] h-[20px]" />
+                          <div key={i} className="border-b border-dotted border-surface-container-highest h-[20px]" />
                         ))}
                       </div>
 
                       <p className="font-semibold mt-4">II. LÝ DO ĐỀ NGHỊ XEM XÉT THEO THỦ TỤC GIÁM ĐỐC THẨM:</p>
                       <div className="space-y-2">
                         {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} className="border-b border-dotted border-[#ccc] h-[20px]" />
+                          <div key={i} className="border-b border-dotted border-surface-container-highest h-[20px]" />
                         ))}
                       </div>
 
                       <p className="font-semibold mt-4">III. YÊU CẦU:</p>
                       <div className="space-y-2">
                         {Array.from({ length: 4 }).map((_, i) => (
-                          <div key={i} className="border-b border-dotted border-[#ccc] h-[20px]" />
+                          <div key={i} className="border-b border-dotted border-surface-container-highest h-[20px]" />
                         ))}
                       </div>
 
@@ -13956,9 +14017,9 @@ export default function App() {
               </div>
             </div>}
             {!showPDF && (
-              <div className="flex-shrink-0 border-l border-[#ccc] bg-[#f5f5f5] flex items-start pt-3">
+              <div className="flex-shrink-0 border-l border-surface-container-highest bg-surface-container-low flex items-start pt-3">
                 <button onClick={() => setShowPDF(true)} title="Hiện tài liệu"
-                  className="flex flex-col items-center gap-1 px-2 py-2 text-[#555] hover:text-[#1d2e4f] hover:bg-[#e8edf5] rounded-[3px] transition-colors">
+                  className="flex flex-col items-center gap-1 px-2 py-2 text-on-surface-variant hover:text-tertiary hover:bg-[#e8edf5] rounded-[3px] transition-colors">
                   <ChevronLeft size={15} />
                   <span className="text-[10px] font-medium [writing-mode:vertical-rl] rotate-180">Tài liệu</span>
                 </button>

@@ -1681,7 +1681,7 @@ function ThemBieuMauModal({
   const JUDGE_INFO: Record<string, { chucVu: string; ngaySinh: string }> = {
     "Nguyễn Biên Thùy": { chucVu: "Thẩm phán TAND Tối cao", ngaySinh: "12/04/1970" },
     "Lê Thị Thu Hiển": { chucVu: "Phó Trưởng phòng Vụ I", ngaySinh: "25/09/1974" },
-    "Phạm Thị Bích Ngọc": { chucVu: "TTV chính", ngaySinh: "18/11/1982" },
+    "Phạm Thị Bích Ngọc": { chucVu: "Công chức nghiên cứu chính", ngaySinh: "18/11/1982" },
     "Nguyễn Như Thắng": { chucVu: "Thẩm phán TAND Tối cao", ngaySinh: "05/06/1968" },
     "Trần Hồng Hà": { chucVu: "Thẩm phán TAND Tối cao", ngaySinh: "10/01/1966" },
     "Phạm Quốc Anh": { chucVu: "Phó Trưởng phòng Vụ IV", ngaySinh: "14/03/1975" },
@@ -2097,7 +2097,7 @@ function ThemBieuMauModal({
                     </td>
                     <td style={{ ...TD_STYLE, fontSize: 11, padding: "8px" }}>
                       <div><span style={{ color: MUTED }}>TP:</span> {c.tp}</div>
-                      <div><span style={{ color: MUTED }}>TTV:</span> {c.ttv}</div>
+                      <div><span style={{ color: MUTED }}>Công chức nghiên cứu:</span> {c.ttv}</div>
                       <div><span style={{ color: MUTED }}>LĐV:</span> {c.ldv}</div>
                     </td>
                   </tr>
@@ -4170,7 +4170,7 @@ function FilterPanel({ open, onToggle, userRole }: { open: boolean; onToggle: ()
               {rangeRow("Thụ lý XX")}
               {rangeRow("Xét xử")}
               {col("Trạng thái xét xử", <select style={inSt}><option value="">– Tất cả –</option><option>Chưa xét xử</option><option>Đã xét xử</option></select>)}
-              {col("TTV/Thư ký", <select style={inSt}><option value="">– Tất cả –</option><option>Nguyễn Thu Hằng</option><option>Lý Văn An</option></select>)}
+              {col("Công chức nghiên cứu/Thư ký", <select style={inSt}><option value="">– Tất cả –</option><option>Nguyễn Thu Hằng</option><option>Lý Văn An</option></select>)}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
               {col("Lãnh đạo phụ trách", <select style={inSt}><option value="">Vui lòng chọn</option>{LANH_DAO_PHU_TRACH.map(n => <option key={n}>{n}</option>)}</select>)}

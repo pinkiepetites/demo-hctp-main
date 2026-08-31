@@ -23,7 +23,7 @@ const KetQuaXuLyDonChart = ({ items, maxValue }: {
       <div className="relative flex-1 min-h-[180px]">
         <div className="absolute left-[168px] right-2 top-0 bottom-0 pointer-events-none">
           {ticks.map(t => (
-            <div key={t} className="absolute top-0 bottom-0 border-l border-dashed border-[#f1f5f9]" style={{ left: `${(t / maxValue) * 100}%` }} />
+            <div key={t} className="absolute top-0 bottom-0 border-l border-dashed border-surface-container-high" style={{ left: `${(t / maxValue) * 100}%` }} />
           ))}
         </div>
         <div className="h-full flex flex-col justify-around relative">
@@ -74,7 +74,7 @@ const SoSanhLoaiAnChart = ({ groups, categories, maxValue }: {
         </div>
         <div className="absolute left-8 right-0 top-0 bottom-5 border-l border-b border-[#e2e8f0]">
           {ticks.slice(1).map(t => (
-            <div key={t} className="absolute w-full border-t border-dashed border-[#f1f5f9]" style={{ bottom: `${(t / maxValue) * 100}%` }} />
+            <div key={t} className="absolute w-full border-t border-dashed border-surface-container-high" style={{ bottom: `${(t / maxValue) * 100}%` }} />
           ))}
         </div>
         <div className="ml-8 w-full flex justify-around items-end h-full z-10 pb-5">
@@ -105,7 +105,7 @@ const SoSanhLoaiAnChart = ({ groups, categories, maxValue }: {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-center gap-4 mt-3 pt-2 border-t border-[#f1f5f9] flex-wrap">
+      <div className="flex items-center justify-center gap-4 mt-3 pt-2 border-t border-surface-container-high flex-wrap">
         {categories.map(cat => (
           <div key={cat.key} className="flex items-center gap-1.5 text-[12px] font-medium text-[#475569]">
             <div className="w-3 h-3 rounded-[3px] shadow-sm" style={{ backgroundColor: cat.color }}></div>
@@ -258,7 +258,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
       <div className="flex items-center justify-between bg-white p-3.5 rounded-[8px] border border-[#e2e8f0] shadow-sm">
         <div className="flex items-center gap-5 flex-wrap w-full">
           <span className="text-[13px] font-medium text-[#475569]">Kỳ báo cáo:</span>
-          <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
+          <div className="flex items-center bg-surface-container-high rounded-[6px] p-1 border border-[#e2e8f0]">
             {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
               const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
               return (
@@ -317,7 +317,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
       <div className="grid grid-cols-3 gap-5">
         {/* Lượng đơn Chart */}
         <div className="col-span-2 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm flex flex-col hover:shadow-md transition-shadow">
-          <div className="px-5 py-4 border-b border-[#f1f5f9] flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-surface-container-high flex items-center justify-between">
             <h3 className="text-[14px] font-bold text-[#0f172a] flex items-center gap-2">
               <BarChart3 size={18} className="text-[#3b82f6]" />
               So sánh số đơn theo loại án & kết quả
@@ -334,8 +334,8 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
             nhau mà lệch chiều cao thì khoảng trắng thừa trông như thiếu nội dung. */}
         <div className="col-span-1 flex flex-col gap-5">
           <div className="flex-1 bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm hover:shadow-md transition-shadow flex flex-col">
-            <div className="px-5 py-4 border-b border-[#f1f5f9]">
-              <h3 className="text-[13px] font-bold text-[#8b1a1a] uppercase tracking-wide">Kết quả xử lý đơn</h3>
+            <div className="px-5 py-4 border-b border-surface-container-high">
+              <h3 className="text-[13px] font-bold text-error uppercase tracking-wide">Kết quả xử lý đơn</h3>
             </div>
             <div className="flex-1 p-5 flex flex-col">
               <KetQuaXuLyDonChart items={ketQuaXuLyDonItems} maxValue={ketQuaXuLyDonMax} />

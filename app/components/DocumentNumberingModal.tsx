@@ -170,24 +170,24 @@ const MUC_DO_UU_TIEN = ["Bình thường", "Thấp", "Cao"];
 // Gom nhãn + ô nhập về một khuôn để mọi trường cùng cỡ chữ, cùng chiều cao,
 // cùng cách đánh dấu bắt buộc — trước đây mỗi trường tự viết một kiểu.
 const NhanTruong = ({ children, bat, phu }: { children: React.ReactNode; bat?: boolean; phu?: string }) => (
-  <label className="block text-[12px] font-semibold text-[#555] mb-1.5 truncate">
+  <label className="block text-[12px] font-semibold text-on-surface-variant mb-1.5 truncate">
     {children}
     {bat && <span className="text-[#e74c3c] ml-0.5">*</span>}
-    {phu && <span className="font-normal text-[#999] ml-1">{phu}</span>}
+    {phu && <span className="font-normal text-outline ml-1">{phu}</span>}
   </label>
 );
 
 const O_CAO = "h-[34px]";
 const oNhapCls = (hopLe = true) =>
   `w-full ${O_CAO} pl-3 pr-8 text-[13px] border rounded-[4px] bg-white outline-none appearance-none transition-colors
-   focus:border-[#1a5a96] focus:ring-2 focus:ring-[#1a5a96]/15
-   ${hopLe ? "border-[#ccc] text-[#222]" : "border-[#e57373] text-[#aaa] bg-[#fffbfb]"}`;
+   focus:border-primary focus:ring-2 focus:ring-primary/15
+   ${hopLe ? "border-surface-container-highest text-on-surface" : "border-[#e57373] text-outline bg-[#fffbfb]"}`;
 
 // Mức độ ưu tiên: chấm màu để quét mắt nhanh, khỏi phải đọc chữ
 const MAU_UU_TIEN: Record<string, string> = {
   "Thấp": "bg-[#9aa5b1]",
   "Bình thường": "bg-[#27ae60]",
-  "Cao": "bg-[#c0392b]",
+  "Cao": "bg-error",
 };
 
 // Số lần yêu cầu bổ sung của một đơn = số YCBS đã gắn với đơn + 1 (lần đang lập).
@@ -594,29 +594,29 @@ const PopupChanTrinhDuyet = ({ soDon, lyDo, onBoDon, onDong }: {
     <div className="bg-white rounded-[8px] shadow-2xl w-[560px] overflow-hidden">
       <div className="px-6 pt-7 pb-4 text-center">
         <div className="w-14 h-14 rounded-full bg-[#fdecea] border-2 border-[#e57373] flex items-center justify-center mx-auto">
-          <AlertTriangle size={28} className="text-[#c0392b]" />
+          <AlertTriangle size={28} className="text-error" />
         </div>
-        <div className="text-[17px] font-bold text-[#8b1a1a] mt-3">Không thể trình duyệt</div>
-        <div className="text-[13px] text-[#666] mt-1">
-          Còn <b className="text-[#c0392b]">{soDon} đơn không hợp lệ</b> trong danh sách.
+        <div className="text-[17px] font-bold text-error mt-3">Không thể trình duyệt</div>
+        <div className="text-[13px] text-on-surface-variant mt-1">
+          Còn <b className="text-error">{soDon} đơn không hợp lệ</b> trong danh sách.
           Vui lòng bỏ các đơn này rồi trình duyệt lại.
         </div>
       </div>
 
-      <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-[#8b1a1a]">
+      <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-error">
         <div className="font-semibold mb-1">Lý do:</div>
         <ul className="list-disc pl-4 space-y-0.5">
           {lyDo.map(l => <li key={l}>{l}</li>)}
         </ul>
       </div>
 
-      <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
         <button onClick={onDong}
-          className="px-5 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f5f5f5] transition-colors">
+          className="px-5 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors">
           Đóng
         </button>
         <button onClick={onBoDon}
-          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-[#8b1a1a] hover:bg-[#6e1414] rounded-[4px] transition-colors">
+          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-error hover:bg-error-container rounded-[4px] transition-colors">
           <Trash2 size={14} /> Bỏ {soDon} đơn không hợp lệ
         </button>
       </div>
@@ -637,13 +637,13 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
           <Check size={30} className="text-[#2e7d32]" strokeWidth={3} />
         </div>
         <div className="text-[17px] font-bold text-[#1b5e20] mt-3">Trình duyệt thành công</div>
-        <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
+        <div className="text-[13px] text-on-surface-variant mt-1 leading-relaxed">
           Hồ sơ đã gửi tới <b>{nguoiDuyet.split(" - ")[0] || "người duyệt"}</b>.<br />
           Xem tiến độ tại màn <b>Văn bản trình ký của tôi</b> bất cứ lúc nào.
         </div>
       </div>
 
-      <div className="mx-6 mb-4 border border-[#e5e7eb] rounded-[6px] divide-y divide-[#f0f0f0] text-[13px]">
+      <div className="mx-6 mb-4 border border-surface-container rounded-[6px] divide-y divide-[#f0f0f0] text-[13px]">
         {[
           ["Loại văn bản", loaiVanBan],
           ...(lyDo ? [["Lý do yêu cầu", lyDo]] : []),
@@ -654,8 +654,8 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
           ["Mức độ ưu tiên", mucDo],
         ].map(([k, v]) => (
           <div key={k} className="flex items-center justify-between px-4 py-2">
-            <span className="text-[#777]">{k}</span>
-            <span className="font-medium text-[#222] text-right">{v}</span>
+            <span className="text-on-surface-variant">{k}</span>
+            <span className="font-medium text-on-surface text-right">{v}</span>
           </div>
         ))}
       </div>
@@ -670,15 +670,15 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
         </div>
       )}
 
-      <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
         {onXem && (
           <button onClick={onXem}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-[#1d2e4f] bg-white border border-[#1d2e4f] hover:bg-[#eef1f5] rounded-[4px] transition-colors">
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-tertiary bg-white border border-tertiary hover:bg-[#eef1f5] rounded-[4px] transition-colors">
             <FileText size={14} /> Xem văn bản đã trình
           </button>
         )}
         <button onClick={onDong}
-          className="px-6 py-2 text-[13px] font-semibold text-white bg-[#1d2e4f] hover:bg-[#15223a] rounded-[4px] transition-colors">
+          className="px-6 py-2 text-[13px] font-semibold text-white bg-tertiary hover:bg-[#15223a] rounded-[4px] transition-colors">
           Đóng
         </button>
       </div>
@@ -694,27 +694,27 @@ const PopupTrinhDuyetLoi = ({ lyDo, onDong, onThuLai }: { lyDo?: string; onDong:
     <div className="bg-white rounded-[8px] shadow-2xl w-[480px] overflow-hidden">
       <div className="px-6 pt-7 pb-4 text-center">
         <div className="w-14 h-14 rounded-full bg-[#fdecea] border-2 border-[#e57373] flex items-center justify-center mx-auto">
-          <X size={28} className="text-[#c0392b]" strokeWidth={3} />
+          <X size={28} className="text-error" strokeWidth={3} />
         </div>
-        <div className="text-[17px] font-bold text-[#8b1a1a] mt-3">Trình duyệt không thành công</div>
-        <div className="text-[13px] text-[#666] mt-1 leading-relaxed">
+        <div className="text-[17px] font-bold text-error mt-3">Trình duyệt không thành công</div>
+        <div className="text-[13px] text-on-surface-variant mt-1 leading-relaxed">
           Hệ thống không thể gửi hồ sơ đi duyệt. Văn bản chưa được tạo.
         </div>
       </div>
 
       {lyDo && (
-        <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-[#8b1a1a]">
+        <div className="mx-6 mb-5 px-4 py-3 bg-[#fdf3f2] border border-[#e57373] rounded-[6px] text-[12px] text-error">
           <span className="font-semibold">Lý do: </span>{lyDo}
         </div>
       )}
 
-      <div className="flex justify-end gap-2 px-6 py-4 border-t border-[#eee] bg-[#fafafa]">
+      <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
         <button onClick={onDong}
-          className="px-5 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f5f5f5] transition-colors">
+          className="px-5 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors">
           Đóng
         </button>
         <button onClick={onThuLai}
-          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-[#8b1a1a] hover:bg-[#7a1717] rounded-[4px] transition-colors">
+          className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-error hover:bg-[#7a1717] rounded-[4px] transition-colors">
           <Send size={14} /> Thử lại
         </button>
       </div>
@@ -826,7 +826,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   const edLine = (value: string, onChange: (v: string) => void, cls = "", w = "") =>
     editing ? (
       <input value={value} onChange={e => onChange(e.target.value)}
-        className={`bg-[#f0f7ff] border-b border-dashed border-[#1a5a96] outline-none px-1 ${w} ${cls}`} />
+        className={`bg-[#f0f7ff] border-b border-dashed border-primary outline-none px-1 ${w} ${cls}`} />
     ) : (
       <span className={cls}>{value}</span>
     );
@@ -834,7 +834,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   const edArea = (value: string, onChange: (v: string) => void, cls = "", rows_ = 3) =>
     editing ? (
       <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows_}
-        className={`w-full bg-[#f0f7ff] border border-dashed border-[#1a5a96] outline-none px-1.5 py-1 resize-y ${cls}`} />
+        className={`w-full bg-[#f0f7ff] border border-dashed border-primary outline-none px-1.5 py-1 resize-y ${cls}`} />
     ) : (
       <span className={cls}>{value}</span>
     );
@@ -890,7 +890,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
     if (loai === "Giấy xác nhận")
       return <MauGiayXacNhan so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
     return (
-      <TrangA4 className="text-center italic text-[#888]">
+      <TrangA4 className="text-center italic text-on-surface-variant">
         Chưa có biểu mẫu cho "{loai}".
       </TrangA4>
     );
@@ -918,7 +918,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
       <div className={`bg-white rounded-[6px] shadow-2xl max-w-[96vw] max-h-[94vh] flex flex-col overflow-hidden transition-[width] ${tab === 1 ? "w-[1420px]" : "w-[1130px]"}`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <span className="text-[15px] font-bold">Biểu mẫu {loaiVanBan}</span>
           <div className="flex items-center gap-2">
             <button
@@ -938,7 +938,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
         </div>
 
         {editing && (
-          <div className="px-5 py-1.5 bg-[#e8f4fd] border-b border-[#b3d7f6] text-[11px] text-[#1a5a96] flex-shrink-0">
+          <div className="px-5 py-1.5 bg-[#e8f4fd] border-b border-[#b3d7f6] text-[11px] text-primary flex-shrink-0">
             Đang ở chế độ sửa — click vào các ô nền xanh để nhập
           </div>
         )}
@@ -946,13 +946,13 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
         <div className="flex-1 flex overflow-hidden">
 
           {/* Tab dọc */}
-          <div className="w-[236px] flex-shrink-0 border-r border-[#ddd] bg-[#f7f9fb] py-2 overflow-y-auto">
+          <div className="w-[236px] flex-shrink-0 border-r border-surface-container bg-[#f7f9fb] py-2 overflow-y-auto">
             {danhSachTab.map((t, i) => (
               <button key={t} onClick={() => setTab(i)}
                 className={`w-full text-left px-4 py-2.5 text-[13px] leading-snug border-l-[3px] transition-colors ${
                   tab === i
-                    ? "border-[#8b1a1a] bg-white text-[#8b1a1a] font-semibold"
-                    : "border-transparent text-[#555] hover:bg-[#eef1f5]"}`}>
+                    ? "border-error bg-white text-error font-semibold"
+                    : "border-transparent text-on-surface-variant hover:bg-[#eef1f5]"}`}>
                 {t}
               </button>
             ))}
@@ -1006,7 +1006,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
                 <div className="text-center text-[13px] font-bold">
                   {editing ? (
                     <textarea value={info.chucDanhKy} onChange={e => set("chucDanhKy", e.target.value)} rows={2}
-                      className="w-full text-center bg-[#f0f7ff] border border-dashed border-[#1a5a96] outline-none px-1 font-bold" />
+                      className="w-full text-center bg-[#f0f7ff] border border-dashed border-primary outline-none px-1 font-bold" />
                   ) : (
                     info.chucDanhKy.split("\n").map((l, i) => <div key={i}>{l}</div>)
                   )}
@@ -1079,7 +1079,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
                           {editing ? (
                             <textarea value={ghiChu[r.id] ?? ""} rows={2}
                               onChange={e => setGhiChu(p => ({ ...p, [r.id]: e.target.value }))}
-                              className="w-full bg-[#f0f7ff] border border-dashed border-[#1a5a96] outline-none px-1 text-[12px] resize-y" />
+                              className="w-full bg-[#f0f7ff] border border-dashed border-primary outline-none px-1 text-[12px] resize-y" />
                           ) : (ghiChu[r.id] ?? "")}
                         </td>
                       </tr>
@@ -1270,24 +1270,24 @@ const ActionMenu = ({ onClose, onLaySo }: { onClose: () => void; onLaySo?: () =>
   }, [onClose]);
 
   return (
-    <div ref={ref} className="absolute right-0 top-full mt-1 z-50 w-40 bg-white border border-[#ddd] shadow-lg py-1 rounded-[4px] text-[#333]">
+    <div ref={ref} className="absolute right-0 top-full mt-1 z-50 w-40 bg-white border border-surface-container shadow-lg py-1 rounded-[4px] text-on-surface">
       {onLaySo && (
         <>
           <button onClick={() => { onLaySo(); onClose(); }}
-            className="w-full text-left px-3 py-1.5 text-[13px] font-medium text-[#1d2e4f] hover:bg-[#eef1f5] flex items-center gap-2">
+            className="w-full text-left px-3 py-1.5 text-[13px] font-medium text-tertiary hover:bg-[#eef1f5] flex items-center gap-2">
             <Save size={14} /> Lấy số
           </button>
-          <div className="h-px bg-[#eee] my-1" />
+          <div className="h-px bg-surface-container-high my-1" />
         </>
       )}
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f5f5f5] flex items-center gap-2">
-        <Edit size={14} className="text-[#666]"/> Sửa
+      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
+        <Edit size={14} className="text-on-surface-variant"/> Sửa
       </button>
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#f5f5f5] flex items-center gap-2">
-        <FileText size={14} className="text-[#666]"/> Chi tiết
+      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
+        <FileText size={14} className="text-on-surface-variant"/> Chi tiết
       </button>
-      <div className="h-px bg-[#eee] my-1" />
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#fdeaea] text-[#c0392b] flex items-center gap-2">
+      <div className="h-px bg-surface-container-high my-1" />
+      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#fdeaea] text-error flex items-center gap-2">
         <Trash2 size={14} /> Xóa
       </button>
     </div>
@@ -1304,12 +1304,12 @@ const OChon = ({ value, onChange, options, placeholder }: {
 }) => (
   <div className="relative">
     <select value={value} onChange={e => onChange(e.target.value)}
-      className={`w-full h-[30px] pl-2 pr-6 text-[12px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a5a96] ${value ? "text-[#222]" : "text-[#aaa]"}`}>
+      className={`w-full h-[30px] pl-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary ${value ? "text-on-surface" : "text-outline"}`}>
       <option value="" disabled hidden>{placeholder}</option>
       {/* value giữ chuỗi đầy đủ để khớp với ô tổng, chỉ hiển thị tên cho gọn cột */}
-      {options.map(o => <option key={o} value={o} className="text-[#222]">{o.split(" - ")[0]}</option>)}
+      {options.map(o => <option key={o} value={o} className="text-on-surface">{o.split(" - ")[0]}</option>)}
     </select>
-    <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+    <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
   </div>
 );
 
@@ -1339,7 +1339,7 @@ const HangTaiLieu = ({
   const menu = (
     <div className="relative inline-block">
       <button onClick={() => setShowMenu(!showMenu)}
-        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#e0e0e0] text-[#555] transition-colors">
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
         <MoreVertical size={15} />
       </button>
       {showMenu && (
@@ -1356,14 +1356,14 @@ const HangTaiLieu = ({
     return (
       <>
         <tr className={level === 0 ? "bg-[#eef1f5]" : "bg-[#f7f9fb]"}>
-          <td colSpan={SO_COT} className={`border-b border-[#ddd] px-3 py-2 ${khongHopLe ? "bg-[#fdf3f2]" : ""}`}>
+          <td colSpan={SO_COT} className={`border-b border-surface-container px-3 py-2 ${khongHopLe ? "bg-[#fdf3f2]" : ""}`}>
             <div className="flex items-center gap-2" style={{ paddingLeft: level * 22 }}>
               <button onClick={() => onToggleExpand(node.id)}
-                className="w-5 h-5 flex items-center justify-center text-[#555] hover:bg-black/5 rounded flex-shrink-0">
+                className="w-5 h-5 flex items-center justify-center text-on-surface-variant hover:bg-black/5 rounded flex-shrink-0">
                 {node.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </button>
-              <FileText size={14} className={`flex-shrink-0 ${level === 0 ? "text-[#8b1a1a]" : "text-[#1a5a96]"}`} />
-              <span className={`${level === 0 ? "text-[13px] font-bold text-[#1d2e4f]" : "text-[12.5px] font-semibold text-[#333]"}`}>
+              <FileText size={14} className={`flex-shrink-0 ${level === 0 ? "text-error" : "text-primary"}`} />
+              <span className={`${level === 0 ? "text-[13px] font-bold text-tertiary" : "text-[12.5px] font-semibold text-on-surface"}`}>
                 {node.name}
               </span>
               <span className="ml-auto flex-shrink-0">
@@ -1389,24 +1389,24 @@ const HangTaiLieu = ({
     setNguoiTheoDon(p => ({ ...p, [node.id]: { ...p[node.id], [k]: v } }));
 
   return (
-    <tr className={`align-top ${khongHopLe ? "bg-[#fdf3f2]" : "bg-white hover:bg-[#fafafa]"}`}>
-      <td className="border-b border-[#eee] px-2 py-2 text-center text-[12px] text-[#555]">
+    <tr className={`align-top ${khongHopLe ? "bg-[#fdf3f2]" : "bg-white hover:bg-surface-bright"}`}>
+      <td className="border-b border-surface-container-high px-2 py-2 text-center text-[12px] text-on-surface-variant">
         {node.sttHienThi ?? "-"}
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 text-[12px]">
-        <div className="font-semibold text-[#1d2e4f]">{node.name}</div>
-        <div className="text-[11px] text-[#888] mt-0.5 whitespace-nowrap">{soCongVanCha ?? "— chưa lấy số"}</div>
+      <td className="border-b border-surface-container-high px-2 py-2 text-[12px]">
+        <div className="font-semibold text-tertiary">{node.name}</div>
+        <div className="text-[11px] text-on-surface-variant mt-0.5 whitespace-nowrap">{soCongVanCha ?? "— chưa lấy số"}</div>
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 text-[12px]">
-        <div className="font-medium text-[#1a5a96]">{d?.nguoiGui || "-"}</div>
-        <div className="text-[11px] text-[#777] mt-0.5">{d?.diaChi || ""}</div>
+      <td className="border-b border-surface-container-high px-2 py-2 text-[12px]">
+        <div className="font-medium text-primary">{d?.nguoiGui || "-"}</div>
+        <div className="text-[11px] text-on-surface-variant mt-0.5">{d?.diaChi || ""}</div>
       </td>
-      <td className="border-b border-[#eee] px-3 py-2 text-[12px] leading-relaxed">
+      <td className="border-b border-surface-container-high px-3 py-2 text-[12px] leading-relaxed">
         <div className="grid grid-cols-2 gap-x-5 gap-y-0.5">
-          <div><span className="text-[#888]">Số BA/QĐ: </span><span className="font-medium">{d?.thongTinDon?.soBaqd || "-"}</span></div>
-          <div><span className="text-[#888]">Ngày BA/QĐ: </span>{d?.thongTinDon?.ngay || "-"}</div>
-          <div className="col-span-2"><span className="text-[#888]">Hình thức: </span>{d?.thongTinDon?.hinhThuc || "-"}</div>
-          <div className="col-span-2"><span className="text-[#888]">Thủ tục giải quyết: </span>{d?.thongTinDon?.thuTuc || "-"}</div>
+          <div><span className="text-on-surface-variant">Số BA/QĐ: </span><span className="font-medium">{d?.thongTinDon?.soBaqd || "-"}</span></div>
+          <div><span className="text-on-surface-variant">Ngày BA/QĐ: </span>{d?.thongTinDon?.ngay || "-"}</div>
+          <div className="col-span-2"><span className="text-on-surface-variant">Hình thức: </span>{d?.thongTinDon?.hinhThuc || "-"}</div>
+          <div className="col-span-2"><span className="text-on-surface-variant">Thủ tục giải quyết: </span>{d?.thongTinDon?.thuTuc || "-"}</div>
         </div>
 
         {/* Số lần + lý do YCBS: cả hai đều do hệ thống lấy từ dữ liệu đơn, chỉ
@@ -1415,14 +1415,14 @@ const HangTaiLieu = ({
           const v = lyDoTheoDon?.[node.id] ?? { chon: "", khac: "" };
           const lyDo = v.chon === "Lý do khác" ? (v.khac.trim() || "Lý do khác") : v.chon;
           return (
-            <div className="mt-2 pt-2 border-t border-dashed border-[#eee] space-y-0.5">
+            <div className="mt-2 pt-2 border-t border-dashed border-surface-container-high space-y-0.5">
               <div>
-                <span className="text-[#888]">Yêu cầu bổ sung: </span>
-                <span className="font-semibold text-[#8b1a1a]">lần thứ {demYcbsDaCo(d) + 1}</span>
+                <span className="text-on-surface-variant">Yêu cầu bổ sung: </span>
+                <span className="font-semibold text-error">lần thứ {demYcbsDaCo(d) + 1}</span>
               </div>
               <div>
-                <span className="text-[#888]">Lý do yêu cầu bổ sung: </span>
-                <span className="text-[#333]">{lyDo || "-"}</span>
+                <span className="text-on-surface-variant">Lý do yêu cầu bổ sung: </span>
+                <span className="text-on-surface">{lyDo || "-"}</span>
               </div>
             </div>
           );
@@ -1431,15 +1431,15 @@ const HangTaiLieu = ({
       {/* Người duyệt / Người ký sửa được ở MỌI loại văn bản.
           Giá trị mặc định kế thừa từ hai ô ở thanh cấu hình; đổi ở dòng nào thì
           chỉ dòng đó đổi, không ảnh hưởng các dòng khác. */}
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
+      <td className="border-b border-surface-container-high px-2 py-2 w-[150px]">
         <OChon value={nguoiTheoDon[node.id]?.duyet ?? duyetChung} onChange={dat("duyet")}
           options={NGUOI_DUYET_OPTIONS} placeholder="Chọn người duyệt" />
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 w-[150px]">
+      <td className="border-b border-surface-container-high px-2 py-2 w-[150px]">
         <OChon value={nguoiTheoDon[node.id]?.ky ?? kyChung} onChange={dat("ky")}
           options={NGUOI_KY_OPTIONS} placeholder="Chọn người ký" />
       </td>
-      <td className="border-b border-[#eee] px-2 py-2 text-right">{menu}</td>
+      <td className="border-b border-surface-container-high px-2 py-2 text-right">{menu}</td>
     </tr>
   );
 };
@@ -1463,8 +1463,8 @@ const DocumentTreeRow = ({
 
   return (
     <>
-      <div className={`flex items-start group border-b border-[#eee] transition-colors
-        ${isInvalid ? 'bg-[#fef2f2] hover:bg-[#fee2e2]' : 'bg-white hover:bg-[#f9f9f9]'}`}
+      <div className={`flex items-start group border-b border-surface-container-high transition-colors
+        ${isInvalid ? 'bg-[#fef2f2] hover:bg-[#fee2e2]' : 'bg-white hover:bg-surface-bright'}`}
       >
         {/* Document Info Column */}
         <div 
@@ -1474,7 +1474,7 @@ const DocumentTreeRow = ({
           {hasChildren ? (
             <button 
               onClick={() => onToggleExpand(node.id)}
-              className="w-5 h-5 flex items-center justify-center mr-1 mt-0.5 text-[#666] hover:bg-[#eee] rounded flex-shrink-0"
+              className="w-5 h-5 flex items-center justify-center mr-1 mt-0.5 text-on-surface-variant hover:bg-surface-container-high rounded flex-shrink-0"
             >
               {node.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
@@ -1482,56 +1482,56 @@ const DocumentTreeRow = ({
             <div className="w-5 mr-1 flex-shrink-0" />
           )}
           
-          <FileText size={15} className={`mr-2 mt-0.5 flex-shrink-0 ${isInvalid ? 'text-[#e74c3c]' : level >= 2 ? 'text-[#2980b9]' : 'text-[#8b1a1a]'}`} />
+          <FileText size={15} className={`mr-2 mt-0.5 flex-shrink-0 ${isInvalid ? 'text-[#e74c3c]' : level >= 2 ? 'text-[#2980b9]' : 'text-error'}`} />
 
           {isLeafDon ? (
             // Rich detail view for leaf Đơn nodes
             <div className="flex-1 min-w-0">
-              <div className={`text-[13px] font-semibold mb-1 ${isInvalid ? 'text-[#c0392b]' : 'text-[#1a1a2e]'}`}>
+              <div className={`text-[13px] font-semibold mb-1 ${isInvalid ? 'text-error' : 'text-[#1a1a2e]'}`}>
                 {node.name}
               </div>
               <div className="grid grid-cols-2 gap-x-6 gap-y-0.5 text-[11.5px]">
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Người đứng đơn:</span>
-                  <span className="text-[#333] font-medium truncate">{d.nguoiGui || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Người đứng đơn:</span>
+                  <span className="text-on-surface font-medium truncate">{d.nguoiGui || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Mã đơn:</span>
-                  <span className="text-[#333] font-medium">{d.maDon || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Mã đơn:</span>
+                  <span className="text-on-surface font-medium">{d.maDon || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Ngày trên đơn:</span>
-                  <span className="text-[#333]">{d.thongTinDon?.ngay || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Ngày trên đơn:</span>
+                  <span className="text-on-surface">{d.thongTinDon?.ngay || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Ngày nhận:</span>
-                  <span className="text-[#333]">{d.ngayNhap || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Ngày nhận:</span>
+                  <span className="text-on-surface">{d.ngayNhap || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Hình thức đơn:</span>
-                  <span className="text-[#333] truncate">{d.thongTinDon?.hinhThuc || d.loaiHinhThuc || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Hình thức đơn:</span>
+                  <span className="text-on-surface truncate">{d.thongTinDon?.hinhThuc || d.loaiHinhThuc || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Số BA/QĐ:</span>
-                  <span className="text-[#333] font-medium">{d.thongTinDon?.soBaqd || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Số BA/QĐ:</span>
+                  <span className="text-on-surface font-medium">{d.thongTinDon?.soBaqd || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Ngày BA/QĐ:</span>
-                  <span className="text-[#333]">{d.thongTinDon?.ngay || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Ngày BA/QĐ:</span>
+                  <span className="text-on-surface">{d.thongTinDon?.ngay || "—"}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="text-[#888] flex-shrink-0">Thủ tục giải quyết:</span>
-                  <span className="text-[#333] truncate">{d.thongTinDon?.thuTuc || "—"}</span>
+                  <span className="text-on-surface-variant flex-shrink-0">Thủ tục giải quyết:</span>
+                  <span className="text-on-surface truncate">{d.thongTinDon?.thuTuc || "—"}</span>
                 </div>
               </div>
             </div>
           ) : (
             // Standard view for parent nodes (Tờ trình / Danh sách)
             <div>
-              <div className={`text-[13px] font-medium ${isInvalid ? 'text-[#c0392b]' : 'text-[#333]'}`}>
+              <div className={`text-[13px] font-medium ${isInvalid ? 'text-error' : 'text-on-surface'}`}>
                 {node.name}
               </div>
-              <div className="text-[11px] text-[#888] mt-0.5">
+              <div className="text-[11px] text-on-surface-variant mt-0.5">
                 Loại: {node.type} • Ngày: {node.date}
               </div>
             </div>
@@ -1545,7 +1545,7 @@ const DocumentTreeRow = ({
               <AlertTriangle size={14} />
               <span className="font-medium">Không hợp lệ</span>
               {/* Tooltip */}
-              <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-52 p-2 bg-[#333] text-white text-[11px] rounded shadow-lg z-10 whitespace-normal">
+              <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-52 p-2 bg-on-surface text-white text-[11px] rounded shadow-lg z-10 whitespace-normal">
                 {node.invalidReason}
               </div>
             </div>
@@ -1562,7 +1562,7 @@ const DocumentTreeRow = ({
         <div className="w-12 px-3 flex justify-end relative py-2.5 flex-shrink-0">
           <button 
             onClick={() => setShowMenu(!showMenu)}
-            className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#e0e0e0] text-[#555] transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors"
           >
             <MoreVertical size={15} />
           </button>
@@ -1792,7 +1792,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
       <div className="bg-[#f4f6f8] w-[96%] max-w-[1400px] h-[92vh] max-h-[880px] rounded-[6px] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-3 bg-[#1d2e4f] text-white flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <div>
             <h2 className="text-[16px] font-bold">Lưu số văn bản & In báo cáo</h2>
             {selectedRows && selectedRows.length > 0 && <p className="text-[12px] text-white/70 mt-0.5">Mã tài liệu gốc: {selectedRows.map(r => r.maDon).join(", ")}</p>}
@@ -1806,7 +1806,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
         {/* Configuration Bar — lưới 12 cột thay cho flex-wrap: các ô luôn thẳng
             cột, không còn cảnh mỗi hàng một độ rộng và "Mức độ ưu tiên" bị đẩy
             văng sang mép phải. */}
-        <div className="bg-white border-b border-[#ddd] px-5 py-4 flex-shrink-0 shadow-sm z-10">
+        <div className="bg-white border-b border-surface-container px-5 py-4 flex-shrink-0 shadow-sm z-10">
           <div className="grid grid-cols-12 gap-x-4 gap-y-3.5">
 
             {/* ── Hàng 1: văn bản gì, ai lập, ai duyệt, ai ký ── */}
@@ -1820,17 +1820,17 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 >
                   {DOC_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                 </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-[10px] text-[#888] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2.5 top-[10px] text-on-surface-variant pointer-events-none" />
               </div>
             </div>
 
             {/* Người tạo — chỉ đọc, làm mờ hẳn để không trông như ô nhập được */}
             <div className="col-span-12 md:col-span-3">
               <NhanTruong>Người tạo</NhanTruong>
-              <div className={`${O_CAO} px-3 flex items-center gap-2 text-[13px] border border-[#e8e8e8] bg-[#f7f8f9] rounded-[4px] text-[#666]`}>
-                <User size={14} className="text-[#aaa] flex-shrink-0" />
+              <div className={`${O_CAO} px-3 flex items-center gap-2 text-[13px] border border-[#e8e8e8] bg-[#f7f8f9] rounded-[4px] text-on-surface-variant`}>
+                <User size={14} className="text-outline flex-shrink-0" />
                 <span className="truncate">Vũ Văn Yên</span>
-                <span className="text-[11px] text-[#999] flex-shrink-0">(Cán bộ)</span>
+                <span className="text-[11px] text-outline flex-shrink-0">(Cán bộ)</span>
               </div>
             </div>
 
@@ -1847,9 +1847,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     className={oNhapCls()}
                   >
                     <option value="" disabled hidden>{f.placeholder}</option>
-                    {f.options.map(o => <option key={o} className="text-[#222]">{o}</option>)}
+                    {f.options.map(o => <option key={o} className="text-on-surface">{o}</option>)}
                   </select>
-                  <ChevronDown size={14} className={`absolute right-2.5 top-[10px] pointer-events-none ${f.value ? "text-[#888]" : "text-[#ccc]"}`} />
+                  <ChevronDown size={14} className={`absolute right-2.5 top-[10px] pointer-events-none ${f.value ? "text-on-surface-variant" : "text-surface-container-highest"}`} />
                 </div>
               </div>
             ))}
@@ -1858,15 +1858,15 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             <div className="col-span-6 md:col-span-2">
               <NhanTruong>Mức độ ưu tiên</NhanTruong>
               <div className="relative">
-                <span className={`absolute left-3 top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full pointer-events-none ${MAU_UU_TIEN[mucDoUuTien] ?? "bg-[#ccc]"}`} />
+                <span className={`absolute left-3 top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full pointer-events-none ${MAU_UU_TIEN[mucDoUuTien] ?? "bg-surface-container-highest"}`} />
                 <select
                   value={mucDoUuTien}
                   onChange={e => setMucDoUuTien(e.target.value)}
-                  className={`${oNhapCls()} !pl-7 ${mucDoUuTien === "Cao" ? "text-[#c0392b] font-semibold" : ""}`}
+                  className={`${oNhapCls()} !pl-7 ${mucDoUuTien === "Cao" ? "text-error font-semibold" : ""}`}
                 >
-                  {MUC_DO_UU_TIEN.map(m => <option key={m} className="text-[#222] font-normal">{m}</option>)}
+                  {MUC_DO_UU_TIEN.map(m => <option key={m} className="text-on-surface font-normal">{m}</option>)}
                 </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-[10px] text-[#888] pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2.5 top-[10px] text-on-surface-variant pointer-events-none" />
               </div>
             </div>
 
@@ -1878,8 +1878,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 <button
                   type="button"
                   onClick={() => setOpenDiKem(o => !o)}
-                  className={`${oNhapCls()} text-left flex items-center ${openDiKem ? "border-[#1a5a96] ring-2 ring-[#1a5a96]/15" : ""}`}>
-                  <span className={`truncate ${vanBanDiKem.length ? "text-[#222]" : "text-[#aaa]"}`}>
+                  className={`${oNhapCls()} text-left flex items-center ${openDiKem ? "border-primary ring-2 ring-primary/15" : ""}`}>
+                  <span className={`truncate ${vanBanDiKem.length ? "text-on-surface" : "text-outline"}`}>
                     {vanBanDiKem.length === 0
                       ? "-- Chọn văn bản đi kèm --"
                       : vanBanDiKem.length === 1
@@ -1888,12 +1888,12 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   </span>
                 </button>
                 <ChevronDown size={14} className={`absolute right-2.5 top-[10px] pointer-events-none transition-transform ${
-                  openDiKem ? "rotate-180 text-[#1a5a96]" : vanBanDiKem.length ? "text-[#888]" : "text-[#ccc]"}`} />
+                  openDiKem ? "rotate-180 text-primary" : vanBanDiKem.length ? "text-on-surface-variant" : "text-surface-container-highest"}`} />
 
                 {openDiKem && (
-                  <div className="absolute left-0 top-[38px] z-50 w-full min-w-[300px] bg-white border border-[#ccc] rounded-[4px] shadow-lg py-1 max-h-[280px] overflow-y-auto">
+                  <div className="absolute left-0 top-[38px] z-50 w-full min-w-[300px] bg-white border border-surface-container-highest rounded-[4px] shadow-lg py-1 max-h-[280px] overflow-y-auto">
                     {loaiDiKemChoPhep.map(v => (
-                      <label key={v} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-[#333] hover:bg-[#f5f5f5] cursor-pointer">
+                      <label key={v} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-on-surface hover:bg-surface-container-low cursor-pointer">
                         <input type="checkbox" className="w-[14px] h-[14px] accent-[#1d2e4f] flex-shrink-0"
                           checked={vanBanDiKem.includes(v)}
                           onChange={e => setVanBanDiKem(prev =>
@@ -1903,9 +1903,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     ))}
                     {vanBanDiKem.length > 0 && (
                       <>
-                        <div className="h-px bg-[#eee] my-1" />
+                        <div className="h-px bg-surface-container-high my-1" />
                         <button type="button" onClick={() => setVanBanDiKem([])}
-                          className="w-full text-left px-3 py-1.5 text-[12px] text-[#c0392b] hover:bg-[#fdeaea]">
+                          className="w-full text-left px-3 py-1.5 text-[12px] text-error hover:bg-[#fdeaea]">
                           Bỏ chọn tất cả
                         </button>
                       </>
@@ -1927,7 +1927,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 value={yKienDuyet}
                 onChange={e => setYKienDuyet(e.target.value)}
                 placeholder="Điều muốn lưu ý người duyệt…"
-                className={`${O_CAO} w-full px-3 text-[13px] border border-[#ccc] rounded-[4px] bg-white outline-none transition-colors placeholder:text-[#aaa] focus:border-[#1a5a96] focus:ring-2 focus:ring-[#1a5a96]/15`} />
+                className={`${O_CAO} w-full px-3 text-[13px] border border-surface-container-highest rounded-[4px] bg-white outline-none transition-colors placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/15`} />
             </div>
 
           </div>
@@ -1935,38 +1935,38 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
 
         {/* Document Tree Content (Scrollable) */}
         <div className="flex-1 overflow-y-auto p-5 bg-[#f4f6f8]">
-          <div className="bg-white border border-[#ddd] rounded-[6px] shadow-sm overflow-hidden">
+          <div className="bg-white border border-surface-container rounded-[6px] shadow-sm overflow-hidden">
             {/* Thanh nhỏ trên bảng: mở/thu toàn bộ cây tài liệu */}
-            <div className="flex items-center justify-between gap-3 px-3 py-1.5 border-b border-[#eee] bg-[#fbfcfd]">
-              <span className="text-[11px] text-[#888]">
+            <div className="flex items-center justify-between gap-3 px-3 py-1.5 border-b border-surface-container-high bg-[#fbfcfd]">
+              <span className="text-[11px] text-on-surface-variant">
                 {treeData.length} văn bản · {countInvalidDocs(treeData) > 0
-                  ? <span className="text-[#c0392b] font-medium">{countInvalidDocs(treeData)} đơn không hợp lệ</span>
+                  ? <span className="text-error font-medium">{countInvalidDocs(treeData)} đơn không hợp lệ</span>
                   : "tất cả đơn hợp lệ"}
               </span>
               <button
                 type="button"
                 onClick={() => datMoTatCa(dangDongBot)}
                 title={dangDongBot ? "Mở toàn bộ cây tài liệu" : "Thu gọn toàn bộ cây tài liệu"}
-                className="inline-flex items-center gap-1 h-[24px] px-2 rounded-[3px] border border-[#ddd] bg-white text-[11px] font-medium text-[#555] hover:bg-[#f2f5f8] hover:border-[#bbb] hover:text-[#1a5a96] transition-colors">
+                className="inline-flex items-center gap-1 h-[24px] px-2 rounded-[3px] border border-surface-container bg-white text-[11px] font-medium text-on-surface-variant hover:bg-[#f2f5f8] hover:border-[#bbb] hover:text-primary transition-colors">
                 {dangDongBot ? <ChevronsDown size={12} /> : <ChevronsUp size={12} />}
                 {dangDongBot ? "Mở tất cả" : "Thu gọn tất cả"}
               </button>
             </div>
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-[#f5f5f5] text-[11px] font-bold text-[#555] uppercase tracking-wide">
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[42px] text-center">STT</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[125px] text-left">Số công văn</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[185px] text-left">Thông tin người gửi</th>
-                  <th className="border-b border-[#ddd] px-3 py-2.5 min-w-[360px] text-left">Thông tin đơn</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[145px] text-left">Người duyệt</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[145px] text-left">Người ký</th>
-                  <th className="border-b border-[#ddd] px-2 py-2.5 w-[54px] text-right">Thao tác</th>
+                <tr className="bg-surface-container-low text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[42px] text-center">STT</th>
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[125px] text-left">Số công văn</th>
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[185px] text-left">Thông tin người gửi</th>
+                  <th className="border-b border-surface-container px-3 py-2.5 min-w-[360px] text-left">Thông tin đơn</th>
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[145px] text-left">Người duyệt</th>
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[145px] text-left">Người ký</th>
+                  <th className="border-b border-surface-container px-2 py-2.5 w-[54px] text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {treeData.length === 0 ? (
-                  <tr><td colSpan={7} className="px-3 py-8 text-center text-[13px] text-[#999] italic">Chưa có tài liệu</td></tr>
+                  <tr><td colSpan={7} className="px-3 py-8 text-center text-[13px] text-outline italic">Chưa có tài liệu</td></tr>
                 ) : treeData.map(node => (
                   <HangTaiLieu
                     key={node.id}
@@ -1986,7 +1986,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             </table>
           </div>
           
-          <div className="mt-4 flex items-start gap-2 bg-[#e8f4fd] p-3 rounded border border-[#b3d7f6] text-[#1a5a96] text-[12px]">
+          <div className="mt-4 flex items-start gap-2 bg-[#e8f4fd] p-3 rounded border border-[#b3d7f6] text-primary text-[12px]">
             <Info size={16} className="mt-0.5 flex-shrink-0" />
             <p>
               Văn bản chính sẽ được tự động cấp số sau khi được
@@ -1997,18 +1997,18 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
         </div>
 
         {/* Sticky Footer */}
-        <div className="bg-white border-t border-[#ddd] p-4 flex items-center justify-between gap-3 flex-shrink-0 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
+        <div className="bg-white border-t border-surface-container p-4 flex items-center justify-between gap-3 flex-shrink-0 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             {/* Hai con số đếm hai thứ khác nhau (văn bản vs đơn) nên phải nói rõ
                 đơn vị, nếu không người đọc tưởng chúng phải khớp nhau. */}
-            <div className="text-[11px] text-[#888] leading-[1.5]">
+            <div className="text-[11px] text-on-surface-variant leading-[1.5]">
               {treeData.length > 0 && (
                 <>
                   <div>
-                    <b className="text-[#333]">{treeData.filter(n => n.isValid !== false).length}/{treeData.length}</b> văn bản hợp lệ
+                    <b className="text-on-surface">{treeData.filter(n => n.isValid !== false).length}/{treeData.length}</b> văn bản hợp lệ
                   </div>
                   {soDonKhongHopLe > 0 && (
-                    <div className="text-[#8b1a1a]">
+                    <div className="text-error">
                       <b>{soDonKhongHopLe}</b> đơn bên trong không hợp lệ
                     </div>
                   )}
@@ -2019,7 +2019,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             {soDonKhongHopLe > 0 && (
               <button
                 onClick={() => setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType, trungMap))}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-[#8b1a1a] bg-white border border-[#8b1a1a] rounded-[4px] hover:bg-[#fdeaea] transition-colors whitespace-nowrap">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors whitespace-nowrap">
                 <Trash2 size={14} /> Bỏ {soDonKhongHopLe} đơn không hợp lệ
               </button>
             )}
@@ -2033,15 +2033,15 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 title={soVanBanChuaLaySo === 0 ? "Tất cả văn bản đã có số" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold rounded-[4px] transition-colors ${
                   soVanBanChuaLaySo === 0
-                    ? "text-[#aaa] bg-[#f5f5f5] border border-[#ddd] cursor-not-allowed"
-                    : "text-white bg-[#1d2e4f] hover:bg-[#15223a] shadow-sm"}`}>
+                    ? "text-outline bg-surface-container-low border border-surface-container cursor-not-allowed"
+                    : "text-white bg-tertiary hover:bg-[#15223a] shadow-sm"}`}>
                 <Save size={15} /> Lấy số tạm (tuỳ chọn)
               </button>
             )}
 
             <button
               onClick={onClose}
-              className="px-4 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f5f5f5] transition-colors"
+              className="px-4 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors"
             >
               Đóng
             </button>
@@ -2049,7 +2049,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             {(
               <button
                 onClick={() => setShowBieuMau(true)}
-                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-[#1a5a96] bg-white border border-[#1a5a96] rounded-[4px] hover:bg-[#f0f7ff] transition-colors">
+                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-primary bg-white border border-primary rounded-[4px] hover:bg-[#f0f7ff] transition-colors">
                 <FileText size={15} /> Xem biểu mẫu
               </button>
             )}
@@ -2060,7 +2060,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 <button className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#27ae60] rounded-[4px] hover:bg-[#219653] transition-colors shadow-sm">
                   <Check size={15} /> Phê duyệt
                 </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-[#8b1a1a] bg-white border border-[#8b1a1a] rounded-[4px] hover:bg-[#fdeaea] transition-colors">
+                <button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
                   Từ chối
                 </button>
               </>
@@ -2074,13 +2074,13 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                   Ký số
                 </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-[#555] bg-white border border-[#ccc] rounded-[4px] hover:bg-[#f0f0f0] transition-colors">
+                <button className="px-4 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container transition-colors">
                   Ký logic
                 </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-[#8b1a1a] bg-white border border-[#8b1a1a] rounded-[4px] hover:bg-[#fdeaea] transition-colors">
+                <button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
                   Từ chối
                 </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-white bg-[#1a5a96] rounded-[4px] hover:bg-[#154a7a] transition-colors shadow-sm">
+                <button className="px-4 py-2 text-[13px] font-semibold text-white bg-primary rounded-[4px] hover:bg-[#154a7a] transition-colors shadow-sm">
                   Đồng ý
                 </button>
               </>
@@ -2127,7 +2127,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   ? "Vui lòng chọn Lý do yêu cầu bổ sung"
                   : thieuNguoiDuyetKy ? "Vui lòng chọn Người duyệt và Người ký" : undefined}
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
-                  thieuNguoiDuyetKy ? "bg-[#8b1a1a]/50 cursor-not-allowed" : "bg-[#8b1a1a] hover:bg-[#7a1717]"}`}>
+                  thieuNguoiDuyetKy ? "bg-error/50 cursor-not-allowed" : "bg-error hover:bg-[#7a1717]"}`}>
                 <Send size={15} /> Trình duyệt
               </button>
             )}
