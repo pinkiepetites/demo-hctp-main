@@ -109,8 +109,8 @@ const bayGio = () => {
 const CongTac = ({ bat, onToggle }: { bat: boolean; onToggle: () => void }) => (
   <button type="button" onClick={onToggle} role="switch" aria-checked={bat}
     title={bat ? "Đang dùng — bấm để tạm dừng" : "Đang tắt — bấm để bật"}
-    className={`relative inline-flex items-center h-[22px] w-[48px] rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a73e8]
-      ${bat ? "bg-[#8b1a1a]" : "bg-[#d5d9de]"}`}>
+    className={`relative inline-flex items-center h-[22px] w-[48px] rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
+      ${bat ? "bg-error" : "bg-[#d5d9de]"}`}>
     <span className={`absolute text-[10px] font-bold text-white transition-all ${bat ? "left-[7px] opacity-100" : "opacity-0"}`}>Bật</span>
     <span className={`absolute text-[10px] font-bold text-[#6b7280] transition-all ${bat ? "opacity-0" : "right-[6px] opacity-100"}`}>Tắt</span>
     <span className={`absolute w-[16px] h-[16px] rounded-full bg-white shadow transition-all ${bat ? "left-[29px]" : "left-[3px]"}`} />
@@ -118,8 +118,8 @@ const CongTac = ({ bat, onToggle }: { bat: boolean; onToggle: () => void }) => (
 );
 
 const Nhan = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
-  <label className="block text-[13px] font-medium text-[#333] mb-1">
-    {req && <span className="text-[#c0392b] mr-0.5">*</span>}{children}
+  <label className="block text-[13px] font-medium text-on-surface mb-1">
+    {req && <span className="text-error mr-0.5">*</span>}{children}
   </label>
 );
 
@@ -129,10 +129,10 @@ const ONhap = ({ value, onChange, placeholder, autoFocus }: {
 }) => (
   <div className="relative">
     <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} autoFocus={autoFocus}
-      className="w-full h-[32px] pl-2.5 pr-7 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+      className="w-full h-[32px] pl-2.5 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
     {value && (
       <button type="button" onClick={() => onChange("")} title="Xóa nội dung"
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#c0392b]">
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-outline hover:text-error">
         <X size={13} />
       </button>
     )}
@@ -144,10 +144,10 @@ const OChon = ({ value, onChange, children }: {
 }) => (
   <div className="relative">
     <select value={value} onChange={e => onChange(e.target.value)}
-      className="w-full h-[32px] pl-2.5 pr-7 text-[13px] border border-[#ccc] rounded-[3px] bg-white appearance-none focus:outline-none focus:border-[#1a73e8]">
+      className="w-full h-[32px] pl-2.5 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
       {children}
     </select>
-    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
+    <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
   </div>
 );
 
@@ -194,19 +194,19 @@ export default function ToThamPhan() {
   return (
     <div className="flex-1 overflow-y-auto bg-[#eef1f5]">
       <div className="p-4">
-        <div className="bg-white border border-[#ddd] rounded-[4px]">
+        <div className="bg-white border border-surface-container rounded-[4px]">
           {/* Tiêu đề + thanh công cụ */}
-          <div className="px-4 pt-3.5 pb-3 border-b border-[#eee]">
-            <h1 className="text-[17px] font-bold text-[#1d2e4f] mb-3">Danh sách Ủy ban Thẩm phán</h1>
+          <div className="px-4 pt-3.5 pb-3 border-b border-surface-container-high">
+            <h1 className="text-[17px] font-bold text-tertiary mb-3">Danh sách Ủy ban Thẩm phán</h1>
 
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-stretch">
                 <input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") setDangTim(tuKhoa); }}
                   placeholder="Nhập từ khóa tìm kiếm…"
-                  className="w-[230px] h-[32px] px-2.5 text-[13px] border border-[#ccc] rounded-l-[3px] focus:outline-none focus:border-[#1a73e8]" />
+                  className="w-[230px] h-[32px] px-2.5 text-[13px] border border-surface-container-highest rounded-l-[3px] focus:outline-none focus:border-primary" />
                 <button type="button" onClick={() => setDangTim(tuKhoa)} title="Tìm kiếm"
-                  className="h-[32px] px-3 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-r-[3px] transition-colors">
+                  className="h-[32px] px-3 bg-error hover:bg-error-container text-white rounded-r-[3px] transition-colors">
                   <Search size={14} />
                 </button>
               </div>
@@ -221,13 +221,13 @@ export default function ToThamPhan() {
               </div>
 
               <button type="button" onClick={() => { setThemMoi(true); setDangSua(null); }}
-                className="flex items-center gap-1.5 h-[32px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[13px] font-medium transition-colors">
+                className="flex items-center gap-1.5 h-[32px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[13px] font-medium transition-colors">
                 <Plus size={14} /> Thêm mới
               </button>
 
               <button type="button" title="Bỏ lọc, tải lại danh sách"
                 onClick={() => { setTuKhoa(""); setDangTim(""); setLocLoaiAn(""); }}
-                className="h-[32px] w-[32px] flex items-center justify-center border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[#555] transition-colors">
+                className="h-[32px] w-[32px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant transition-colors">
                 <RotateCw size={14} />
               </button>
             </div>
@@ -246,12 +246,12 @@ export default function ToThamPhan() {
             <table className="w-full border-collapse text-[13px]">
               <thead>
                 <tr className="bg-[#f8fafc] border-b border-[#e2e8f0]">
-                  <th className="px-3 py-2.5 text-center font-semibold text-[#333] w-[60px]">STT</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-[#333]">Tên Ủy ban</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[230px]">Loại án</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[120px]">Trạng thái</th>
-                  <th className="px-3 py-2.5 text-left font-semibold text-[#333] w-[150px]">Cập nhật cuối</th>
-                  <th className="px-3 py-2.5 text-center font-semibold text-[#333] w-[120px]">Hành động</th>
+                  <th className="px-3 py-2.5 text-center font-semibold text-on-surface w-[60px]">STT</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-on-surface">Tên Ủy ban</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[230px]">Loại án</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[120px]">Trạng thái</th>
+                  <th className="px-3 py-2.5 text-left font-semibold text-on-surface w-[150px]">Cập nhật cuối</th>
+                  <th className="px-3 py-2.5 text-center font-semibold text-on-surface w-[120px]">Hành động</th>
                 </tr>
               </thead>
               <tbody>
@@ -260,10 +260,10 @@ export default function ToThamPhan() {
                     Không có Ủy ban nào khớp điều kiện.
                   </td></tr>
                 ) : hienThi.map((r, i) => (
-                  <tr key={r.id} className="border-b border-[#eee] hover:bg-[#f8fafc] transition-colors">
-                    <td className="px-3 py-3 text-center text-[#666]">{i + 1}</td>
+                  <tr key={r.id} className="border-b border-surface-container-high hover:bg-[#f8fafc] transition-colors">
+                    <td className="px-3 py-3 text-center text-on-surface-variant">{i + 1}</td>
                     <td className="px-3 py-3">
-                      <div className="font-medium text-[#222]">{r.ten}</div>
+                      <div className="font-medium text-on-surface">{r.ten}</div>
                       {/* Số thành viên quyết định tổ có dùng được không — tổ rỗng
                           mà bật lên thì lúc phân công sẽ không ra ai. */}
                       <div className="text-[11px] mt-0.5 flex items-center gap-2">
@@ -280,20 +280,20 @@ export default function ToThamPhan() {
                     </td>
                     <td className="px-3 py-3"><CongTac bat={r.bat} onToggle={() => doiTrangThai(r.id)} /></td>
                     <td className="px-3 py-3">
-                      <div className="font-semibold text-[#222] tabular-nums">{r.capNhat}</div>
+                      <div className="font-semibold text-on-surface tabular-nums">{r.capNhat}</div>
                       <div className="text-[11px] text-[#94a3b8] tabular-nums">{r.gio}</div>
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-center gap-3">
                         <button type="button" title="Chỉnh sửa thông tin Ủy ban Thẩm phán"
                           onClick={() => { setDangSua(r); setThemMoi(false); }}
-                          className="text-[#1a73e8] hover:text-[#0f4fa8] transition-colors"><Pencil size={15} /></button>
+                          className="text-primary hover:text-[#0f4fa8] transition-colors"><Pencil size={15} /></button>
                         <button type="button" title="Gán người dùng vào Ủy ban"
                           onClick={() => setGanThanhVien(r)}
-                          className="text-[#1a73e8] hover:text-[#0f4fa8] transition-colors"><UserPlus size={15} /></button>
+                          className="text-primary hover:text-[#0f4fa8] transition-colors"><UserPlus size={15} /></button>
                         <button type="button" title="Xóa Ủy ban"
                           onClick={() => setXoaRow(r)}
-                          className="text-[#c0392b] hover:text-[#8b1a1a] transition-colors"><Trash2 size={15} /></button>
+                          className="text-error hover:text-error transition-colors"><Trash2 size={15} /></button>
                       </div>
                     </td>
                   </tr>
@@ -302,7 +302,7 @@ export default function ToThamPhan() {
             </table>
           </div>
 
-          <div className="px-4 py-2.5 border-t border-[#eee] text-[12px] text-[#8a94a6]">
+          <div className="px-4 py-2.5 border-t border-surface-container-high text-[12px] text-[#8a94a6]">
             {hienThi.length} Ủy ban · {rows.filter(r => r.bat).length} đang được dùng khi phân công
           </div>
         </div>
@@ -368,11 +368,11 @@ function PopupSuaTo({ banGhi, onDong, onLuu }: {
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50" onClick={onDong}>
       <div className="bg-white rounded-[6px] w-[540px] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="px-4 py-3 border-b border-[#eee] flex items-center justify-between">
-          <div className="text-[15px] font-bold text-[#1d2e4f]">
+        <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
+          <div className="text-[15px] font-bold text-tertiary">
             {banGhi ? "Chỉnh sửa thông tin Ủy ban Thẩm phán" : "Thêm Ủy ban Thẩm phán"}
           </div>
-          <button type="button" onClick={onDong} className="text-[#888] hover:text-[#333]"><X size={17} /></button>
+          <button type="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface"><X size={17} /></button>
         </div>
 
         <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
@@ -416,25 +416,25 @@ function PopupSuaTo({ banGhi, onDong, onLuu }: {
             <Nhan>Mô tả</Nhan>
             <textarea value={moTa} maxLength={GIOI_HAN_MO_TA}
               onChange={e => setMoTa(e.target.value)} rows={4}
-              className="w-full px-2.5 py-2 text-[13px] border border-[#ccc] rounded-[3px] resize-y focus:outline-none focus:border-[#1a73e8]" />
+              className="w-full px-2.5 py-2 text-[13px] border border-surface-container-highest rounded-[3px] resize-y focus:outline-none focus:border-primary" />
             <div className="text-[11px] text-[#94a3b8] text-right mt-0.5 tabular-nums">
               {moTa.length} / {GIOI_HAN_MO_TA}
             </div>
           </div>
         </div>
 
-        <div className="border-t border-[#e0e0e0] px-4 py-3 flex items-center justify-between gap-3">
+        <div className="border-t border-surface-container-highest px-4 py-3 flex items-center justify-between gap-3">
           {/* Nút mờ mà không nói vì sao là chỗ hay tắc nhất ở biểu mẫu có * */}
           <span className="text-[12px] text-[#b45309] min-w-0 truncate">
             {luuDuoc ? "" : `Còn thiếu: ${thieu.join(" · ")}`}
           </span>
           <div className="flex gap-2 flex-shrink-0">
             <button type="button" onClick={onDong}
-              className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[13px] font-medium text-[#333] hover:bg-[#f5f5f5]">Hủy</button>
+              className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</button>
             <button type="button" disabled={!luuDuoc}
               onClick={() => onLuu({ maTo: maTo.trim(), ten: ten.trim(), loaiAn, loaiToNhom, moTa, bat })}
               className={`h-[30px] px-4 rounded-[3px] text-[13px] font-medium text-white transition-colors
-                ${luuDuoc ? "bg-[#8b1a1a] hover:bg-[#6e1414]" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
+                ${luuDuoc ? "bg-error hover:bg-error-container" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
               {banGhi ? "Cập nhật" : "Thêm mới"}
             </button>
           </div>
@@ -466,12 +466,12 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
   const tatCaDuocChon = phanHienThi.length > 0 && phanHienThi.every(u => chon.includes(u.id));
 
   return (
-    <div className="flex-1 min-w-0 border border-[#e0e0e0] rounded-[4px] flex flex-col overflow-hidden">
-      <div className="px-3 py-2 bg-[#f8fafc] border-b border-[#e0e0e0] text-[13px] font-semibold text-[#1d2e4f]">
+    <div className="flex-1 min-w-0 border border-surface-container-highest rounded-[4px] flex flex-col overflow-hidden">
+      <div className="px-3 py-2 bg-[#f8fafc] border-b border-surface-container-highest text-[13px] font-semibold text-tertiary">
         {tieuDe} ({ds.length})
       </div>
 
-      <label className="px-3 py-2 border-b border-[#eee] flex items-center gap-2 text-[12px] font-medium text-[#555] cursor-pointer">
+      <label className="px-3 py-2 border-b border-surface-container-high flex items-center gap-2 text-[12px] font-medium text-on-surface-variant cursor-pointer">
         <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
           checked={tatCaDuocChon}
           onChange={() => setChon(tatCaDuocChon
@@ -491,7 +491,7 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
               checked={chon.includes(u.id)}
               onChange={() => setChon(chon.includes(u.id) ? chon.filter(x => x !== u.id) : [...chon, u.id])} />
             <div className="min-w-0">
-              <div className="text-[13px] font-medium text-[#222] truncate">{u.ten}</div>
+              <div className="text-[13px] font-medium text-on-surface truncate">{u.ten}</div>
               <div className="text-[11px] text-[#94a3b8] tabular-nums">{u.taiKhoan}</div>
               <div className="text-[11px] text-[#94a3b8] truncate">{u.donVi}</div>
             </div>
@@ -499,20 +499,20 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
         ))}
       </div>
 
-      <div className="px-3 py-2 border-t border-[#e0e0e0] bg-[#fafafa] flex items-center gap-2 text-[11px] text-[#666]">
+      <div className="px-3 py-2 border-t border-surface-container-highest bg-surface-bright flex items-center gap-2 text-[11px] text-on-surface-variant">
         <span className="flex-1 truncate">{ds.length} người dùng</span>
         <button type="button" disabled={trangHienTai <= 1} onClick={() => setTrang(trangHienTai - 1)}
-          className="w-[22px] h-[22px] flex items-center justify-center border border-[#ccc] rounded-[3px] bg-white disabled:opacity-40">
+          className="w-[22px] h-[22px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white disabled:opacity-40">
           <ChevronLeft size={12} />
         </button>
-        <span className="px-2 h-[22px] leading-[20px] border border-[#ccc] rounded-[3px] bg-white tabular-nums">{trangHienTai}</span>
+        <span className="px-2 h-[22px] leading-[20px] border border-surface-container-highest rounded-[3px] bg-white tabular-nums">{trangHienTai}</span>
         <span className="tabular-nums">/ {soTrang}</span>
         <button type="button" disabled={trangHienTai >= soTrang} onClick={() => setTrang(trangHienTai + 1)}
-          className="w-[22px] h-[22px] flex items-center justify-center border border-[#ccc] rounded-[3px] bg-white disabled:opacity-40">
+          className="w-[22px] h-[22px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white disabled:opacity-40">
           <ChevronRight size={12} />
         </button>
         <select value={moiTrang} onChange={e => { setMoiTrang(Number(e.target.value)); setTrang(1); }}
-          className="h-[22px] px-1 border border-[#ccc] rounded-[3px] bg-white text-[11px]">
+          className="h-[22px] px-1 border border-surface-container-highest rounded-[3px] bg-white text-[11px]">
           {KICH_THUOC_TRANG.map(n => <option key={n} value={n}>{n} / trang</option>)}
         </select>
       </div>
@@ -559,19 +559,19 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
     <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 p-4" onClick={onDong}>
       <div className="bg-white rounded-[6px] w-[900px] max-h-[92vh] flex flex-col overflow-hidden shadow-2xl"
         onClick={e => e.stopPropagation()}>
-        <div className="px-4 py-3 border-b border-[#eee] flex items-center justify-between gap-3">
-          <div className="text-[15px] font-bold text-[#1d2e4f] truncate">
+        <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between gap-3">
+          <div className="text-[15px] font-bold text-tertiary truncate">
             Gán người dùng vào {to.ten}
           </div>
-          <button type="button" onClick={onDong} className="text-[#888] hover:text-[#333] flex-shrink-0"><X size={17} /></button>
+          <button type="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface flex-shrink-0"><X size={17} /></button>
         </div>
 
         {/* Thanh lọc */}
-        <div className="px-4 py-3 flex items-center gap-2 flex-wrap border-b border-[#f0f0f0]">
+        <div className="px-4 py-3 flex items-center gap-2 flex-wrap border-b border-surface-container">
           <input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") { setLocTuKhoa(tuKhoa); setLocDonVi(donVi); } }}
             placeholder="Tìm tên, tài khoản, số định danh…"
-            className="w-[250px] h-[32px] px-2.5 text-[13px] border border-[#ccc] rounded-[3px] focus:outline-none focus:border-[#1a73e8]" />
+            className="w-[250px] h-[32px] px-2.5 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
           <div className="w-[210px]">
             <OChon value={donVi} onChange={setDonVi}>
               <option value="">Lọc theo đơn vị</option>
@@ -579,12 +579,12 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
             </OChon>
           </div>
           <button type="button" onClick={() => { setLocTuKhoa(tuKhoa); setLocDonVi(donVi); }}
-            className="flex items-center gap-1.5 h-[32px] px-4 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[3px] text-[13px] font-medium transition-colors">
+            className="flex items-center gap-1.5 h-[32px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[13px] font-medium transition-colors">
             <Search size={13} /> Lọc
           </button>
           <button type="button"
             onClick={() => { setTuKhoa(""); setDonVi(""); setLocTuKhoa(""); setLocDonVi(""); }}
-            className="flex items-center gap-1.5 h-[32px] px-3 border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[13px] text-[#555] transition-colors">
+            className="flex items-center gap-1.5 h-[32px] px-3 border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-[13px] text-on-surface-variant transition-colors">
             <RotateCw size={13} /> Xóa lọc
           </button>
 
@@ -596,7 +596,7 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
             onClick={() => { setDaGan(p => [...new Set([...p, ...chuaGan.map(u => u.id)])]); setChonTrai([]); }}
             disabled={chuaGan.length === 0}
             title={chuaGan.length === 0 ? "Không còn ai để gán" : `Gán ${chuaGan.length} người đang hiển thị`}
-            className="flex items-center gap-1.5 h-[32px] px-3 border border-[#8b1a1a] text-[#8b1a1a] rounded-[3px] bg-white hover:bg-[#fcf5f5] text-[13px] font-medium transition-colors disabled:opacity-40 disabled:hover:bg-white">
+            className="flex items-center gap-1.5 h-[32px] px-3 border border-error text-error rounded-[3px] bg-white hover:bg-[#fcf5f5] text-[13px] font-medium transition-colors disabled:opacity-40 disabled:hover:bg-white">
             <Users size={13} /> Gán tất cả ({chuaGan.length})
           </button>
         </div>
@@ -609,12 +609,12 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
             <div className="flex flex-col items-center justify-center gap-2 flex-shrink-0">
               <button type="button" onClick={sangPhai} disabled={chonTrai.length === 0}
                 title="Gán người đã chọn vào tổ"
-                className="w-[34px] h-[30px] flex items-center justify-center border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[#555] disabled:opacity-40 disabled:hover:bg-white transition-colors">
+                className="w-[34px] h-[30px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant disabled:opacity-40 disabled:hover:bg-white transition-colors">
                 <ChevronsRight size={15} />
               </button>
               <button type="button" onClick={sangTrai} disabled={chonPhai.length === 0}
                 title="Bỏ người đã chọn khỏi tổ"
-                className="w-[34px] h-[30px] flex items-center justify-center border border-[#ccc] rounded-[3px] bg-white hover:bg-[#f5f5f5] text-[#555] disabled:opacity-40 disabled:hover:bg-white transition-colors">
+                className="w-[34px] h-[30px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant disabled:opacity-40 disabled:hover:bg-white transition-colors">
                 <ChevronsLeft size={15} />
               </button>
             </div>
@@ -633,11 +633,11 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
           )}
         </div>
 
-        <div className="border-t border-[#e0e0e0] px-4 py-3 flex justify-end gap-2 flex-shrink-0">
+        <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2 flex-shrink-0">
           <button type="button" onClick={onDong}
-            className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[13px] font-medium text-[#333] hover:bg-[#f5f5f5]">Đóng</button>
+            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Đóng</button>
           <button type="button" onClick={() => onLuu(daGan)}
-            className="h-[30px] px-4 rounded-[3px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-medium transition-colors">
+            className="h-[30px] px-4 rounded-[3px] bg-error hover:bg-error-container text-white text-[13px] font-medium transition-colors">
             Cập nhật
           </button>
         </div>
@@ -661,8 +661,8 @@ function PopupXacNhanXoa({ ten, soThanhVien, onDong, onXoa }: {
             <AlertCircle size={16} />
           </span>
           <div className="min-w-0">
-            <div className="text-[14px] font-bold text-[#222] mb-1.5">Xác nhận xóa</div>
-            <p className="text-[13px] text-[#555] leading-relaxed">
+            <div className="text-[14px] font-bold text-on-surface mb-1.5">Xác nhận xóa</div>
+            <p className="text-[13px] text-on-surface-variant leading-relaxed">
               Bạn có chắc chắn muốn xóa Ủy ban “{ten}”?
             </p>
             {/* Tổ còn thành viên thì nhắc lối thoát mềm hơn — công tắc đã có sẵn
@@ -677,9 +677,9 @@ function PopupXacNhanXoa({ ten, soThanhVien, onDong, onXoa }: {
         </div>
         <div className="px-4 pb-4 flex justify-end gap-2">
           <button type="button" onClick={onDong}
-            className="h-[30px] px-4 rounded-[3px] border border-[#ccc] text-[13px] font-medium text-[#333] hover:bg-[#f5f5f5]">Hủy</button>
+            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</button>
           <button type="button" onClick={onXoa}
-            className="h-[30px] px-4 rounded-[3px] bg-[#e5484d] hover:bg-[#c0392b] text-white text-[13px] font-medium transition-colors">
+            className="h-[30px] px-4 rounded-[3px] bg-[#e5484d] hover:bg-error text-white text-[13px] font-medium transition-colors">
             Xóa
           </button>
         </div>

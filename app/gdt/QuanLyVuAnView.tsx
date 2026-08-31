@@ -363,7 +363,7 @@ const VU_AN_DETAILS: Record<string, VuAnDetailData> = {
       { stt: 1, maDon: "KN-88421", thongTinGQ: "Thụ lý mới", soThuLy: "KN-2026/00142", ngayThuLy: "15/05/2026", ngayNhan: "15/05/2026", nguoiDung: "Nguyễn Thị Lan", phanLoai: "Đơn khiếu nại tố tụng", loaiDon: "DON_CHINH", noiDung: "Khiếu nại hành vi tố tụng và Quyết định trả lại đơn đề nghị giám đốc thẩm đối với bản án hình sự sơ thẩm số 12/2026/HS-ST." },
     ],
     muonTraHoSo: [
-      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-KN-001", soBuLuc: "08", ngayGhiPhieu: "18/05/2026", ngayTao: "18/05/2026", canBo: "Vũ Diệu Thúy", chucVu: "TTV", donVi: "Tòa Hình sự - TAND thành phố Hà Nội", nguoiKyDuyet: "Phạm Thị Bích Ngọc", trangThaiKy: "Đã ký", ghiChu: "Hồ sơ khiếu nại" },
+      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-KN-001", soBuLuc: "08", ngayGhiPhieu: "18/05/2026", ngayTao: "18/05/2026", canBo: "Vũ Diệu Thúy", chucVu: "Công chức nghiên cứu", donVi: "Tòa Hình sự - TAND thành phố Hà Nội", nguoiKyDuyet: "Phạm Thị Bích Ngọc", trangThaiKy: "Đã ký", ghiChu: "Hồ sơ khiếu nại" },
     ],
   },
   "KN26-005230-DS": {
@@ -407,8 +407,8 @@ const VU_AN_DETAILS: Record<string, VuAnDetailData> = {
       { stt: 3, maDon: "7004", thongTinGQ: "Đã thụ lý", soThuLy: "", ngayThuLy: "", ngayNhan: "21/07/2026", nguoiDung: "Nguyễn Văn Minh", phanLoai: "Đơn đề nghị GĐT.TT", loaiDon: "DON_TRUNG", noiDung: "Đề nghị xem xét bản án theo thủ tục Giám đốc thẩm vì cho rằng có vi phạm nghiêm trọng trong việc đánh giá chứng cứ; chưa xem xét đầy đủ các tình tiết giảm nhẹ..." },
     ],
     muonTraHoSo: [
-      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-2026-001", soBuLuc: "12", ngayGhiPhieu: "20/07/2026", ngayTao: "20/07/2026", canBo: "Lý Thái Phúc", chucVu: "TTV", donVi: "Viện kiểm sát nhân dân thành phố Hà Nội", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Đã ký", ghiChu: "Kèm hồ sơ vụ án" },
-      { stt: 2, loaiPhieu: "Phiếu trả", soPhieu: "PT-2026-001", soBuLuc: "12", ngayGhiPhieu: "25/07/2026", ngayTao: "25/07/2026", canBo: "Lý Thái Phúc", chucVu: "TTV", donVi: "Viện kiểm sát nhân dân thành phố Hà Nội", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Chờ ký", ghiChu: "Trả hồ sơ sau khi nghiên cứu" },
+      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-2026-001", soBuLuc: "12", ngayGhiPhieu: "20/07/2026", ngayTao: "20/07/2026", canBo: "Lý Thái Phúc", chucVu: "Công chức nghiên cứu", donVi: "Viện kiểm sát nhân dân thành phố Hà Nội", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Đã ký", ghiChu: "Kèm hồ sơ vụ án" },
+      { stt: 2, loaiPhieu: "Phiếu trả", soPhieu: "PT-2026-001", soBuLuc: "12", ngayGhiPhieu: "25/07/2026", ngayTao: "25/07/2026", canBo: "Lý Thái Phúc", chucVu: "Công chức nghiên cứu", donVi: "Viện kiểm sát nhân dân thành phố Hà Nội", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Chờ ký", ghiChu: "Trả hồ sơ sau khi nghiên cứu" },
     ],
   },
   "VA26-002138": {
@@ -418,7 +418,7 @@ const VU_AN_DETAILS: Record<string, VuAnDetailData> = {
     toaXetXu: "Tòa án nhân dân khu vực 1 - Hà Nội",
     danhSachDon: [],
     muonTraHoSo: [
-      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "–", soBuLuc: "–", ngayGhiPhieu: "–", ngayTao: "24/07/2026", canBo: "Vũ Xuân Hiển", chucVu: "TTV chính", donVi: "Viện kiểm sát nhân dân khu vực 11", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Chờ ký", ghiChu: "Ghi chú" },
+      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "–", soBuLuc: "–", ngayGhiPhieu: "–", ngayTao: "24/07/2026", canBo: "Vũ Xuân Hiển", chucVu: "Công chức nghiên cứu chính", donVi: "Viện kiểm sát nhân dân khu vực 11", nguoiKyDuyet: "Nguyễn Văn A – Trưởng phòng", trangThaiKy: "Chờ ký", ghiChu: "Ghi chú" },
     ],
   },
   "VA26-001543-DS": {
@@ -430,7 +430,7 @@ const VU_AN_DETAILS: Record<string, VuAnDetailData> = {
       { stt: 1, maDon: "7122", thongTinGQ: "Thụ lý mới", soThuLy: "54681543", ngayThuLy: "03/07/2026", ngayNhan: "03/07/2026", nguoiDung: "Ngô Mai Trang", phanLoai: "Đơn đề nghị GĐT", loaiDon: "DON_CHINH", noiDung: "Đề nghị xem xét bản án sơ thẩm về tranh chấp quyền sử dụng đất và nhà ở do vi phạm nghiêm trọng thủ tục tố tụng." },
     ],
     muonTraHoSo: [
-      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-DS-001", soBuLuc: "15", ngayGhiPhieu: "05/07/2026", ngayTao: "05/07/2026", canBo: "Trần Thị Mai", chucVu: "TTV", donVi: "TAND khu vực 4 - Hà Nội", nguoiKyDuyet: "Trần Thị Hoa", trangThaiKy: "Đã ký", ghiChu: "Hồ sơ gốc vụ án" },
+      { stt: 1, loaiPhieu: "Phiếu mượn", soPhieu: "PM-DS-001", soBuLuc: "15", ngayGhiPhieu: "05/07/2026", ngayTao: "05/07/2026", canBo: "Trần Thị Mai", chucVu: "Công chức nghiên cứu", donVi: "TAND khu vực 4 - Hà Nội", nguoiKyDuyet: "Trần Thị Hoa", trangThaiKy: "Đã ký", ghiChu: "Hồ sơ gốc vụ án" },
     ],
   },
   "VA26-002300-DS": {
@@ -614,7 +614,7 @@ export function QuickViewDanhSachDonModal({
             <b style={{ color: TEXT }}>{group.loaiAn || "Hình sự"}</b>
           </div>
           <div>
-            <span style={{ color: MUTED }}>TTV: </span>
+            <span style={{ color: MUTED }}>Công chức nghiên cứu: </span>
             <b style={{ color: TEXT }}>{group.rows[0]?.ttv || "Lý Thái Phúc"}</b>
           </div>
           <div>
@@ -1059,7 +1059,7 @@ export default function QuanLyVuAnView({
                                 <td rowSpan={totalRows} style={{ ...TD_STYLE, verticalAlign: "middle", background: "#ffffff", padding: "6px 10px", lineHeight: 1.35 }}>
                                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                     <span style={{ fontSize: 11, fontFamily: F }}>
-                                      <span style={{ color: MUTED }}>TTV: </span>
+                                      <span style={{ color: MUTED }}>Công chức nghiên cứu: </span>
                                       <span style={{ fontWeight: 600, color: TEXT }}>{row.ttv}</span>
                                     </span>
                                     <span style={{ fontSize: 11, fontFamily: F }}>
@@ -1220,7 +1220,7 @@ export default function QuanLyVuAnView({
                         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                           {row.kqgq !== "chua-phan-cong" && (
                             <span style={{ fontSize: 11, fontFamily: F }}>
-                              <span style={{ color: MUTED }}>TTV: </span>{row.ttv}
+                              <span style={{ color: MUTED }}>Công chức nghiên cứu: </span>{row.ttv}
                             </span>
                           )}
                           <span style={{ fontSize: 11, fontFamily: F }}>
@@ -1237,7 +1237,7 @@ export default function QuanLyVuAnView({
                       <td style={TD_STYLE}>
                         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                           {row.kqgq === "chua-phan-cong"
-                            ? <Badge color="#333333" bg="#f5f5f5">Chưa phân công TTV</Badge>
+                            ? <Badge color="#333333" bg="#f5f5f5">Chưa phân công Công chức nghiên cứu</Badge>
                             : row.kqgq === "trinh-tham-phan"
                               ? <Badge color="#1a5a96" bg="#ccfbf1">Trình Thẩm phán</Badge>
                               : <Badge color="#1a5a96" bg="#e8f4ff">Trình Phó Chánh án</Badge>}
@@ -1956,9 +1956,9 @@ function TabPhanCong({ detail }: { detail: VuAnDetailData }) {
   ];
 
   const ttvRows = [
-    { stt: 3, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Chiêu", chucDanhTTV: "TTV", ngayPCTTV: "21/07/2026", hoTenLD: "Nguyễn Văn Hiển", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "21/07/2026" },
-    { stt: 2, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Ngã", chucDanhTTV: "TTV", ngayPCTTV: "01/07/2026", hoTenLD: "Nguyễn Văn Hòa", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "01/07/2026" },
-    { stt: 1, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Hoa", chucDanhTTV: "TTV", ngayPCTTV: "21/06/2026", hoTenLD: "Nguyễn Văn Hiển", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "21/06/2026" },
+    { stt: 3, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Chiêu", chucDanhTTV: "Công chức nghiên cứu", ngayPCTTV: "21/07/2026", hoTenLD: "Nguyễn Văn Hiển", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "21/07/2026" },
+    { stt: 2, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Ngã", chucDanhTTV: "Công chức nghiên cứu", ngayPCTTV: "01/07/2026", hoTenLD: "Nguyễn Văn Hòa", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "01/07/2026" },
+    { stt: 1, giaiDoan: "Giải quyết đơn", hoTenTTV: "Hoàng Ngọc Hoa", chucDanhTTV: "Công chức nghiên cứu", ngayPCTTV: "21/06/2026", hoTenLD: "Nguyễn Văn Hiển", chucVuLD: "Phó Trưởng phòng", ngayPCLD: "21/06/2026" },
   ];
 
   const sectionHdr = (title: string) => (
@@ -2016,7 +2016,7 @@ function TabPhanCong({ detail }: { detail: VuAnDetailData }) {
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        {sectionHdr("Lịch sử phân công TTV và LĐV")}
+        {sectionHdr("Lịch sử phân công Công chức nghiên cứu và LĐV")}
         <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
             <colgroup>
@@ -2248,7 +2248,7 @@ function XemBieuMauToTrinhVuAnModal({
             </p>
 
             <p style={{ fontWeight: "bold", margin: "14px 0 4px" }}>II. QUAN ĐIỂM THẨM TRA CỦA THẨM TRA VIÊN:</p>
-            <p style={{ margin: "4px 0", textIndent: "1cm" }}>Qua nghiên cứu toàn diện hồ sơ và các tài liệu chứng cứ có liên quan, TTV nhận thấy:</p>
+            <p style={{ margin: "4px 0", textIndent: "1cm" }}>Qua nghiên cứu toàn diện hồ sơ và các tài liệu chứng cứ có liên quan, Công chức nghiên cứu nhận thấy:</p>
             <p style={{ margin: "4px 0", textIndent: "1cm" }}>
               {isKhieuNai
                 ? "1. Căn cứ quy định của pháp luật về khiếu nại trong hoạt động tố tụng, việc khiếu nại của đương sự là có cơ sở xem xét."
@@ -2341,7 +2341,7 @@ function TaoToTrinhModal({
       deXuat: isKhieuNai ? "Chấp nhận khiếu nại" : "Kháng nghị",
       noiDung: isKhieuNai
         ? "Đề xuất Lãnh đạo Vụ xem xét, trình Chánh án TAND thành phố Hà Nội chấp nhận nội dung khiếu nại của đương sự, ban hành quyết định giải quyết khiếu nại theo quy định."
-        : "Đồng ý. Giao TTV hoàn thiện dự thảo văn bản trả lời đơn gửi Lãnh đạo Vụ xem xét, trình Chánh án TAND thành phố Hà Nội.",
+        : "Đồng ý. Giao Công chức nghiên cứu hoàn thiện dự thảo văn bản trả lời đơn gửi Lãnh đạo Vụ xem xét, trình Chánh án TAND thành phố Hà Nội.",
     },
   ]);
 
@@ -2358,7 +2358,7 @@ function TaoToTrinhModal({
         deXuat: isKhieuNai ? "Chấp nhận khiếu nại" : "Kháng nghị",
         noiDung: isKhieuNai
           ? "Đề xuất chấp nhận khiếu nại của đương sự."
-          : "Đồng ý. Giao TTV hoàn thiện dự thảo văn bản trả lời đơn gửi Lãnh đạo Vụ xem xét, trình Chánh án TAND thành phố Hà Nội.",
+          : "Đồng ý. Giao Công chức nghiên cứu hoàn thiện dự thảo văn bản trả lời đơn gửi Lãnh đạo Vụ xem xét, trình Chánh án TAND thành phố Hà Nội.",
       },
     ]);
   };
@@ -2676,10 +2676,10 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
 
   const [lichSuData, setLichSuData] = useState([
     {
-      ngayTrinh: "09/08/2026", lanh: detail?.thamPhan || "Nguyễn Biên Thuỳ", capTrinh: "Thẩm phán phụ trách", vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị GĐT", yKien: "Đồng ý với đề xuất của TTV. Chuyển Lãnh đạo Vụ xem xét trình Chánh án.", ngayDuyet: "09/08/2026", trangThai: "da-duyet", subRows: [] as { label: string; ngayDuyet: string }[],
+      ngayTrinh: "09/08/2026", lanh: detail?.thamPhan || "Nguyễn Biên Thuỳ", capTrinh: "Thẩm phán phụ trách", vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị GĐT", yKien: "Đồng ý với đề xuất của Công chức nghiên cứu. Chuyển Lãnh đạo Vụ xem xét trình Chánh án.", ngayDuyet: "09/08/2026", trangThai: "da-duyet", subRows: [] as { label: string; ngayDuyet: string }[],
     },
     {
-      ngayTrinh: "05/08/2026", lanh: "Lãnh đạo Tòa Hình sự", capTrinh: "Phó Trưởng phòng", vanBan: "Tờ trình xin ý kiến hướng giải quyết", yKien: "Yêu cầu TTV thẩm tra kỹ tình tiết lời khai nhân chứng tại BL 45-50 trước khi báo cáo lại.", ngayDuyet: "06/08/2026", trangThai: "tu-choi", subRows: [],
+      ngayTrinh: "05/08/2026", lanh: "Lãnh đạo Tòa Hình sự", capTrinh: "Phó Trưởng phòng", vanBan: "Tờ trình xin ý kiến hướng giải quyết", yKien: "Yêu cầu Công chức nghiên cứu thẩm tra kỹ tình tiết lời khai nhân chứng tại BL 45-50 trước khi báo cáo lại.", ngayDuyet: "06/08/2026", trangThai: "tu-choi", subRows: [],
     },
   ]);
 
@@ -2687,9 +2687,9 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
   const [filterVanBan, setFilterVanBan] = useState("");
 
   const [vanBanList, setVanBanList] = useState([
-    { stt: 1, loai: "to-trinh", vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị Giám đốc thẩm", don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "09/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)", trangThai: "–", daDinhKemHoSo: true, soHoSo: 5 },
+    { stt: 1, loai: "to-trinh", vanBan: "Tờ trình thẩm tra vụ án đề xuất Kháng nghị Giám đốc thẩm", don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "09/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)", trangThai: "–", daDinhKemHoSo: true, soHoSo: 5 },
     { stt: 2, loai: "du-thao", vanBan: "Dự thảo Quyết định kháng nghị giám đốc thẩm", don: `${detail?.maVuAn || "VA26-002621"} - Đơn 09D732899`, ngayTao: "09/08/2026", nguoiKy: "–", trangThai: "Chờ ký số", daDinhKemHoSo: true, soHoSo: 3 },
-    { stt: 3, loai: "du-thao", vanBan: "Dự thảo Thông báo trả lời đơn đề nghị", don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "08/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)", trangThai: "Đã ký số", daDinhKemHoSo: true, soHoSo: 1 },
+    { stt: 3, loai: "du-thao", vanBan: "Dự thảo Thông báo trả lời đơn đề nghị", don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "08/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)", trangThai: "Đã ký số", daDinhKemHoSo: true, soHoSo: 1 },
   ]);
 
   const handleSaveToTrinh = (data?: { daDinhKemHoSo: boolean; countHoSo: number; soTT: string }) => {
@@ -2697,7 +2697,7 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
     const count = data?.countHoSo ?? 5;
     const isAttached = data?.daDinhKemHoSo ?? true;
 
-    const newRow = { stt: 1, loai: "to-trinh", vanBan: `Tờ trình thẩm tra vụ án số ${toTrinhCount}`, don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "09/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (TTV)", trangThai: "–", daDinhKemHoSo: isAttached, soHoSo: count };
+    const newRow = { stt: 1, loai: "to-trinh", vanBan: `Tờ trình thẩm tra vụ án số ${toTrinhCount}`, don: `${detail?.maVuAn || "VA26-002621"} - ${detail?.tenVuAn || "Nguyễn Văn A"}`, ngayTao: "09/08/2026", nguoiKy: detail?.thamTraVien || "Lý Thái Phúc (Công chức nghiên cứu)", trangThai: "–", daDinhKemHoSo: isAttached, soHoSo: count };
     setVanBanList(prev => [newRow, ...prev.map((r, i) => ({ ...r, stt: i + 2 }))]);
   };
 

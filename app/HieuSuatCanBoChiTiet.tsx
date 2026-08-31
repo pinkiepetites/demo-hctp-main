@@ -69,15 +69,15 @@ const KPICard = ({ title, value, unit, phuChu, icon, colorClass, bgColorClass }:
   title: string; value: string; unit: string; phuChu?: string;
   icon: React.ReactNode; colorClass: string; bgColorClass: string;
 }) => (
-  <div className="bg-white rounded-[8px] border border-[#eee] p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+  <div className="bg-white rounded-[8px] border border-surface-container-high p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow duration-300">
     <div className={`w-[52px] h-[52px] rounded-full flex items-center justify-center flex-shrink-0 ${bgColorClass} ${colorClass}`}>
       {icon}
     </div>
     <div className="min-w-0">
-      <p className="text-[13px] text-[#666] font-medium mb-1.5 leading-snug">{title}</p>
+      <p className="text-[13px] text-on-surface-variant font-medium mb-1.5 leading-snug">{title}</p>
       <div className="flex items-baseline gap-1.5">
-        <span className="text-[28px] font-bold text-[#1d2e4f] leading-none tracking-tight tabular-nums">{value}</span>
-        <span className="text-[12px] text-[#888] font-medium">{unit}</span>
+        <span className="text-[28px] font-bold text-tertiary leading-none tracking-tight tabular-nums">{value}</span>
+        <span className="text-[12px] text-on-surface-variant font-medium">{unit}</span>
       </div>
       <div className="text-[12px] text-[#94a3b8] mt-1.5 leading-snug">{phuChu}</div>
     </div>
@@ -166,13 +166,13 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
           value={String(t.quaHan)} unit="đơn"
           phuChu={`${phanTram(t.tyLeQuaHan)} số đơn chưa giải quyết`}
           icon={<AlertTriangle size={24} />}
-          bgColorClass="bg-[#fef2f2]" colorClass="text-[#c0392b]"
+          bgColorClass="bg-[#fef2f2]" colorClass="text-error"
         />
       </div>
 
       {/* Bảng 1: tiến độ theo cán bộ */}
       <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#f1f5f9]">
+        <div className="px-5 py-4 border-b border-surface-container-high">
           <h3 className="text-[14px] font-bold text-[#0f172a]">Tiến độ giải quyết đơn theo cán bộ</h3>
         </div>
         <div className="overflow-x-auto">
@@ -194,16 +194,16 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
                 </td></tr>
               )}
               {rows.map(r => (
-                <tr key={r.name} className="border-t border-[#f1f5f9] hover:bg-[#f8fafc] transition-colors">
+                <tr key={r.name} className="border-t border-surface-container-high hover:bg-[#f8fafc] transition-colors">
                   <td className="px-5 py-3 text-[#1e293b]">
                     <span className="font-semibold">{r.name}</span>
                     <span className="text-[#64748b]"> - {r.role}</span>
                   </td>
-                  <td className="text-center px-3 py-3 font-bold text-[#1d2e4f] tabular-nums">{r.tong}</td>
+                  <td className="text-center px-3 py-3 font-bold text-tertiary tabular-nums">{r.tong}</td>
                   <td className="text-center px-3 py-3 font-semibold text-[#27ae60] tabular-nums">{r.daXong}</td>
                   <td className="text-center px-3 py-3 font-semibold text-[#e67e22] tabular-nums">{r.chuaXong}</td>
                   {/* Số 0 để mờ: mắt phải bắt được ngay dòng nào thực sự có quá hạn */}
-                  <td className={`text-center px-3 py-3 font-semibold tabular-nums ${r.quaHan ? "text-[#c0392b]" : "text-[#cbd5e1]"}`}>
+                  <td className={`text-center px-3 py-3 font-semibold tabular-nums ${r.quaHan ? "text-error" : "text-[#cbd5e1]"}`}>
                     {r.quaHan}
                   </td>
                   <td className="text-center px-3 py-3 text-[#475569] tabular-nums">
@@ -229,7 +229,7 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
       {/* Bảng 2: theo trạng thái thụ lý — đúng 6 trạng thái mà Trang chủ và màn
           Danh sách đơn đang dùng, không phải một bộ cột riêng của màn này */}
       <div className="bg-white rounded-[8px] border border-[#e2e8f0] shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#f1f5f9]">
+        <div className="px-5 py-4 border-b border-surface-container-high">
           <h3 className="text-[14px] font-bold text-[#0f172a]">Trạng thái thụ lý theo cán bộ</h3>
         </div>
         <div className="overflow-x-auto">
@@ -254,7 +254,7 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
                 </td></tr>
               )}
               {rows.map(r => (
-                <tr key={r.name} className="border-t border-[#f1f5f9] hover:bg-[#f8fafc] transition-colors">
+                <tr key={r.name} className="border-t border-surface-container-high hover:bg-[#f8fafc] transition-colors">
                   <td className="px-5 py-3 text-[#1e293b]">
                     <span className="font-semibold">{r.name}</span>
                     <span className="text-[#64748b]"> - {r.role}</span>
