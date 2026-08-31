@@ -603,7 +603,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                     trichYeu: r.hinhThucDon,
                     loaiVanBan: r.loaiAn,
                     ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
-                    canBoTiepNhan: "Chưa phân công",
+                    canBoTiepNhan: "Chờ xử lý",
                     hinhThucTiepNhan: r.nguon,
                     soBaqd: r.soBaqd,
                     ngayBaqd: r.ngayBaqd,
@@ -759,7 +759,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                               trichYeu: don.hinhThucDon,
                               loaiVanBan: don.loaiAn,
                               ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
-                              canBoTiepNhan: "Chưa phân công",
+                              canBoTiepNhan: "Chờ xử lý",
                               hinhThucTiepNhan: don.nguon
                             });
                           }
