@@ -307,8 +307,8 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân huyện Phong Điền",
       nguyenDon: "",
       biDon: "LÊ NGUYỄN KHÁNH",
-      ttvLd: "Võ Thị Thùy Giang (Công chức)\nNguyễn Như Thắng (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Võ Thị Thùy Giang (TTV)\nNguyễn Như Thắng (PVT)",
+      tinhTrang: "Đã phân công TTV",
       tenCoQuan: "",
     },
     {
@@ -318,8 +318,8 @@ export function AnQuocHoiView() {
       toa: "",
       nguyenDon: "",
       biDon: "NGUYỄN NHẬT QUANG",
-      ttvLd: "Võ Thị Thùy Giang (Công chức)\nNguyễn Như Thắng (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Võ Thị Thùy Giang (TTV)\nNguyễn Như Thắng (PVT)",
+      tinhTrang: "Đã phân công TTV",
       tenCoQuan: "",
     },
     {
@@ -329,8 +329,8 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "",
       biDon: "Phạm Ngọc Hoa",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nPhạm Thị Bích Ngọc (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nPhạm Thị Bích Ngọc (PVT)",
+      tinhTrang: "Đã phân công TTV",
       tenCoQuan: "Nguyễn Ngọc",
     },
     {
@@ -340,7 +340,7 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân khu vực 1 - Hà Nội",
       nguyenDon: "",
       biDon: "ĐỖ PHƯƠNG UYÊN",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nPhạm Thị Bích Ngọc (PVT)",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nPhạm Thị Bích Ngọc (PVT)",
       tinhTrang: "Kháng nghị\nSố: 207\nNgày: 17/07/2026",
       tenCoQuan: "",
     },
@@ -351,7 +351,7 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "",
       biDon: "NGHIÊM THỊ THANH XUÂN",
-      ttvLd: "Võ Thị Thùy Giang (Công chức)\nNguyễn Như Thắng (PVT)",
+      ttvLd: "Võ Thị Thùy Giang (TTV)\nNguyễn Như Thắng (PVT)",
       tinhTrang: "Trả lời đơn",
       tenCoQuan: "",
     },
@@ -362,7 +362,7 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân quận Ô Môn",
       nguyenDon: "",
       biDon: "NGÔ QUỲNH TRANG",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nPhạm Thị Bích Ngọc (PVT)",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nPhạm Thị Bích Ngọc (PVT)",
       tinhTrang: "Trả lời đơn\nSố: 126\nNgày: 30/06/2026",
       tenCoQuan: "",
     },
@@ -373,8 +373,8 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân khu vực 7 - Hà Nội",
       nguyenDon: "NGUYỄN THỊ KIM NGÂN",
       biDon: "CHU TRẦN KHÁNH VINH",
-      ttvLd: "Đỗ Thị Thúy Hằng (Công chức)\nNguyễn Tiến Mạnh (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Đỗ Thị Thúy Hằng (TTV)\nNguyễn Tiến Mạnh (PVT)",
+      tinhTrang: "Đã phân công TTV",
       tenCoQuan: "",
     },
     {
@@ -384,7 +384,7 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân khu vực 8 - Hà Nội",
       nguyenDon: "",
       biDon: "LỒ THỊ TRANG NHUNG",
-      ttvLd: "Đỗ Thị Thu Hằng (Công chức)\nNguyễn Thị Bích Ngọc (PVT)",
+      ttvLd: "Đỗ Thị Thu Hằng (TTV)\nNguyễn Thị Bích Ngọc (PVT)",
       tinhTrang: "Trả lời đơn\nSố: 76\nNgày: 22/06/2026",
       tenCoQuan: "",
     },
@@ -395,7 +395,7 @@ export function AnQuocHoiView() {
       toa: "Tòa án nhân dân thành phố Hà Nội",
       nguyenDon: "",
       biDon: "Đỗ Thành Hưng",
-      ttvLd: "Nguyen Thi Huong (Công chức)\nPham Thi Bich Ngoc (PVT)",
+      ttvLd: "Nguyen Thi Huong (TTV)\nPham Thi Bich Ngoc (PVT)",
       tinhTrang: "Kháng nghị\nSố: 57\nNgày: 18/06/2026",
       tenCoQuan: "",
     },
@@ -412,7 +412,7 @@ export function AnQuocHoiView() {
         toa: "Tòa án nhân dân thành phố Hà Nội",
         nguyenDon: "",
         biDon: "Người bị khiếu nại mới",
-        ttvLd: "Công chức",
+        ttvLd: "TTV",
         tinhTrang: "Chưa phân công",
         tenCoQuan: "",
       },
@@ -451,7 +451,7 @@ export function AnQuocHoiView() {
             <FormDate label="Giải quyết từ ngày" />
             <FormDate label="Giải quyết đến ngày" />
             <FormSelect label="Lãnh đạo phụ trách" />
-            <FormSelect label="Công chức giải quyết đơn" />
+            <FormSelect label="TTV giải quyết đơn" />
             <FormSelect label="Loại công văn" />
           </div>
 
@@ -534,7 +534,7 @@ export function AnQuocHoiView() {
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 120 }}>Tòa xét xử</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Nguyên đơn/Người khiếu nại</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Bị đơn/Người được khiếu nại</th>
-                  <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Công chức/LĐ Vụ</th>
+                  <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>TTV/LĐ Vụ</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 100 }}>Tình trạng</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 90 }}>Tên cơ quan</th>
                 </tr>
@@ -577,7 +577,7 @@ export function AnThoiHieuView() {
       nguyenDon: "f",
       biDon: "sdfsfsf",
       ttvLd: "",
-      tinhTrang: "Chưa phân công Công chức",
+      tinhTrang: "Chưa phân công TTV",
       ghiChu: "",
     },
     {
@@ -587,8 +587,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "dsadaad, wswrwr",
       biDon: "áwr",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nNguyễn Thị Bình (VT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nNguyễn Thị Bình (VT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -598,8 +598,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 1 - Hà Nội",
       nguyenDon: "",
       biDon: "",
-      ttvLd: "Vũ Thị Sâm (Công chức)\nDương Văn Hải (CV_01)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Thị Sâm (TTV)\nDương Văn Hải (CV_01)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -609,7 +609,7 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "",
       biDon: "Phùng Văn Nam",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nLê Thị Thu Hiền (PVT)",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nLê Thị Thu Hiền (PVT)",
       tinhTrang: "Kháng nghị",
       ghiChu: "",
     },
@@ -620,8 +620,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân huyện Phong Điền",
       nguyenDon: "",
       biDon: "LÊ NGUYỄN KHÁNH",
-      ttvLd: "Võ Thị Thùy Giang (Công chức)\nNguyễn Như Thắng (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Võ Thị Thùy Giang (TTV)\nNguyễn Như Thắng (PVT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -631,8 +631,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "Dương Thu Hằng",
       biDon: "Nguyễn Thành Đô",
-      ttvLd: "Hoàng Ngọc Chiều (Công chức)\nNguyễn Văn Hiển (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Hoàng Ngọc Chiều (TTV)\nNguyễn Văn Hiển (PVT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -642,8 +642,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 1 - Hà Nội",
       nguyenDon: "",
       biDon: "Nguyễn Văn Minh",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nLê Thị Thu Hiền (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nLê Thị Thu Hiền (PVT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -653,8 +653,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "",
       biDon: "Phạm Ngọc Hoa",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nPhạm Thị Bích Ngọc (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nPhạm Thị Bích Ngọc (PVT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -664,8 +664,8 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "",
       biDon: "Phạm Ngọc Hoa",
-      ttvLd: "Vũ Diệu Thúy (Công chức)\nLê Thị Thu Hiền (PVT)",
-      tinhTrang: "Đã phân công Công chức",
+      ttvLd: "Vũ Diệu Thúy (TTV)\nLê Thị Thu Hiền (PVT)",
+      tinhTrang: "Đã phân công TTV",
       ghiChu: "",
     },
     {
@@ -675,7 +675,7 @@ export function AnThoiHieuView() {
       toa: "Tòa án nhân dân khu vực 5 - Hà Nội",
       nguyenDon: "Dương Thu Hằng",
       biDon: "Nguyễn Thành Đô",
-      ttvLd: "Hoàng Ngọc Chiều (Công chức)\nNguyễn Văn Hiển (PVT)",
+      ttvLd: "Hoàng Ngọc Chiều (TTV)\nNguyễn Văn Hiển (PVT)",
       tinhTrang: "Kháng nghị",
       ghiChu: "",
     },
@@ -692,7 +692,7 @@ export function AnThoiHieuView() {
         toa: "Tòa án nhân dân thành phố Hà Nội",
         nguyenDon: "",
         biDon: "Bị đơn mới",
-        ttvLd: "Công chức",
+        ttvLd: "TTV",
         tinhTrang: "Chưa phân công",
         ghiChu: "",
       },
@@ -732,7 +732,7 @@ export function AnThoiHieuView() {
             <FormDate label="Đến ngày" />
             <FormSelect label="Thời hạn giải quyết" />
             <FormSelect label="Lãnh đạo phụ trách" />
-            <FormSelect label="Công chức giải quyết đơn" />
+            <FormSelect label="TTV giải quyết đơn" />
           </div>
 
           {/* Row 2 */}
@@ -812,7 +812,7 @@ export function AnThoiHieuView() {
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 120 }}>Tòa xét xử</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Nguyên đơn/Người khiếu nại</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Bị đơn/Người được khiếu nại</th>
-                  <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>Công chức/LĐ Vụ</th>
+                  <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 110 }}>TTV/LĐ Vụ</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 100 }}>Tình trạng</th>
                   <th style={{ border: "1px solid #000", padding: "6px 6px", textAlign: "center", width: 90 }}>Ghi chú</th>
                 </tr>

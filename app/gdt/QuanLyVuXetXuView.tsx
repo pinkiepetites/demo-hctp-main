@@ -736,7 +736,7 @@ function TabPhanCong({ row }: { row: VuXetXuRow }) {
   const PC_ROWS = [
     { vai: "Thẩm phán", ngay: "10/04/2026\n06/04/2026", ten: "Trịnh Đức Minh", phu: "Lê Đức Hòa", chuc: "Phó Chánh án", nguoi: "Nguyễn Xuân Thành\n10/04/2026 – 10:20:10", hasDoc: true, isThuKy: false },
     { vai: "Lãnh đạo vụ", ngay: "14/04/2026", ten: "Hoàng Văn Hòa", phu: "", chuc: "Phó Trưởng phòng", nguoi: "Nguyễn Xuân Thành\n14/04/2026 – 10:20:10", hasDoc: false, isThuKy: false },
-    { vai: "Công chức", ngay: "16/04/2026", ten: "Nguyễn Ngọc Ngan", phu: "", chuc: "Công chức chính", nguoi: "Nguyễn Xuân Thành\n14/04/2026 – 10:20:10", hasDoc: false, isThuKy: false },
+    { vai: "TTV", ngay: "16/04/2026", ten: "Nguyễn Ngọc Ngan", phu: "", chuc: "TTV chính", nguoi: "Nguyễn Xuân Thành\n14/04/2026 – 10:20:10", hasDoc: false, isThuKy: false },
     { vai: "Thư ký phiên tòa", ngay: "18/04/2026", ten: thuKyTen, phu: "", chuc: "Thư ký tòa án", nguoi: "Nguyễn Xuân Thành\n18/04/2026 – 08:30:00", hasDoc: true, isThuKy: true },
   ];
   const HDXX_ROWS = [
@@ -6463,7 +6463,7 @@ export default function QuanLyVuXetXuView({
               </div>
             </div>
 
-            {/* Hàng 2 (5-8): Thuộc án | Lãnh đạo vụ | Công chức | Quá hạn xét xử */}
+            {/* Hàng 2 (5-8): Thuộc án | Lãnh đạo vụ | TTV | Quá hạn xét xử */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px 16px" }}>
               {/* 5. Thuộc án */}
               <div>
@@ -6495,9 +6495,9 @@ export default function QuanLyVuXetXuView({
                 </select>
               </div>
 
-              {/* 7. Công chức */}
+              {/* 7. TTV */}
               <div>
-                <label style={labelStyle}>Công chức</label>
+                <label style={labelStyle}>TTV</label>
                 <select
                   value={fTTV}
                   onChange={(e) => setFTTV(e.target.value)}
@@ -6714,7 +6714,7 @@ export default function QuanLyVuXetXuView({
                   {/* Phân công */}
                   <td style={TD_STYLE}>
                     <div style={{ fontSize: 11, fontFamily: F, lineHeight: 1.8 }}>
-                      <div><span style={{ color: MUTED }}>Công chức: </span>{row.ttv}</div>
+                      <div><span style={{ color: MUTED }}>TTV: </span>{row.ttv}</div>
                       <div><span style={{ color: MUTED }}>LĐV: </span>{row.ldv}</div>
                       <div><span style={{ color: MUTED }}>TP: </span>{row.tp}</div>
                     </div>

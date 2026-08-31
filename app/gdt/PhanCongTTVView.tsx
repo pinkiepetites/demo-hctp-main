@@ -244,7 +244,7 @@ const INITIAL_DA_PHAN_CONG: CaseRow[] = [
 export function PhanCongTTVView() {
   const [activeTab, setActiveTab] = useState<"chua-phan-cong" | "da-phan-cong">("chua-phan-cong");
   // Chỉ còn MỘT hình thức phân công: chỉ định. Bỏ phân công ngẫu nhiên vì
-  // người có thẩm quyền phải chọn đích danh công chức, không bốc thăm.
+  // người có thẩm quyền phải chọn đích danh TTV, không bốc thăm.
   const [filterExpanded, setFilterExpanded] = useState(true);
 
   // Form Filter states
@@ -304,7 +304,7 @@ export function PhanCongTTVView() {
 
   const handleExecutePhanCong = () => {
     if (selectedIds.length === 0) {
-      alert("Vui lòng tích chọn ít nhất 1 vụ án để phân công Công chức!");
+      alert("Vui lòng tích chọn ít nhất 1 vụ án để phân công TTV!");
       return;
     }
 
@@ -332,7 +332,7 @@ export function PhanCongTTVView() {
     setDaPCRows((prev) => [...assignedRows, ...prev]);
     setSelectedIds([]);
     setShowAssignModal(false);
-    alert(`Đã phân công chỉ định thành công cho Công chức: ${assignTTV}!`);
+    alert(`Đã phân công chỉ định thành công cho TTV: ${assignTTV}!`);
     setActiveTab("da-phan-cong");
   };
 
@@ -386,13 +386,13 @@ export function PhanCongTTVView() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflowY: "auto", background: "#fafafa", fontFamily: F }}>
       {/* Breadcrumb Header */}
       <div style={{ padding: "10px 24px", fontSize: 12, color: MUTED, fontFamily: F, background: "#fff", borderBottom: `1px solid ${BORDER}` }}>
-        <span>Trang chủ</span> &nbsp;/&nbsp; <span>Quản lý án GĐT/TT</span> &nbsp;/&nbsp; <span style={{ color: TEXT, fontWeight: 600 }}>Phân công Công chức</span>
+        <span>Trang chủ</span> &nbsp;/&nbsp; <span>Quản lý án GĐT/TT</span> &nbsp;/&nbsp; <span style={{ color: TEXT, fontWeight: 600 }}>Phân công TTV</span>
       </div>
 
       <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Page Title */}
         <h1 style={{ fontSize: 18, fontWeight: 700, color: TEXT, margin: 0, fontFamily: F }}>
-          Phân công Công chức
+          Phân công TTV
         </h1>
 
         {/* Tab Navigation */}
@@ -414,7 +414,7 @@ export function PhanCongTTVView() {
               fontFamily: F,
             }}
           >
-            Chưa phân công Công chức
+            Chưa phân công TTV
           </button>
           <button
             onClick={() => {
@@ -433,7 +433,7 @@ export function PhanCongTTVView() {
               fontFamily: F,
             }}
           >
-            Đã phân công Công chức
+            Đã phân công TTV
           </button>
         </div>
 
@@ -573,13 +573,13 @@ export function PhanCongTTVView() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Công chức</label>
+                  <label style={labelStyle}>TTV</label>
                   <select
                     value={fTTV}
                     onChange={(e) => setFTTV(e.target.value)}
                     style={inputStyle}
                   >
-                    <option value="">Chọn công chức</option>
+                    <option value="">Chọn TTV</option>
                     {DANH_SACH_TTV.map((t) => (
                       <option key={t} value={t}>{t}</option>
                     ))}
@@ -616,7 +616,7 @@ export function PhanCongTTVView() {
 
             <div style={{ display: "flex", gap: 10 }}>
               <button
-                onClick={() => alert("Đang lọc danh sách phân công Công chức...")}
+                onClick={() => alert("Đang lọc danh sách phân công TTV...")}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -753,9 +753,9 @@ export function PhanCongTTVView() {
                   <th style={{ ...TH_CUSTOM, width: "12%" }}>Số & Ngày thụ lý</th>
                   <th style={{ ...TH_CUSTOM, width: "23%" }}>Thông tin bản án/quyết định và QHPL</th>
                   <th style={{ ...TH_CUSTOM, width: "14%" }}>Đương sự</th>
-                  <th style={{ ...TH_CUSTOM, width: "10%" }}>Ngày Công chức nhận THS</th>
-                  <th style={{ ...TH_CUSTOM, width: "11%" }}>Ngày phân công Công chức</th>
-                  <th style={{ ...TH_CUSTOM, width: "13%" }}>Công chức</th>
+                  <th style={{ ...TH_CUSTOM, width: "10%" }}>Ngày TTV nhận THS</th>
+                  <th style={{ ...TH_CUSTOM, width: "11%" }}>Ngày phân công TTV</th>
+                  <th style={{ ...TH_CUSTOM, width: "13%" }}>TTV</th>
                   <th style={{ ...TH_CUSTOM, width: 60, textAlign: "center", borderRight: "none" }}>Thao tác</th>
                 </tr>
               </thead>
@@ -899,7 +899,7 @@ export function PhanCongTTVView() {
           <div style={{ background: "#fff", borderRadius: 10, width: "100%", maxWidth: 560, boxShadow: "0 20px 50px rgba(0,0,0,0.25)", overflow: "hidden", fontFamily: F }}>
             <div style={{ padding: "14px 20px", background: "#fafafa", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: 15, color: RED }}>
-                <UserCheck size={18} /> Phân công chỉ định Công chức
+                <UserCheck size={18} /> Phân công chỉ định TTV
               </div>
               <button onClick={() => setShowAssignModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
                 <X size={20} />
@@ -913,7 +913,7 @@ export function PhanCongTTVView() {
 
               <div>
                 <label style={{ fontSize: 12, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>
-                  Chọn Công chức giải quyết (*)
+                  Chọn TTV giải quyết (*)
                 </label>
                 <select
                   value={assignTTV}
@@ -980,7 +980,7 @@ export function PhanCongTTVView() {
                 <span>{showDetailModal.ndkn ? `NĐ/NKK: ${showDetailModal.ndkn} - BĐ/NBK: ${showDetailModal.nbk}` : "Chưa cập nhật"}</span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, padding: "6px 0" }}>
-                <span style={{ color: MUTED, fontWeight: 600 }}>Công chức:</span>
+                <span style={{ color: MUTED, fontWeight: 600 }}>TTV:</span>
                 <span style={{ fontWeight: 600, color: "#1a5a96" }}>{showDetailModal.ttv}</span>
               </div>
             </div>

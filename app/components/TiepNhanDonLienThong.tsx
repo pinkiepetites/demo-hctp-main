@@ -114,9 +114,7 @@ const DON_SAMPLE: DonTiepNhan[] = [
 ];
 
 const TRANG_THAI_META: Record<DonTrangThai, { label: string; cls: string }> = {
-  "cho-phan-loai": { label: "Chờ phân công", cls: "bg-[#fff4db] text-[#8b5e00] border-[#f5c842]" },
-  "cho-phan-loai":  { label: "Đã phân công",  cls: "bg-[#e8f0fe] text-[#1a5a96] border-[#a9c9f4]" },
-  "cho-phan-loai":     { label: "Chờ xử lý",     cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]" },
+  "cho-phan-loai": { label: "Chờ phân loại", cls: "bg-[#fff4db] text-[#8b5e00] border-[#f5c842]" },
   "tra-lai":       { label: "Trả lại",        cls: "bg-[#fdecea] text-[#8b1a1a] border-[#f5a3a3]" },
 };
 
@@ -703,7 +701,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   <td className="px-2.5 py-2.5 text-[#555]">{don.hinhThucDon}</td>
                   <td className="px-2.5 py-2.5 text-[#555]">{don.loaiAn}</td>
                   <td className="px-2.5 py-2.5 whitespace-nowrap">
-                    {isTruongPhong && (don.trangThai === "cho-phan-loai" || don.trangThai === "cho-phan-loai" || don.trangThai === "cho-phan-loai") ? (
+                    {isTruongPhong && don.trangThai === "cho-phan-loai" ? (
                       <select
                         value={don.canBoPhanLoai === "Chưa phân công" ? "" : don.canBoPhanLoai}
                         onChange={(e) => {
