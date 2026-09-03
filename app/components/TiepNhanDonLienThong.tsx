@@ -160,6 +160,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   const [fLoaiAn, setFLoaiAn] = useState("");
   const [fCanBo, setFCanBo] = useState("");
   const [fTrangThai, setFTrangThai] = useState("");
+  const [fDieuKien, setFDieuKien] = useState("tat-ca");
 
   // Popup state
   const [chiTietPopup, setChiTietPopup] = useState<DonTiepNhan | null>(null);
@@ -196,10 +197,12 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       if (fCanBo && d.canBoPhanLoai !== fCanBo) return false;
       if (fTrangThai && d.trangThai !== fTrangThai) return false;
       if (fNguoiDon && !d.nguoiLamDon.toLowerCase().includes(fNguoiDon.toLowerCase())) return false;
+      if (fDieuKien === "du" && (!d.dieuKienGoiY || !d.dieuKienGoiY.hopLe)) return false;
+      if (fDieuKien === "chua-du" && d.dieuKienGoiY?.hopLe !== false) return false;
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoPhanLoai].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, refreshKey]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, fDieuKien, refreshKey]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -545,6 +548,23 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
 
       {/* Search bar */}
       <div className="px-4 py-2.5 border-b border-surface-container-high bg-surface-bright">
+        <div className="flex items-center gap-6 mb-2.5">
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "tat-ca"} onChange={() => setFDieuKien("tat-ca")} />
+            Tất cả
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "chua-du"} onChange={() => setFDieuKien("chua-du")} />
+            Đơn chưa đủ điều kiện
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "du"} onChange={() => setFDieuKien("du")} />
+            Đơn đủ điều kiện
+          </label>
+        </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1 max-w-[420px]">
             <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-outline" />
@@ -576,7 +596,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               { label: "Hình thức đơn", el: <select value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><optgroup label="— Đơn"><option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option><option value="Đơn khiếu nại tố cáo trong tố tụng">2. Đơn khiếu nại tố cáo trong tố tụng</option><option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option><option value="Đơn khác">4. Đơn khác</option></optgroup><optgroup label="— Công văn"><option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option><option value="CV chuyển đơn">2. CV chuyển đơn</option><option value="CV chuyển kiến nghị GĐT-TT">3. CV chuyển kiến nghị GĐT-TT</option><option value="CV khác">4. CV khác</option></optgroup><optgroup label="— Tài liệu"><option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option></optgroup></select> },
               { label: "Loại án", el: <select value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option>Hành chính</option><option>Dân sự</option><option>Hình sự</option><option>Lao động</option><option>Kinh doanh thương mại</option></select> },
               { label: "Cán bộ tiếp nhận", el: <select value={fCanBo} onChange={e => setFCanBo(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option>{CAN_BO_LIST_LT.map(cb => <option key={cb} value={cb}>{cb}</option>)}</select> },
-              { label: "Trạng thái", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option value="cho-phan-loai">Chờ phân công</option><option value="cho-phan-loai">Đã phân công</option><option value="cho-phan-loai">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select> },
+              { label: "Trạng thái (gợi ý)", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option value="cho-phan-loai">Chờ phân công</option><option value="cho-phan-loai">Đã phân công</option><option value="cho-phan-loai">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select> },
             ].map(({ label, el }) => (
               <div key={label}>
                 <div className="text-[10px] text-on-surface-variant mb-0.5">{label}</div>
@@ -666,7 +686,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0}
                   onChange={toggleAll} className="cursor-pointer" />
               </th>
-              {["STT", "Nguồn", "Mã đơn", "Ngày tiếp nhận", "Người làm đơn", "Hình thức đơn", "Loại án", "Đơn vị tiếp nhận", activeTab === "cho-phan-loai" ? "Trạng thái (gợi ý)" : "Trạng thái", "Thao tác"].map(h => (
+              {["STT", "Nguồn", "Mã đơn", "Ngày tiếp nhận", "Người làm đơn", "Hình thức đơn", "Loại án", "Trạng thái (gợi ý)", "Đơn vị tiếp nhận (gợi ý)", "Thao tác"].map(h => (
                 <th key={h} className="text-left px-2.5 py-2 text-[11px] font-semibold text-on-surface-variant whitespace-nowrap">{h}</th>
               ))}
             </tr>
@@ -701,6 +721,22 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   <td className="px-2.5 py-2.5 text-on-surface-variant">{don.loaiAn}</td>
 
                   <td className="px-2.5 py-2.5">
+                    {don.trangThai === "cho-phan-loai" && don.dieuKienGoiY ? (
+                      <div className="flex flex-col gap-1 items-start">
+                         <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap w-fit ${don.dieuKienGoiY.hopLe ? 'bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]' : 'bg-[#fdecea] text-error border-[#f5a3a3]'}`}>
+                            {don.dieuKienGoiY.hopLe ? 'Đủ điều kiện' : 'Không đủ điều kiện'}
+                         </span>
+                         {!don.dieuKienGoiY.hopLe && don.dieuKienGoiY.lyDo && (
+                           <span className="text-[10px] text-error italic">{don.dieuKienGoiY.lyDo}</span>
+                         )}
+                      </div>
+                    ) : (
+                      <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap ${sm.cls}`}>
+                        {sm.label}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-2.5 py-2.5">
                     {isCanBoPhanLoai ? (
                       <select
                         value={don.donViTiepNhanGoiY || ""}
@@ -721,22 +757,6 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                       </select>
                     ) : (
                       <span className="text-on-surface font-medium">{don.donViTiepNhanGoiY || "Chưa xác định"}</span>
-                    )}
-                  </td>
-                  <td className="px-2.5 py-2.5">
-                    {don.trangThai === "cho-phan-loai" && don.dieuKienGoiY ? (
-                      <div className="flex flex-col gap-1 items-start">
-                         <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap w-fit ${don.dieuKienGoiY.hopLe ? 'bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]' : 'bg-[#fdecea] text-error border-[#f5a3a3]'}`}>
-                            {don.dieuKienGoiY.hopLe ? 'Đủ điều kiện' : 'Không đủ điều kiện'}
-                         </span>
-                         {!don.dieuKienGoiY.hopLe && don.dieuKienGoiY.lyDo && (
-                           <span className="text-[10px] text-error italic">{don.dieuKienGoiY.lyDo}</span>
-                         )}
-                      </div>
-                    ) : (
-                      <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap ${sm.cls}`}>
-                        {sm.label}
-                      </span>
                     )}
                   </td>
                   <td className="px-2.5 py-2.5">
