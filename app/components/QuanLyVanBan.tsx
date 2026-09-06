@@ -28,8 +28,9 @@ import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
-  Inbox, FilePlus
+  Inbox, FilePlus, List
 } from "lucide-react";
+import PheDuyetToTrinhModal from "./PheDuyetToTrinhPhanCong";
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
 export type TrangThaiVB =
@@ -845,7 +846,7 @@ const SoSanhPhienBan = ({ vb, moc, onClose }: { vb: VanBanTrinh; moc: MocLichSu;
           </div>
           {moc.yKien && (
             <div className="mt-2.5 bg-[#fde8e8] border-l-[3px] border-[#8b1a1a] rounded-[3px] px-3 py-2 text-[12px] leading-relaxed">
-              💬 “{moc.yKien}”
+              💬 "{moc.yKien}"
             </div>
           )}
         </div>
@@ -985,7 +986,7 @@ const TabLichSu = ({ vb, onXemThayDoi }: { vb: VanBanTrinh; onXemThayDoi: (m: Mo
                         <span className="text-[#888]"> · {m.chucVu}</span>
                       </div>
                       <div className={`text-[12px] mt-0.5 flex items-center gap-2 ${voHieu ? "text-[#999]" : "text-[#333]"}`}>
-                        {m.hanhDong === "TraLai" && <span>⛔</span>}
+                        {m.hanhDong === "TraLai" && <span>â›"</span>}
                         {m.hanhDong === "SuaVaDuyet" && <span>✏️</span>}
                         {HANH_DONG_NHAN[m.hanhDong]}
                         {m.hanhDong === "LaySoTam" && vb.soVanBan && (
@@ -1004,7 +1005,7 @@ const TabLichSu = ({ vb, onXemThayDoi }: { vb: VanBanTrinh; onXemThayDoi: (m: Mo
                             borderLeftColor: voHieu ? "#999" : "#8b1a1a",
                             color: voHieu ? "#999" : "#333",
                           }}>
-                          💬 “{m.yKien}”
+                          💬 "{m.yKien}"
                         </div>
                       )}
 
@@ -1085,7 +1086,7 @@ const HopThoaiKySo = ({ vb, soSeCap, onXacNhan, onClose }: {
   vb: VanBanTrinh; soSeCap: string; onXacNhan: () => void; onClose: () => void;
 }) => (
   <KhungHopThoai tieuDe="Ký số văn bản" onClose={onClose}
-    chan={<><BtnNeutral onClick={onClose}>Huỷ</BtnNeutral>
+    chan={<><BtnNeutral onClick={onClose}>Huá»·</BtnNeutral>
       <BtnPrimary onClick={onXacNhan}><PenLine size={13} /> Ký số</BtnPrimary></>}>
     <div className="text-[12px] leading-relaxed mb-3.5">
       <span className="font-mono font-medium">{vb.soVanBan ?? "— chưa số —"}</span><br />
@@ -1119,7 +1120,7 @@ const HopThoaiButPhe = ({ vb, onXacNhan, onClose }: {
   const hopLe = yKien.trim().length >= 5;
   return (
     <KhungHopThoai tieuDe="Bút phê của lãnh đạo" onClose={onClose}
-      chan={<><BtnNeutral onClick={onClose}>Huỷ</BtnNeutral>
+      chan={<><BtnNeutral onClick={onClose}>Huá»·</BtnNeutral>
         <BtnPrimary disabled={!hopLe} onClick={() => hopLe && onXacNhan(yKien.trim())}
           title={hopLe ? undefined : "Nhập nội dung bút phê để tiếp tục"}>
           <PenLine size={13} /> Bút phê
@@ -1156,7 +1157,7 @@ const HopThoaiDuyet = ({ vb, onXacNhan, onClose }: {
   const tiep = vb.luongKy[vb.buocHienTai + 1];
   return (
     <KhungHopThoai tieuDe="Duyệt văn bản" onClose={onClose}
-      chan={<><BtnNeutral onClick={onClose}>Huỷ</BtnNeutral>
+      chan={<><BtnNeutral onClick={onClose}>Huá»·</BtnNeutral>
         <BtnPrimary onClick={() => onXacNhan(yKien.trim())}><Check size={13} /> Duyệt</BtnPrimary></>}>
       <div className="text-[12px] leading-relaxed mb-3.5">
         <span className="font-mono font-medium">{vb.soVanBan ?? "— chưa số —"}</span><br />
@@ -1188,12 +1189,12 @@ const HopThoaiSuaVaDuyet = ({ vb, onXacNhan, onClose }: {
   const vMoi = Math.max(...vb.phienBan.map(p => p.so)) + 1;
   return (
     <KhungHopThoai tieuDe="Sửa & duyệt" onClose={onClose}
-      chan={<><BtnNeutral onClick={onClose}>Huỷ</BtnNeutral>
+      chan={<><BtnNeutral onClick={onClose}>Huá»·</BtnNeutral>
         <BtnPrimary onClick={() => onXacNhan(yKien.trim())}><Check size={13} /> Xác nhận</BtnPrimary></>}>
       <div className="bg-[#e8f4ff] border border-[#a9c9f4] text-[#1a73e8] rounded-[4px] px-3 py-2 text-[12px] leading-relaxed flex gap-2 mb-3.5">
         <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
         <div>Sẽ lưu thành phiên bản <b>v{vMoi}</b> và duyệt bước {vb.buocHienTai + 1}.
-          <b> {vb.nguoiTao}</b> sẽ thấy được thay đổi này qua nút “Xem thay đổi”.</div>
+          <b> {vb.nguoiTao}</b> sẽ thấy được thay đổi này qua nút "Xem thay đổi".</div>
       </div>
       <label className="block text-[11px] font-medium mb-1.5">Ý kiến <span className="text-[#888] font-normal">(tuỳ chọn)</span></label>
       <textarea value={yKien} onChange={e => setYKien(e.target.value)} rows={3}
@@ -1257,6 +1258,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
     vb.trangThai === "BiTraLai" ? "lichsu" : "noidung");
   const [mocDiff, setMocDiff] = useState<MocLichSu | null>(null);
   const [hopThoai, setHopThoai] = useState<"tralai" | "kyso" | "butphe" | "suaduyet" | "duyet" | null>(null);
+  const [showPheDuyetModal, setShowPheDuyetModal] = useState(false);
 
   const pbHienTai = vb.phienBan.find(p => p.so === vb.phienBanHienTai) ?? vb.phienBan[vb.phienBan.length - 1];
   const [noiDung, setNoiDung] = useState(pbHienTai.noiDung);
@@ -1337,6 +1339,9 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       );
       case "ChoDuyet": return (
         <>
+          {/tờ trình/i.test(vb.loaiVanBan) && (
+            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+          )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnOutline onClick={() => setHopThoai("suaduyet")}><Pencil size={13} /> Sửa &amp; duyệt</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("duyet")}><Check size={13} /> Duyệt</BtnPrimary>
@@ -1344,12 +1349,18 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       );
       case "ChoKy": return (
         <>
+          {/tờ trình/i.test(vb.loaiVanBan) && (
+            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+          )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("kyso")}><PenLine size={13} /> Ký số</BtnPrimary>
         </>
       );
       case "ChoButPhe": return (
         <>
+          {/tờ trình/i.test(vb.loaiVanBan) && (
+            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+          )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("butphe")}><PenLine size={13} /> Bút phê</BtnPrimary>
         </>
@@ -1542,6 +1553,16 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       {hopThoai === "suaduyet" && (
         <HopThoaiSuaVaDuyet vb={vb} onClose={() => setHopThoai(null)}
           onXacNhan={yk => xong(apSuaVaDuyet(vb, nguoiDung, chucVu, noiDung, yk || undefined))} />
+      )}
+      
+      {showPheDuyetModal && (
+        <PheDuyetToTrinhModal 
+          onClose={() => setShowPheDuyetModal(false)}
+          role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
+          danhSachDonBanDau={vb.donDinhKem.map(d => ({
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
+          }))}
+        />
       )}
     </>
   );
@@ -1771,7 +1792,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                       </div>
                       {traLai && yKienCuoi && (
                         <div className="text-[11px] text-[#8b1a1a] italic mt-1 leading-snug max-w-[230px]">
-                          💬 “{yKienCuoi.length > 62 ? yKienCuoi.slice(0, 62) + "…" : yKienCuoi}”
+                          💬 "{yKienCuoi.length > 62 ? yKienCuoi.slice(0, 62) + "…" : yKienCuoi}"
                         </div>
                       )}
                     </td>
@@ -2105,7 +2126,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
           · Tờ trình  → "Lãnh đạo phê duyệt ý kiến" (xoay quanh ý kiến + trình tiếp)
           · Còn lại   → "Ký số văn bản" (xoay quanh bản in + ký) */}
       {chon && (laToTrinh(chon.loaiVanBan) ? (
-        <ManPheDuyetYKien vb={chon} nguoiDung={nguoiDung} chucVu={chucVu} danhSach={danhSach}
+        <ManPheDuyetYKien vb={chon} nguoiDung={nguoiDung} chucVu={chucVu} currentRole={currentRole} danhSach={danhSach}
           onCapNhat={capNhat} onClose={() => setChonId(null)} />
       ) : (
         <ManKySoVanBan vb={chon} nguoiDung={nguoiDung} chucVu={chucVu} danhSach={danhSach}
@@ -2414,6 +2435,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
   vb: VanBanTrinh; nguoiDung: string; chucVu: string; danhSach: VanBanTrinh[];
   onCapNhat: (v: VanBanTrinh) => void; onClose: () => void;
 }) => {
+  const [showPheDuyetModal, setShowPheDuyetModal] = useState(false);
   const [tab, setTab] = useState<"ykien" | "thongtin">("ykien");
   const [yKien, setYKien] = useState("Lãnh đạo đề xuất ý kiến:");
   const [capTrinh, setCapTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.capTrinh ?? "");
@@ -2520,7 +2542,13 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
             <>
               <div className="border border-[#e5e5e5] rounded-[6px] overflow-hidden">
                 {/* Nút Xem diễn biến — luôn hiển thị, không kèm nội dung ý kiến đề xuất */}
-                <div className="px-4 py-3 flex items-center justify-end">
+                <div className="px-4 py-3 flex items-center justify-end gap-2">
+                  {laNguoiGiu && /tờ trình/i.test(vb.loaiVanBan) && (
+                    <button onClick={() => setShowPheDuyetModal(true)}
+                      className="h-[28px] px-2.5 border border-[#1a5a96] rounded-[4px] bg-white text-[12px] text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors flex items-center gap-1.5 font-medium">
+                      <List size={12} /> Kiểm tra danh sách đơn
+                    </button>
+                  )}
                   <button onClick={() => setXemDienBien(v => !v)}
                     className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline">
                     <History size={12} /> Xem diễn biến
@@ -2637,8 +2665,8 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                           {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
                           <button onClick={tuChoi}
                             title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
-                            className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors">
-                            <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
+                            className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors flex items-center gap-1.5">
+                            <Ban size={14} /> Từ chối
                           </button>
                           {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
                           <button onClick={() => luuVaKy(false)}
@@ -2761,6 +2789,16 @@ Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
           </div>
         </div>
       </div>
+      
+      {showPheDuyetModal && (
+        <PheDuyetToTrinhModal 
+          onClose={() => setShowPheDuyetModal(false)}
+          role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
+          danhSachDonBanDau={vb.donDinhKem.map(d => ({
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
+          }))}
+        />
+      )}
     </div>
   );
 };
@@ -2895,10 +2933,15 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
           <Clock size={12} className="mt-0.5 flex-shrink-0" />
           <span>
             Sắp theo <b>số</b>, không theo ngày ban hành — hệ quả bình thường của quy tắc
-            “một số duy nhất, không thu hồi”. Sổ bày ra thay vì giấu.
+            "một số duy nhất, không thu hồi". Sổ bày ra thay vì giấu.
           </span>
         </div>
       </div>
     </div>
   );
 };
+
+
+
+
+

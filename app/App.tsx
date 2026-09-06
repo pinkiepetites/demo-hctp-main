@@ -13558,6 +13558,35 @@ export default function App() {
   const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
   const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
 
+  // Lắng nghe sự kiện MO_CHI_TIET_DON từ các modal sâu (như PheDuyetToTrinhPhanCong)
+  useEffect(() => {
+    const handleMoChiTiet = (e: Event) => {
+      const maDon = (e as CustomEvent).detail;
+      setEditingRowId(maDon);
+      setView("form");
+      setIsLienThongMode(false);
+    };
+    window.addEventListener("MO_CHI_TIET_DON", handleMoChiTiet);
+    return () => window.removeEventListener("MO_CHI_TIET_DON", handleMoChiTiet);
+  }, []);
+
+  // Lắng nghe SYNC_VAN_BAN từ PheDuyetToTrinhPhanCong để cập nhật trạng thái tờ trình
+  // toTrinhBiTuChoi=true: tất cả đơn bị trả lại → tờ trình chuyển sang "BiTraLai"
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const { vanBanId, toTrinhBiTuChoi } = (e as CustomEvent).detail ?? {};
+      if (!vanBanId) return;
+      setVanBanList(prev => prev.map(vb => {
+        if (vb.id !== vanBanId) return vb;
+        return toTrinhBiTuChoi
+          ? { ...vb, trangThai: "BiTraLai" as const }
+          : vb; // trường hợp Chánh án: tờ trình giữ nguyên
+      }));
+    };
+    window.addEventListener("SYNC_VAN_BAN", handleSync);
+    return () => window.removeEventListener("SYNC_VAN_BAN", handleSync);
+  }, []);
+
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
   // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
   //   · Danh sách văn bản (cán bộ)

@@ -115,8 +115,6 @@ const DON_SAMPLE: DonTiepNhan[] = [
 
 const TRANG_THAI_META: Record<DonTrangThai, { label: string; cls: string }> = {
   "cho-phan-loai": { label: "Chờ phân công", cls: "bg-[#fff4db] text-[#8b5e00] border-[#f5c842]" },
-  "cho-phan-loai":  { label: "Đã phân công",  cls: "bg-info-container text-primary border-surface-variant" },
-  "cho-phan-loai":     { label: "Chờ xử lý",     cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]" },
   "tra-lai":       { label: "Trả lại",        cls: "bg-[#fdecea] text-error border-[#f5a3a3]" },
 };
 
