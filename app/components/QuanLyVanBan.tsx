@@ -628,6 +628,37 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
 
   // Trưởng phòng: CHỜ DUYỆT (bước 1 của luồng 3 bước)
   {
+    id: "vb-568",
+    trichYeu: "Tờ trình phân công thẩm phán giải quyết 08 đơn đề nghị giám đốc thẩm",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & DS",
+    soVanBan: "568/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "06/08/2026",
+    trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{
+      so: 1,
+      noiDung: `Kính trình phân công Thẩm phán giải quyết 08 đơn đề nghị giám đốc thẩm, tái thẩm.
+
+Danh sách đơn kèm theo gồm các đơn thuộc lĩnh vực dân sự, hình sự, hành chính và kinh doanh thương mại đã được rà soát điều kiện thụ lý.
+
+Đề xuất phân công Thẩm phán Nguyễn Văn Cường chủ trì giải quyết theo quy định.`,
+      nguoiSua: "Vũ Văn Yên", thoiGian: "06/08/2026 08:15",
+    }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:15", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Kính trình Trưởng phòng xem xét danh sách 08 đơn." },
+    ],
+    donDinhKem: [
+      { ma: "Mã 7045", nguoiGui: "TAND tỉnh Bắc Ninh", soBA: "03/2025/DS-ST", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7046", nguoiGui: "Nguyễn Thị Chín", soBA: "471/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7047", nguoiGui: "TAND cấp cao tại Hà Nội", soBA: "28/2025/DS-GĐT", hinhThuc: "CV kiến nghị GĐT, TT" },
+      { ma: "Mã 7048", nguoiGui: "Lê Thị Hồng", soBA: "185/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7049", nguoiGui: "Hoàng Thị Hương", soBA: "413/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7050", nguoiGui: "TAND tỉnh Hà Nam", soBA: "33/2024/KDTM-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7051", nguoiGui: "Phạm Văn Minh", soBA: "12/2025/HS-ST", hinhThuc: "Đơn đề nghị GĐT" },
+      { ma: "Mã 7052", nguoiGui: "TAND tỉnh Lạng Sơn", soBA: "07/2026/HC-PT", hinhThuc: "CV kiến nghị GĐT, TT" },
+    ],
+  },
+  {
     id: "vb-560",
     trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hình sự",
     loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & HS",
