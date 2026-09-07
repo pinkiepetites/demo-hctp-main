@@ -2459,6 +2459,11 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
 
   // Trưởng phòng chỉ thấy 2 nút (Phê duyệt + Từ chối); các cấp cao hơn thấy đủ 5 nút.
   const laTruongPhong = chucVu === "Trưởng phòng";
+  const laPhoChanhVanPhong = chucVu === "Phó Chánh văn phòng" || chucVu === "Phó chánh văn phòng";
+  const laChanhAn = chucVu === "Chánh án" || chucVu === "Phó Chánh án" || chucVu === "Phó chánh án";
+  const coQuyenKiemTraDanhSach = laNguoiGiu
+    && (laTruongPhong || laPhoChanhVanPhong || laChanhAn)
+    && laToTrinh(vb.loaiVanBan);
 
   // Ý kiến của người ở bước trước — cái mà lãnh đạo đang phải cho ý kiến tiếp
   const yKienTruoc = [...vb.lichSu].reverse().find(m => m.yKien?.trim());
@@ -2543,7 +2548,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
               <div className="border border-[#e5e5e5] rounded-[6px] overflow-hidden">
                 {/* Nút Xem diễn biến — luôn hiển thị, không kèm nội dung ý kiến đề xuất */}
                 <div className="px-4 py-3 flex items-center justify-end gap-2">
-                  {laNguoiGiu && /tờ trình/i.test(vb.loaiVanBan) && (
+                  {coQuyenKiemTraDanhSach && (
                     <button onClick={() => setShowPheDuyetModal(true)}
                       className="h-[28px] px-2.5 border border-[#1a5a96] rounded-[4px] bg-white text-[12px] text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors flex items-center gap-1.5 font-medium">
                       <List size={12} /> Kiểm tra danh sách đơn
@@ -2940,8 +2945,6 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
     </div>
   );
 };
-
-
 
 
 
