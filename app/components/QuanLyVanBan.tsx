@@ -100,7 +100,7 @@ export interface VanBanTrinh {
   phienBanHienTai: number;
   phienBan: PhienBan[];
   lichSu: MocLichSu[];
-  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string }[];
   yKienDangSoan?: string;
 }
 
@@ -1562,7 +1562,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
           vanBanId={vb.id}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
-            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu
           }))}
         />
       )}
@@ -2804,7 +2804,9 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                          <td className="border border-[#777] px-1 py-2">{d.nguoiGui}</td>
                          <td className="border border-[#777] px-1 py-2 text-center">1</td>
                          <td className="border border-[#777] px-1 py-2">Nguyễn Văn Cường</td>
-                         <td className="border border-[#777] px-1 py-2">{d.hinhThuc}</td>
+                         <td className="border border-[#777] px-1 py-2">
+                           {d.ghiChu || d.hinhThuc}
+                         </td>
                        </tr>
                      ))}
                    </tbody>
@@ -2851,7 +2853,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
           vanBanId={vb.id}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
-            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu
           }))}
         />
       )}

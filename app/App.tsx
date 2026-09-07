@@ -13579,11 +13579,12 @@ export default function App() {
       setVanBanList(prev => prev.map(vb => {
         if (vb.id !== vanBanId) return vb;
         const donDinhKem = Array.isArray(danhSachDon)
-          ? danhSachDon.map((don: { id: string; nguoiGui: string; soBA: string; hinhThuc: string }) => ({
+          ? danhSachDon.map((don: { id: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string }) => ({
               ma: don.id,
               nguoiGui: don.nguoiGui,
               soBA: don.soBA,
               hinhThuc: don.hinhThuc,
+              ghiChu: don.ghiChu,
             }))
           : vb.donDinhKem;
         return {
