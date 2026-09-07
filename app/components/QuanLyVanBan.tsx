@@ -387,6 +387,13 @@ const BtnOutline = ({ children, onClick }: any) => (
     {children}
   </button>
 );
+const NutKiemTraDanhSachDon = ({ onClick, compact = false }: { onClick: () => void; compact?: boolean }) => (
+  <button type="button" onClick={onClick}
+    className={`inline-flex items-center gap-1.5 border border-[#1a5a96] rounded-[4px] bg-white text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors font-medium
+      ${compact ? "h-[28px] px-2.5 text-[12px]" : "h-[28px] px-3 text-[12px]"}`}>
+    <List size={compact ? 12 : 13} /> Kiểm tra danh sách đơn
+  </button>
+);
 const BtnNeutral = ({ children, onClick }: any) => (
   <button type="button" onClick={onClick}
     className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-[#ccc] text-[#333] bg-white text-[12px] font-medium hover:bg-[#f5f5f5] transition-colors">
@@ -1372,7 +1379,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoDuyet": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnOutline onClick={() => setHopThoai("suaduyet")}><Pencil size={13} /> Sửa &amp; duyệt</BtnOutline>
@@ -1382,7 +1389,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoKy": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("kyso")}><PenLine size={13} /> Ký số</BtnPrimary>
@@ -1391,7 +1398,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoButPhe": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("butphe")}><PenLine size={13} /> Bút phê</BtnPrimary>
@@ -2597,10 +2604,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                 {/* Nút Xem diễn biến — luôn hiển thị, không kèm nội dung ý kiến đề xuất */}
                 <div className="px-4 py-3 flex items-center justify-end gap-2">
                   {coQuyenKiemTraDanhSach && (
-                    <button onClick={() => setShowPheDuyetModal(true)}
-                      className="h-[28px] px-2.5 border border-[#1a5a96] rounded-[4px] bg-white text-[12px] text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors flex items-center gap-1.5 font-medium">
-                      <List size={12} /> Kiểm tra danh sách đơn
-                    </button>
+                    <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} compact />
                   )}
                   <button onClick={() => setXemDienBien(v => !v)}
                     className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline">
