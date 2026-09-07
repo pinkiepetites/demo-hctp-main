@@ -2755,27 +2755,46 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
               {/* Đang chọn một danh sách đơn kèm theo ⇒ xem nội dung của danh sách
                   đó, không phải nội dung tờ trình. */}
               {donDangXem ? (
-                <>
-                  <div className="text-center text-[12px] text-[#666] mb-4">
-                    Danh sách đơn kèm theo — {donDangXem.ma}
-                  </div>
-                  <pre className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#222]"
-                    style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-{`Mục 1. Thông tin đơn
-Mã đơn: ${donDangXem.ma}
-Người gửi: ${donDangXem.nguoiGui}
-Số bản án/quyết định: ${donDangXem.soBA}
-Hình thức: ${donDangXem.hinhThuc}
-
-Mục 2. Nội dung
-Đơn nêu trên được lập danh sách kèm theo ${vb.loaiVanBan}
-số ${vb.soVanBan ?? "……"} để trình cấp có thẩm quyền xem xét.
-
-Mục 3. Kiến nghị
-Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
-                  </pre>
-                </>
-              ) : suaWord ? (
+               <div className="text-[#222]" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+                 <div className="grid grid-cols-2 text-center text-[11px] font-bold leading-tight mb-7">
+                   <div>TÒA ÁN NHÂN DÂN TỐI CAO<br /><span className="underline">VĂN PHÒNG</span></div>
+                   <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br /><span className="underline">Độc lập - Tự do - Hạnh phúc</span></div>
+                 </div>
+                 <div className="text-center text-[15px] font-bold leading-snug mb-1">
+                   Danh sách đơn đề nghị xem xét theo thủ tục<br />giám đốc thẩm, tái thẩm
+                 </div>
+                 <div className="text-center italic text-[11px] mb-5">
+                   (Kèm theo {vb.loaiVanBan.toLowerCase()} số {vb.soVanBan ?? "……"})
+                 </div>
+                 <table className="w-full border-collapse border border-[#555] text-[9px] leading-tight">
+                   <thead>
+                     <tr>
+                       {["TT", "Số thụ lý", "Ngày thụ lý", "Người đề nghị, kiến nghị, thông báo", "Địa chỉ", "Số BA/QĐ", "Ngày BA/QĐ", "Tòa án xét xử", "Số đơn", "Thẩm phán giải quyết", "Ghi chú"].map(h => (
+                         <th key={h} className="border border-[#777] px-1 py-1.5 text-center align-middle font-bold">{h}</th>
+                       ))}
+                     </tr>
+                   </thead>
+                   <tbody>
+                     {vb.donDinhKem.map((d, i) => (
+                       <tr key={d.ma}>
+                         <td className="border border-[#777] px-1 py-2 text-center">{i + 1}</td>
+                         <td className="border border-[#777] px-1 py-2 text-center">{d.ma.replace(/^Mã\s*/i, "")}</td>
+                         <td className="border border-[#777] px-1 py-2 text-center">10/08/2026</td>
+                         <td className="border border-[#777] px-1 py-2">{d.nguoiGui}</td>
+                         <td className="border border-[#777] px-1 py-2">—</td>
+                         <td className="border border-[#777] px-1 py-2">{d.soBA}</td>
+                         <td className="border border-[#777] px-1 py-2 text-center">—</td>
+                         <td className="border border-[#777] px-1 py-2">{d.nguoiGui}</td>
+                         <td className="border border-[#777] px-1 py-2 text-center">1</td>
+                         <td className="border border-[#777] px-1 py-2">Nguyễn Văn Cường</td>
+                         <td className="border border-[#777] px-1 py-2">{d.hinhThuc}</td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+                 <div className="text-right text-[10px] mt-5 italic">Hà Nội, ngày 13 tháng 8 năm 2026</div>
+               </div>
+             ) : suaWord ? (
                 <textarea value={noiDung} onChange={e => setNoiDung(e.target.value)} rows={26}
                   className="w-full text-[13px] leading-relaxed text-[#222] resize-none focus:outline-none"
                   style={{ fontFamily: "'Times New Roman', Times, serif" }} />
@@ -2786,8 +2805,22 @@ Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
                       Số: {vb.soVanBan}{vb.trangThaiSo === "tam" && <span className="ml-1 text-[#b45309]">(số tạm)</span>}
                     </div>
                   )}
-                  <pre className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#222]"
-                    style={{ fontFamily: "'Times New Roman', Times, serif" }}>{noiDung}</pre>
+                  <div className="text-[#222]" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+                    <div className="grid grid-cols-2 text-center text-[11px] font-bold leading-tight mb-7">
+                      <div>TÒA ÁN NHÂN DÂN TỐI CAO<br /><span className="underline">VĂN PHÒNG</span><br /><span className="font-normal">Số: {vb.soVanBan ?? "……"}</span></div>
+                      <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br /><span className="underline">Độc lập - Tự do - Hạnh phúc</span><br /><span className="font-normal italic">Hà Nội, ngày 13 tháng 8 năm 2026</span></div>
+                    </div>
+                    <div className="text-center text-[16px] font-bold mb-1">TỜ TRÌNH</div>
+                    <div className="text-center text-[12px] font-bold leading-snug mb-5">
+                      Về việc thụ lý đơn và phân công Thẩm phán giải quyết<br />
+                      đơn đề nghị xem xét lại quyết định, bản án đã có hiệu lực pháp luật
+                    </div>
+                    <pre className="whitespace-pre-wrap text-[13px] leading-relaxed text-[#222]">{noiDung}</pre>
+                    <div className="grid grid-cols-2 gap-5 mt-7 text-[11px] leading-relaxed">
+                      <div><b>Nơi nhận:</b><br />- Như kính trình;<br />- Lưu: PTĐC&XLĐ.</div>
+                      <div className="text-center font-bold">CHÁNH VĂN PHÒNG<br /><br /><br />Nguyễn Tường Linh</div>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
@@ -2945,6 +2978,5 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
     </div>
   );
 };
-
 
 
