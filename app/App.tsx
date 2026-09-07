@@ -13574,13 +13574,23 @@ export default function App() {
   // toTrinhBiTuChoi=true: tất cả đơn bị trả lại → tờ trình chuyển sang "BiTraLai"
   useEffect(() => {
     const handleSync = (e: Event) => {
-      const { vanBanId, toTrinhBiTuChoi } = (e as CustomEvent).detail ?? {};
+      const { vanBanId, toTrinhBiTuChoi, danhSachDon } = (e as CustomEvent).detail ?? {};
       if (!vanBanId) return;
       setVanBanList(prev => prev.map(vb => {
         if (vb.id !== vanBanId) return vb;
-        return toTrinhBiTuChoi
-          ? { ...vb, trangThai: "BiTraLai" as const }
-          : vb; // trường hợp Chánh án: tờ trình giữ nguyên
+        const donDinhKem = Array.isArray(danhSachDon)
+          ? danhSachDon.map((don: { id: string; nguoiGui: string; soBA: string; hinhThuc: string }) => ({
+              ma: don.id,
+              nguoiGui: don.nguoiGui,
+              soBA: don.soBA,
+              hinhThuc: don.hinhThuc,
+            }))
+          : vb.donDinhKem;
+        return {
+          ...vb,
+          ...(Array.isArray(danhSachDon) ? { donDinhKem } : {}),
+          ...(toTrinhBiTuChoi ? { trangThai: "BiTraLai" as const } : {}),
+        };
       }));
     };
     window.addEventListener("SYNC_VAN_BAN", handleSync);

@@ -102,10 +102,14 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
         alert(`Đã lưu! Tờ trình còn ${danhSachMoi.length} đơn (đã trả lại ${soTraLai} đơn).\nCác đơn trả lại cập nhật ngược về danh sách chờ của cán bộ.`);
       }
       // Dispatch để các màn khác (danh sách VB, PanelChiTiet) sync lại
-      window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", { detail: { vanBanId, toTrinhBiTuChoi, soConLai: danhSachMoi.length } }));
+      window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", {
+        detail: { vanBanId, toTrinhBiTuChoi, soConLai: danhSachMoi.length, danhSachDon: danhSachMoi },
+      }));
     } else {
       alert(`Đã lưu ý kiến Chánh án! Các ý kiến chỉ đạo đã được ghi nhận vào cột ghi chú.\nTrạng thái đơn sẽ được trả lại cán bộ nhưng Tờ trình vẫn giữ nguyên.`);
-      window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", { detail: { vanBanId, toTrinhBiTuChoi: false } }));
+      window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", {
+        detail: { vanBanId, toTrinhBiTuChoi: false, danhSachDon },
+      }));
     }
     onClose();
   };

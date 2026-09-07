@@ -101,6 +101,7 @@ export interface VanBanTrinh {
   phienBan: PhienBan[];
   lichSu: MocLichSu[];
   donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+  yKienDangSoan?: string;
 }
 
 // ─── Trường dẫn xuất & tiện ích ──────────────────────────────────────────────
@@ -1559,6 +1560,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
         <PheDuyetToTrinhModal 
           onClose={() => setShowPheDuyetModal(false)}
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
+          vanBanId={vb.id}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
           }))}
@@ -2437,7 +2439,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
 }) => {
   const [showPheDuyetModal, setShowPheDuyetModal] = useState(false);
   const [tab, setTab] = useState<"ykien" | "thongtin">("ykien");
-  const [yKien, setYKien] = useState("Lãnh đạo đề xuất ý kiến:");
+  const [yKien, setYKien] = useState(vb.yKienDangSoan ?? "Lãnh đạo đề xuất ý kiến:");
   const [capTrinh, setCapTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.capTrinh ?? "");
   const [nguoiTrinh, setNguoiTrinh] = useState(() => docGhiNhoTrinhTiep(vb.loaiVanBan)?.nguoiTrinh ?? "");
   const chonCapTrinh = (v: string) => { setCapTrinh(v); luuGhiNhoTrinhTiep(vb.loaiVanBan, { capTrinh: v, nguoiTrinh }); };
@@ -2475,12 +2477,27 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
   const thieuLyDoTuChoi = daBamTuChoi && !duLyDoTuChoi;
 
   const xong = (v: VanBanTrinh) => { onCapNhat(v); onClose(); };
+  const vbDaCapNhatTaiLieu = (): VanBanTrinh => {
+    if (!pbHienTai || (pbHienTai.noiDung === noiDung && vb.yKienDangSoan === yKien)) return vb;
+    return {
+      ...vb,
+      yKienDangSoan: yKien,
+      phienBan: vb.phienBan.map(pb => pb.so === pbHienTai.so
+        ? { ...pb, noiDung, nguoiSua: nguoiDung, thoiGian: bayGio() }
+        : pb),
+    };
+  };
+  const luuYKien = () => {
+    onCapNhat(vbDaCapNhatTaiLieu());
+    setBao("Đã lưu ý kiến và cập nhật tài liệu tờ trình.");
+  };
   const luuVaKy = (logic: boolean) => {
     const ghiChuY = yKien.trim();
     const ghi = ghiChuY ? (logic ? `${ghiChuY} (ký logic)` : ghiChuY) : undefined;
-    if (vb.trangThai === "ChoButPhe") return xong(apButPhe(vb, nguoiDung, chucVu, ghi ?? ""));
-    if (vb.trangThai === "ChoKy") return xong(apKySo(vb, nguoiDung, chucVu, danhSach));
-    xong(apDuyet(vb, nguoiDung, chucVu, ghi));
+    const vbMoi = vbDaCapNhatTaiLieu();
+    if (vb.trangThai === "ChoButPhe") return xong(apButPhe(vbMoi, nguoiDung, chucVu, ghi ?? ""));
+    if (vb.trangThai === "ChoKy") return xong(apKySo(vbMoi, nguoiDung, chucVu, danhSach));
+    xong(apDuyet(vbMoi, nguoiDung, chucVu, ghi));
   };
   const tuChoi = () => {
     setDaBamTuChoi(true);
@@ -2634,7 +2651,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                           : "border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]"}`}>
                         {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
                       </button>
-                      <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
+                      <button onClick={luuYKien}
                         className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
                         Lưu
                       </button>
@@ -2661,7 +2678,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                           : "border-[#ccc] bg-white text-[#333] hover:bg-[#f5f5f5]"}`}>
                         {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
                       </button>
-                      <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
+                      <button onClick={luuYKien}
                         className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
                         Lưu
                       </button>
@@ -2832,6 +2849,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
         <PheDuyetToTrinhModal 
           onClose={() => setShowPheDuyetModal(false)}
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
+          vanBanId={vb.id}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc
           }))}
@@ -2978,5 +2996,3 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
     </div>
   );
 };
-
-
