@@ -102,7 +102,9 @@ export interface VanBanTrinh {
   lichSu: MocLichSu[];
   donDinhKem: {
     ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
-    thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+    thamPhan?: string; ghiChuPhanCong?: string; ketLuan?: "xac_nhan" | "giai_quyet_sau";
+    trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
+    toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
   }[];
   yKienDangSoan?: string;
 }
@@ -1606,7 +1608,8 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
           yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
-            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, ketLuan: d.ketLuan, trangThaiXuly: d.trangThaiXuly,
+            toaAn: d.toaAn, ngayBA: d.ngayBA,
             thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />
@@ -2898,7 +2901,8 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
-            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, ketLuan: d.ketLuan, trangThaiXuly: d.trangThaiXuly,
+            toaAn: d.toaAn, ngayBA: d.ngayBA,
             thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />
