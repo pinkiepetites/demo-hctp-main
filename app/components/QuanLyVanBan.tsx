@@ -100,7 +100,10 @@ export interface VanBanTrinh {
   phienBanHienTai: number;
   phienBan: PhienBan[];
   lichSu: MocLichSu[];
-  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string }[];
+  donDinhKem: {
+    ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
+    thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+  }[];
   yKienDangSoan?: string;
 }
 
@@ -125,7 +128,10 @@ export const timVanBanTheoDon = (ds: VanBanTrinh[], maDon?: string): VanBanTrinh
   const chuan = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
   if (!maDon || !chuan(maDon)) return [];
   const k = chuan(maDon);
-  return ds.filter(v => v.trangThai !== "DaHuy" && v.donDinhKem.some(d => chuan(d.ma) === k));
+  // Tờ trình bị trả lại không còn khóa đơn: đơn có thể được đưa vào
+  // một tờ trình mới sau khi lãnh đạo chọn "Giải quyết sau".
+  return ds.filter(v => !["DaHuy", "BiTraLai"].includes(v.trangThai)
+    && v.donDinhKem.some(d => chuan(d.ma) === k));
 };
 
 /** Người đăng nhập suy ra từ widget "Vai trò" ở góc phải màn hình.
@@ -387,6 +393,13 @@ const BtnOutline = ({ children, onClick }: any) => (
     {children}
   </button>
 );
+const NutKiemTraDanhSachDon = ({ onClick, compact = false }: { onClick: () => void; compact?: boolean }) => (
+  <button type="button" onClick={onClick}
+    className={`inline-flex items-center gap-1.5 border border-[#1a5a96] rounded-[4px] bg-white text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors font-medium
+      ${compact ? "h-[28px] px-2.5 text-[12px]" : "h-[28px] px-3 text-[12px]"}`}>
+    <List size={compact ? 12 : 13} /> Kiểm tra danh sách đơn
+  </button>
+);
 const BtnNeutral = ({ children, onClick }: any) => (
   <button type="button" onClick={onClick}
     className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-[#ccc] text-[#333] bg-white text-[12px] font-medium hover:bg-[#f5f5f5] transition-colors">
@@ -627,6 +640,37 @@ export const DU_LIEU_MAU: VanBanTrinh[] = [
   //   Từ chối        — lịch sử có mốc TraLai của người đó
 
   // Trưởng phòng: CHỜ DUYỆT (bước 1 của luồng 3 bước)
+  {
+    id: "vb-568",
+    trichYeu: "Tờ trình phân công thẩm phán giải quyết 08 đơn đề nghị giám đốc thẩm",
+    loaiVanBan: "Tờ trình phân công", donViSoanThao: "Vụ GĐKT & DS",
+    soVanBan: "568/2026/TTr-TANDTC-VP", trangThaiSo: "tam", ngayCapSo: "06/08/2026",
+    trangThai: "ChoDuyet", nguoiTao: "Vũ Văn Yên",
+    luongKy: luongToTrinhPhanCong(), buocHienTai: 0, vongTrinh: 1, phienBanHienTai: 1,
+    phienBan: [{
+      so: 1,
+      noiDung: `Kính trình phân công Thẩm phán giải quyết 08 đơn đề nghị giám đốc thẩm, tái thẩm.
+
+Danh sách đơn kèm theo gồm các đơn thuộc lĩnh vực dân sự, hình sự, hành chính và kinh doanh thương mại đã được rà soát điều kiện thụ lý.
+
+Đề xuất phân công Thẩm phán Nguyễn Văn Cường chủ trì giải quyết theo quy định.`,
+      nguoiSua: "Vũ Văn Yên", thoiGian: "06/08/2026 08:15",
+    }],
+    lichSu: [
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:15", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 },
+      { vongTrinh: 1, thoiGian: "06/08/2026 08:30", nguoi: "Vũ Văn Yên", chucVu: "Cán bộ", hanhDong: "Trinh", yKien: "Kính trình Trưởng phòng xem xét danh sách 08 đơn." },
+    ],
+    donDinhKem: [
+      { ma: "Mã 7045", nguoiGui: "TAND tỉnh Bắc Ninh", soBA: "03/2025/DS-ST", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7046", nguoiGui: "Nguyễn Thị Chín", soBA: "471/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7047", nguoiGui: "TAND cấp cao tại Hà Nội", soBA: "28/2025/DS-GĐT", hinhThuc: "CV kiến nghị GĐT, TT" },
+      { ma: "Mã 7048", nguoiGui: "Lê Thị Hồng", soBA: "185/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7049", nguoiGui: "Hoàng Thị Hương", soBA: "413/2026/DS-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7050", nguoiGui: "TAND tỉnh Hà Nam", soBA: "33/2024/KDTM-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+      { ma: "Mã 7051", nguoiGui: "Phạm Văn Minh", soBA: "12/2025/HS-ST", hinhThuc: "Đơn đề nghị GĐT" },
+      { ma: "Mã 7052", nguoiGui: "TAND tỉnh Lạng Sơn", soBA: "07/2026/HC-PT", hinhThuc: "CV kiến nghị GĐT, TT" },
+    ],
+  },
   {
     id: "vb-560",
     trichYeu: "Tờ trình phân công thẩm phán – Vụ Giám đốc kiểm tra về hình sự",
@@ -1341,7 +1385,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoDuyet": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnOutline onClick={() => setHopThoai("suaduyet")}><Pencil size={13} /> Sửa &amp; duyệt</BtnOutline>
@@ -1351,7 +1395,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoKy": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("kyso")}><PenLine size={13} /> Ký số</BtnPrimary>
@@ -1360,7 +1404,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
       case "ChoButPhe": return (
         <>
           {/tờ trình/i.test(vb.loaiVanBan) && (
-            <BtnOutline onClick={() => setShowPheDuyetModal(true)}><List size={13} /> Kiểm tra danh sách đơn</BtnOutline>
+            <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} />
           )}
           <BtnOutline onClick={() => setHopThoai("tralai")}><Ban size={13} /> Trả lại</BtnOutline>
           <BtnPrimary onClick={() => setHopThoai("butphe")}><PenLine size={13} /> Bút phê</BtnPrimary>
@@ -1561,8 +1605,12 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
           onClose={() => setShowPheDuyetModal(false)}
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
           vanBanId={vb.id}
+          chucVuNguoiLuu={chucVu}
+          yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
-            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />
       )}
@@ -2566,10 +2614,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                 {/* Nút Xem diễn biến — luôn hiển thị, không kèm nội dung ý kiến đề xuất */}
                 <div className="px-4 py-3 flex items-center justify-end gap-2">
                   {coQuyenKiemTraDanhSach && (
-                    <button onClick={() => setShowPheDuyetModal(true)}
-                      className="h-[28px] px-2.5 border border-[#1a5a96] rounded-[4px] bg-white text-[12px] text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors flex items-center gap-1.5 font-medium">
-                      <List size={12} /> Kiểm tra danh sách đơn
-                    </button>
+                    <NutKiemTraDanhSachDon onClick={() => setShowPheDuyetModal(true)} compact />
                   )}
                   <button onClick={() => setXemDienBien(v => !v)}
                     className="flex items-center gap-1 text-[12px] text-[#1a5a96] hover:underline">
@@ -2803,7 +2848,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                          <td className="border border-[#777] px-1 py-2 text-center">—</td>
                          <td className="border border-[#777] px-1 py-2">{d.nguoiGui}</td>
                          <td className="border border-[#777] px-1 py-2 text-center">1</td>
-                         <td className="border border-[#777] px-1 py-2">Nguyễn Văn Cường</td>
+                         <td className="border border-[#777] px-1 py-2">{d.thamPhan || "Chưa phân công"}</td>
                          <td className="border border-[#777] px-1 py-2">
                            {d.ghiChu || d.hinhThuc}
                          </td>
@@ -2852,8 +2897,12 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           onClose={() => setShowPheDuyetModal(false)}
           role={["Chánh án","Phó Chánh án","Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
           vanBanId={vb.id}
+          chucVuNguoiLuu={chucVu}
+          yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
-            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu
+            id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />
       )}

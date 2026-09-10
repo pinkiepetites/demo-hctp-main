@@ -44,7 +44,11 @@ export interface KetQuaTrinhDuyet {
    *  ý kiến của người trình, ghi vào lịch sử tại mốc "Trình duyệt". */
   yKienTrinh?: string;
   soVanBan?: string;   // có nếu cán bộ đã bấm "Lấy số tạm"
-  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+  donDinhKem: {
+    ma: string; nguoiGui: string; soBA: string; hinhThuc: string;
+    thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string;
+    thuTuc?: string; diaChi?: string;
+  }[];
 }
 
 interface DocumentNumberingModalProps {
@@ -74,6 +78,16 @@ const DOC_TYPES = [
   "Tờ trình khác", 
   "Thông báo phân công TP", 
   "Yêu cầu bổ sung"
+];
+
+// Khi lập tờ trình từ đơn chưa có dữ liệu phân công, hệ thống vẫn phải tạo
+// một thẩm phán ban đầu để Chánh án có thể thực hiện thao tác thay thế.
+const THAM_PHAN_BAN_DAU = [
+  "Nguyễn Thị Lan",
+  "Trần Văn Hùng",
+  "Lê Thị Mai",
+  "Phạm Văn Đức",
+  "Hoàng Thị Thu",
 ];
 
 const INITIAL_TREE_DATA: DocNode[] = [
@@ -1820,6 +1834,20 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
   // Trình duyệt luôn, thay vì để cán bộ bấm rồi mới báo lỗi.
   const khongCoVanBanHopLe = treeData.filter(n => n.isValid !== false).length === 0;
 
+  const taoDonDinhKem = () => (selectedRows ?? []).map((r: any, index) => ({
+    ma: r?.maDon ?? String(r?.id ?? "—"),
+    nguoiGui: r?.nguoiGui ?? "—",
+    soBA: r?.thongTinDon?.soBaqd ?? "—",
+    hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
+    thamPhan: r?.thongTinDon?.thamPhan?.trim() || r?.thamPhan?.trim()
+      || THAM_PHAN_BAN_DAU[index % THAM_PHAN_BAN_DAU.length],
+    ghiChuPhanCong: r?.thongTinDon?.ghiChuPhanCong,
+    toaAn: r?.thongTinDon?.toaXetXu,
+    ngayBA: r?.thongTinDon?.ngay,
+    thuTuc: r?.thongTinDon?.thuTuc,
+    diaChi: r?.diaChi,
+  }));
+
   // Dựng cây tài liệu — MỘT luồng dùng chung cho MỌI loại văn bản.
   //   Mặc định 3 tầng: Văn bản (mỗi đơn vị chuyển đến 1 bản)
   //                    → Danh sách đơn (mỗi thẩm phán, tách theo hình thức phân công)
@@ -2296,12 +2324,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                         noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
                         yKienTrinh: yKienDuyet.trim() || undefined,
                         soVanBan: goc?.soVanBan,
-                        donDinhKem: (selectedRows ?? []).map((r: any) => ({
-                          ma: r?.maDon ?? String(r?.id ?? "—"),
-                          nguoiGui: r?.nguoiGui ?? "—",
-                          soBA: r?.thongTinDon?.soBaqd ?? "—",
-                          hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
-                        })),
+                        donDinhKem: taoDonDinhKem(),
                       });
                       setDaTrinhDuyet(true); // Có thể hiện popup báo lưu nháp thành công
                     }}
@@ -2333,12 +2356,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                       noiDung: `${docType}\n\nKèm theo ${(selectedRows ?? []).length} đơn nêu tại Danh sách đơn của ${docType} này.`,
                       yKienTrinh: yKienDuyet.trim() || undefined,
                       soVanBan: goc?.soVanBan,
-                      donDinhKem: (selectedRows ?? []).map((r: any) => ({
-                        ma: r?.maDon ?? String(r?.id ?? "—"),
-                        nguoiGui: r?.nguoiGui ?? "—",
-                        soBA: r?.thongTinDon?.soBaqd ?? "—",
-                        hinhThuc: r?.thongTinDon?.hinhThuc ?? r?.loaiHinhThuc ?? "—",
-                      })),
+                      donDinhKem: taoDonDinhKem(),
                     });
                     setDaTrinhDuyet(true);
                   }}
