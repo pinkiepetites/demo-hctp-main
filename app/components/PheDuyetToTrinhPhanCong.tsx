@@ -26,7 +26,6 @@ interface DonThu {
   thamPhan?: string;
   ghiChuPhanCong?: string;
   trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
-  ketLuan?: "xac_nhan" | "giai_quyet_sau";
 }
 
 interface PheDuyetToTrinhModalProps {
@@ -92,7 +91,6 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
   // State cho Modal "Trả lại" (TP/CVP) hoặc "Cho ý kiến" (Chánh án)
   const [modalLyDo, setModalLyDo] = useState<{ idDon: string; type: "tra_lai" | "cho_y_kien" } | null>(null);
-  const [ketLuanChoYKien, setKetLuanChoYKien] = useState<"xac_nhan" | "giai_quyet_sau">("xac_nhan");
   const [lyDoText, setLyDoText] = useState("");
 
   const handleXacNhanLyDo = () => {
@@ -103,28 +101,32 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
         : "Vui lòng nhập nội dung ý kiến.");
       return;
     }
-    const ketLuan = modalLyDo.type === "cho_y_kien" ? ketLuanChoYKien : undefined;
     setDanhSachDon(prev => prev.map(don => {
       if (don.id === modalLyDo.idDon) {
         if (modalLyDo.type === "tra_lai") {
           return { ...don, trangThaiXuly: "tra_lai", ghiChu: lyDoText };
         } else {
-          const ghiChu = ketLuan === "giai_quyet_sau"
-            ? `${lyDoText}\nGiải quyết sau — Thụ lý mới; Tờ trình bị trả lại.`
-            : lyDoText;
-          return {
-            ...don,
-            ghiChu,
-            ketLuan,
-            trangThaiXuly: ketLuan === "giai_quyet_sau" ? "giai_quyet_sau" : "binh_thuong",
-          };
+          return { ...don, ghiChu: lyDoText };
         }
       }
       return don;
     }));
     setModalLyDo(null);
     setLyDoText("");
-    setKetLuanChoYKien("xac_nhan");
+  };
+
+  const handleGiaiQuyetSau = () => {
+    if (!modalLyDo || modalLyDo.type !== "cho_y_kien") return;
+    if (!lyDoText.trim()) {
+      setValidationError("Vui lòng nhập nội dung ý kiến.");
+      return;
+    }
+    setDanhSachDon(prev => prev.map(don => don.id === modalLyDo.idDon
+      ? { ...don, trangThaiXuly: "giai_quyet_sau", ghiChu: lyDoText }
+      : don));
+    setModalLyDo(null);
+    setLyDoText("");
+    setValidationError("");
   };
 
   const openAssignmentEditor = (don: DonThu) => {
@@ -189,15 +191,12 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
         detail: { vanBanId, toTrinhBiTuChoi, soConLai: danhSachMoi.length, danhSachDon: danhSachMoi, assignments: Object.fromEntries(danhSachMoi.map(d => [d.id, d.thamPhan || ""])) },
       }));
     } else {
-      alert(`Đã lưu ý kiến Chánh án! Các ý kiến chỉ đạo đã được ghi nhận vào cột ghi chú.\nTrạng thái đơn sẽ được trả lại cán bộ nhưng Tờ trình vẫn giữ nguyên.`);
+      const coDonGiaiQuyetSau = danhSachDaGanGhiChu.some(d => d.trangThaiXuly === "giai_quyet_sau");
+      alert(coDonGiaiQuyetSau
+        ? "Đã ghi nhận ý kiến. Đơn được đánh dấu Thụ lý mới và Tờ trình bị trả lại."
+        : "Đã lưu ý kiến Chánh án! Ý kiến chỉ được ghi nhận vào cột ghi chú.");
       window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", {
-       detail: {
-         vanBanId,
-         toTrinhBiTuChoi: danhSachDaGanGhiChu.some(d => d.ketLuan === "giai_quyet_sau"),
-         danhSachDon: danhSachDaGanGhiChu,
-         assignments: Object.fromEntries(danhSachDaGanGhiChu.map(d => [d.id, d.thamPhan || ""])),
-         opinion: yKien,
-       },
+       detail: { vanBanId, toTrinhBiTuChoi: coDonGiaiQuyetSau, danhSachDon: danhSachDaGanGhiChu, assignments: Object.fromEntries(danhSachDaGanGhiChu.map(d => [d.id, d.thamPhan || ""])), opinion: yKien },
       }));
     }
     onClose();
@@ -432,20 +431,6 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
               <label className="block text-[13px] font-medium text-[#333] mb-2">
                 {modalLyDo.type === "tra_lai" ? "Lý do trả lại (bắt buộc)" : "Nội dung ý kiến chỉ đạo"}
               </label>
-              {modalLyDo.type === "cho_y_kien" && (
-                <div className="flex items-center gap-4 mb-3">
-                  {([
-                    ["xac_nhan", "Xác nhận"],
-                    ["giai_quyet_sau", "Giải quyết sau"],
-                  ] as const).map(([value, label]) => (
-                    <label key={value} className="flex items-center gap-1.5 text-[12px] cursor-pointer">
-                      <input type="radio" name="ket-luan-cho-y-kien" checked={ketLuanChoYKien === value}
-                        onChange={() => setKetLuanChoYKien(value)} className="accent-[#8b1a1a]" />
-                      <span className={ketLuanChoYKien === value ? "font-semibold text-[#8b1a1a]" : ""}>{label}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
               <textarea 
                 className="w-full border border-[#ccc] rounded-[3px] p-2.5 text-[13px] focus:outline-none focus:border-[#1a73e8] resize-none" 
                 rows={4}
@@ -456,8 +441,13 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
               />
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
                 <button onClick={() => setModalLyDo(null)} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
+                {modalLyDo.type === "cho_y_kien" && (
+                  <button onClick={handleGiaiQuyetSau} className="px-4 py-[5px] border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[13px] font-medium hover:bg-[#eaf4ff]">
+                    Giải quyết sau
+                  </button>
+                )}
                 <button onClick={handleXacNhanLyDo} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">
-                  {modalLyDo.type === "cho_y_kien" && ketLuanChoYKien === "giai_quyet_sau" ? "Giải quyết sau" : "Xác nhận"}
+                  Xác nhận
                 </button>
               </div>
             </div>

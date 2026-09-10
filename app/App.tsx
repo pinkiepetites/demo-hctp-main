@@ -8374,15 +8374,13 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
       setRows(prev => prev.map(row => {
         const don = danhSachDon.find((item: { id?: string }) => item.id?.trim() === row.maDon.trim());
         if (!don) return row;
-        const giaiQuyetSau = don.trangThaiXuly === "giai_quyet_sau";
         return {
           ...row,
           thongTinDon: { ...row.thongTinDon, thamPhan: don.thamPhan || row.thongTinDon.thamPhan },
           ghiChu: don.ghiChu ?? row.ghiChu,
-          ...(giaiQuyetSau ? {
-            giaiQuyet: { ...row.giaiQuyet, nhan: "Thụ lý mới", color: "#27ae60" },
-            toTrinhStatus: "none" as const,
-          } : {}),
+          ...(don.trangThaiXuly === "giai_quyet_sau"
+            ? { giaiQuyet: { ...row.giaiQuyet, nhan: "Thụ lý mới", color: "#27ae60" } }
+            : {}),
         };
       }));
     };
@@ -13603,9 +13601,7 @@ export default function App() {
         const donDinhKem = Array.isArray(danhSachDon)
           ? danhSachDon.map((don: {
               id: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
-              thamPhan?: string; ghiChuPhanCong?: string; ketLuan?: "xac_nhan" | "giai_quyet_sau";
-              trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
-              toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+              thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
             }) => ({
               ma: don.id,
               nguoiGui: don.nguoiGui,
@@ -13614,8 +13610,6 @@ export default function App() {
               ghiChu: don.ghiChu,
               thamPhan: don.thamPhan,
               ghiChuPhanCong: don.ghiChuPhanCong,
-              ketLuan: don.ketLuan,
-              trangThaiXuly: don.trangThaiXuly,
               toaAn: don.toaAn,
               ngayBA: don.ngayBA,
               thuTuc: don.thuTuc,
