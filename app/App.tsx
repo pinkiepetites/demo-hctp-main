@@ -8367,6 +8367,23 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
   const OFFICERS = ["Nguyễn Văn An", "Trần Thị Bình", "Lê Thị Hà", "Phạm Văn Đức", "Hoàng Thị Thu"];
   const [rows, setRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+  useEffect(() => {
+    const handleSync = (e: Event) => {
+      const { danhSachDon } = (e as CustomEvent).detail ?? {};
+      if (!Array.isArray(danhSachDon)) return;
+      setRows(prev => prev.map(row => {
+        const don = danhSachDon.find((item: { id?: string }) => item.id?.trim() === row.maDon.trim());
+        if (!don) return row;
+        return {
+          ...row,
+          thongTinDon: { ...row.thongTinDon, thamPhan: don.thamPhan || row.thongTinDon.thamPhan },
+          ghiChu: don.ghiChu ?? row.ghiChu,
+        };
+      }));
+    };
+    window.addEventListener("SYNC_VAN_BAN", handleSync);
+    return () => window.removeEventListener("SYNC_VAN_BAN", handleSync);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -13574,25 +13591,36 @@ export default function App() {
   // toTrinhBiTuChoi=true: tất cả đơn bị trả lại → tờ trình chuyển sang "BiTraLai"
   useEffect(() => {
     const handleSync = (e: Event) => {
-      const { vanBanId, toTrinhBiTuChoi, danhSachDon } = (e as CustomEvent).detail ?? {};
+      const { vanBanId, toTrinhBiTuChoi, danhSachDon, opinion } = (e as CustomEvent).detail ?? {};
       if (!vanBanId) return;
       setVanBanList(prev => prev.map(vb => {
         if (vb.id !== vanBanId) return vb;
         const donDinhKem = Array.isArray(danhSachDon)
-          ? danhSachDon.map((don: { id: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string }) => ({
+          ? danhSachDon.map((don: {
+              id: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
+              thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+            }) => ({
               ma: don.id,
               nguoiGui: don.nguoiGui,
               soBA: don.soBA,
               hinhThuc: don.hinhThuc,
               ghiChu: don.ghiChu,
+              thamPhan: don.thamPhan,
+              ghiChuPhanCong: don.ghiChuPhanCong,
+              toaAn: don.toaAn,
+              ngayBA: don.ngayBA,
+              thuTuc: don.thuTuc,
+              diaChi: don.diaChi,
             }))
           : vb.donDinhKem;
         return {
           ...vb,
           ...(Array.isArray(danhSachDon) ? { donDinhKem } : {}),
+          ...(typeof opinion === "string" ? { yKienDangSoan: opinion } : {}),
           ...(toTrinhBiTuChoi ? { trangThai: "BiTraLai" as const } : {}),
         };
       }));
+      triggerNoti("Đã đồng bộ phân công thẩm phán và ý kiến thành công.");
     };
     window.addEventListener("SYNC_VAN_BAN", handleSync);
     return () => window.removeEventListener("SYNC_VAN_BAN", handleSync);

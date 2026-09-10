@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Pencil, Ban, Check, MessageSquare, Save } from "lucide-react";
+import { X, Pencil, Ban, Check, MessageSquare, Save, UserRound, AlertCircle } from "lucide-react";
 
 // GHI CHÚ CHO DEV:
 // Modal này bật lên khi Trưởng phòng/Chánh án ấn "Kiểm tra danh sách đơn" trong màn hình chi tiết Tờ trình.
@@ -23,6 +23,8 @@ interface DonThu {
   thuTuc?: string;
   diaChi?: string;
   ghiChu?: string;
+  thamPhan?: string;
+  ghiChuPhanCong?: string;
   trangThaiXuly?: "tra_lai" | "binh_thuong";
 }
 
@@ -31,7 +33,14 @@ interface PheDuyetToTrinhModalProps {
   role: "truong_phong" | "chanh_an"; // "truong_phong" đại diện cho cả Phó CVP
   danhSachDonBanDau?: DonThu[];
   vanBanId?: string; // ID tờ trình — dùng để dispatch SYNC_VAN_BAN sau khi lưu
+  chucVuNguoiLuu?: string;
+  yKienBanDau?: string;
 }
+
+const THAM_PHAN_OPTIONS = [
+  "Nguyễn Thị Lan", "Trần Văn Hùng", "Lê Thị Mai", "Phạm Văn Đức", "Hoàng Thị Thu",
+];
+const OPINION_SHORTCUT = "Xem xét nghiên cứu, giải quyết sau";
 
 const DULIEU_MAU: DonThu[] = [
   {
@@ -66,8 +75,14 @@ const DULIEU_MAU: DonThu[] = [
   },
 ];
 
-export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau, vanBanId }: PheDuyetToTrinhModalProps) {
-  const [danhSachDon, setDanhSachDon] = useState<DonThu[]>(danhSachDonBanDau || DULIEU_MAU);
+export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau, vanBanId, chucVuNguoiLuu = "Phó Chánh án", yKienBanDau = "" }: PheDuyetToTrinhModalProps) {
+  const [danhSachDon, setDanhSachDon] = useState<DonThu[]>(() => (danhSachDonBanDau || DULIEU_MAU).map(d => ({
+    ...d, thamPhan: d.thamPhan || "",
+  })));
+  const [editingAssignment, setEditingAssignment] = useState<string | null>(null);
+  const [assignmentDraft, setAssignmentDraft] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [yKien, setYKien] = useState(yKienBanDau);
 
   // State cho Modal "Trả lại" (TP/CVP) hoặc "Cho ý kiến" (Chánh án)
   const [modalLyDo, setModalLyDo] = useState<{ idDon: string; type: "tra_lai" | "cho_y_kien" } | null>(null);
@@ -75,6 +90,12 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
   const handleXacNhanLyDo = () => {
     if (!modalLyDo) return;
+    if (!lyDoText.trim()) {
+      setValidationError(modalLyDo.type === "tra_lai"
+        ? "Vui lòng nhập lý do trả lại."
+        : "Vui lòng nhập nội dung ý kiến.");
+      return;
+    }
     setDanhSachDon(prev => prev.map(don => {
       if (don.id === modalLyDo.idDon) {
         if (modalLyDo.type === "tra_lai") {
@@ -89,10 +110,51 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
     setLyDoText("");
   };
 
+  const openAssignmentEditor = (don: DonThu) => {
+    setValidationError("");
+    setAssignmentDraft(don.thamPhan || "");
+    setEditingAssignment(don.id);
+  };
+
+  const cancelAssignmentEditor = () => {
+    setEditingAssignment(null);
+    setAssignmentDraft("");
+  };
+
+  const saveAssignmentEditor = () => {
+    if (!editingAssignment) return;
+    if (!assignmentDraft.trim()) {
+      setValidationError(`Vui lòng chọn thẩm phán cho đơn ${editingAssignment}.`);
+      return;
+    }
+    setDanhSachDon(prev => prev.map(don => don.id === editingAssignment
+      ? { ...don, thamPhan: assignmentDraft.trim() }
+      : don));
+    cancelAssignmentEditor();
+  };
+
   const handleLuuToTrinh = () => {
+    if (role === "chanh_an") {
+      const missing = danhSachDon.find(d => d.trangThaiXuly !== "tra_lai" && !d.thamPhan?.trim());
+      if (missing) {
+        setValidationError(`Vui lòng chọn thẩm phán cho đơn ${missing.id}.`);
+        return;
+      }
+    }
+    const danhSachDaGanGhiChu = danhSachDon.map(don => {
+      const original = (danhSachDonBanDau || []).find(d => d.id === don.id);
+      const changed = role === "chanh_an" && don.thamPhan && don.thamPhan !== (original?.thamPhan || "");
+      if (!changed) return don;
+      const note = `${chucVuNguoiLuu} chỉ định thẩm phán.`;
+      return {
+        ...don,
+        ghiChu: don.ghiChu?.includes(note) ? don.ghiChu : [don.ghiChu, note].filter(Boolean).join("\n"),
+        ghiChuPhanCong: note,
+      };
+    });
     if (role === "truong_phong") {
-      const danhSachMoi = danhSachDon.filter(d => d.trangThaiXuly !== "tra_lai");
-      const soTraLai = danhSachDon.length - danhSachMoi.length;
+      const danhSachMoi = danhSachDaGanGhiChu.filter(d => d.trangThaiXuly !== "tra_lai");
+      const soTraLai = danhSachDaGanGhiChu.length - danhSachMoi.length;
       // EDGE CASE: nếu trả lại hết → tờ trình coi như bị từ chối
       // Backend cần đổi trangThai của Tờ trình từ ChoDuyet sang BiTraLai
       const toTrinhBiTuChoi = danhSachMoi.length === 0;
@@ -103,12 +165,12 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
       }
       // Dispatch để các màn khác (danh sách VB, PanelChiTiet) sync lại
       window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", {
-        detail: { vanBanId, toTrinhBiTuChoi, soConLai: danhSachMoi.length, danhSachDon: danhSachMoi },
+        detail: { vanBanId, toTrinhBiTuChoi, soConLai: danhSachMoi.length, danhSachDon: danhSachMoi, assignments: Object.fromEntries(danhSachMoi.map(d => [d.id, d.thamPhan || ""])) },
       }));
     } else {
       alert(`Đã lưu ý kiến Chánh án! Các ý kiến chỉ đạo đã được ghi nhận vào cột ghi chú.\nTrạng thái đơn sẽ được trả lại cán bộ nhưng Tờ trình vẫn giữ nguyên.`);
       window.dispatchEvent(new CustomEvent("SYNC_VAN_BAN", {
-        detail: { vanBanId, toTrinhBiTuChoi: false, danhSachDon },
+       detail: { vanBanId, toTrinhBiTuChoi: false, danhSachDon: danhSachDaGanGhiChu, assignments: Object.fromEntries(danhSachDaGanGhiChu.map(d => [d.id, d.thamPhan || ""])), opinion: yKien },
       }));
     }
     onClose();
@@ -172,6 +234,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                           <div><span className="text-[#666]">Tòa án: </span><span className="font-medium text-[#222]">{don.toaAn || don.nguoiGui}</span></div>
                           <div><span className="text-[#666]">Số BA/QĐ: </span><span>{don.soBA}</span></div>
                           <div><span className="text-[#666]">Ngày BA/QĐ: </span><span>{don.ngayBA || "—"}</span></div>
+                          <div className="flex items-center gap-1"><UserRound size={12} className="text-[#666]" /><span className="text-[#666]">Thẩm phán: </span><span className="font-medium">{don.thamPhan || "Chưa phân công"}</span></div>
                         </div>
                       </div>
                     </td>
@@ -206,6 +269,12 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                       {biTraLai && <div className="text-[#8b1a1a] text-[11px] mt-1 font-bold">(Đánh dấu sẽ bị trả lại)</div>}
                     </td>
                     <td className="border border-[#ddd] px-3 py-2 text-center align-top">
+                      {!biTraLai && role === "chanh_an" && (
+                        <button onClick={() => openAssignmentEditor(don)}
+                          className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#e8f4ff]">
+                          <Pencil size={13} /> Đổi thẩm phán
+                        </button>
+                      )}
                       {!biTraLai && role === "truong_phong" && (
                         <div className="flex justify-center gap-2">
                           <button 
@@ -256,7 +325,47 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
             {role === "truong_phong" ? "Lưu & Cập nhật Tờ trình" : "Lưu ý kiến"}
           </button>
         </div>
+        {role === "chanh_an" && (
+          <div className="border-t border-[#ddd] px-4 py-3 bg-white">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[13px] font-medium text-[#333]">Ý kiến Chánh án</label>
+              <button onClick={() => setYKien(OPINION_SHORTCUT)} className="text-[11px] text-[#1a5a96] hover:underline">Điền ý kiến mẫu</button>
+            </div>
+            <textarea value={yKien} onChange={e => setYKien(e.target.value)} rows={2}
+              className="w-full border border-[#ccc] rounded-[3px] p-2 text-[13px] focus:outline-none focus:border-[#1a73e8] resize-none"
+              placeholder="Nhập ý kiến..." />
+          </div>
+        )}
       </div>
+
+      {validationError && (
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[150] bg-[#fde8e8] text-[#8b1a1a] border border-[#f5b7b7] rounded px-4 py-2 text-[13px] shadow-lg flex items-center gap-2">
+          <AlertCircle size={15} /> {validationError}
+        </div>
+      )}
+
+      {editingAssignment && (
+        <div className="fixed inset-0 bg-black/40 z-[140] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[4px] w-[500px] shadow-2xl border border-[#bbb]">
+            <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex justify-between items-center rounded-t-[4px]">
+              <span className="text-[14px] font-semibold">Điều chỉnh thẩm phán — {editingAssignment}</span>
+              <button onClick={cancelAssignmentEditor} className="text-white/70 hover:text-white"><X size={16} /></button>
+            </div>
+            <div className="p-4">
+              <label className="block text-[13px] font-medium text-[#333] mb-2">Thẩm phán hiện tại / thay thế</label>
+              <select value={assignmentDraft} onChange={e => { setAssignmentDraft(e.target.value); setValidationError(""); }}
+                className="w-full border border-[#ccc] rounded-[3px] p-2 text-[13px] bg-white">
+                <option value="">-- Chọn thẩm phán --</option>
+                {Array.from(new Set([assignmentDraft, ...THAM_PHAN_OPTIONS].filter(Boolean))).map(tp => <option key={tp} value={tp}>{tp}</option>)}
+              </select>
+              <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
+                <button onClick={cancelAssignmentEditor} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
+                <button onClick={saveAssignmentEditor} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">Lưu thay đổi</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* LỚP MODAL CON: TRẢ LẠI / CHO Ý KIẾN */}
       {modalLyDo && (
