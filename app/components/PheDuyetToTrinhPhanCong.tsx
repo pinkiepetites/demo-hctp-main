@@ -37,8 +37,25 @@ interface PheDuyetToTrinhModalProps {
   yKienBanDau?: string;
 }
 
+// Danh mục thẩm phán dùng cho thao tác chỉ định tại màn kiểm tra danh sách đơn.
+// Giữ cả các thẩm phán đang xuất hiện trong dữ liệu tờ trình cũ để khi mở lại
+// bản ghi, giá trị hiện tại luôn được giữ trong danh sách chọn.
 const THAM_PHAN_OPTIONS = [
-  "Nguyễn Thị Lan", "Trần Văn Hùng", "Lê Thị Mai", "Phạm Văn Đức", "Hoàng Thị Thu",
+  "Nguyễn Văn Hiền (Thẩm phán TAND bậc 3)",
+  "Nguyễn Như Thắng (Thẩm phán TAND bậc 3)",
+  "Trần Văn Bình (Thẩm phán TAND bậc 2)",
+  "Nguyễn Văn Hùng (Thẩm phán TAND bậc 3)",
+  "Nguyễn Thị Lan (Thẩm phán TAND bậc 3)",
+  "Trần Văn Hùng (Thẩm phán TAND bậc 3)",
+  "Lê Thị Mai (Thẩm phán TAND bậc 3)",
+  "Phạm Văn Đức (Thẩm phán TAND bậc 3)",
+  "Hoàng Thị Thu (Thẩm phán TAND bậc 3)",
+  "Đỗ Tất Thống (Thẩm phán TAND bậc 3)",
+  "Lê Thị Hoa (Thẩm phán TAND bậc 3)",
+  "Cao Thị Mai (Thẩm phán TAND bậc 2)",
+  "Lê Minh Tuấn (Thẩm phán TAND bậc 3)",
+  "Trần Thị Hương (Thẩm phán TAND bậc 2)",
+  "Nguyễn Minh Tuấn (Thẩm phán TAND bậc 3)",
 ];
 const OPINION_SHORTCUT = "Xem xét nghiên cứu, giải quyết sau";
 
