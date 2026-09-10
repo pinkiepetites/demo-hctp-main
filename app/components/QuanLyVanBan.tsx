@@ -102,9 +102,7 @@ export interface VanBanTrinh {
   lichSu: MocLichSu[];
   donDinhKem: {
     ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
-    thamPhan?: string; ghiChuPhanCong?: string; ketLuan?: "xac_nhan" | "giai_quyet_sau";
-    trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
-    toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+    thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
   }[];
   yKienDangSoan?: string;
 }
@@ -130,7 +128,10 @@ export const timVanBanTheoDon = (ds: VanBanTrinh[], maDon?: string): VanBanTrinh
   const chuan = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
   if (!maDon || !chuan(maDon)) return [];
   const k = chuan(maDon);
-  return ds.filter(v => v.trangThai !== "DaHuy" && v.donDinhKem.some(d => chuan(d.ma) === k));
+  // Tờ trình bị trả lại không còn khóa đơn: đơn có thể được đưa vào
+  // một tờ trình mới sau khi lãnh đạo chọn "Giải quyết sau".
+  return ds.filter(v => !["DaHuy", "BiTraLai"].includes(v.trangThai)
+    && v.donDinhKem.some(d => chuan(d.ma) === k));
 };
 
 /** Người đăng nhập suy ra từ widget "Vai trò" ở góc phải màn hình.
@@ -1608,8 +1609,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
           yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
-            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, ketLuan: d.ketLuan, trangThaiXuly: d.trangThaiXuly,
-            toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
             thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />
@@ -2901,8 +2901,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
           yKienBanDau={vb.yKienDangSoan}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
-            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, ketLuan: d.ketLuan, trangThaiXuly: d.trangThaiXuly,
-            toaAn: d.toaAn, ngayBA: d.ngayBA,
+            thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
             thuTuc: d.thuTuc, diaChi: d.diaChi
           }))}
         />

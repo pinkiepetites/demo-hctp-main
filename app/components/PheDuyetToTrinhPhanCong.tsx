@@ -46,6 +46,13 @@ const THAM_PHAN_OPTIONS = [
 ];
 type CapThamPhan = "tatca" | "toicao" | "bac3";
 
+const ganThamPhanBanDau = (don: DonThu, index: number): DonThu => ({
+  ...don,
+  // Dữ liệu tờ trình cũ có thể chưa lưu thamPhan; bổ sung ngay khi mở
+  // màn kiểm tra để Chánh án luôn thấy thẩm phán ban đầu.
+  thamPhan: don.thamPhan?.trim() || THAM_PHAN_OPTIONS[index % THAM_PHAN_OPTIONS.length].hoTen,
+});
+
 const DULIEU_MAU: DonThu[] = [
   {
     id: "Mã 7031",
@@ -80,10 +87,11 @@ const DULIEU_MAU: DonThu[] = [
 ];
 
 export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau, vanBanId, chucVuNguoiLuu = "Phó Chánh án", yKienBanDau = "" }: PheDuyetToTrinhModalProps) {
-  const [danhSachDon, setDanhSachDon] = useState<DonThu[]>(() => (danhSachDonBanDau || DULIEU_MAU).map(d => ({
-    ...d, thamPhan: d.thamPhan || "",
-  })));
+  const [danhSachDon, setDanhSachDon] = useState<DonThu[]>(() =>
+    (danhSachDonBanDau || DULIEU_MAU).map(ganThamPhanBanDau)
+  );
   const [editingAssignment, setEditingAssignment] = useState<string | null>(null);
+  const [assignmentCurrent, setAssignmentCurrent] = useState("");
   const [assignmentDraft, setAssignmentDraft] = useState("");
   const [assignmentFilter, setAssignmentFilter] = useState<CapThamPhan>("tatca");
   const [validationError, setValidationError] = useState("");
@@ -130,7 +138,12 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
   };
 
   const openAssignmentEditor = (don: DonThu) => {
+    if (!don.thamPhan?.trim()) {
+      setValidationError(`Đơn ${don.id} chưa có thẩm phán được phân công từ trước.`);
+      return;
+    }
     setValidationError("");
+    setAssignmentCurrent(don.thamPhan || "");
     setAssignmentDraft(don.thamPhan || "");
     setAssignmentFilter("tatca");
     setEditingAssignment(don.id);
@@ -138,6 +151,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
   const cancelAssignmentEditor = () => {
     setEditingAssignment(null);
+    setAssignmentCurrent("");
     setAssignmentDraft("");
   };
 
@@ -306,11 +320,14 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                       {biTraLai && <div className="text-[#8b1a1a] text-[11px] mt-1 font-bold">(Đánh dấu sẽ bị trả lại)</div>}
                     </td>
                     <td className="border border-[#ddd] px-3 py-2 text-center align-top">
-                      {!biTraLai && role === "chanh_an" && (
+                      {!biTraLai && role === "chanh_an" && don.thamPhan?.trim() && (
                         <button onClick={() => openAssignmentEditor(don)}
                           className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#e8f4ff]">
                           <Pencil size={13} /> Đổi thẩm phán
                         </button>
+                      )}
+                      {!biTraLai && role === "chanh_an" && !don.thamPhan?.trim() && (
+                        <div className="text-[11px] text-[#b45309]">Chưa có thẩm phán ban đầu</div>
                       )}
                       {!biTraLai && role === "truong_phong" && (
                         <div className="flex justify-center gap-2">
@@ -381,7 +398,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
               <div className="mb-3 rounded-[4px] border border-[#e5e5e5] bg-[#f8fafc] p-3">
                 <div className="text-[12px] text-[#666] mb-1">Đơn đang chọn</div>
                 <div className="font-semibold text-[#1d2e4f]">{editingAssignment}</div>
-                <div className="text-[12px] text-[#555] mt-1">Thẩm phán hiện tại: <b>{assignmentDraft || "Chưa phân công"}</b></div>
+                <div className="text-[12px] text-[#555] mt-1">Thẩm phán hiện tại: <b>{assignmentCurrent || "Chưa phân công"}</b></div>
               </div>
               <label className="block text-[13px] font-medium text-[#333] mb-2">Chọn thẩm phán thay thế</label>
               <div className="flex items-center gap-4 mb-3">

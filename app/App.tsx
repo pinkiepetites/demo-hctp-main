@@ -8379,7 +8379,12 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
           thongTinDon: { ...row.thongTinDon, thamPhan: don.thamPhan || row.thongTinDon.thamPhan },
           ghiChu: don.ghiChu ?? row.ghiChu,
           ...(don.trangThaiXuly === "giai_quyet_sau"
-            ? { giaiQuyet: { ...row.giaiQuyet, nhan: "Thụ lý mới", color: "#27ae60" } }
+            ? {
+              // Đơn được trả lại từ tờ trình phải trở về luồng lập tờ trình;
+              // bản ghi tờ trình cũ vẫn được giữ lại với trạng thái Bị trả lại.
+              toTrinhStatus: "none",
+              giaiQuyet: { ...row.giaiQuyet, nhan: "Thụ lý mới", color: "#27ae60" },
+            }
             : {}),
         };
       }));
