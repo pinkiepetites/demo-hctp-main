@@ -3087,9 +3087,15 @@ export interface BanAnLienQuan {
   daGiaiQuyet: boolean;
   isDuplicate: boolean;
   nguon: string;
+  soQdThiHanhAn?: string;
+  ngayQdThiHanhAn?: string;
+  toaQdThiHanhAn?: string;
+  soQdMienGiam?: string;
+  ngayQdMienGiam?: string;
+  toaQdMienGiam?: string;
 }
 
-const LOAI_BA_QD_OPTIONS = ["Bản án", "Quyết định", "Công văn", "Thông báo"];
+const LOAI_BA_QD_OPTIONS = ["Bản án", "Quyết định", "Quyết định liên quan đến THA", "Công văn", "Thông báo"];
 const GIAI_DOAN_OPTIONS = ["Sơ thẩm", "Phúc thẩm", "Giám đốc thẩm", "Tái thẩm"];
 const TOA_RA_BA_OPTIONS = [
   "TAND tối cao",
@@ -3113,10 +3119,15 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
     ngayBA: banDau?.ngayBA ? banDau.ngayBA.split("/").reverse().join("-") : "",
     toaAn: banDau?.toaAn ?? "",
     daGiaiQuyet: banDau?.daGiaiQuyet ?? false, isDuplicate: banDau?.isDuplicate ?? false,
+    soQdThiHanhAn: banDau?.soQdThiHanhAn ?? "", ngayQdThiHanhAn: banDau?.ngayQdThiHanhAn ?? "",
+    toaQdThiHanhAn: banDau?.toaQdThiHanhAn ?? "", soQdMienGiam: banDau?.soQdMienGiam ?? "",
+    ngayQdMienGiam: banDau?.ngayQdMienGiam ?? "", toaQdMienGiam: banDau?.toaQdMienGiam ?? "",
   });
   const dat = <K extends keyof typeof f>(k: K) => (v: (typeof f)[K]) => setF(p => ({ ...p, [k]: v }));
   const [daBam, setDaBam] = useState(false);
-  const thieu = !f.vuAn.trim() || !f.loai || !f.giaiDoan || !f.soBA.trim() || !f.ngayBA || !f.toaAn;
+  const laQuyetDinhTHA = f.loai === "Quyết định liên quan đến THA";
+  const thieu = !f.vuAn.trim() || !f.loai || (!laQuyetDinhTHA && (!f.giaiDoan || !f.soBA.trim() || !f.ngayBA || !f.toaAn))
+    || (laQuyetDinhTHA && (!f.soQdMienGiam.trim() || !f.ngayQdMienGiam || !f.toaQdMienGiam));
 
   const o = (rong: boolean) =>
     `w-full h-[36px] px-3 text-[13px] border rounded-[6px] bg-white outline-none transition-colors placeholder:text-[#bbb] ${daBam && rong ? "border-[#c0392b]" : "border-[#ddd] focus:border-[#1a5a96]"}`;
@@ -3136,7 +3147,6 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
             <input value={f.vuAn} onChange={e => dat("vuAn")(e.target.value)}
               placeholder="VD: Nguyễn Văn An kiện UBND tỉnh Bắc Ninh" className={o(!f.vuAn.trim())} />
           </div>
-
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Loại BA/QĐ</label>
@@ -3148,7 +3158,7 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
                 <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
               </div>
             </div>
-            <div>
+            {!laQuyetDinhTHA && <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Giai đoạn</label>
               <div className="relative">
                 <select value={f.giaiDoan} onChange={e => dat("giaiDoan")(e.target.value)}
@@ -3158,18 +3168,30 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
                 </select>
                 <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
               </div>
-            </div>
-            <div>
+            </div>}
+            {laQuyetDinhTHA ? (
+              <div className="col-span-2 grid grid-cols-3 gap-3 border border-[#e5e7eb] rounded-[6px] p-3 bg-[#fafafa]">
+                <div className="col-span-3 text-[12px] font-semibold text-[#1d2e4f]">Quyết định miễn/giảm thời hạn chấp hành hình phạt tù</div>
+                <div><label className="block text-[12px] text-[#333] mb-1"><Sao />Số quyết định</label><input value={f.soQdMienGiam} onChange={e => dat("soQdMienGiam")(e.target.value)} className={o(!f.soQdMienGiam.trim())} /></div>
+                <div><label className="block text-[12px] text-[#333] mb-1"><Sao />Ngày quyết định</label><input type="date" value={f.ngayQdMienGiam} onChange={e => dat("ngayQdMienGiam")(e.target.value)} className={o(!f.ngayQdMienGiam)} /></div>
+                <div><label className="block text-[12px] text-[#333] mb-1"><Sao />Tòa ra quyết định</label><select value={f.toaQdMienGiam} onChange={e => dat("toaQdMienGiam")(e.target.value)} className={`${o(!f.toaQdMienGiam)} appearance-none`}><option value="">Chọn tòa án</option>{TOA_RA_BA_OPTIONS.map(x => <option key={x}>{x}</option>)}</select></div>
+                <div className="col-span-3 text-[12px] font-semibold text-[#1d2e4f] mt-2">Quyết định thi hành án</div>
+                <div><label className="block text-[12px] text-[#333] mb-1">Số quyết định</label><input value={f.soQdThiHanhAn} onChange={e => dat("soQdThiHanhAn")(e.target.value)} className={o(false)} /></div>
+                <div><label className="block text-[12px] text-[#333] mb-1">Ngày quyết định</label><input type="date" value={f.ngayQdThiHanhAn} onChange={e => dat("ngayQdThiHanhAn")(e.target.value)} className={o(false)} /></div>
+                <div><label className="block text-[12px] text-[#333] mb-1">Tòa ra quyết định</label><select value={f.toaQdThiHanhAn} onChange={e => dat("toaQdThiHanhAn")(e.target.value)} className={`${o(false)} appearance-none`}><option value="">Chọn tòa án</option>{TOA_RA_BA_OPTIONS.map(x => <option key={x}>{x}</option>)}</select></div>
+                <div className="col-span-3 text-[11px] text-[#666]">Có thể tra cứu theo một trong hai quyết định hoặc nhập đủ cả hai để xác định chính xác hồ sơ.</div>
+              </div>
+            ) : <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Số bản án / quyết định</label>
               <input value={f.soBA} onChange={e => dat("soBA")(e.target.value)}
                 placeholder="VD: 15/2023/HC-PT" className={o(!f.soBA.trim())} />
-            </div>
-            <div>
+            </div>}
+            {!laQuyetDinhTHA && <div>
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Ngày ra bản án</label>
               <input type="date" value={f.ngayBA} onChange={e => dat("ngayBA")(e.target.value)}
                 className={o(!f.ngayBA)} />
-            </div>
-            <div className="col-span-2">
+            </div>}
+            {!laQuyetDinhTHA && <div className="col-span-2">
               <label className="block text-[13px] text-[#333] mb-1.5"><Sao />Tòa án ra bản án</label>
               <div className="relative">
                 <select value={f.toaAn} onChange={e => dat("toaAn")(e.target.value)}
@@ -3179,7 +3201,7 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
                 </select>
                 <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
               </div>
-            </div>
+            </div>}
           </div>
 
           <div className="flex items-center gap-6 pt-1">
@@ -3211,6 +3233,17 @@ const PopupThemBanAn = ({ onDong, onThem, banDau }: {
               vuAn: f.vuAn.trim(), loai: f.loai, giaiDoan: f.giaiDoan,
               soBA: f.soBA.trim(), ngayBA: f.ngayBA.split("-").reverse().join("/"),
               toaAn: f.toaAn, daGiaiQuyet: f.daGiaiQuyet, isDuplicate: f.isDuplicate,
+              ...(laQuyetDinhTHA ? {
+                soBA: f.soQdThiHanhAn || f.soQdMienGiam,
+                ngayBA: (f.ngayQdThiHanhAn || f.ngayQdMienGiam).split("-").reverse().join("/"),
+                toaAn: f.toaQdThiHanhAn || f.toaQdMienGiam,
+                soQdThiHanhAn: f.soQdThiHanhAn.trim(),
+                ngayQdThiHanhAn: f.ngayQdThiHanhAn.split("-").reverse().join("/"),
+                toaQdThiHanhAn: f.toaQdThiHanhAn,
+                soQdMienGiam: f.soQdMienGiam.trim(),
+                ngayQdMienGiam: f.ngayQdMienGiam.split("-").reverse().join("/"),
+                toaQdMienGiam: f.toaQdMienGiam,
+              } : {}),
             });
           }}
             className="h-[36px] px-5 bg-[#8b1a1a] hover:bg-[#6e1414] text-white rounded-[5px] text-[13px] font-semibold transition-colors">Thêm</button>
@@ -13886,7 +13919,7 @@ export default function App() {
     if (r.ngayBA) setBaForm(prev => ({ ...prev, ngayBA: r.ngayBA ? r.ngayBA.split("/").reverse().join("-") : "" }));
     addNotification(`Đã liên kết đơn trùng với ${r.maDon} và sao chép toàn bộ thông tin.`);
   };
-  const loaiQDBaOptions = ["Bản án", "Quyết định"];
+  const loaiQDBaOptions = ["Bản án", "Quyết định", "Quyết định liên quan đến THA"];
   const loaiQDBaEffective = loaiQDBaOptions.includes(loaiQDBa) ? loaiQDBa : loaiQDBaOptions[0];
   const laHanhVi = false;
   const [nhanSoBA, nhanNgayBA] = NHAN_SO_NGAY_BA[loaiQDBaEffective] ?? NHAN_SO_NGAY_BA["Bản án"];
@@ -13896,6 +13929,8 @@ export default function App() {
     toaBA: "",
     capXetXu: "",
     thoiHieuGiaiQuyet: "" as ThoiHieuKey | "",
+    soQdThiHanhAn: "", ngayQdThiHanhAn: "", toaQdThiHanhAn: "",
+    soQdMienGiam: "", ngayQdMienGiam: "", toaQdMienGiam: "",
   });
   const [ocrFields, setOcrFields] = useState<Set<string>>(new Set());
   const editingRow = SAMPLE_ROWS.find(r => r.id === editingRowId) ?? null;
@@ -14056,11 +14091,40 @@ export default function App() {
     { id: 3, vuAn: "Nguyễn Văn An và cộng sự — tranh chấp đất đai", loai: "Bản án", giaiDoan: "Phúc thẩm", soBA: "15/2023/HC-PT", ngayBA: "12/03/2023", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: true, nguon: "Thêm mới" },
     { id: 4, vuAn: "Nguyễn Văn An kiện UBND tỉnh Bắc Ninh", loai: "Quyết định", giaiDoan: "Giám đốc thẩm", soBA: "15/2024/GĐT-HC", ngayBA: "20/01/2024", toaAn: "TAND tỉnh Bắc Ninh", isDuplicate: true, nguon: "QLA" },
   ];
+  const coQdThiHanhAnTraCuu = baForm.soQdThiHanhAn.trim() && baForm.ngayQdThiHanhAn && baForm.toaQdThiHanhAn;
+  const BA_SEARCH_RESULTS_THA = [
+    ...(coQdThiHanhAnTraCuu ? [{
+      id: 101, vuAn: "Hồ sơ thi hành án hình sự", loai: "Quyết định liên quan đến THA",
+      giaiDoan: "Thi hành án", soBA: baForm.soQdThiHanhAn || "—",
+      ngayBA: baForm.ngayQdThiHanhAn || "—",
+      toaAn: baForm.toaQdThiHanhAn || "—",
+      isDuplicate: false, nguon: "QLA",
+      soQdThiHanhAn: baForm.soQdThiHanhAn,
+      ngayQdThiHanhAn: baForm.ngayQdThiHanhAn,
+      toaQdThiHanhAn: baForm.toaQdThiHanhAn,
+    }] : []),
+    {
+      id: 102, vuAn: "Hồ sơ thi hành án hình sự", loai: "Quyết định liên quan đến THA",
+      giaiDoan: "Miễn/giảm chấp hành hình phạt tù", soBA: baForm.soQdMienGiam || "—",
+      ngayBA: baForm.ngayQdMienGiam || "—",
+      toaAn: baForm.toaQdMienGiam || "—",
+      isDuplicate: false, nguon: "QLA",
+      soQdMienGiam: baForm.soQdMienGiam,
+      ngayQdMienGiam: baForm.ngayQdMienGiam,
+      toaQdMienGiam: baForm.toaQdMienGiam,
+    },
+    {
+      id: 103, vuAn: "Bị án trong quyết định miễn/giảm chấp hành hình phạt tù",
+      loai: "Quyết định", giaiDoan: "Sơ thẩm", soBA: "12/2020/HS-ST",
+      ngayBA: "10/08/2020", toaAn: "TAND tỉnh Bắc Ninh",
+      isDuplicate: false, nguon: "QLA",
+    },
+  ];
 
   // Bảng = kết quả tra cứu (sau khi bấm Tra cứu) + các bản án thêm tay.
   // Bản án thêm tay hiện được ngay cả khi chưa tra cứu.
   const BA_SEARCH_RESULTS = [
-    ...(baSearched ? BA_SEARCH_RESULTS_GOC : []),
+    ...(baSearched ? (loaiQDBaEffective === "Quyết định liên quan đến THA" ? BA_SEARCH_RESULTS_THA : BA_SEARCH_RESULTS_GOC) : []),
     ...banAnThem,
   ];
 
@@ -14144,10 +14208,13 @@ export default function App() {
       }));
 
     if (loaiAn === "Hình sự") {
-      setBiCao((bo.biCao ?? []).map((n, i) => ({ ...n, id: Date.now() + i })));
+      const danhSachBiAn = loaiQDBaEffective === "Quyết định liên quan đến THA"
+        ? (bo.biCao ?? []).slice(0, 1)
+        : (bo.biCao ?? []);
+      setBiCao(danhSachBiAn.map((n, i) => ({ ...n, id: Date.now() + i })));
       setNguyenDon([]); setBiDon([]); setNguoiLienQuan([]); setQuanHePhapLuat("");
       setNguoiTuDong(true);
-      return (bo.biCao ?? []).length;
+      return danhSachBiAn.length;
     }
     setBiCao([]);
     setQuanHePhapLuat(bo.quanHe ?? "");
@@ -14159,12 +14226,21 @@ export default function App() {
   };
 
   const traCuuBanAn = () => {
+    const laTHA = loaiQDBaEffective === "Quyết định liên quan đến THA";
+    const coQuyetDinhTHA = baForm.soQdThiHanhAn.trim() && baForm.ngayQdThiHanhAn && baForm.toaQdThiHanhAn;
+    const coQuyetDinhMienGiam = baForm.soQdMienGiam.trim() && baForm.ngayQdMienGiam && baForm.toaQdMienGiam;
+    if (laTHA && !coQuyetDinhMienGiam) {
+      addNotification("Vui lòng nhập đủ Số, Ngày và Tòa của quyết định miễn/giảm để tra cứu.");
+      return;
+    }
     setBaSearched(true);
     setSelectedVuAnGoc(null);
     const n = dienNguoiThamGia(loaiAnForm);
     addNotification(n > 0
       ? `Đã tra cứu bản án và điền sẵn ${n} người tham gia tố tụng. Vui lòng kiểm tra lại.`
-      : "Đã tra cứu bản án. Chưa lấy được người tham gia tố tụng — vui lòng chọn Loại án hoặc nhập tay.");
+      : laTHA
+        ? `Đã tra cứu ${coQuyetDinhTHA && coQuyetDinhMienGiam ? "cả hai quyết định" : "quyết định đã nhập"}. Vui lòng kiểm tra Bị án và thông tin khiếu nại.`
+        : "Đã tra cứu bản án. Chưa lấy được người tham gia tố tụng — vui lòng chọn Loại án hoặc nhập tay.");
   };
 
   // Bảng đơn liên quan = kết quả tra cứu (nếu đã bấm Tra cứu) + các đơn thêm tay
@@ -14831,7 +14907,7 @@ export default function App() {
                           </Sel>
                         </div>
                         <div>
-                          <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Loại án</Lbl>
+                          <Lbl req={loaiQDBaEffective !== "Quyết định liên quan đến THA" && !isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Loại án</Lbl>
                           <Sel value={ocrFields.has("loaiAn") && !loaiAnForm ? "Hành chính" : loaiAnForm} onChange={e => {
                             setLoaiAnForm(e.target.value);
                             if (e.target.value !== "Hình sự") setAnTuHinh(false);
@@ -14882,6 +14958,49 @@ export default function App() {
                         </div>
                       )}
 
+                      {loaiQDBaEffective === "Quyết định liên quan đến THA" ? (
+                        <div className="grid grid-cols-4 gap-x-3 gap-y-3 items-end">
+                          <div className="col-span-4 text-[12px] font-semibold text-[#444] border-l-4 border-[#8b1a1a] pl-2 mt-1">
+                            Quyết định miễn/giảm thời hạn chấp hành hình phạt tù
+                          </div>
+                          <div>
+                            <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Số quyết định</Lbl>
+                            <Inp value={baForm.soQdMienGiam} onChange={e => setBaForm(p => ({ ...p, soQdMienGiam: e.target.value }))} />
+                          </div>
+                          <div>
+                            <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Ngày quyết định</Lbl>
+                            <Inp type="date" value={baForm.ngayQdMienGiam} onChange={e => setBaForm(p => ({ ...p, ngayQdMienGiam: e.target.value }))} />
+                          </div>
+                          <div>
+                            <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Tòa ra quyết định</Lbl>
+                            <Inp value={baForm.toaQdMienGiam} onChange={e => setBaForm(p => ({ ...p, toaQdMienGiam: e.target.value }))} />
+                          </div>
+                          <div className="col-span-4 text-[12px] font-semibold text-[#444] border-l-4 border-[#8b1a1a] pl-2 mt-1">
+                            Quyết định thi hành án
+                          </div>
+                          <div>
+                            <Lbl>Số quyết định</Lbl>
+                            <Inp value={baForm.soQdThiHanhAn} onChange={e => setBaForm(p => ({ ...p, soQdThiHanhAn: e.target.value }))} />
+                          </div>
+                          <div>
+                            <Lbl>Ngày quyết định</Lbl>
+                            <Inp type="date" value={baForm.ngayQdThiHanhAn} onChange={e => setBaForm(p => ({ ...p, ngayQdThiHanhAn: e.target.value }))} />
+                          </div>
+                          <div>
+                            <Lbl>Tòa ra quyết định</Lbl>
+                            <Inp value={baForm.toaQdThiHanhAn} onChange={e => setBaForm(p => ({ ...p, toaQdThiHanhAn: e.target.value }))} />
+                          </div>
+                          <div className="flex items-end">
+                            <button onClick={traCuuBanAn}
+                              className="flex items-center gap-1.5 h-[30px] px-3 bg-[#1d2e4f] hover:bg-[#15223a] text-white rounded-[3px] text-[12px] font-medium transition-colors whitespace-nowrap">
+                              <Search size={12} /> Tra cứu
+                            </button>
+                          </div>
+                          <div className="col-span-4 text-[11px] text-[#666]">
+                            Quyết định miễn/giảm là bắt buộc; có thể nhập thêm quyết định thi hành án để xác định hồ sơ chính xác hơn.
+                          </div>
+                        </div>
+                      ) : (
                       <div className="grid grid-cols-4 gap-x-3 items-end">
                         <OcrWrap fieldKey="soBA">
                           <div>
@@ -14919,6 +15038,7 @@ export default function App() {
 
                         </div>
                       </div>
+                      )}
                       <div className="border border-[#ddd] rounded-[3px] px-3 py-2.5">
                         <div className="flex items-center gap-1.5 mb-2">
                           <span className="w-[6px] h-[6px] rounded-full bg-[#8b1a1a] flex-shrink-0" />
@@ -14998,9 +15118,23 @@ export default function App() {
                                       {r.giaiDoan}
                                     </span>
                                   </td>
-                                  <td className="border border-[#ddd] px-3 py-2 font-medium">{r.soBA}</td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.ngayBA}</td>
-                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">{r.toaAn}</td>
+                                  <td className="border border-[#ddd] px-3 py-2 font-medium">
+                                    {r.loai === "Quyết định liên quan đến THA" ? (
+                                      r.giaiDoan === "Thi hành án"
+                                        ? <><span className="text-[#666]">THA: </span>{r.soQdThiHanhAn || "—"}</>
+                                        : <><span className="text-[#666]">Miễn/giảm: </span>{r.soQdMienGiam || "—"}</>
+                                    ) : r.soBA}
+                                  </td>
+                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">
+                                    {r.loai === "Quyết định liên quan đến THA" ? (
+                                      r.giaiDoan === "Thi hành án" ? r.ngayQdThiHanhAn || "—" : r.ngayQdMienGiam || "—"
+                                    ) : r.ngayBA}
+                                  </td>
+                                  <td className="border border-[#ddd] px-3 py-2 text-[#555]">
+                                    {r.loai === "Quyết định liên quan đến THA" ? (
+                                      r.giaiDoan === "Thi hành án" ? r.toaQdThiHanhAn || "—" : r.toaQdMienGiam || "—"
+                                    ) : r.toaAn}
+                                  </td>
                                   <td className="border border-[#ddd] px-3 py-2">
                                     {/* Bản án thêm tay có cờ daGiaiQuyet riêng;
                                           dữ liệu tra cứu thì suy theo giai đoạn. */}
@@ -15828,7 +15962,7 @@ export default function App() {
                               </span>
                             </div>
                           )}
-                          {loaiAnForm !== "Hình sự" && <>
+                          {loaiAnForm !== "Hình sự" && loaiQDBaEffective !== "Quyết định liên quan đến THA" && <>
                             <div>
                               <Lbl>Quan hệ pháp luật</Lbl>
                               <Inp placeholder="Nhập quan hệ pháp luật" value={quanHePhapLuat}
@@ -15901,10 +16035,12 @@ export default function App() {
                           </>}
 
                           {/* Hình sự: Danh sách bị cáo + Danh sách thông tin khiếu nại */}
-                          {loaiAnForm === "Hình sự" && <>
+                          {(loaiAnForm === "Hình sự" || loaiQDBaEffective === "Quyết định liên quan đến THA") && <>
                             <div>
                               <div className="flex items-center justify-between mb-2">
-                                <span className="text-[13px] font-semibold text-[#444]">Danh sách bị cáo</span>
+                                <span className="text-[13px] font-semibold text-[#444]">
+                                  {loaiQDBaEffective === "Quyết định liên quan đến THA" ? "Danh sách bị án" : "Danh sách bị cáo"}
+                                </span>
                                 <BtnAdd onClick={() => setShowBiCaoPopup(true)}><Plus size={12} /> Thêm</BtnAdd>
                               </div>
                               <Tbl
