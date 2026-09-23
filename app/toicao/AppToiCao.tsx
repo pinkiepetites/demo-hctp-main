@@ -1,6 +1,8 @@
 import { KhoiTaiKhoanChung } from "../components/KhoiTaiKhoanChung";
 import { CapSwitcherPill } from "../components/CapSwitcherPill";
 import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
+import { Input, Select, DatePicker, ConfigProvider, Radio, Checkbox, Space } from "antd";
+import dayjs from "dayjs";
 import {
   X, Plus, Trash2, Edit2, FileText, ChevronDown, ChevronRight,
   ChevronUp, Search, ZoomIn, ZoomOut, RotateCcw, Download, Upload,
@@ -147,14 +149,6 @@ export const layKetLuanLD = (maDon: string): KetLuanLD | undefined => ketLuanLD[
 const useKetLuanLD = () => useSyncExternalStore(dangKyLD, () => phienBanLD, () => phienBanLD);
 
 
-// ─── Shared primitives ───────────────────────────────────────────────────────
-const Inp = ({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input
-    {...props}
-    className={`w-full h-[30px] px-2 text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]/20 disabled:bg-[#f5f5f5] ${className}`}
-  />
-);
-
 // Nút ✕ xóa lựa chọn cho mọi ô select.
 // Chỉ hiện khi select CÓ option rỗng (kiểu "-- Chọn --" / "Tất cả") để xóa xong
 // còn chỗ mà quay về; select không có option rỗng thì không hiện, tránh để trống vô nghĩa.
@@ -191,20 +185,56 @@ const NutXoaChon = ({ onClick, right, size = 12 }: { onClick: () => void; right:
   </button>
 );
 
-const Sel = ({ className = "", children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => {
-  const { ref, hienX, xoa } = useXoaChon(props.value);
+// ─── Shared primitives ───────────────────────────────────────────────────────
+const Inp = ({ className = "", type, value, onChange, disabled, placeholder, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
+  if (type === "date") {
+    return (
+      <DatePicker
+        className={`w-full h-[30px] rounded-[3px] ${className}`}
+        value={value ? dayjs(value as string) : null}
+        onChange={(date, dateString) => {
+          if (onChange) {
+            onChange({ target: { value: Array.isArray(dateString) ? dateString[0] : dateString } } as any);
+          }
+        }}
+        disabled={disabled}
+        placeholder={placeholder}
+        format="YYYY-MM-DD"
+        size="small"
+      />
+    );
+  }
   return (
-    <div className="relative">
-      <select
-        ref={ref}
-        {...props}
-        className={`w-full h-[30px] px-2 ${hienX && !props.disabled ? "pr-12" : "pr-7"} text-[13px] border border-[#ccc] rounded-[3px] bg-white focus:outline-none focus:border-[#1a73e8] appearance-none disabled:bg-[#f5f5f5] disabled:text-[#888] disabled:cursor-not-allowed ${className}`}
-      >
-        {children}
-      </select>
-      {hienX && !props.disabled && <NutXoaChon onClick={xoa} right="right-6" size={13} />}
-      <ChevronDown size={13} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#666] pointer-events-none" />
-    </div>
+    <Input
+      className={`w-full h-[30px] rounded-[3px] ${className}`}
+      type={type}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      placeholder={placeholder}
+      {...(props as any)}
+    />
+  );
+};
+
+const Sel = ({ className = "", children, value, onChange, disabled, placeholder, ...props }: React.SelectHTMLAttributes<HTMLSelectElement> & { placeholder?: string }) => {
+  return (
+    <Select
+      className={`w-full h-[30px] ${className}`}
+      value={value === "" ? undefined : value}
+      onChange={(val) => {
+        if (onChange) {
+          onChange({ target: { value: val ?? "" } } as any);
+        }
+      }}
+      disabled={disabled}
+      placeholder={placeholder || "-- Chọn --"}
+      allowClear
+      popupMatchSelectWidth={false}
+      size="small"
+    >
+      {children}
+    </Select>
   );
 };
 
@@ -278,9 +308,9 @@ const Tbl = ({ headers, children, emptyMsg }: {
           // các cột nội dung. "Thông tin người đứng đơn" / "Thông tin đơn" của
           // bảng Danh sách đơn liên quan đổi size cho nhau theo yêu cầu.
           <th key={i} className={`border border-[#ddd] px-3 py-[6px] font-semibold text-[#333] whitespace-nowrap ${h === "Thao tác" ? "text-center w-[76px]"
-              : h === "Thông tin người đứng đơn" ? "text-left w-[270px]"
-                : h === "Thông tin đơn" ? "text-left w-[447px]"
-                  : "text-left"}`}>
+            : h === "Thông tin người đứng đơn" ? "text-left w-[270px]"
+              : h === "Thông tin đơn" ? "text-left w-[447px]"
+                : "text-left"}`}>
             {h}
           </th>
         ))}
@@ -1798,8 +1828,8 @@ const KhoiTaiKhoan = ({ vaiTro, onDoiVaiTro }: { vaiTro: string; onDoiVaiTro?: (
                     <div key={v}
                       onClick={() => { onDoiVaiTro(v); setMoVaiTro(false); setMo(false); }}
                       className={`flex items-center gap-2 pl-8 pr-3 py-1.5 text-[12px] cursor-pointer transition-colors ${v === vaiTro
-                          ? "text-[#8b1a1a] font-semibold bg-[#fdeaea]"
-                          : "text-[#444] hover:bg-[#f0f2f5]"}`}>
+                        ? "text-[#8b1a1a] font-semibold bg-[#fdeaea]"
+                        : "text-[#444] hover:bg-[#f0f2f5]"}`}>
                       {v === vaiTro
                         ? <Check size={12} className="flex-shrink-0" />
                         : <span className="w-[12px] flex-shrink-0" />}
@@ -1898,7 +1928,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", globalRoleKey, onD
           <div className="text-[13px] font-bold text-[#1d2e4f]">HỆ THỐNG QUẢN LÝ ÁN</div>
         </div>
       </div>
-      <CapSwitcherPill currentCap="toicao" onChuyenCap={onChuyenCap || (() => {})} />
+      <CapSwitcherPill currentCap="toicao" onChuyenCap={onChuyenCap || (() => { })} />
 
       {/* Nav items — cuộn riêng để khối tài khoản luôn nằm đáy */}
       <nav className="flex-1 py-2 space-y-0.5 overflow-y-auto">
@@ -1914,7 +1944,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", globalRoleKey, onD
             open={quanLyDonOpen} onToggle={() => setQuanLyDonOpen(!quanLyDonOpen)} />
           {quanLyDonOpen && (
             <div className="pb-1">
-              <SubItem icon={<Inbox size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "lienthong"} nav="lienthong" />
+              <SubItem icon={<Inbox size={13} />} label="Tiếp nhận đơn liên thông" active={activePage === "tiepnhan_don_lienthong"} nav="tiepnhan_don_lienthong" />
               <SubItem icon={<List size={13} />} label="Danh sách đơn" active={activePage === "list" || activePage === "form" || activePage === "prototype"} nav="list" />
               {/* Đặt ngay dưới Danh sách đơn vì văn bản sinh ra từ chính màn đó —
                   cán bộ tạo tờ trình ở trên, theo dõi tiến độ ở đây. */}
@@ -4039,8 +4069,8 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
                 onDragLeave={() => setKeoVao(false)}
                 onDrop={e => { e.preventDefault(); setKeoVao(false); nhanTep(e.dataTransfer.files); }}
                 className={`border border-dashed rounded-[5px] py-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors ${keoVao ? "border-[#8b1a1a] bg-[#fdeaea]"
-                    : daBamThem && tepDangSoan.length === 0 ? "border-[#e57373] bg-[#fffbfb]"
-                      : "border-[#ccc] bg-white hover:bg-[#f2f2f2]"}`}>
+                  : daBamThem && tepDangSoan.length === 0 ? "border-[#e57373] bg-[#fffbfb]"
+                    : "border-[#ccc] bg-white hover:bg-[#f2f2f2]"}`}>
                 <Upload size={20} className="text-[#8b1a1a] mb-1.5" />
                 <div className="text-[13px] text-[#333]">Bấm hoặc kéo thả tệp vào đây</div>
                 <div className="text-[11px] text-[#888] mt-0.5">Hỗ trợ PDF, ảnh, Word · chọn được nhiều tệp</div>
@@ -4624,6 +4654,7 @@ interface DanhSachDonRow {
     // Chỉ có khi nhan === "Trả lại đơn" — lấy từ Nhận đơn & TL vụ án → Trả lại
     nguoiTra?: string;
     ngayTra?: string;
+    lyDoKhongDu?: string;
   };
   processingHistory?: { date: string; step: string; actor: string; note?: string; rawData?: any }[];
   nguoiNhap: string;
@@ -5550,20 +5581,49 @@ const oLoc = (v: unknown) =>
     ? "border-[#7aa7d9] bg-[#eff6fd]"
     : "border-[#ccc] bg-white";
 
-const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...props} className={`w-full h-[30px] px-2 text-[12px] border rounded-[3px] focus:outline-none focus:border-[#1a73e8] placeholder:text-[#aaa] transition-colors ${oLoc(props.value)} ${props.className ?? ""}`} />
-);
-const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => {
-  const { ref, hienX, xoa } = useXoaChon(props.value);
+const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+  if (props.type === "date") {
+    return (
+      <DatePicker
+        className={`w-full h-[30px] rounded-[3px] ${oLoc(props.value)} ${props.className ?? ""}`}
+        value={props.value ? dayjs(props.value as string) : null}
+        onChange={(date, dateString) => {
+          if (props.onChange) {
+            props.onChange({ target: { value: Array.isArray(dateString) ? dateString[0] : dateString } } as any);
+          }
+        }}
+        disabled={props.disabled}
+        placeholder={props.placeholder}
+        format="YYYY-MM-DD"
+        size="small"
+      />
+    );
+  }
   return (
-    <div className="relative">
-      <select ref={ref} {...props}
-        className={`w-full h-[30px] px-2 ${hienX ? "pr-11" : "pr-6"} text-[12px] border rounded-[3px] focus:outline-none appearance-none transition-colors ${oLoc(props.value)}`}>
-        {children}
-      </select>
-      {hienX && <NutXoaChon onClick={xoa} right="right-5" size={11} />}
-      <ChevronDown size={11} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-    </div>
+    <Input
+      {...(props as any)}
+      className={`w-full h-[30px] rounded-[3px] ${oLoc(props.value)} ${props.className ?? ""}`}
+      size="small"
+    />
+  );
+};
+const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => {
+  return (
+    <Select
+      {...(props as any)}
+      className={`w-full h-[30px] custom-sel ${oLoc(props.value)} ${props.className ?? ""}`}
+      value={props.value === "" ? undefined : props.value}
+      onChange={(val) => {
+        if (props.onChange) {
+          props.onChange({ target: { value: val ?? "" } } as any);
+        }
+      }}
+      allowClear
+      popupMatchSelectWidth={false}
+      size="small"
+    >
+      {children}
+    </Select>
   );
 };
 const FLbl = ({ children }: { children: React.ReactNode }) => (
@@ -6317,8 +6377,8 @@ const NhanDonTLVuAn = () => {
                             {(r.yKien ?? []).map((y, k) => (
                               <div key={k}>
                                 <span className={`inline-block px-2 py-[2px] rounded-[10px] border text-[10px] font-medium ${y.ketQua.toLowerCase().includes("không")
-                                    ? "bg-[#fdecea] text-[#c0392b] border-[#f3c0bb]"
-                                    : "bg-[#e8f5e9] text-[#1b5e20] border-[#a5d6a7]"}`}>
+                                  ? "bg-[#fdecea] text-[#c0392b] border-[#f3c0bb]"
+                                  : "bg-[#e8f5e9] text-[#1b5e20] border-[#a5d6a7]"}`}>
                                   {y.ketQua}
                                 </span>
                                 <div className="mt-0.5">{y.nguoi} – {y.chucVu}</div>
@@ -7632,6 +7692,7 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
   const [traLaiLyDo, setTraLaiLyDo] = useState("");
   const [traLaiGhiChu, setTraLaiGhiChu] = useState("");
   const [chonCanBo, setChonCanBo] = useState("");
+  const [bulkCanBo, setBulkCanBo] = useState("");
   const [phanCongResult] = useState({ canBo: "Nguyễn Hải Trâm", tyLe: "18%", uuTien: "Có BA/QĐ liên quan đã được cán bộ xử lý" });
 
   const counts = useMemo(() => ({
@@ -7942,8 +8003,8 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
         {tabs.filter(t => isTruongPhong || (t.key !== "tat-ca" && t.key !== "cho-phan-cong" && t.key !== "da-phan-cong")).map(t => (
           <button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
             className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === t.key
-                ? "border-[#8b1a1a] text-[#8b1a1a]"
-                : "border-transparent text-[#555] hover:text-[#222]"
+              ? "border-[#8b1a1a] text-[#8b1a1a]"
+              : "border-transparent text-[#555] hover:text-[#222]"
               }`}>
             {t.label}
           </button>
@@ -7996,36 +8057,51 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
 
       {isTruongPhong && (activeTab === "cho-phan-cong" || activeTab === "da-phan-cong") && (
         <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-[#ddd] bg-white">
+          {selectedIds.size > 0 && (
+            <span className="text-[11.5px] text-[#555] mr-2">Đã chọn <b>{selectedIds.size}</b> đơn</span>
+          )}
           <button onClick={() => {
             if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-            setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoTiepNhan: "Phạm Quốc Hưng", trangThai: "da-phan-cong" } : r));
+            setRows(prev => prev.map(r => {
+              if (selectedIds.has(r.maDon)) {
+                const randomCanBo = CAN_BO_LIST_LT[Math.floor(Math.random() * CAN_BO_LIST_LT.length)];
+                return { ...r, canBoTiepNhan: randomCanBo, trangThai: "da-phan-cong" };
+              }
+              return r;
+            }));
             setSelectedIds(new Set());
+            alert("Đã phân công ngẫu nhiên các đơn đã chọn.");
           }}
-            className="h-[28px] px-3 bg-[#1a5a96] text-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#154b7e] transition-colors">
+            className="h-[28px] px-3 bg-white border border-[#1a5a96] text-[#1a5a96] rounded-[3px] text-[11.5px] font-medium hover:bg-[#f0f6ff] transition-colors">
             Phân công tự động
           </button>
-
-          <select
-            value=""
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!val) return;
+          <div className="flex items-center gap-2 border-l border-[#ddd] pl-3">
+            <select
+              value={bulkCanBo}
+              onChange={(e) => setBulkCanBo(e.target.value)}
+              className="w-[180px] h-[28px] px-2 border border-[#ddd] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none focus:border-[#8b1a1a] cursor-pointer"
+            >
+              <option value="">-- Chọn cán bộ --</option>
+              {CAN_BO_LIST_LT.map(cb => {
+                const count = assignmentCounts[cb] || 0;
+                return <option key={cb} value={cb}>{cb} ({count})</option>
+              })}
+            </select>
+            <button onClick={() => {
               if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
+              if (!bulkCanBo) { alert("Vui lòng chọn cán bộ từ danh sách"); return; }
               setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
                 ...r,
-                canBoTiepNhan: val,
+                canBoTiepNhan: bulkCanBo,
                 trangThai: "da-phan-cong"
               } : r));
               setSelectedIds(new Set());
+              alert(`Đã phân công chỉ định các đơn đã chọn cho ${bulkCanBo}.`);
             }}
-            className="w-[180px] h-[28px] px-2 border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[11.5px] font-medium focus:outline-none cursor-pointer"
-          >
-            <option value="" disabled hidden>Phân công chỉ định...</option>
-            {CAN_BO_LIST_LT.map(cb => {
-              const count = assignmentCounts[cb] || 0;
-              return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
-            })}
-          </select>
+              className="h-[28px] px-3 bg-[#1a5a96] text-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#154b7e] transition-colors">
+              Phân công chỉ định
+            </button>
+          </div>
         </div>
       )}
 
@@ -8074,13 +8150,13 @@ const PanelLienThong = ({ onChiTiet, currentRole = "can-bo" }: { onChiTiet?: (do
                   <td className="px-2.5 py-2.5 text-[#555]">
                     {don.soBaqd ? (
                       <div className="max-w-[150px] whitespace-normal" title={`Bản án ${don.soBaqd} ngày ${don.ngayBaqd || '---'} (${don.toaXetXu || '---'})`}>
-                         <div className="font-medium text-[#1a5a96]">{don.soBaqd}</div>
-                         <div className="text-[10px] text-[#888]">{don.ngayBaqd || '---'} - {don.toaXetXu || '---'}</div>
+                        <div className="font-medium text-[#1a5a96]">{don.soBaqd}</div>
+                        <div className="text-[10px] text-[#888]">{don.ngayBaqd || '---'} - {don.toaXetXu || '---'}</div>
                       </div>
                     ) : don.maVuAn ? (
                       <div className="max-w-[150px] whitespace-normal" title={`Vụ án ${don.maVuAn} - ${don.tenVuAn || '---'}`}>
-                         <div className="font-medium text-[#1a5a96]">{don.maVuAn}</div>
-                         <div className="text-[10px] text-[#888]">{don.tenVuAn || '---'}</div>
+                        <div className="font-medium text-[#1a5a96]">{don.maVuAn}</div>
+                        <div className="text-[10px] text-[#888]">{don.tenVuAn || '---'}</div>
                       </div>
                     ) : don.thongTinVuAn ? (
                       <div className="max-w-[150px] whitespace-normal" title={don.thongTinVuAn}>{don.thongTinVuAn}</div>
@@ -8900,7 +8976,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                             </TRow>
                           </div>
                         </div>
-                        
+
                         {activeTab !== 1 && (
                           <>
                             <div className="col-span-2">
@@ -12288,16 +12364,48 @@ const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
       {children}{req && <span className="text-red-500 ml-0.5">*</span>}
     </label>
   );
-  const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
-    <input {...props} className="w-full h-[28px] border border-[#ccc] rounded-[3px] px-2 text-[12px] text-[#222] focus:outline-none focus:border-[#1a73e8]" />
-  );
-  const FSel = ({ children }: { children: React.ReactNode }) => (
-    <div className="relative">
-      <select className="w-full h-[28px] border border-[#ccc] rounded-[3px] px-2 pr-6 text-[12px] text-[#222] appearance-none focus:outline-none focus:border-[#1a73e8] bg-white">
-        {children}
-      </select>
-      <ChevronDown size={9} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#888] pointer-events-none" />
-    </div>
+  const FInp = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+    if (props.type === "date") {
+      return (
+        <DatePicker
+          className="w-full h-[28px] rounded-[3px]"
+          value={props.value ? dayjs(props.value as string) : null}
+          onChange={(date, dateString) => {
+            if (props.onChange) {
+              props.onChange({ target: { value: Array.isArray(dateString) ? dateString[0] : dateString } } as any);
+            }
+          }}
+          disabled={props.disabled}
+          placeholder={props.placeholder}
+          format="YYYY-MM-DD"
+          size="small"
+        />
+      );
+    }
+    return (
+      <Input
+        {...(props as any)}
+        className="w-full h-[28px] rounded-[3px]"
+        size="small"
+      />
+    );
+  };
+  const FSel = ({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) => (
+    <Select
+      {...(props as any)}
+      className="w-full h-[28px] rounded-[3px] custom-sel"
+      value={props.value === "" ? undefined : props.value}
+      onChange={(val) => {
+        if (props.onChange) {
+          props.onChange({ target: { value: val ?? "" } } as any);
+        }
+      }}
+      allowClear
+      popupMatchSelectWidth={false}
+      size="small"
+    >
+      {children}
+    </Select>
   );
   const Row2 = ({ children }: { children: React.ReactNode }) => (
     <div className="grid grid-cols-2 gap-x-4 gap-y-3">{children}</div>
@@ -13331,7 +13439,7 @@ export default function AppToiCao({
   const [isLienThongMode, setIsLienThongMode] = useState(false);
   const [activeDonLienThong, setActiveDonLienThong] = useState<DonTiepNhan | null>(null);
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong">(donChiTietTabMoi ? "form" : "list");
   const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
@@ -13475,6 +13583,7 @@ export default function AppToiCao({
   const [khongCoGDT, setKhongCoGDT] = useState(false);
   const [coNoiDungToCao, setCoNoiDungToCao] = useState(false);
   const [xinHoanThiHanhAn, setXinHoanThiHanhAn] = useState(false);
+  const [rutKhangNghi, setRutKhangNghi] = useState(false);
   // Số hiệu và hai mốc ngày của chính lá đơn. "Ngày tòa nhận" và "Ngày ghi trên
   // đơn" là hai mốc khác nhau — một là lúc đơn tới tòa, một là ngày người gửi
   // đề trên đơn — và cột Thông tin người gửi ở Danh sách đơn in cả hai, nên
@@ -14007,36 +14116,36 @@ export default function AppToiCao({
                           <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                         </>
                         : view === "phancong"
-                            ? <span className="text-[#333]">Phân công thẩm phán</span>
-                            : view === "phe_duyet"
+                          ? <span className="text-[#333]">Phân công thẩm phán</span>
+                          : view === "phe_duyet"
+                            ? <>
+                              <span className="text-[#1a5a96] hover:underline cursor-pointer">Công tác lãnh đạo</span>
+                              <ChevronRight size={12} />
+                              <span className="text-[#333]">Phê duyệt đề xuất</span>
+                            </>
+                            : view === "van_ban_trinh_ky"
                               ? <>
-                                <span className="text-[#1a5a96] hover:underline cursor-pointer">Công tác lãnh đạo</span>
+                                <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
                                 <ChevronRight size={12} />
-                                <span className="text-[#333]">Phê duyệt đề xuất</span>
+                                <span className="text-[#333]">Danh sách văn bản</span>
                               </>
-                              : view === "van_ban_trinh_ky"
+                              : view === "hieu_suat_chi_tiet"
                                 ? <>
-                                  <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                                  <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Hiệu suất cán bộ kỳ này</span>
                                   <ChevronRight size={12} />
-                                  <span className="text-[#333]">Danh sách văn bản</span>
+                                  <span className="text-[#333]">Xem chi tiết</span>
                                 </>
-                                : view === "hieu_suat_chi_tiet"
+                                : view === "so_sanh_loai_an"
                                   ? <>
-                                    <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Hiệu suất cán bộ kỳ này</span>
+                                    <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Trang chủ</span>
                                     <ChevronRight size={12} />
-                                    <span className="text-[#333]">Xem chi tiết</span>
+                                    <span className="text-[#333]">So sánh số đơn theo loại án & kết quả xử lý</span>
                                   </>
-                                  : view === "so_sanh_loai_an"
-                                    ? <>
-                                      <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("home")}>Trang chủ</span>
-                                      <ChevronRight size={12} />
-                                      <span className="text-[#333]">So sánh số đơn theo loại án & kết quả xử lý</span>
-                                    </>
-                                    : <>
-                                      <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
-                                      <ChevronRight size={12} />
-                                      <span className="text-[#333]">Thêm mới</span>
-                                    </>
+                                  : <>
+                                    <span className="text-[#1a5a96] hover:underline cursor-pointer" onClick={() => setView("list")}>Danh sách đơn</span>
+                                    <ChevronRight size={12} />
+                                    <span className="text-[#333]">Thêm mới</span>
+                                  </>
             }
           </div>
 
@@ -14086,13 +14195,13 @@ export default function AppToiCao({
           {/* Tiếp nhận đơn liên thông */}
           {view === "tiepnhan_don_lienthong" && (
             <div className="flex-1 overflow-hidden flex flex-col">
-              <TiepNhanDonLienThong 
-                currentRole={currentRole} 
+              <TiepNhanDonLienThong
+                currentRole={currentRole}
                 onPhanLoaiGDT={(don) => {
                   setEditingRowId(null);
                   setView("form");
                   setActiveDonLienThong(don);
-                }} 
+                }}
               />
             </div>
           )}
@@ -14124,7 +14233,7 @@ export default function AppToiCao({
                 onBieuMau={(r, vbId) => { setBieuMauRow(r); setBieuMauVbId(vbId ?? null); setView("bieumau"); }}
                 onWordEditor={() => setView("wordeditor")}
                 onEditRow={(id) => { setEditingRowId(id); setView("form"); setIsLienThongMode(false); }}
-                isTruongPhong={false}
+                isTruongPhong={currentRole === "truong-phong"}
               />
             </div>
           )}
@@ -14231,11 +14340,11 @@ export default function AppToiCao({
                       <Lbl req>Hình thức nhận</Lbl>
                       <Sel disabled={isLienThongMode} value={hinhThucNhan} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setHinhThucNhan(e.target.value)}>
                         <option value="">-- Chọn hình thức nhận --</option>
-                        <option>Bưu điện</option>
-                        <option>Điện tử</option>
-                        <option>Trực tiếp</option>
-                        <option>Nội bộ</option>
-                        <option>Tiếp công dân</option>
+                        <option value="Bưu điện">Bưu điện</option>
+                        <option value="Điện tử">Điện tử</option>
+                        <option value="Trực tiếp">Trực tiếp</option>
+                        <option value="Nội bộ">Nội bộ</option>
+                        <option value="Tiếp công dân">Tiếp công dân</option>
                       </Sel>
                     </div>
                     <div>
@@ -14267,10 +14376,10 @@ export default function AppToiCao({
                       <Lbl req>Thủ tục giải quyết</Lbl>
                       <Sel value={thuTucGQ} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setThuTucGQ(e.target.value)}>
                         <option value="">-- Chọn --</option>
-                        <option>Giám đốc thẩm</option>
-                        <option>Tái thẩm</option>
-                        <option>Giám đốc thẩm + Tái thẩm</option>
-                        <option>Chưa xác định</option>
+                        <option value="Giám đốc thẩm">Giám đốc thẩm</option>
+                        <option value="Tái thẩm">Tái thẩm</option>
+                        <option value="Giám đốc thẩm + Tái thẩm">Giám đốc thẩm + Tái thẩm</option>
+                        <option value="Chưa xác định">Chưa xác định</option>
                       </Sel>
                     </div>
                     {/* Số hiệu đơn: do NƠI GỬI đánh trên đơn, khác mã đơn do hệ
@@ -14416,7 +14525,7 @@ export default function AppToiCao({
                         <div>
                           <Lbl req={!isDonKhac && !khongCoGDT && !chuyenDiNoiKhac}>Loại QĐ/BA</Lbl>
                           <Sel value={loaiQDBaEffective} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLoaiQDBa(e.target.value)}>
-                            {loaiQDBaOptions.map(o => <option key={o}>{o}</option>)}
+                            {loaiQDBaOptions.map(o => <option key={o} value={o}>{o}</option>)}
                           </Sel>
                         </div>
                         <div>
@@ -14428,14 +14537,14 @@ export default function AppToiCao({
                             if (baSearched) dienNguoiThamGia(e.target.value);
                           }}>
                             <option value="">-- Chọn --</option>
-                            <option>Hình sự</option>
-                            <option>Dân sự</option>
-                            <option>Hành chính</option>
-                            <option>Kinh doanh thương mại</option>
-                            <option>Hôn nhân gia đình</option>
-                            <option>Lao động</option>
-                            <option>Sở hữu trí tuệ</option>
-                            <option>Phá sản</option>
+                            <option value="Hình sự">Hình sự</option>
+                            <option value="Dân sự">Dân sự</option>
+                            <option value="Hành chính">Hành chính</option>
+                            <option value="Kinh doanh thương mại">Kinh doanh thương mại</option>
+                            <option value="Hôn nhân gia đình">Hôn nhân gia đình</option>
+                            <option value="Lao động">Lao động</option>
+                            <option value="Sở hữu trí tuệ">Sở hữu trí tuệ</option>
+                            <option value="Phá sản">Phá sản</option>
                           </Sel>
                         </div>
                         {isDonKhieuNaiTuPhap && (
@@ -14573,10 +14682,10 @@ export default function AppToiCao({
                                   <td className="border border-[#ddd] px-3 py-2 text-[#1a5a96]">{r.vuAn}</td>
                                   <td className="border border-[#ddd] px-3 py-2">
                                     <span className={`inline-block px-2 py-[2px] rounded text-[10px] font-semibold ${r.nguon === "QLA"
-                                        ? "bg-[#e0f2fe] text-[#0369a1]"
-                                        : r.nguon === "Kho số hóa"
-                                          ? "bg-[#fef3c7] text-[#d97706]"
-                                          : "bg-[#f3f4f6] text-[#374151]"
+                                      ? "bg-[#e0f2fe] text-[#0369a1]"
+                                      : r.nguon === "Kho số hóa"
+                                        ? "bg-[#fef3c7] text-[#d97706]"
+                                        : "bg-[#f3f4f6] text-[#374151]"
                                       }`}>
                                       {r.nguon}
                                     </span>
@@ -15053,6 +15162,11 @@ export default function AppToiCao({
                         checked={coNoiDungToCao} onChange={e => setCoNoiDungToCao(e.target.checked)} />
                       Có nội dung tố cáo
                     </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-[#333] whitespace-nowrap">
+                      <input type="checkbox" className="w-[15px] h-[15px] accent-[#8b1a1a]"
+                        checked={rutKhangNghi} onChange={e => setRutKhangNghi(e.target.checked)} />
+                      Đương sự rút đơn/kháng nghị
+                    </label>
                     {loaiAnForm === "Hình sự" && (
                       <>
                         <label className={`flex items-center gap-2 cursor-pointer text-[13px] whitespace-nowrap ${xulychuynhuong ? "text-[#aaa] cursor-not-allowed opacity-60" : "text-[#333]"}`}>
@@ -15065,6 +15179,18 @@ export default function AppToiCao({
                       </>
                     )}
                   </div>
+
+                  {rutKhangNghi && (
+                    <div className="mb-3 px-3 py-2 bg-[#f0f9ff] border border-[#bae6fd] rounded-[4px] text-[12px] text-[#0369a1]">
+                      <div className="font-semibold mb-1 flex items-center gap-1"><AlertCircle size={14} /> Hướng xử lý khi đương sự rút đơn/kháng nghị:</div>
+                      <ul className="list-disc pl-4 space-y-0.5">
+                        <li><b>Chưa thụ lý:</b> Ra <i>Thông báo trả lại đơn</i>.</li>
+                        <li><b>Đã thụ lý + Đã nộp án phí:</b> Ra <i>Thông báo trả lại đơn</i> và <i>Thông báo trả lại án phí</i>.</li>
+                        <li><b>Đã thụ lý vụ án:</b> Ra <i>Quyết định đình chỉ vụ án</i>.</li>
+                      </ul>
+                      <div className="mt-2 text-[11px] italic text-[#0284c7]">Vui lòng chọn kết quả xử lý tương ứng ở phía dưới.</div>
+                    </div>
+                  )}
 
                   {/* Tùy chọn con của Án tử hình */}
                   {loaiAnForm === "Hình sự" && !xulychuynhuong && anTuHinh && (

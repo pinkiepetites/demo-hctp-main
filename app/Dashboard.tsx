@@ -137,6 +137,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
   // là những vai trò nằm trong luồng ký duyệt văn bản và có quyền phân công.
   // Cán bộ thấy bản rút gọn "Tải việc & hiệu suất của tôi" thay vì khối trắng.
   const hienThiTheDuyet = currentRole === "truong-phong" || currentRole === "pho-vp" || currentRole === "chanh-an" || currentRole === "lanh-dao";
+<<<<<<< HEAD
 
   return (
     <div>
@@ -278,6 +279,8 @@ const DonTheoTrangThaiThuLy = ({ trangThai, onXemDanhSachDon }: {
     </div>
   </div>
 );
+=======
+>>>>>>> 393e4bb030584bd70ddc4981669c52cc1c7aab50
 
 // ─── Khối "Báo cáo kết quả xử lý theo kỳ" ────────────────────────────────────
 // Nguồn: báo cáo chốt kỳ của Phòng HCTP — KHÁC "Hiện trạng đơn" ở trên (đếm
@@ -527,6 +530,7 @@ const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon, onXemSoSanhLoaiAn }: 
                 "Đơn theo trạng thái thụ lý" ở khối Hiện trạng, nhưng lấy nguồn khác
                 nên ra số khác. Giữ cả hai thì người đọc phải tự đoán bên nào đúng. */}
         </div>
+<<<<<<< HEAD
 
         </NhomCon>
       </div>
@@ -1027,6 +1031,16 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
       {/* Báo cáo kết quả xử lý theo kỳ — chung cho mọi vai trò. Lưới "Đơn theo
           trạng thái thụ lý" nằm trong khối này, ngay dưới bộ lọc kỳ. */}
       <BaoCaoKetQuaTheoKy trangThai={hienTrang.trangThai} onXemDanhSachDon={onXemDanhSachDon} onXemSoSanhLoaiAn={onXemSoSanhLoaiAn} />
+=======
+      </div>
+
+        </NhomCon>
+      </div>
+
+      {/* Widget "Hiệu suất cán bộ" cũ đã gỡ: Tầng 3 ("Tải việc của phòng") thay
+          thế, và giữ cả hai thì trên cùng một màn có hai danh sách cán bộ khác
+          nhau — đúng thứ lỗi mà tầng đó sinh ra để dẹp. */}
+>>>>>>> 393e4bb030584bd70ddc4981669c52cc1c7aab50
     </div>
   );
 }

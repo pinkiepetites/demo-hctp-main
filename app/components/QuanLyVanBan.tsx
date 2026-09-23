@@ -28,7 +28,7 @@ import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
-  Inbox, Home,
+  Inbox, Home, List, FilePlus,
 } from "lucide-react";
 import PheDuyetToTrinhModal from "./PheDuyetToTrinhPhanCong";
 
@@ -1652,7 +1652,7 @@ export type LocVanBanTuTrangChu = {
 const nguoiTraLaiGanNhat = (vb: VanBanTrinh) =>
   [...(vb.lichSu ?? [])].reverse().find(m => m.hanhDong === "TraLai")?.nguoi;
 
-export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, locTuTrangChu, onXoaLocTuTrangChu }: {
+export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highlightId, openId, onDaMo, locMaDon, locTuTrangChu, onXoaLocTuTrangChu, onTaoThongBaoPhanCong }: {
   danhSach: VanBanTrinh[];
   setDanhSach: React.Dispatch<React.SetStateAction<VanBanTrinh[]>>;
   currentRole: string;
@@ -1665,8 +1665,9 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
   locMaDon?: string | null;
   locTuTrangChu?: LocVanBanTuTrangChu | null;
   onXoaLocTuTrangChu?: () => void;
+  onTaoThongBaoPhanCong?: (donList: any[]) => void;
 }) => {
-  const [tab, setTab] = useState<TabDS>(initialTab);
+  const [tab, setTab] = useState<TabDS>(locTuTrangChu?.trangThai || "all");
   const [tim, setTim] = useState("");
   const [chonId, setChonId] = useState<string | null>(null);
   const { nguoi: nguoiDung, chucVu } = nguoiTheoVaiTro(currentRole);
@@ -2535,8 +2536,8 @@ const luuGhiNhoTrinhTiep = (loaiVanBan: string, data: GhiNhoTrinhTiep) => {
   } catch { /* localStorage không khả dụng — bỏ qua */ }
 };
 
-const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
-  vb: VanBanTrinh; nguoiDung: string; chucVu: string; danhSach: VanBanTrinh[];
+const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapNhat, onClose }: {
+  vb: VanBanTrinh; nguoiDung: string; chucVu: string; currentRole?: string; danhSach: VanBanTrinh[];
   onCapNhat: (v: VanBanTrinh) => void; onClose: () => void;
 }) => {
   const [showPheDuyetModal, setShowPheDuyetModal] = useState(false);
