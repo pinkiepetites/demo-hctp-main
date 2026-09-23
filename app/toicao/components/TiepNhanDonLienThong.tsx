@@ -4,7 +4,7 @@ import { Table, Tabs, Modal, Drawer, Select, Input, Button, Tag, Radio, Space, T
 import type { ColumnsType } from "antd/es/table";
 
 type DonNguon = "VBDH" | "DVTT" | "DVC" | "BuuDien" | "TrucTiep" | "ToaKhac";
-type DonTrangThai = "du-dieu-kien" | "chua-du-dieu-kien";
+type DonTrangThai = "cho-phan-cong" | "da-phan-cong" | "cho-xu-ly" | "tra-lai";
 
 interface DonTiepNhan {
   maDon: string;
@@ -38,7 +38,7 @@ const DON_SAMPLE: DonTiepNhan[] = [
   {
     maDon: "001256", ngayTiepNhan: "19/08/2026 08:14", nguoiLamDon: "Nguyễn Văn Bình",
     hinhThucDon: "Đơn khiếu nại tố cáo trong tố tụng", loaiAn: "Hành chính", canBoTiepNhan: "Chưa phân công",
-    trangThai: "du-dieu-kien", nguon: "VBDH", coDonLienQuan: true, dieuKienGoiY: { hopLe: true },
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: true, dieuKienGoiY: { hopLe: true },
     soBaqd: "15/2026/HC-ST", ngayBaqd: "10/01/2026", toaXetXu: "TAND Tp. Hà Nội", noiDungQuanHePhapLuat: "Khiếu nại quyết định hành chính",
     donLienQuan: [
       { maDon: "001025", quanHe: "Trùng số/ngày BA, QĐ" },
@@ -48,59 +48,61 @@ const DON_SAMPLE: DonTiepNhan[] = [
   {
     maDon: "DVTT-2026-00125", ngayTiepNhan: "18/08/2026 14:30", nguoiLamDon: "Trần Thị Lan",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Dân sự", canBoTiepNhan: "Chưa phân công",
-    trangThai: "chua-du-dieu-kien", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu BA/QĐ có hiệu lực" },
+    trangThai: "cho-phan-cong", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu BA/QĐ có hiệu lực" },
     soBaqd: "112/2025/DS-PT", ngayBaqd: "05/11/2025", toaXetXu: "TAND Cấp cao tại Hà Nội", noiDungQuanHePhapLuat: "Tranh chấp đất đai",
   },
   {
     maDon: "001254", ngayTiepNhan: "18/08/2026 09:00", nguoiLamDon: "Lê Minh Tuấn",
     hinhThucDon: "Thông báo phát hiện vi phạm pháp luật", loaiAn: "Hình sự", canBoTiepNhan: "Phạm Quốc Hưng",
-    trangThai: "du-dieu-kien", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThai: "da-phan-cong", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
     soBaqd: "88/2026/HS-ST", ngayBaqd: "15/03/2026", toaXetXu: "TAND tỉnh Bắc Ninh", noiDungQuanHePhapLuat: "Tội lừa đảo chiếm đoạt tài sản",
   },
   {
     maDon: "DVC-2026-00312", ngayTiepNhan: "17/08/2026 15:45", nguoiLamDon: "Vũ Thu Hà",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Lao động", canBoTiepNhan: "Nguyễn Hải Trâm",
-    trangThai: "du-dieu-kien", nguon: "DVC", coDonLienQuan: true, dieuKienGoiY: { hopLe: true },
+    trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: true, dieuKienGoiY: { hopLe: true },
     soBaqd: "45/2025/LĐ-PT", ngayBaqd: "20/12/2025", toaXetXu: "TAND Cấp cao tại Đà Nẵng", noiDungQuanHePhapLuat: "Tranh chấp sa thải trái pháp luật",
     donLienQuan: [{ maDon: "000921", quanHe: "Có yêu cầu bổ sung trước đó" }],
   },
   {
     maDon: "001250", ngayTiepNhan: "16/08/2026 10:20", nguoiLamDon: "Công ty TNHH ABC",
     hinhThucDon: "CV kiến nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Phạm Quốc Hưng",
-    trangThai: "du-dieu-kien", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThai: "tra-lai", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
   },
   {
     maDon: "001248", ngayTiepNhan: "15/08/2026 09:30", nguoiLamDon: "Hoàng Văn Nam",
     hinhThucDon: "CV chuyển đơn", loaiAn: "Hành chính", canBoTiepNhan: "Nguyễn Hải Trâm",
-    trangThai: "du-dieu-kien", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThai: "cho-xu-ly", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
   },
   {
     maDon: "001258", ngayTiepNhan: "19/08/2026 10:05", nguoiLamDon: "Đặng Bích Ngọc",
     hinhThucDon: "Đơn khác", loaiAn: "Dân sự", canBoTiepNhan: "Chưa phân công",
-    trangThai: "chua-du-dieu-kien", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu thông tin CCCD" },
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu thông tin CCCD" },
   },
   {
     maDon: "DVC-2026-00315", ngayTiepNhan: "19/08/2026 11:20", nguoiLamDon: "Võ Quang Huy",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Trần Văn Minh",
-    trangThai: "du-dieu-kien", nguon: "DVC", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
   },
   {
     maDon: "001260", ngayTiepNhan: "20/08/2026 08:30", nguoiLamDon: "Nguyễn Thị Phương",
     hinhThucDon: "CV chuyển kiến nghị GĐT-TT", loaiAn: "Lao động", canBoTiepNhan: "Chưa phân công",
-    trangThai: "du-dieu-kien", nguon: "VBDH", coDonLienQuan: true,
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: true,
     donLienQuan: [{ maDon: "001250", quanHe: "Liên quan đến đơn của công ty TNHH ABC" }]
   },
   {
     maDon: "001262", ngayTiepNhan: "20/08/2026 14:15", nguoiLamDon: "Lý Đức Trọng",
     hinhThucDon: "Tài liệu chứng cứ", loaiAn: "Hình sự", canBoTiepNhan: "Lê Thị Hoa",
-    trangThai: "du-dieu-kien", nguon: "DVTT", coDonLienQuan: true,
+    trangThai: "da-phan-cong", nguon: "DVTT", coDonLienQuan: true,
     donLienQuan: [{ maDon: "001254", quanHe: "Tài liệu bổ sung cho vụ Lê Minh Tuấn" }]
   }
 ];
 
 const TRANG_THAI_META: Record<DonTrangThai, { label: string; color: string }> = {
-  "du-dieu-kien": { label: "Đủ điều kiện", color: "success" },
-  "chua-du-dieu-kien": { label: "Chưa đủ điều kiện", color: "error" },
+  "cho-phan-cong": { label: "Chờ phân công", color: "orange" },
+  "da-phan-cong": { label: "Đã phân công", color: "blue" },
+  "cho-xu-ly": { label: "Chờ xử lý", color: "green" },
+  "tra-lai": { label: "Trả lại", color: "red" },
 };
 
 const NGUON_META_LT: Record<DonNguon, { label: string; color: string }> = {
@@ -151,6 +153,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   const [fLoaiAn, setFLoaiAn] = useState("");
   const [fCanBo, setFCanBo] = useState("");
   const [fTrangThai, setFTrangThai] = useState("");
+  const [fDieuKien, setFDieuKien] = useState("tat-ca");
 
   // Popup state
   const [chiTietPopup, setChiTietPopup] = useState<DonTiepNhan | null>(null);
@@ -162,14 +165,16 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
 
   const counts = useMemo(() => ({
     "tat-ca": DON_SAMPLE.length,
-    "du-dieu-kien": DON_SAMPLE.filter(d => d.trangThai === "du-dieu-kien").length,
-    "chua-du-dieu-kien": DON_SAMPLE.filter(d => d.trangThai === "chua-du-dieu-kien").length,
+    "cho-phan-cong": DON_SAMPLE.filter(d => d.trangThai === "cho-phan-cong").length,
+    "da-phan-cong": DON_SAMPLE.filter(d => d.trangThai === "da-phan-cong").length,
+    "tra-lai": DON_SAMPLE.filter(d => d.trangThai === "tra-lai").length,
   }), []);
 
   const tabItems = [
     { key: "tat-ca", label: `Tất cả (${counts["tat-ca"]})` },
-    { key: "du-dieu-kien", label: `Đủ điều kiện (${counts["du-dieu-kien"]})` },
-    { key: "chua-du-dieu-kien", label: `Chưa đủ điều kiện (${counts["chua-du-dieu-kien"]})` },
+    { key: "cho-phan-cong", label: `Chờ phân công (${counts["cho-phan-cong"]})` },
+    { key: "da-phan-cong", label: `Đã phân công (${counts["da-phan-cong"]})` },
+    { key: "tra-lai", label: `Trả lại (${counts["tra-lai"]})` },
   ];
 
   const filtered = useMemo(() => {
@@ -182,10 +187,12 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       if (fCanBo && d.canBoTiepNhan !== fCanBo) return false;
       if (fTrangThai && d.trangThai !== fTrangThai) return false;
       if (fNguoiDon && !d.nguoiLamDon.toLowerCase().includes(fNguoiDon.toLowerCase())) return false;
+      if (fDieuKien === "du" && (!d.dieuKienGoiY || !d.dieuKienGoiY.hopLe)) return false;
+      if (fDieuKien === "chua-du" && d.dieuKienGoiY?.hopLe !== false) return false;
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoTiepNhan].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, fDieuKien]);
 
   const resetAdvanced = () => {
     setFNguon(""); setFNgayTu(""); setFNgayDen(""); setFNguoiDon("");
@@ -327,19 +334,27 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       key: 'trangThaiPhanCong',
       width: 250,
       render: (_, record) => {
-        const sm = TRANG_THAI_META[record.trangThai];
-        const tag = <Tag color={sm.color}>{sm.label}</Tag>;
+        const hopLe = record.dieuKienGoiY?.hopLe !== false;
+        const tag = (
+          <div>
+            <Tag color={hopLe ? "success" : "error"}>
+              {hopLe ? 'Đủ điều kiện' : 'Chưa đủ điều kiện'}
+            </Tag>
+            {!hopLe && record.dieuKienGoiY?.lyDo && (
+              <div className="text-[11px] text-red-500 mt-1">{record.dieuKienGoiY.lyDo}</div>
+            )}
+          </div>
+        );
 
         return (
           <div className="space-y-2">
             <div>{tag}</div>
-            {record.trangThai === 'chua-du-dieu-kien' && record.dieuKienGoiY?.lyDo && (
-              <div className="text-[11px] text-red-500 mt-1">{record.dieuKienGoiY.lyDo}</div>
+            {record.trangThai !== 'tra-lai' && (
+              <div>
+                <div className="text-[10px] text-gray-500 font-semibold mb-0.5">Phân công cán bộ xử lý</div>
+                <Tooltip title={record.canBoTiepNhan || "Chưa phân công"}><div className="truncate max-w-[140px] font-medium">{record.canBoTiepNhan || "Chưa phân công"}</div></Tooltip>
+              </div>
             )}
-            <div>
-              <div className="text-[10px] text-gray-500 font-semibold mb-0.5">Phân công cán bộ xử lý</div>
-              <Tooltip title={record.canBoTiepNhan || "Chưa phân công"}><div className="truncate max-w-[140px] font-medium">{record.canBoTiepNhan || "Chưa phân công"}</div></Tooltip>
-            </div>
           </div>
         );
       }
@@ -369,7 +384,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               }} />
             </Tooltip>
           )}
-          {(!isCanBoPhanLoai && !isChanhVP) && (
+          {(!isCanBoPhanLoai && !isChanhVP) && record.trangThai !== "tra-lai" && (
             <Tooltip title="Trả lại">
               <Button type="text" danger icon={<CornerUpLeft size={16} />} onClick={(e) => { e.stopPropagation(); setTraLaiPopup(record); }} />
             </Tooltip>
@@ -483,7 +498,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                     </div>
                     <div className="col-span-1">
                       <div className="text-[13px] font-medium text-gray-700 mb-1.5">Trạng thái</div>
-                      <Select className="w-full h-[38px]" value={fTrangThai} onChange={setFTrangThai} options={[{ value: '', label: 'Tất cả' }, { value: 'du-dieu-kien', label: 'Đủ điều kiện' }, { value: 'chua-du-dieu-kien', label: 'Chưa đủ điều kiện' }]} />
+                      <Select className="w-full h-[38px]" value={fDieuKien} onChange={setFDieuKien} options={[{ value: 'tat-ca', label: 'Tất cả' }, { value: 'du', label: 'Đủ điều kiện' }, { value: 'chua-du', label: 'Chưa đủ điều kiện' }]} />
                     </div>
                     <div className="col-span-1">
                       <div className="text-[13px] font-medium text-gray-700 mb-1.5">Cán bộ xử lý</div>
@@ -521,7 +536,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
             </div>
           </div>
 
-          {(isTruongPhong && (activeTab === "tat-ca" || activeTab === "du-dieu-kien")) && (
+          {(isTruongPhong && (activeTab === "tat-ca" || activeTab === "cho-phan-cong")) && (
             <div className="p-3 border-b border-gray-200 flex justify-end gap-3 items-center shrink-0 bg-white z-10">
               {selectedRowKeys.length > 0 && (
                 <span className="text-sm text-gray-600 mr-2">Đã chọn <b>{selectedRowKeys.length}</b> đơn</span>
@@ -575,7 +590,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           open={!!chiTietPopup}
           extra={
             <Space>
-              {chiTietPopup?.nguon === "VBDH" && (
+              {chiTietPopup?.nguon === "VBDH" && chiTietPopup?.trangThai !== "tra-lai" && (
                 <Button danger icon={<CornerUpLeft size={14} />} onClick={() => { setTraLaiPopup(chiTietPopup); setChiTietPopup(null); }}>Trả lại</Button>
               )}
               {isCanBoPhanLoai && (
