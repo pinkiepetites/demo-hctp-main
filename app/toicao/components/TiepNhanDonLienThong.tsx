@@ -171,9 +171,9 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   }), []);
 
   const tabItems = [
-    { key: "tat-ca", label: `Tất cả (${counts["tat-ca"]})` },
+    { key: "tat-ca", label: `Tất cả` },
     { key: "cho-phan-cong", label: `Chờ phân công (${counts["cho-phan-cong"]})` },
-    { key: "da-phan-cong", label: `Đã phân công (${counts["da-phan-cong"]})` },
+    { key: "da-phan-cong", label: `Đã phân công` },
     { key: "tra-lai", label: `Trả lại (${counts["tra-lai"]})` },
   ];
 
