@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { X, FileText, Calendar } from "lucide-react";
 import { F, BORDER, TEXT, MUTED } from "./shared";
-import { TrinhKyModal } from "./TrinhKyModal";
+import { TrinhKyModal } from "./TrinhKyModal";import { Button, Input } from "antd";
+
 
 // ── Word preview / editor modal cho Dự thảo văn bản giải quyết ─────────────────
 export function XemBieuMauDuThaoModal({
@@ -133,7 +134,7 @@ export function XemBieuMauDuThaoModal({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button
+          <Button
             onClick={onClose}
             style={{
               display: "flex",
@@ -151,7 +152,7 @@ export function XemBieuMauDuThaoModal({
             }}
           >
             ← Quay lại
-          </button>
+          </Button>
           <FileText size={20} color="#fff" />
           <div>
             <div style={{ fontWeight: 700, fontSize: 15, fontFamily: F, display: "flex", alignItems: "center", gap: 8 }}>
@@ -164,7 +165,7 @@ export function XemBieuMauDuThaoModal({
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
+          <Button
             onClick={() => alert("Đã lưu nội dung Dự thảo Word thành công!")}
             style={{
               padding: "7px 20px",
@@ -179,10 +180,10 @@ export function XemBieuMauDuThaoModal({
             }}
           >
             💾 Lưu thay đổi
-          </button>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 4 }}>
+          </Button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 4 }}>
             <X size={22} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -201,8 +202,8 @@ export function XemBieuMauDuThaoModal({
           fontFamily: F,
         }}
       >
-        <button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác">↩ Hoàn tác</button>
-        <button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại">↪ Làm lại</button>
+        <Button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác">↩ Hoàn tác</Button>
+        <Button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại">↪ Làm lại</Button>
         <div style={{ width: 1, height: 18, background: BORDER, margin: "0 2px" }} />
 
         <select onChange={e => { setFontFamily(e.target.value); execCmd("fontName", e.target.value); }} value={fontFamily} style={selectSt}>
@@ -219,27 +220,27 @@ export function XemBieuMauDuThaoModal({
         </select>
         <div style={{ width: 1, height: 18, background: BORDER, margin: "0 2px" }} />
 
-        <button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm"><b>B</b></button>
-        <button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng"><i>I</i></button>
-        <button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân"><u>U</u></button>
+        <Button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm"><b>B</b></Button>
+        <Button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng"><i>I</i></Button>
+        <Button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân"><u>U</u></Button>
         <div style={{ width: 1, height: 18, background: BORDER, margin: "0 2px" }} />
 
-        <button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</button>
-        <button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</button>
-        <button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</button>
-        <button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều">☰</button>
+        <Button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</Button>
+        <Button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</Button>
+        <Button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</Button>
+        <Button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều">☰</Button>
         <div style={{ width: 1, height: 18, background: BORDER, margin: "0 2px" }} />
 
-        <button onClick={() => window.print()} style={tbBtnSt}>🖨 In</button>
-        <button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
+        <Button onClick={() => window.print()} style={tbBtnSt}>🖨 In</Button>
+        <Button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
           📥 Tải file Word
-        </button>
+        </Button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: "auto", fontSize: 12, color: MUTED }}>
           <span>Thu phóng:</span>
-          <button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</button>
+          <Button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</Button>
           <span style={{ fontWeight: 600, color: TEXT, minWidth: 36, textAlign: "center" }}>{zoom}%</span>
-          <button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</button>
+          <Button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</Button>
         </div>
       </div>
 
@@ -661,7 +662,7 @@ export function TaoDuThaoModal({
               Tạo Dự thảo
             </span>
           </div>
-          <button
+          <Button
             onClick={onClose}
             style={{
               background: "none",
@@ -674,7 +675,7 @@ export function TaoDuThaoModal({
             }}
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Modal Body */}
@@ -769,8 +770,8 @@ export function TaoDuThaoModal({
                   <label style={lblSt}>
                     <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Đơn liên quan / Người đứng đơn
                   </label>
-                  <button
-                    type="button"
+                  <Button
+                    htmlType="button"
                     onClick={() => setShowAddNguoiModal(true)}
                     style={{
                       background: "none",
@@ -786,7 +787,7 @@ export function TaoDuThaoModal({
                     }}
                   >
                     + Thêm người đứng đơn
-                  </button>
+                  </Button>
                 </div>
 
                 <div style={{ position: "relative" }}>
@@ -842,7 +843,7 @@ export function TaoDuThaoModal({
                                 background: isWholeDonChecked || anyNguoiChecked ? "#fdf3f2" : "#fff",
                               }}
                             >
-                              <input
+                              <Input
                                 type="checkbox"
                                 checked={isWholeDonChecked}
                                 ref={el => { if (el) el.indeterminate = !isWholeDonChecked && anyNguoiChecked; }}
@@ -852,13 +853,13 @@ export function TaoDuThaoModal({
                               <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: "#222222" }}>
                                 {don.label}
                               </span>
-                              <button
-                                type="button"
+                              <Button
+                                htmlType="button"
                                 onClick={e => { e.stopPropagation(); setDonExpanded(p => ({ ...p, [don.id]: !p[don.id] })); }}
                                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a73e8", padding: "2px 4px" }}
                               >
                                 {isExpanded ? "▲ Thu gọn người đứng đơn" : `▼ Xem ${don.nguoi.length} người đứng đơn`}
-                              </button>
+                              </Button>
                             </div>
                             {isExpanded && don.nguoi.map(nguoi => (
                               <div
@@ -872,7 +873,7 @@ export function TaoDuThaoModal({
                                   background: donCheckedList[`${don.id}::${nguoi}`] ? "#fff5f5" : "#fafafa",
                                 }}
                               >
-                                <input
+                                <Input
                                   type="checkbox"
                                   checked={!!donCheckedList[`${don.id}::${nguoi}`] || isWholeDonChecked}
                                   onChange={() => toggleNguoiCheck(don.id, nguoi)}
@@ -885,20 +886,20 @@ export function TaoDuThaoModal({
                         );
                       })}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderTop: "1px solid #e0e0e0", background: "#fafafa" }}>
-                        <button
-                          type="button"
+                        <Button
+                          htmlType="button"
                           onClick={() => { setShowAddNguoiModal(true); setDonOpen(false); }}
                           style={{ fontSize: 11, color: "#8b1a1a", fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}
                         >
                           + Thêm mới người đứng đơn
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
+                          htmlType="button"
                           onClick={() => setDonOpen(false)}
                           style={{ padding: "5px 16px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600 }}
                         >
                           Xác nhận
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -914,7 +915,7 @@ export function TaoDuThaoModal({
                 {isKhieuNai ? (
                   <>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "chap-nhan" || ketQuaGQ === "tra-loi"}
@@ -924,7 +925,7 @@ export function TaoDuThaoModal({
                       <span style={{ fontWeight: (ketQuaGQ === "chap-nhan" || ketQuaGQ === "tra-loi") ? 700 : 400 }}>Chấp nhận khiếu nại</span>
                     </label>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "khong-chap-nhan"}
@@ -934,7 +935,7 @@ export function TaoDuThaoModal({
                       <span style={{ fontWeight: ketQuaGQ === "khong-chap-nhan" ? 700 : 400 }}>Không chấp nhận khiếu nại</span>
                     </label>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "xep-don"}
@@ -947,7 +948,7 @@ export function TaoDuThaoModal({
                 ) : (
                   <>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "khang-nghi"}
@@ -957,7 +958,7 @@ export function TaoDuThaoModal({
                       <span style={{ fontWeight: ketQuaGQ === "khang-nghi" ? 700 : 400 }}>Kháng nghị</span>
                     </label>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "tra-loi"}
@@ -967,7 +968,7 @@ export function TaoDuThaoModal({
                       <span style={{ fontWeight: ketQuaGQ === "tra-loi" ? 700 : 400 }}>Trả lời đơn</span>
                     </label>
                     <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketQuaGQ"
                         checked={ketQuaGQ === "xep-don"}
@@ -1011,7 +1012,7 @@ export function TaoDuThaoModal({
               <div>
                 <label style={lblSt}>Ngày quyết định</label>
                 <div style={{ position: "relative" }}>
-                  <input
+                  <Input
                     type="text"
                     value={ngayQuyetDinh}
                     onChange={e => setNgayQuyetDinh(e.target.value)}
@@ -1024,7 +1025,7 @@ export function TaoDuThaoModal({
 
               <div>
                 <label style={lblSt}>Số quyết định</label>
-                <input
+                <Input
                   type="text"
                   value={soQuyetDinh}
                   onChange={e => setSoQuyetDinh(e.target.value)}
@@ -1052,7 +1053,7 @@ export function TaoDuThaoModal({
               <div>
                 <label style={lblSt}>Ngày phát hành</label>
                 <div style={{ position: "relative" }}>
-                  <input
+                  <Input
                     type="text"
                     value={ngayPhatHanh}
                     onChange={e => setNgayPhatHanh(e.target.value)}
@@ -1087,8 +1088,8 @@ export function TaoDuThaoModal({
               <label style={{ ...lblSt, marginBottom: 0, fontWeight: 600 }}>
                 <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Nơi nhận
               </label>
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => setIsAddingNoiNhan(true)}
                 style={{
                   background: "#8b1a1a",
@@ -1103,7 +1104,7 @@ export function TaoDuThaoModal({
                 }}
               >
                 Thêm nơi nhận
-              </button>
+              </Button>
             </div>
 
             <div style={{ border: "1px solid #e0e0e0", borderRadius: 4, overflow: "hidden" }}>
@@ -1147,7 +1148,7 @@ export function TaoDuThaoModal({
                           </select>
                         </td>
                         <td style={{ padding: "6px 8px", borderRight: "1px solid #e0e0e0" }}>
-                          <input
+                          <Input
                             value={editChiTiet}
                             onChange={e => setEditChiTiet(e.target.value)}
                             style={{ ...inSt, padding: "4px 8px" }}
@@ -1155,7 +1156,7 @@ export function TaoDuThaoModal({
                           />
                         </td>
                         <td style={{ padding: "6px 8px", borderRight: "1px solid #e0e0e0" }}>
-                          <input
+                          <Input
                             value={editGhiChu}
                             onChange={e => setEditGhiChu(e.target.value)}
                             style={{ ...inSt, padding: "4px 8px" }}
@@ -1164,20 +1165,20 @@ export function TaoDuThaoModal({
                         </td>
                         <td style={{ padding: "6px 8px", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                            <button
-                              type="button"
+                            <Button
+                              htmlType="button"
                               onClick={() => handleSaveEdit(item.id)}
                               style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 3, padding: "3px 8px", fontSize: 11, cursor: "pointer", fontWeight: 600 }}
                             >
                               Lưu
-                            </button>
-                            <button
-                              type="button"
+                            </Button>
+                            <Button
+                              htmlType="button"
                               onClick={() => setEditingId(null)}
                               style={{ background: "#fff", color: "#333333", border: "1px solid #cccccc", borderRadius: 3, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
                             >
                               Hủy
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -1203,20 +1204,20 @@ export function TaoDuThaoModal({
                         </td>
                         <td style={{ padding: "9px 10px", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: 12, justifyContent: "center", alignItems: "center" }}>
-                            <button
-                              type="button"
+                            <Button
+                              htmlType="button"
                               onClick={() => handleStartEdit(item)}
                               style={{ background: "none", border: "none", cursor: "pointer", color: "#1a73e8", fontSize: 12, fontWeight: 500, padding: 0 }}
                             >
                               — Sửa
-                            </button>
-                            <button
-                              type="button"
+                            </Button>
+                            <Button
+                              htmlType="button"
                               onClick={() => handleDeleteNoiNhan(item.id)}
                               style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", fontSize: 12, fontWeight: 500, padding: 0 }}
                             >
                               🗑 Xóa
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -1242,7 +1243,7 @@ export function TaoDuThaoModal({
                         </select>
                       </td>
                       <td style={{ padding: "6px 8px", borderRight: "1px solid #e0e0e0" }}>
-                        <input
+                        <Input
                           value={newChiTiet}
                           onChange={e => setNewChiTiet(e.target.value)}
                           style={{ ...inSt, padding: "4px 8px" }}
@@ -1250,7 +1251,7 @@ export function TaoDuThaoModal({
                         />
                       </td>
                       <td style={{ padding: "6px 8px", borderRight: "1px solid #e0e0e0" }}>
-                        <input
+                        <Input
                           value={newGhiChu}
                           onChange={e => setNewGhiChu(e.target.value)}
                           style={{ ...inSt, padding: "4px 8px" }}
@@ -1259,20 +1260,20 @@ export function TaoDuThaoModal({
                       </td>
                       <td style={{ padding: "6px 8px", textAlign: "center" }}>
                         <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                          <button
-                            type="button"
+                          <Button
+                            htmlType="button"
                             onClick={handleSaveNewNoiNhan}
                             style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 3, padding: "3px 8px", fontSize: 11, cursor: "pointer", fontWeight: 600 }}
                           >
                             Lưu
-                          </button>
-                          <button
-                            type="button"
+                          </Button>
+                          <Button
+                            htmlType="button"
                             onClick={() => setIsAddingNoiNhan(false)}
                             style={{ background: "#fff", color: "#333333", border: "1px solid #cccccc", borderRadius: 3, padding: "3px 8px", fontSize: 11, cursor: "pointer" }}
                           >
                             Hủy
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -1296,8 +1297,8 @@ export function TaoDuThaoModal({
             flexWrap: "wrap",
           }}
         >
-          <button
-            type="button"
+          <Button
+            htmlType="button"
             onClick={onClose}
             style={{
               padding: "7px 22px",
@@ -1312,9 +1313,9 @@ export function TaoDuThaoModal({
             }}
           >
             Đóng
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            htmlType="button"
             onClick={handleSave}
             style={{
               padding: "7px 26px",
@@ -1329,9 +1330,9 @@ export function TaoDuThaoModal({
             }}
           >
             Lưu
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            htmlType="button"
             onClick={handleToggleLaySo}
             style={{
               padding: "7px 20px",
@@ -1346,9 +1347,9 @@ export function TaoDuThaoModal({
             }}
           >
             {daLaySo ? "Hủy lấy số" : "Lấy số"}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            htmlType="button"
             onClick={() => setShowTrinhKy(true)}
             style={{
               padding: "7px 26px",
@@ -1363,9 +1364,9 @@ export function TaoDuThaoModal({
             }}
           >
             Trình ký
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            htmlType="button"
             onClick={() => setShowBieuMau(true)}
             style={{
               padding: "7px 20px",
@@ -1380,7 +1381,7 @@ export function TaoDuThaoModal({
             }}
           >
             Xem biểu mẫu
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -1403,7 +1404,7 @@ export function TaoDuThaoModal({
               </div>
               <div>
                 <label style={lblSt}><span style={{ color: "#c0392b" }}>*</span> Tên người đứng đơn</label>
-                <input
+                <Input
                   type="text"
                   placeholder="Nhập họ và tên người đứng đơn..."
                   value={newNguoiTen}
@@ -1413,20 +1414,20 @@ export function TaoDuThaoModal({
               </div>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 18 }}>
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => setShowAddNguoiModal(false)}
                 style={{ padding: "6px 16px", background: "#fff", border: "1px solid #cccccc", borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}
               >
                 Hủy
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                htmlType="button"
                 onClick={handleAddNewNguoiDungDon}
                 style={{ padding: "6px 16px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}
               >
                 Thêm người đứng đơn
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1602,7 +1603,7 @@ export function TaoDuThaoCongVanModal({
           <span style={{ fontSize: 16, fontWeight: 700, color: "#222222", fontFamily: F }}>
             Tạo dự thảo
           </span>
-          <button
+          <Button
             onClick={onClose}
             style={{
               background: "none",
@@ -1615,7 +1616,7 @@ export function TaoDuThaoCongVanModal({
             }}
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -1634,7 +1635,7 @@ export function TaoDuThaoCongVanModal({
             <label style={lblSt}>Cách giải quyết</label>
             <div style={{ display: "flex", gap: 24, alignItems: "center", marginTop: 4 }}>
               {/* <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#222222" }}>
-                <input
+                <Input
                   type="radio"
                   name="cachGiaiQuyet"
                   checked={cachGiaiQuyet === "truc-tiep"}
@@ -1644,7 +1645,7 @@ export function TaoDuThaoCongVanModal({
                 Trao đổi trực tiếp
               </label> */}
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#222222" }}>
-                <input
+                <Input
                   type="radio"
                   name="cachGiaiQuyet"
                   checked={cachGiaiQuyet === "qua-cong-van"}
@@ -1666,7 +1667,7 @@ export function TaoDuThaoCongVanModal({
                     <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Ngày tạo CV
                   </label>
                   <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                    <input
+                    <Input
                       type="text"
                       placeholder="mm/dd/yyyy"
                       value={ngayTaoCV}
@@ -1681,7 +1682,7 @@ export function TaoDuThaoCongVanModal({
                   <label style={lblSt}>
                     <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Số CV
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Nhập số công văn"
                     value={soCV}
@@ -1692,7 +1693,7 @@ export function TaoDuThaoCongVanModal({
 
                 <div>
                   <label style={lblSt}>Người ký</label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Nhập tên người ký"
                     value={nguoiKy}
@@ -1721,7 +1722,7 @@ export function TaoDuThaoCongVanModal({
 
                 <div>
                   <label style={lblSt}>Đơn vị nhận</label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Chọn nơi nhận trước"
                     value={donViNhan}
@@ -1739,7 +1740,7 @@ export function TaoDuThaoCongVanModal({
               <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Ngày trao đổi
             </label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <input
+              <Input
                 type="text"
                 placeholder="mm/dd/yyyy"
                 value={ngayTraoDoi}
@@ -1811,24 +1812,24 @@ export function TaoDuThaoCongVanModal({
                           </td>
                           <td style={{ padding: "8px", color: "#222222" }}>
                             {isEditing ? (
-                              <input value={editDonVi} onChange={e => setEditDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                              <Input value={editDonVi} onChange={e => setEditDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                             ) : item.tenDonViNhan}
                           </td>
                           <td style={{ padding: "8px", color: "#666666" }}>
                             {isEditing ? (
-                              <input value={editGhiChu} onChange={e => setEditGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                              <Input value={editGhiChu} onChange={e => setEditGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                             ) : item.ghiChu}
                           </td>
                           <td style={{ padding: "8px", textAlign: "center" }}>
                             {isEditing ? (
                               <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                                <button onClick={() => handleSaveEdit(item.id)} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Lưu</button>
-                                <button onClick={() => setEditingId(null)} style={{ color: "#666666", background: "none", border: "none", cursor: "pointer" }}>Hủy</button>
+                                <Button onClick={() => handleSaveEdit(item.id)} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Lưu</Button>
+                                <Button onClick={() => setEditingId(null)} style={{ color: "#666666", background: "none", border: "none", cursor: "pointer" }}>Hủy</Button>
                               </div>
                             ) : (
                               <div style={{ display: "flex", gap: 8, justifyContent: "center", fontSize: 12 }}>
-                                <button onClick={() => handleStartEdit(item)} style={{ color: "#1a73e8", background: "none", border: "none", cursor: "pointer" }}>✎ Sửa</button>
-                                <button onClick={() => handleDeleteNoiNhan(item.id)} style={{ color: "#c0392b", background: "none", border: "none", cursor: "pointer" }}>Xóa</button>
+                                <Button onClick={() => handleStartEdit(item)} style={{ color: "#1a73e8", background: "none", border: "none", cursor: "pointer" }}>✎ Sửa</Button>
+                                <Button onClick={() => handleDeleteNoiNhan(item.id)} style={{ color: "#c0392b", background: "none", border: "none", cursor: "pointer" }}>Xóa</Button>
                               </div>
                             )}
                           </td>
@@ -1848,15 +1849,15 @@ export function TaoDuThaoCongVanModal({
                           </select>
                         </td>
                         <td style={{ padding: "6px" }}>
-                          <input placeholder="Tên đơn vị nhận" value={newDonVi} onChange={e => setNewDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                          <Input placeholder="Tên đơn vị nhận" value={newDonVi} onChange={e => setNewDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                         </td>
                         <td style={{ padding: "6px" }}>
-                          <input placeholder="Ghi chú" value={newGhiChu} onChange={e => setNewGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                          <Input placeholder="Ghi chú" value={newGhiChu} onChange={e => setNewGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                         </td>
                         <td style={{ padding: "6px", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                            <button onClick={handleAddNoiNhan} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Thêm</button>
-                            <button onClick={() => setIsAdding(false)} style={{ color: "#666666", background: "none", border: "none", cursor: "pointer" }}>Hủy</button>
+                            <Button onClick={handleAddNoiNhan} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Thêm</Button>
+                            <Button onClick={() => setIsAdding(false)} style={{ color: "#666666", background: "none", border: "none", cursor: "pointer" }}>Hủy</Button>
                           </div>
                         </td>
                       </tr>
@@ -1866,8 +1867,8 @@ export function TaoDuThaoCongVanModal({
               </div>
 
               {!isAdding && (
-                <button
-                  type="button"
+                <Button
+                  htmlType="button"
                   onClick={() => setIsAdding(true)}
                   style={{
                     border: "1px dashed #cccccc",
@@ -1881,7 +1882,7 @@ export function TaoDuThaoCongVanModal({
                   }}
                 >
                   + Thêm nơi nhận
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -1900,7 +1901,7 @@ export function TaoDuThaoCongVanModal({
           }}
         >
           <div style={{ display: "flex", gap: 10 }}>
-            <button
+            <Button
               onClick={onClose}
               style={{
                 padding: "7px 18px",
@@ -1914,8 +1915,8 @@ export function TaoDuThaoCongVanModal({
               }}
             >
               Đóng
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 setNgayTaoCV("");
                 setSoCV("");
@@ -1938,13 +1939,13 @@ export function TaoDuThaoCongVanModal({
               }}
             >
               Làm mới
-            </button>
+            </Button>
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
             {cachGiaiQuyet === "qua-cong-van" && (
               <>
-                <button
+                <Button
                   onClick={() => alert("Đang xem biểu mẫu...")}
                   style={{
                     padding: "7px 18px",
@@ -1958,8 +1959,8 @@ export function TaoDuThaoCongVanModal({
                   }}
                 >
                   Xem biểu mẫu
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowTrinhKy(true)}
                   style={{
                     padding: "7px 18px",
@@ -1974,10 +1975,10 @@ export function TaoDuThaoCongVanModal({
                   }}
                 >
                   Trình ký
-                </button>
+                </Button>
               </>
             )}
-            <button
+            <Button
               onClick={handleSave}
               style={{
                 padding: "7px 18px",
@@ -1992,7 +1993,7 @@ export function TaoDuThaoCongVanModal({
               }}
             >
               Lưu
-            </button>
+            </Button>
           </div>
         </div>
       </div>

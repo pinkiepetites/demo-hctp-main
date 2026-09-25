@@ -5,7 +5,8 @@ import {
   ChevronDown, ChevronRight, X, MessageSquare, ListFilter, Check,
   ExternalLink, Layers, Search, Sparkles
 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG, Badge } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG, Badge } from "./shared";import { Button, Input } from "antd";
+
 
 export type TaiLieuItem = {
   id: string;
@@ -230,18 +231,18 @@ export function TaiLieuHoSoView({
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED }}>
-            <button
+            <Button
               title="Đổi bố cục hiển thị"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
             >
               <Maximize2 size={13} />
-            </button>
-            <button
+            </Button>
+            <Button
               title="Bộ lọc nâng cao"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
             >
               <ListFilter size={14} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -266,7 +267,7 @@ export function TaiLieuHoSoView({
             ).map(tab => {
               const active = phamVi === tab.id;
               return (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setPhamVi(tab.id)}
                   style={{
@@ -287,7 +288,7 @@ export function TaiLieuHoSoView({
                   }}
                 >
                   {tab.label}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -313,7 +314,7 @@ export function TaiLieuHoSoView({
             ).map(tab => {
               const active = sapXep === tab.id;
               return (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setSapXep(tab.id)}
                   style={{
@@ -333,7 +334,7 @@ export function TaiLieuHoSoView({
                   }}
                 >
                   {tab.label}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -406,11 +407,11 @@ export function TaiLieuHoSoView({
               >
                 0
               </span>
-              <button
+              <Button
                 style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 1 }}
               >
                 <MoreVertical size={13} />
-              </button>
+              </Button>
             </div>
           </div> */}
 
@@ -497,7 +498,7 @@ export function TaiLieuHoSoView({
                               {doc.name}
                             </span>
                             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <button
+                              <Button
                                 onClick={e => toggleFavorite(doc.id, e)}
                                 style={{
                                   background: "none",
@@ -508,13 +509,13 @@ export function TaiLieuHoSoView({
                                 }}
                               >
                                 <Star size={13} fill={isFav ? "#eab308" : "none"} />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
                                 onClick={e => e.stopPropagation()}
                                 style={{ background: "none", border: "none", cursor: "pointer", padding: 1, color: MUTED }}
                               >
                                 <MoreVertical size={13} />
-                              </button>
+                              </Button>
                             </div>
                           </div>
 
@@ -555,7 +556,7 @@ export function TaiLieuHoSoView({
           }}
         >
           <div style={{ display: "flex", gap: 6 }}>
-            <button
+            <Button
               onClick={() => setShowUploadModal(true)}
               style={{
                 flex: 1,
@@ -575,8 +576,8 @@ export function TaiLieuHoSoView({
               }}
             >
               <Upload size={12} /> Tải lên tài liệu
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 showToast("Đang đồng bộ hồ sơ số hóa từ hệ thống quản lý...");
                 setTimeout(() => showToast("Đã đồng bộ hồ sơ số hóa thành công!"), 1500);
@@ -600,10 +601,10 @@ export function TaiLieuHoSoView({
               }}
             >
               <RefreshCw size={12} /> Đồng bộ hồ sơ số hóa
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button
             onClick={() => {
               showToast("Đã lưu trữ tài liệu vào kho hồ sơ số hóa.");
             }}
@@ -625,7 +626,7 @@ export function TaiLieuHoSoView({
             }}
           >
             <Archive size={12} /> Lưu trữ
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -656,7 +657,7 @@ export function TaiLieuHoSoView({
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {/* Zoom selector */}
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <button
+              <Button
                 onClick={() => setZoom(z => Math.max(50, z - 10))}
                 style={{
                   background: "none",
@@ -669,7 +670,7 @@ export function TaiLieuHoSoView({
                 }}
               >
                 -
-              </button>
+              </Button>
               <select
                 value={zoom}
                 onChange={e => setZoom(Number(e.target.value))}
@@ -691,7 +692,7 @@ export function TaiLieuHoSoView({
                 <option value={210}>210%</option>
                 <option value={250}>250%</option>
               </select>
-              <button
+              <Button
                 onClick={() => setZoom(z => Math.min(300, z + 10))}
                 style={{
                   background: "none",
@@ -704,53 +705,53 @@ export function TaiLieuHoSoView({
                 }}
               >
                 +
-              </button>
+              </Button>
             </div>
 
             <div style={{ width: 1, height: 18, background: BORDER }} />
 
             {/* Page navigation */}
             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: MUTED }}>
-              <button
+              <Button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
               >
                 ▲
-              </button>
+              </Button>
               <span style={{ fontWeight: 600, color: TEXT }}>{currentPage}</span>
               <span>/ {selectedDoc.pageCount || 1}</span>
-              <button
+              <Button
                 onClick={() => setCurrentPage(p => Math.min(selectedDoc.pageCount || 1, p + 1))}
                 style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
               >
                 ▼
-              </button>
+              </Button>
             </div>
 
             <div style={{ width: 1, height: 18, background: BORDER }} />
 
             {/* Print & Download */}
-            <button
+            <Button
               onClick={() => showToast("Đang tải file PDF xuống máy...")}
               title="Tải xuống"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}
             >
               <Download size={15} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => window.print()}
               title="In tài liệu"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}
             >
               <Printer size={15} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => showToast("Đã mở rộng chế độ xem toàn màn hình")}
               title="Mở rộng"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}
             >
               <ExternalLink size={15} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -869,12 +870,12 @@ export function TaiLieuHoSoView({
                 <span style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>
                   Ghi chú tài liệu ({notes.length})
                 </span>
-                <button
+                <Button
                   onClick={() => setShowNotes(false)}
                   style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
                 >
                   <X size={16} />
-                </button>
+                </Button>
               </div>
 
               {/* Notes List */}
@@ -922,7 +923,7 @@ export function TaiLieuHoSoView({
                     resize: "none",
                   }}
                 />
-                <button
+                <Button
                   onClick={handleAddNote}
                   style={{
                     marginTop: 6,
@@ -939,7 +940,7 @@ export function TaiLieuHoSoView({
                   }}
                 >
                   + Thêm ghi chú
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -974,9 +975,9 @@ export function TaiLieuHoSoView({
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT }}>Tải lên tài liệu hồ sơ mới</h3>
-              <button onClick={() => setShowUploadModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
+              <Button onClick={() => setShowUploadModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
                 <X size={18} />
-              </button>
+              </Button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -984,7 +985,7 @@ export function TaiLieuHoSoView({
                 <label style={{ fontSize: 11, fontWeight: 600, color: MUTED, display: "block", marginBottom: 4 }}>
                   Tên tài liệu / Văn bản <span style={{ color: RED }}>*</span>
                 </label>
-                <input
+                <Input
                   type="text"
                   placeholder="Ví dụ: Bản án sơ thẩm, Đơn đề nghị, Biên bản..."
                   style={{ width: "100%", padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box" }}
@@ -1034,15 +1035,15 @@ export function TaiLieuHoSoView({
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => setShowUploadModal(false)}
                 style={{ padding: "7px 18px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}
               >
                 Hủy bỏ
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                htmlType="button"
                 onClick={() => {
                   setShowUploadModal(false);
                   showToast("Đã tải lên tài liệu mới thành công!");
@@ -1050,7 +1051,7 @@ export function TaiLieuHoSoView({
                 style={{ padding: "7px 22px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
               >
                 Xác nhận tải lên
-              </button>
+              </Button>
             </div>
           </div>
         </div>

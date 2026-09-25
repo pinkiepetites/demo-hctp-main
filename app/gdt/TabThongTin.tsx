@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Eye, Trash2, Sliders } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge, getThoiHieuOptions, type UserRoleType } from "./shared";
-import type { VuAnDetailData } from "./App";
-import { LOAI_AN_OPTIONS, LoaiAn } from "./data";
+import type { VuAnDetailData } from "./QuanLyVuAnView";
+import { LOAI_AN_OPTIONS, LoaiAn } from "./data";import { Button, Input } from "antd";
+
 
 export function SectionCard({ title, children, collapsible = false }: { title: string; children: React.ReactNode; collapsible?: boolean }) {
   const [open, setOpen] = React.useState(true);
@@ -644,8 +645,8 @@ function NguoiLienQuanTable({ rows, noMarginBottom = false, showToiDanh = false 
             <td style={{ ...TD_STYLE, fontSize: 12, color: TEXT }}>{r.diaChi}</td>
             <td style={{ ...TD_STYLE, textAlign: "center" }}>
               <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-                <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem"><Eye size={13} color={MUTED} /></button>
-                <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa"><Trash2 size={13} color={MUTED} /></button>
+                <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem"><Eye size={13} color={MUTED} /></Button>
+                <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa"><Trash2 size={13} color={MUTED} /></Button>
               </div>
             </td>
           </tr>
@@ -847,7 +848,7 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
             <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
               {getThoiHieuOptions(userRole, selectedLoaiAn).map(({ val, label }) => (
                 <label key={val} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: TEXT, fontFamily: F, cursor: "pointer", whiteSpace: "nowrap" }}>
-                  <input type="radio" name="thoiHieu" value={val} checked={thoiHieu === val || (thoiHieu !== "1-nam" && thoiHieu !== "ko-xac-dinh" && thoiHieu !== "3-nam" && thoiHieu !== "5-nam" && val === "1-nam")} onChange={() => setThoiHieu(val)}
+                  <Input type="radio" name="thoiHieu" value={val} checked={thoiHieu === val || (thoiHieu !== "1-nam" && thoiHieu !== "ko-xac-dinh" && thoiHieu !== "3-nam" && thoiHieu !== "5-nam" && val === "1-nam")} onChange={() => setThoiHieu(val)}
                     style={{ width: 14, height: 14, accentColor: RED, cursor: "pointer" }} />
                   {label}
                 </label>
@@ -857,7 +858,7 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
               <div style={{ display: "flex", gap: 20, marginTop: 12 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
                   <label style={{ fontSize: 11, color: TEXT, fontFamily: F }}><span style={{ color: RED }}>*</span> Quan hệ pháp luật</label>
-                  <input
+                  <Input
                     value={quanHePL}
                     onChange={e => setQuanHePL(e.target.value)}
                     style={{ padding: "7px 10px", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, outline: "none", width: "100%", background: "#fff", boxSizing: "border-box" }}
@@ -895,7 +896,7 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
             <span style={{ fontSize: 12, fontWeight: 700, color: RED, fontFamily: F, flex: 1 }}>
               {isKhieuNai ? "* Người đứng đơn" : mock.nguoiThamGiaToTung.nhom1.title}
             </span>
-            <button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</button>
+            <Button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</Button>
           </div>
           <NguoiLienQuanTable rows={mock.nguoiThamGiaToTung.nhom1.rows} noMarginBottom={isKhieuNai} showToiDanh={isVu1} />
 
@@ -904,7 +905,7 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
               {/* Nhóm 2: Bị hại (Hình sự) / Bị đơn (Dân sự/KDTM) / Người bị kiện (Hành chính) */}
               <div style={{ ...subHdr, borderTop: `1px solid ${BORDER}`, paddingTop: 12, marginTop: 4 }}>
                 <span style={{ fontSize: 12, fontWeight: 700, color: RED, fontFamily: F, flex: 1 }}>{mock.nguoiThamGiaToTung.nhom2.title}</span>
-                <button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</button>
+                <Button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</Button>
               </div>
               <NguoiLienQuanTable rows={mock.nguoiThamGiaToTung.nhom2.rows} showToiDanh={!isVu1} />
 
@@ -912,9 +913,9 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
               <div style={{ ...subHdr, borderTop: `1px solid ${BORDER}`, paddingTop: 12, marginTop: 4 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1 }}>
                   <span style={{ fontSize: 12, fontWeight: 700, color: TEXT, fontFamily: F }}>{mock.nguoiThamGiaToTung.nhom3.title}</span>
-                  {mock.nguoiThamGiaToTung.nhom3.hasCheckbox && <input type="checkbox" style={{ cursor: "pointer" }} defaultChecked />}
+                  {mock.nguoiThamGiaToTung.nhom3.hasCheckbox && <Input type="checkbox" style={{ cursor: "pointer" }} defaultChecked />}
                 </div>
-                <button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</button>
+                <Button style={{ padding: "3px 10px", background: "none", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F }}>+ Thêm mới</Button>
               </div>
               <NguoiLienQuanTable rows={mock.nguoiThamGiaToTung.nhom3.rows} noMarginBottom showToiDanh={false} />
             </>
@@ -924,9 +925,9 @@ export function TabThongTin({ detail, userRole }: { detail?: VuAnDetailData; use
 
       {/* ── Nút Sửa thông tin ── */}
       <div style={{ display: "flex", justifyContent: "center", paddingBottom: 12 }}>
-        <button style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 32px", background: RED, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>
+        <Button style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 32px", background: RED, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>
           ✏ Sửa thông tin
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge, type UserRo
 import { TaoToTrinhModal, ThuHoiConfirmDialog } from "./AppHelpers";
 import { TrinhKyModal, HoSoToTrinhModal } from "./TrinhKyModal";
 import { TaoDuThaoModal, TaoDuThaoCongVanModal } from "./TaoDuThaoModal";
+import { Button, Input } from "antd";
+
 
 // ── Types & Data ─────────────────────────────────────────────────────────────
 
@@ -21,6 +23,7 @@ type CVRow = {
   ngayThuLy: string;
   donViGui: string;
   donViNhan: string;
+  donVi?: string;
   phanHoi: string;
   phanCong: string;
   coKQGG: boolean;
@@ -253,21 +256,21 @@ export function XemBieuMauCongVanModal({ onClose }: { onClose: () => void }) {
       {/* Header Ribbon bar Word Style */}
       <div style={{ background: "#2b579a", color: "#fff", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
+          <Button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
             ← Quay lại
-          </button>
+          </Button>
           <FileText size={20} color="#fff" />
           <span style={{ fontWeight: 700, fontSize: 16, fontFamily: F }}>
             Trình chỉnh sửa bản Word - {selectedDoc === "to-trinh" ? "Tờ trình công văn trao đổi (.docx)" : "Dự thảo Công văn trao đổi (.docx)"}
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => alert("Đã lưu nội dung bản Word thành công!")} style={{ padding: "7px 18px", background: "#1b5e20", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>
+          <Button onClick={() => alert("Đã lưu nội dung bản Word thành công!")} style={{ padding: "7px 18px", background: "#1b5e20", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>
             💾 Lưu thay đổi
-          </button>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}>
+          </Button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}>
             <X size={22} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -286,8 +289,8 @@ export function XemBieuMauCongVanModal({ onClose }: { onClose: () => void }) {
         <div style={sepSt} />
 
         {/* Undo / Redo */}
-        <button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác (Ctrl+Z)">↩ Hoàn tác</button>
-        <button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại (Ctrl+Y)">↪ Làm lại</button>
+        <Button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác (Ctrl+Z)">↩ Hoàn tác</Button>
+        <Button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại (Ctrl+Y)">↪ Làm lại</Button>
         <div style={sepSt} />
 
         {/* Font Family & Size */}
@@ -307,38 +310,38 @@ export function XemBieuMauCongVanModal({ onClose }: { onClose: () => void }) {
         <div style={sepSt} />
 
         {/* Text formatting */}
-        <button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm (Ctrl+B)"><b>B</b></button>
-        <button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng (Ctrl+I)"><i>I</i></button>
-        <button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân (Ctrl+U)"><u>U</u></button>
-        <button onClick={() => execCmd("strikeThrough")} style={tbBtnSt} title="Gạch ngang"><s>S</s></button>
+        <Button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm (Ctrl+B)"><b>B</b></Button>
+        <Button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng (Ctrl+I)"><i>I</i></Button>
+        <Button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân (Ctrl+U)"><u>U</u></Button>
+        <Button onClick={() => execCmd("strikeThrough")} style={tbBtnSt} title="Gạch ngang"><s>S</s></Button>
         <div style={sepSt} />
 
         {/* Text alignments */}
-        <button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</button>
-        <button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</button>
-        <button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</button>
-        <button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều 2 bên">☰</button>
+        <Button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</Button>
+        <Button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</Button>
+        <Button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</Button>
+        <Button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều 2 bên">☰</Button>
         <div style={sepSt} />
 
         {/* Lists */}
-        <button onClick={() => execCmd("insertUnorderedList")} style={tbBtnSt} title="Danh sách chấm">• Danh sách</button>
-        <button onClick={() => execCmd("insertOrderedList")} style={tbBtnSt} title="Danh sách số">1. Danh sách</button>
+        <Button onClick={() => execCmd("insertUnorderedList")} style={tbBtnSt} title="Danh sách chấm">• Danh sách</Button>
+        <Button onClick={() => execCmd("insertOrderedList")} style={tbBtnSt} title="Danh sách số">1. Danh sách</Button>
         <div style={sepSt} />
 
         {/* In & Tải về */}
-        <button onClick={() => window.print()} style={tbBtnSt}>
+        <Button onClick={() => window.print()} style={tbBtnSt}>
           <Printer size={13} /> In
-        </button>
-        <button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
+        </Button>
+        <Button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
           📥 Tải file Word
-        </button>
+        </Button>
 
         {/* Zoom controls */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: "auto", fontSize: 12, color: MUTED }}>
           <span>Thu phóng:</span>
-          <button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</button>
+          <Button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</Button>
           <span style={{ fontWeight: 600, color: TEXT, minWidth: 36, textAlign: "center" }}>{zoom}%</span>
-          <button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</button>
+          <Button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</Button>
         </div>
       </div>
 
@@ -511,9 +514,9 @@ export function XemBieuMauCongVanModal({ onClose }: { onClose: () => void }) {
       {/* Footer Status Bar */}
       <div style={{ background: "#fff", borderTop: `1px solid ${BORDER}`, padding: "8px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
         <span style={{ fontSize: 12, color: MUTED, fontFamily: F }}>Chế độ: Chỉnh sửa trực tiếp (Word Editor) &nbsp;•&nbsp; Trang 1 / 1 &nbsp;•&nbsp; Font: {fontFamily} {fontSize} &nbsp;•&nbsp; Đã bật tự động căn lề</span>
-        <button onClick={onClose} style={{ padding: "6px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+        <Button onClick={onClose} style={{ padding: "6px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
           Đóng màn hình Word
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -556,8 +559,8 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
       <div style={{ background: "#fff", borderRadius: 8, width: 840, maxWidth: "95vw", maxHeight: "90vh", overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
         {/* Header */}
         <div style={{ background: RED, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: F }}>Tạo công văn</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={18} /></button>
+          <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: F }}>Thêm công văn</span>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={18} /></Button>
         </div>
 
         {/* Form Body */}
@@ -567,7 +570,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
             <label style={lblSt}>Loại công văn</label>
             <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: TEXT }}>
-                <input
+                <Input
                   type="radio"
                   name="loaiCV"
                   value="den"
@@ -578,7 +581,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                 Công văn đến
               </label>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: TEXT }}>
-                <input
+                <Input
                   type="radio"
                   name="loaiCV"
                   value="di"
@@ -595,15 +598,15 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             <div>
               <label style={lblSt}>Ngày CV</label>
-              <input type="date" style={inSt} />
+              <Input type="date" style={inSt} />
             </div>
             <div>
               <label style={lblSt}>Số CV</label>
-              <input placeholder="Nhập số CV" style={inSt} />
+              <Input placeholder="Nhập số CV" style={inSt} />
             </div>
             <div>
               <label style={lblSt}>Người ký</label>
-              <input placeholder="Chọn người ký" style={inSt} />
+              <Input placeholder="Chọn người ký" style={inSt} />
             </div>
           </div>
 
@@ -621,7 +624,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
               </div>
               <div>
                 <label style={lblSt}>Tên đơn vị gửi</label>
-                <input placeholder="Chọn nơi gửi trước" style={inSt} />
+                <Input placeholder="Chọn nơi gửi trước" style={inSt} />
               </div>
             </div>
           ) : (
@@ -639,7 +642,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   <label style={lblSt}>Tên đơn vị nhận</label>
-                  <input placeholder="Chọn nơi nhận trước" style={inSt} />
+                  <Input placeholder="Chọn nơi nhận trước" style={inSt} />
                 </div>
               </div>
             </div>
@@ -663,19 +666,19 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
             <div style={{ display: "grid", gridTemplateColumns: loaiCV === "di" ? "1fr 1fr 1fr 1fr" : "1fr 1fr", gap: 14 }}>
               <div>
                 <label style={lblSt}>Số CV</label>
-                <input value={traLoiSoCV} onChange={e => setTraLoiSoCV(e.target.value)} placeholder="Nhập số CV" style={inSt} />
-                <button
+                <Input value={traLoiSoCV} onChange={e => setTraLoiSoCV(e.target.value)} placeholder="Nhập số CV" style={inSt} />
+                <Button
                   style={{
                     display: "flex", alignItems: "center", gap: 6, padding: "6px 16px",
                     background: "#6e1414", color: "#fff", border: "none", borderRadius: 4,
                     cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F, marginTop: 10,
                   }}>
                   <Search size={13} /> Tìm kiếm
-                </button>
+                </Button>
               </div>
               <div>
                 <label style={lblSt}>Ngày CV</label>
-                <input type="date" value={traLoiNgayCV} onChange={e => setTraLoiNgayCV(e.target.value)} style={inSt} />
+                <Input type="date" value={traLoiNgayCV} onChange={e => setTraLoiNgayCV(e.target.value)} style={inSt} />
               </div>
 
               {loaiCV === "di" && (
@@ -691,7 +694,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                   </div>
                   <div>
                     <label style={lblSt}>Đơn vị gửi công văn</label>
-                    <input defaultValue="Tòa án nhân dân thành phố Hà Nội" style={inSt} />
+                    <Input defaultValue="Tòa án nhân dân thành phố Hà Nội" style={inSt} />
                   </div>
                 </>
               )}
@@ -705,7 +708,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                 <div style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>
                   Cấu hình nơi nhận công văn đi
                 </div>
-                <button
+                <Button
                   onClick={() => setNoiNhanList(prev => [...prev, { id: Date.now(), phanLoai: "toa-an", donVi: "", kinhGui: "", soBan: "01" }])}
                   style={{
                     padding: "6px 14px",
@@ -723,7 +726,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                   }}
                 >
                   + Thêm nơi nhận
-                </button>
+                </Button>
               </div>
 
               <div style={{ overflowX: "auto" }}>
@@ -761,7 +764,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                           </select>
                         </td>
                         <td style={{ ...TD_STYLE, padding: "6px 8px", borderRight: `1px solid ${BORDER}` }}>
-                          <input
+                          <Input
                             placeholder="Nhập tên đơn vị nhận"
                             value={row.donVi}
                             onChange={e => setNoiNhanList(prev => prev.map(x => x.id === row.id ? { ...x, donVi: e.target.value } : x))}
@@ -769,7 +772,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                           />
                         </td>
                         <td style={{ ...TD_STYLE, padding: "6px 8px", borderRight: `1px solid ${BORDER}` }}>
-                          <input
+                          <Input
                             placeholder="Kính gửi / Nội dung lưu"
                             value={row.kinhGui}
                             onChange={e => setNoiNhanList(prev => prev.map(x => x.id === row.id ? { ...x, kinhGui: e.target.value } : x))}
@@ -777,7 +780,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                           />
                         </td>
                         <td style={{ ...TD_STYLE, padding: "6px 8px", borderRight: `1px solid ${BORDER}` }}>
-                          <input
+                          <Input
                             type="number"
                             min={1}
                             value={row.soBan}
@@ -786,13 +789,13 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                           />
                         </td>
                         <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                          <button
+                          <Button
                             onClick={() => setNoiNhanList(prev => prev.filter(x => x.id !== row.id))}
                             style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", padding: 2 }}
                             title="Xóa nơi nhận"
                           >
                             <Trash2 size={14} />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -813,7 +816,7 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                 <div style={{ fontSize: 12, fontFamily: F, color: MUTED }}>
                   Kéo thả tệp vào đây hoặc <span style={{ color: "#6e1414", fontWeight: 600 }}>chọn tệp</span>
                 </div>
-                <input
+                <Input
                   type="file"
                   multiple
                   onChange={e => {
@@ -831,9 +834,9 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                       <FileText size={14} color={MUTED} />
                       <span style={{ flex: 1, fontSize: 12, color: TEXT, fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</span>
                       <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>{(file.size / 1024).toFixed(0)} KB</span>
-                      <button onClick={() => setAttachments(p => p.filter((_, i) => i !== idx))} style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", display: "flex" }}>
+                      <Button onClick={() => setAttachments(p => p.filter((_, i) => i !== idx))} style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", display: "flex" }}>
                         <Trash2 size={14} />
-                      </button>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -844,10 +847,10 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
 
         {/* Footer */}
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10, borderTop: `1px solid ${BORDER}`, padding: "14px 20px", flexWrap: "wrap" }}>
-          <button onClick={onClose} style={{ padding: "7px 22px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>Đóng</button>
+          <Button onClick={onClose} style={{ padding: "7px 22px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>Đóng</Button>
 
           {!isSaved ? (
-            <button
+            <Button
               onClick={() => setIsSaved(true)}
               style={{
                 padding: "7px 22px", background: "#6e1414", color: "#fff", border: "none",
@@ -855,10 +858,10 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
               }}
             >
               Lưu
-            </button>
+            </Button>
           ) : (
             <>
-              <button
+              <Button
                 onClick={() => setDaCapSo(!daCapSo)}
                 style={{
                   padding: "7px 20px",
@@ -868,19 +871,19 @@ export function TaoCongVanModal({ onClose }: { onClose: () => void }) {
                   borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: daCapSo ? 700 : 400, fontFamily: F
                 }}>
                 {daCapSo ? "Hủy cấp số" : "Lấy số"}
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setShowTrinhKy(true)}
                 style={{ padding: "7px 20px", background: "#6e1414", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
                 Trình ký
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setShowBieuMau(true)}
                 style={{ padding: "7px 20px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>
                 Xem biểu mẫu
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -900,7 +903,7 @@ export function XemChiTietCongVanModal({ row, onClose }: { row: CVRow; onClose: 
           <span style={{ color: "#fff", fontWeight: 700, fontSize: 15, fontFamily: F }}>
             Chi tiết công văn: {row.soCV}
           </span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={18} /></button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={18} /></Button>
         </div>
 
         {/* Modal Body */}
@@ -953,9 +956,9 @@ export function XemChiTietCongVanModal({ row, onClose }: { row: CVRow; onClose: 
                   <FileText size={16} color={RED} />
                   <span>{row.soCV || "Cong_van_13"}_dinh_kem.pdf</span>
                 </div>
-                <button style={{ padding: "4px 10px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F, color: TEXT }}>
+                <Button style={{ padding: "4px 10px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: F, color: TEXT }}>
                   Tải về
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -963,12 +966,12 @@ export function XemChiTietCongVanModal({ row, onClose }: { row: CVRow; onClose: 
 
         {/* Footer */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, borderTop: `1px solid ${BORDER}`, padding: "14px 20px", background: "#fafafa" }}>
-          <button onClick={onClose} style={{ padding: "7px 24px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>
+          <Button onClick={onClose} style={{ padding: "7px 24px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>
             Đóng
-          </button>
-          <button onClick={() => window.print()} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          </Button>
+          <Button onClick={() => window.print()} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             In công văn
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -1108,10 +1111,10 @@ function TabToTrinhCV() {
       <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>Danh sách văn bản</span>
-          <button onClick={handleTrinhKyClick} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, fontWeight: 600 }}>Trình ký</button>
-          <button onClick={() => setShowTaoDuThao(true)} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Tạo dự thảo</button>
-          <button onClick={() => setShowTaoTT(true)} style={{ padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>+ Tạo tờ trình</button>
-          <button onClick={() => setShowHoSo(true)} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Hồ sơ tờ trình</button>
+          <Button onClick={handleTrinhKyClick} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, fontWeight: 600 }}>Trình ký</Button>
+          <Button onClick={() => setShowTaoDuThao(true)} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Tạo dự thảo</Button>
+          <Button onClick={() => setShowTaoTT(true)} style={{ padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>+ Tạo tờ trình</Button>
+          <Button onClick={() => setShowHoSo(true)} style={{ padding: "6px 14px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Hồ sơ tờ trình</Button>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <colgroup>
@@ -1120,7 +1123,7 @@ function TabToTrinhCV() {
           <thead>
             <tr>
               <th style={{ ...TH, textAlign: "center", width: 36 }}>
-                <input
+                <Input
                   type="checkbox"
                   checked={selectedVB.length === vanBanList.length && vanBanList.length > 0}
                   onChange={toggleAllVB}
@@ -1134,7 +1137,7 @@ function TabToTrinhCV() {
             {vanBanList.map((r, idx) => (
               <tr key={r.stt} style={{ background: selectedVB.includes(r.stt) ? "#fff5f5" : idx % 2 === 0 ? "#fff" : "#fafafa" }}>
                 <td style={{ ...TD, textAlign: "center" }}>
-                  <input
+                  <Input
                     type="checkbox"
                     checked={selectedVB.includes(r.stt)}
                     onChange={() => toggleVB(r.stt)}
@@ -1158,14 +1161,14 @@ function TabToTrinhCV() {
                 <td style={{ ...TD, textAlign: "center" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                     {r.trangThai === "Chưa ký số" && (
-                      <button
+                      <Button
                         onClick={() => handleDeleteVanBan(r.stt)}
                         title="Xóa tờ trình chưa ký số"
                         style={{ background: "none", border: "none", cursor: "pointer", padding: 3, display: "inline-flex", alignItems: "center" }}>
                         <Trash2 size={14} color="#c0392b" />
-                      </button>
+                      </Button>
                     )}
-                    <button style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xem văn bản"><Eye size={14} color="#1a5a96" /></button>
+                    <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xem văn bản"><Eye size={14} color="#1a5a96" /></Button>
                   </div>
                 </td>
               </tr>
@@ -1238,18 +1241,18 @@ function TabToTrinhCV() {
                     </td>
                     <td style={{ ...TD, textAlign: "center" }}>
                       <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Eye size={13} color="#1a5a96" /></button>
+                        <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Eye size={13} color="#1a5a96" /></Button>
                         {r.trangThai === "cho-duyet" && (
-                          <button title="Thu hồi" onClick={() => setThuHoiIdx(realIdx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                          <Button title="Thu hồi" onClick={() => setThuHoiIdx(realIdx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                               <path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#c0392b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               <path d="M2 4v4h4" stroke="#c0392b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                          </button>
+                          </Button>
                         )}
-                        <button title="Trình ký" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                        <Button title="Trình ký" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                           <Send size={13} color={RED} />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -1426,7 +1429,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
           <span style={{ fontSize: 16, fontWeight: 700, color: TEXT, fontFamily: F }}>
             Thêm kết quả giải quyết công văn
           </span>
-          <button
+          <Button
             onClick={onClose}
             style={{
               background: "none",
@@ -1439,7 +1442,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
             }}
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -1458,7 +1461,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
             <label style={lblSt}>Cách giải quyết</label>
             <div style={{ display: "flex", gap: 24, alignItems: "center", marginTop: 4 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: TEXT }}>
-                <input
+                <Input
                   type="radio"
                   name="kqCachGiaiQuyet"
                   checked={cachGiaiQuyet === "truc-tiep"}
@@ -1468,7 +1471,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                 Trao đổi trực tiếp
               </label>
               <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: TEXT }}>
-                <input
+                <Input
                   type="radio"
                   name="kqCachGiaiQuyet"
                   checked={cachGiaiQuyet === "qua-cong-van"}
@@ -1490,7 +1493,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                     <span style={{ color: RED, marginRight: 3 }}>*</span>Ngày tạo CV
                   </label>
                   <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                    <input
+                    <Input
                       type="text"
                       placeholder="mm/dd/yyyy"
                       value={ngayTaoCV}
@@ -1505,7 +1508,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                   <label style={lblSt}>
                     <span style={{ color: RED, marginRight: 3 }}>*</span>Số CV
                   </label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Nhập số công văn"
                     value={soCV}
@@ -1516,7 +1519,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
 
                 <div>
                   <label style={lblSt}>Người ký</label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Nhập tên người ký"
                     value={nguoiKy}
@@ -1545,7 +1548,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
 
                 <div>
                   <label style={lblSt}>Đơn vị nhận</label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Chọn nơi nhận trước"
                     value={donViNhan}
@@ -1563,7 +1566,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
               <span style={{ color: RED, marginRight: 3 }}>*</span>Ngày trao đổi
             </label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-              <input
+              <Input
                 type="text"
                 placeholder="mm/dd/yyyy"
                 value={ngayTraoDoi}
@@ -1635,24 +1638,24 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                           </td>
                           <td style={{ padding: "8px", color: TEXT }}>
                             {isEditing ? (
-                              <input value={editDonVi} onChange={e => setEditDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                              <Input value={editDonVi} onChange={e => setEditDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                             ) : item.tenDonViNhan}
                           </td>
                           <td style={{ padding: "8px", color: MUTED }}>
                             {isEditing ? (
-                              <input value={editGhiChu} onChange={e => setEditGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                              <Input value={editGhiChu} onChange={e => setEditGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                             ) : item.ghiChu}
                           </td>
                           <td style={{ padding: "8px", textAlign: "center" }}>
                             {isEditing ? (
                               <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                                <button onClick={() => handleSaveEdit(item.id)} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Lưu</button>
-                                <button onClick={() => setEditingId(null)} style={{ color: MUTED, background: "none", border: "none", cursor: "pointer" }}>Hủy</button>
+                                <Button onClick={() => handleSaveEdit(item.id)} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Lưu</Button>
+                                <Button onClick={() => setEditingId(null)} style={{ color: MUTED, background: "none", border: "none", cursor: "pointer" }}>Hủy</Button>
                               </div>
                             ) : (
                               <div style={{ display: "flex", gap: 8, justifyContent: "center", fontSize: 12 }}>
-                                <button onClick={() => handleStartEdit(item)} style={{ color: "#1a73e8", background: "none", border: "none", cursor: "pointer" }}>✎ Sửa</button>
-                                <button onClick={() => handleDeleteNoiNhan(item.id)} style={{ color: RED, background: "none", border: "none", cursor: "pointer" }}>Xóa</button>
+                                <Button onClick={() => handleStartEdit(item)} style={{ color: "#1a73e8", background: "none", border: "none", cursor: "pointer" }}>✎ Sửa</Button>
+                                <Button onClick={() => handleDeleteNoiNhan(item.id)} style={{ color: RED, background: "none", border: "none", cursor: "pointer" }}>Xóa</Button>
                               </div>
                             )}
                           </td>
@@ -1672,15 +1675,15 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                           </select>
                         </td>
                         <td style={{ padding: "6px" }}>
-                          <input placeholder="Tên đơn vị nhận" value={newDonVi} onChange={e => setNewDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                          <Input placeholder="Tên đơn vị nhận" value={newDonVi} onChange={e => setNewDonVi(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                         </td>
                         <td style={{ padding: "6px" }}>
-                          <input placeholder="Ghi chú" value={newGhiChu} onChange={e => setNewGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
+                          <Input placeholder="Ghi chú" value={newGhiChu} onChange={e => setNewGhiChu(e.target.value)} style={{ ...inSt, padding: "3px 6px" }} />
                         </td>
                         <td style={{ padding: "6px", textAlign: "center" }}>
                           <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                            <button onClick={handleAddNoiNhan} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Thêm</button>
-                            <button onClick={() => setIsAdding(false)} style={{ color: MUTED, background: "none", border: "none", cursor: "pointer" }}>Hủy</button>
+                            <Button onClick={handleAddNoiNhan} style={{ color: "#27ae60", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>Thêm</Button>
+                            <Button onClick={() => setIsAdding(false)} style={{ color: MUTED, background: "none", border: "none", cursor: "pointer" }}>Hủy</Button>
                           </div>
                         </td>
                       </tr>
@@ -1690,8 +1693,8 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
               </div>
 
               {!isAdding && (
-                <button
-                  type="button"
+                <Button
+                  htmlType="button"
                   onClick={() => setIsAdding(true)}
                   style={{
                     border: `1px dashed ${BORDER}`,
@@ -1705,7 +1708,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                   }}
                 >
                   + Thêm nơi nhận
-                </button>
+                </Button>
               )}
             </div>
           )}
@@ -1724,7 +1727,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
           }}
         >
           <div style={{ display: "flex", gap: 10 }}>
-            <button
+            <Button
               onClick={onClose}
               style={{
                 padding: "7px 18px",
@@ -1738,8 +1741,8 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
               }}
             >
               Đóng
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleLamMoi}
               style={{
                 padding: "7px 18px",
@@ -1753,13 +1756,13 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
               }}
             >
               Làm mới
-            </button>
+            </Button>
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
             {cachGiaiQuyet === "qua-cong-van" && (
               <>
-                <button
+                <Button
                   onClick={() => alert("Đang xem biểu mẫu...")}
                   style={{
                     padding: "7px 18px",
@@ -1773,8 +1776,8 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                   }}
                 >
                   Xem biểu mẫu
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowTrinhKy(true)}
                   style={{
                     padding: "7px 18px",
@@ -1789,10 +1792,10 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
                   }}
                 >
                   Trình ký
-                </button>
+                </Button>
               </>
             )}
-            <button
+            <Button
               onClick={handleSave}
               style={{
                 padding: "7px 18px",
@@ -1807,7 +1810,7 @@ function ThemKetQuaGQModal({ onClose }: { onClose: () => void }) {
               }}
             >
               Lưu
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -1825,9 +1828,9 @@ function TabKetQuaCV() {
       {showModal && <ThemKetQuaGQModal onClose={() => setShowModal(false)} />}
       <div style={{ display: "flex", alignItems: "center", padding: "14px 18px", borderBottom: `1px solid ${BORDER}` }}>
         <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>Kết quả giải quyết công văn</span>
-        <button onClick={() => setShowModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
+        <Button onClick={() => setShowModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
           + Thêm kết quả giải quyết
-        </button>
+        </Button>
       </div>
       <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
         <colgroup>
@@ -1853,8 +1856,8 @@ function TabKetQuaCV() {
               <td style={TD}>{r.ghiChu}</td>
               <td style={{ ...TD, textAlign: "center" }}>
                 <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Eye size={14} color={RED} /></button>
-                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Pencil size={13} color={RED} /></button>
+                  <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Eye size={14} color={RED} /></Button>
+                  <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><Pencil size={13} color={RED} /></Button>
                 </div>
               </td>
             </tr>
@@ -1893,7 +1896,7 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
 
         {/* Title */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-          <button onClick={onBack} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 10px", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center" }}>←</button>
+          <Button onClick={onBack} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 10px", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center" }}>←</Button>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: TEXT, fontFamily: F, margin: 0 }}>
             Chi tiết công văn số 13, Ngày 20/07/2026
           </h1>
@@ -1902,7 +1905,7 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
         {/* Tabs */}
         <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, marginBottom: 20 }}>
           {tabs.map(t => (
-            <button
+            <Button
               key={t.id}
               onClick={() => setTab(t.id)}
               style={{
@@ -1914,7 +1917,7 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
               }}
             >
               {t.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -1966,11 +1969,11 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
                       Công văn xin ý kiến giải quyết vướng mắc án kinh doanh thương mại
                     </td>
                     <td style={{ ...TD, textAlign: "center" }}>
-                      <button
+                      <Button
                         onClick={() => setShowChiTietPopup(true)}
                         style={{ background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, color: RED, fontSize: 12, fontFamily: F, fontWeight: 600 }}>
                         <Eye size={13} color={RED} /> Xem chi tiết
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 </tbody>
@@ -1983,15 +1986,15 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
                 <div>
                   <label style={lblSt}>SỐ THỤ LÝ</label>
-                  <input defaultValue="123/TL-TA" style={inSt} />
+                  <Input defaultValue="123/TL-TA" style={inSt} />
                 </div>
                 <div>
                   <label style={lblSt}>NGÀY THỤ LÝ</label>
-                  <input type="date" defaultValue="2026-07-08" style={inSt} />
+                  <Input type="date" defaultValue="2026-07-08" style={inSt} />
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button style={{ padding: "7px 28px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</button>
+                <Button style={{ padding: "7px 28px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</Button>
               </div>
             </div>
           </div>
@@ -2029,11 +2032,11 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
                     <td style={TD}>Nguyễn Văn Bình</td>
                     <td style={{ ...TD, color: MUTED }}>–</td>
                     <td style={{ ...TD, textAlign: "center" }}>
-                      <button
+                      <Button
                         onClick={() => setShowChiTietPopup(true)}
                         style={{ background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4, color: RED, fontSize: 12, fontFamily: F, fontWeight: 600 }}>
                         <Eye size={13} color={RED} /> Xem chi tiết
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 </tbody>
@@ -2044,9 +2047,9 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
             <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, padding: 18 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>Lịch sử phân công Thẩm phán</div>
-                <button title="Làm mới" style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center" }}>
+                <Button title="Làm mới" style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center" }}>
                   <RotateCw size={13} />
-                </button>
+                </Button>
               </div>
               <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                 <colgroup>
@@ -2089,9 +2092,9 @@ function ChiTietCongVanView({ row, onBack }: { row: CVRow; onBack: () => void })
             <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, padding: 18 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>Lịch sử phân công Công chức nghiên cứu và LĐV</div>
-                <button title="Làm mới" style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center" }}>
+                <Button title="Làm mới" style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: MUTED, display: "flex", alignItems: "center" }}>
                   <RotateCw size={13} />
-                </button>
+                </Button>
               </div>
               <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                 <colgroup>
@@ -2230,7 +2233,7 @@ export default function CongVanTraoDoiView({
 
         <div style={{ display: "flex", gap: 0, borderBottom: `1px solid ${BORDER}`, marginBottom: 20 }}>
           {tabs.map(t => (
-            <button
+            <Button
               key={t.id}
               onClick={() => setTab(t.id)}
               style={{
@@ -2242,7 +2245,7 @@ export default function CongVanTraoDoiView({
               }}
             >
               {t.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -2254,23 +2257,23 @@ export default function CongVanTraoDoiView({
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 14, marginBottom: filterExpanded ? 14 : 0 }}>
             <div>
               <span style={labelStyle}>Số CV</span>
-              <input value={soCVFilter} onChange={e => setSoCVFilter(e.target.value)} placeholder="Nhập số CV" style={inputStyle} />
+              <Input value={soCVFilter} onChange={e => setSoCVFilter(e.target.value)} placeholder="Nhập số CV" style={inputStyle} />
             </div>
             <div>
               <span style={labelStyle}>Ngày CV</span>
-              <input type="date" value={ngayCVFilter} onChange={e => setNgayCVFilter(e.target.value)} style={inputStyle} />
+              <Input type="date" value={ngayCVFilter} onChange={e => setNgayCVFilter(e.target.value)} style={inputStyle} />
             </div>
             <div>
               <span style={labelStyle}>Ngày gửi CV</span>
-              <input type="date" value={ngayGuiFilter} onChange={e => setNgayGuiFilter(e.target.value)} style={inputStyle} />
+              <Input type="date" value={ngayGuiFilter} onChange={e => setNgayGuiFilter(e.target.value)} style={inputStyle} />
             </div>
             <div>
               <span style={labelStyle}>Ngày nhận CV</span>
-              <input type="date" value={ngayNhanFilter} onChange={e => setNgayNhanFilter(e.target.value)} style={inputStyle} />
+              <Input type="date" value={ngayNhanFilter} onChange={e => setNgayNhanFilter(e.target.value)} style={inputStyle} />
             </div>
             <div>
               <span style={labelStyle}>Công chức nghiên cứu</span>
-              <input value={ttvFilter} onChange={e => setTtvFilter(e.target.value)} placeholder="Nhập Công chức nghiên cứu" style={inputStyle} />
+              <Input value={ttvFilter} onChange={e => setTtvFilter(e.target.value)} placeholder="Nhập Công chức nghiên cứu" style={inputStyle} />
             </div>
           </div>
 
@@ -2290,7 +2293,7 @@ export default function CongVanTraoDoiView({
                 </div>
                 <div>
                   <span style={labelStyle}>Đơn vị nhận</span>
-                  <input value={donViNhanFilter} onChange={e => setDonViNhanFilter(e.target.value)} placeholder="Nhập đơn vị nhận" style={inputStyle} />
+                  <Input value={donViNhanFilter} onChange={e => setDonViNhanFilter(e.target.value)} placeholder="Nhập đơn vị nhận" style={inputStyle} />
                 </div>
                 <div>
                   <span style={labelStyle}>Nơi gửi</span>
@@ -2303,11 +2306,11 @@ export default function CongVanTraoDoiView({
                 </div>
                 <div>
                   <span style={labelStyle}>Đơn vị gửi</span>
-                  <input value={donViGuiFilter} onChange={e => setDonViGuiFilter(e.target.value)} placeholder="Nhập đơn vị gửi" style={inputStyle} />
+                  <Input value={donViGuiFilter} onChange={e => setDonViGuiFilter(e.target.value)} placeholder="Nhập đơn vị gửi" style={inputStyle} />
                 </div>
                 <div>
                   <span style={labelStyle}>Thẩm phán</span>
-                  <input value={thamPhanFilter} onChange={e => setThamPhanFilter(e.target.value)} placeholder="Nhập thẩm phán" style={inputStyle} />
+                  <Input value={thamPhanFilter} onChange={e => setThamPhanFilter(e.target.value)} placeholder="Nhập thẩm phán" style={inputStyle} />
                 </div>
               </div>
 
@@ -2315,7 +2318,7 @@ export default function CongVanTraoDoiView({
               <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 14, marginBottom: 14 }}>
                 <div>
                   <span style={labelStyle}>Lãnh đạo phụ trách</span>
-                  <input value={lanhDaoFilter} onChange={e => setLanhDaoFilter(e.target.value)} placeholder="Nhập lãnh đạo" style={inputStyle} />
+                  <Input value={lanhDaoFilter} onChange={e => setLanhDaoFilter(e.target.value)} placeholder="Nhập lãnh đạo" style={inputStyle} />
                 </div>
               </div>
             </>
@@ -2323,17 +2326,17 @@ export default function CongVanTraoDoiView({
 
           {/* Nút toggle Thu gọn/Mở rộng bên trái & Nút Tìm kiếm/Xóa bộ lọc bên phải */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
-            <button
+            <Button
               onClick={() => setFilterExpanded(v => !v)}
               style={{
                 display: "flex", alignItems: "center", gap: 4, background: "none", border: "none",
                 cursor: "pointer", fontSize: 12, color: "#1a73e8", fontFamily: F, padding: 0, fontWeight: 500,
               }}>
               {filterExpanded ? "▲ Thu gọn" : "▼ Mở rộng"}
-            </button>
+            </Button>
 
             <div style={{ display: "flex", gap: 8 }}>
-              <button
+              <Button
                 onClick={() => setSearch(soCVFilter || donViNhanFilter || donViGuiFilter)}
                 style={{
                   display: "flex", alignItems: "center", gap: 6, padding: "7px 18px",
@@ -2341,15 +2344,15 @@ export default function CongVanTraoDoiView({
                   cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F,
                 }}>
                 <Search size={13} /> Tìm kiếm
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleResetFilter}
                 style={{
                   padding: "7px 16px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`,
                   borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F,
                 }}>
                 Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -2357,12 +2360,12 @@ export default function CongVanTraoDoiView({
         {/* Danh sách Công văn */}
         <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, padding: 20 }}>
           <div style={{ display: "flex", gap: 10, marginBottom: 16, alignItems: "center", justifyContent: "flex-end" }}>
-            <button onClick={() => setShowTaoCV(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", background: RED, color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F, whiteSpace: "nowrap" }}>
+            <Button onClick={() => setShowTaoCV(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", background: RED, color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F, whiteSpace: "nowrap" }}>
               + Thêm công văn
-            </button>
-            <button style={{ padding: 8, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center" }}>
+            </Button>
+            <Button style={{ padding: 8, background: "none", border: `1px solid ${BORDER}`, borderRadius: 5, cursor: "pointer", display: "flex", alignItems: "center" }}>
               <Printer size={15} color={MUTED} />
-            </button>
+            </Button>
           </div>
 
           <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
@@ -2439,13 +2442,13 @@ export default function CongVanTraoDoiView({
                   </td>
                   <td style={{ ...TD, textAlign: "center" }}>
                     <div style={{ display: "flex", gap: 6, justifyContent: "center", alignItems: "center" }}>
-                      <button onClick={() => setSelectedCV(r)} style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xem">
+                      <Button onClick={() => setSelectedCV(r)} style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xem">
                         <Eye size={15} color="#666666" />
-                      </button>
+                      </Button>
                       {!r.coKQGG && (
-                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xóa">
+                        <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title="Xóa">
                           <span style={{ fontSize: 15, color: "#c0392b" }}>🗑</span>
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -2467,7 +2470,7 @@ export default function CongVanTraoDoiView({
               </select>
               <div style={{ display: "flex", gap: 2 }}>
                 {["‹‹", "‹", "1", "›", "››"].map((p, i) => (
-                  <button key={i} style={{ padding: "3px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: p === "1" ? RED : "#fff", color: p === "1" ? "#fff" : MUTED, fontSize: 12, cursor: "pointer", fontFamily: F }}>{p}</button>
+                  <Button key={i} style={{ padding: "3px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: p === "1" ? RED : "#fff", color: p === "1" ? "#fff" : MUTED, fontSize: 12, cursor: "pointer", fontFamily: F }}>{p}</Button>
                 ))}
               </div>
             </div>

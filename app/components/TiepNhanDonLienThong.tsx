@@ -8,7 +8,8 @@ import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-import { format, isAfter, isBefore, isSameDay } from "date-fns";
+import { format, isAfter, isBefore, isSameDay } from "date-fns";import { Button, Input } from "antd";
+
 type DonTrangThai = "cho-xu-ly" | "tra-lai";
 
 interface DonTiepNhan {
@@ -230,7 +231,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 <div className="text-[15px] font-bold text-tertiary">Chi tiết đơn: {chiTietPopup.maDon}</div>
                 <div className="text-[12px] text-on-surface-variant mt-0.5">Hình thức: {chiTietPopup.hinhThucDon}</div>
               </div>
-              <button onClick={() => setChiTietPopup(null)} className="text-outline hover:text-on-surface text-[20px]">×</button>
+              <Button onClick={() => setChiTietPopup(null)} className="text-outline hover:text-on-surface text-[20px]">×</Button>
             </div>
             <div className="flex-1 flex overflow-hidden">
               <div className="w-[280px] border-r border-surface-container-high flex flex-col bg-surface-bright">
@@ -281,7 +282,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[480px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Đơn liên quan</div>
-              <button onClick={() => setDonLienQuanPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setDonLienQuanPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4">
               <table className="w-full text-[12px] border-collapse">
@@ -310,7 +311,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[420px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Kết quả phân công</div>
-              <button onClick={() => setPhanCongAutoPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setPhanCongAutoPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div className="grid grid-cols-2 gap-2">
@@ -322,12 +323,12 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 Ưu tiên: {phanCongResult.uuTien}
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setPhanCongAutoPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => {
+                <Button onClick={() => setPhanCongAutoPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => {
                   setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-xu-ly" } : r));
                   setSelectedIds(new Set());
                   setPhanCongAutoPopup(null);
-                }} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân công</button>
+                }} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân công</Button>
               </div>
             </div>
           </div>
@@ -340,7 +341,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[380px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Chọn cán bộ tiếp nhận</div>
-              <button onClick={() => setPhanCongChiDinhPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setPhanCongChiDinhPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div>
@@ -355,8 +356,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 Tỷ lệ phân công hiện tại: Phạm Quốc Hưng 22% | Nguyễn Hải Trâm 18% | Trần Văn Minh 32% | Lê Thị Hoa 28%
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</button>
+                <Button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</Button>
               </div>
             </div>
           </div>
@@ -369,7 +370,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[380px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Thay đổi phân công</div>
-              <button onClick={() => setThayDoiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setThayDoiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div className="text-on-surface-variant">Cán bộ hiện tại: <span className="font-semibold text-tertiary">{thayDoiPopup.canBoPhanLoai}</span></div>
@@ -382,8 +383,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 </select>
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</button>
+                <Button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</Button>
               </div>
             </div>
           </div>
@@ -396,7 +397,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[440px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Trả lại đơn</div>
-              <button onClick={() => setTraLaiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setTraLaiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div>
@@ -417,8 +418,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   className="w-full text-[12px] px-2 py-1.5 border border-surface-container rounded-[3px] focus:outline-none focus:border-error resize-none h-[64px]" />
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận trả lại</button>
+                <Button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận trả lại</Button>
               </div>
             </div>
           </div>
@@ -433,16 +434,16 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
         </div>
         <div className="flex items-center gap-2">
           {isTruongPhong && (
-            <button onClick={() => setShowDanhSachCanBo(true)}
+            <Button onClick={() => setShowDanhSachCanBo(true)}
               className="h-[28px] px-3 border border-primary text-primary bg-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#f0f6ff] transition-colors">
               Danh sách cán bộ
-            </button>
+            </Button>
           )}
 
-          <button onClick={() => setRefreshKey(k => k + 1)}
+          <Button onClick={() => setRefreshKey(k => k + 1)}
             className="h-[28px] px-3 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
             <RefreshCw size={11} /> Làm mới
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -451,7 +452,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[900px] h-[600px] shadow-xl flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between bg-[#fcfcfc] shrink-0">
               <div className="text-[13px] font-bold text-tertiary">Kiểm soát tải lượng cán bộ tiếp nhận</div>
-              <button onClick={() => setShowDanhSachCanBo(false)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setShowDanhSachCanBo(false)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
 
             <div className="flex-1 flex min-h-0">
@@ -533,13 +534,13 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       {/* Tabs */}
       <div className="flex items-end border-b border-surface-container px-4 pt-0.5 gap-0 bg-white">
         {tabs.map(t => (
-          <button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
+          <Button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
             className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === t.key
               ? "border-error text-error"
               : "border-transparent text-on-surface-variant hover:text-on-surface"
               }`}>
             {t.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -547,17 +548,17 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       <div className="px-4 py-2.5 border-b border-surface-container-high bg-surface-bright">
         <div className="flex items-center gap-6 mb-2.5">
           <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
-            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
               checked={fDieuKien === "tat-ca"} onChange={() => setFDieuKien("tat-ca")} />
             Tất cả
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
-            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
               checked={fDieuKien === "chua-du"} onChange={() => setFDieuKien("chua-du")} />
             Đơn chưa đủ điều kiện
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
-            <input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
               checked={fDieuKien === "du"} onChange={() => setFDieuKien("du")} />
             Đơn đủ điều kiện
           </label>
@@ -565,21 +566,21 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
         <div className="flex items-center gap-2">
           <div className="relative flex-1 max-w-[420px]">
             <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-outline" />
-            <input value={search} onChange={e => setSearch(e.target.value)}
+            <Input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm theo số đến, mã đơn, người làm đơn..."
               className="w-full h-[30px] pl-7 pr-2 text-[12px] border border-surface-container rounded-[3px] focus:outline-none focus:border-error" />
           </div>
-          <button onClick={() => setShowAdvanced(v => !v)}
+          <Button onClick={() => setShowAdvanced(v => !v)}
             className={`h-[30px] px-3 border rounded-[3px] text-[11.5px] transition-colors ${showAdvanced ? "border-error text-error bg-[#fdeaea]" : "border-surface-container text-on-surface-variant bg-white hover:bg-surface-container-low"}`}>
             Nâng cao
-          </button>
-          <button className="h-[30px] px-3 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] transition-colors">
+          </Button>
+          <Button className="h-[30px] px-3 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] transition-colors">
             Tìm kiếm
-          </button>
-          <button onClick={() => { setSearch(""); resetAdvanced(); }}
+          </Button>
+          <Button onClick={() => { setSearch(""); resetAdvanced(); }}
             className="h-[30px] px-3 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low transition-colors">
             Đặt lại
-          </button>
+          </Button>
         </div>
 
         {/* Advanced filter */}
@@ -587,9 +588,9 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="mt-2.5 grid grid-cols-4 gap-2.5">
             {[
               { label: "Nguồn tiếp nhận", el: <select value={fNguon} onChange={e => setFNguon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option>VBDH</option><option>DVTT</option><option>DVC</option></select> },
-              { label: "Người đứng đơn", el: <input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" placeholder="Nhập tên..." /> },
-              { label: "Ngày tiếp nhận từ", el: <input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
-              { label: "Đến ngày", el: <input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
+              { label: "Người đứng đơn", el: <Input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" placeholder="Nhập tên..." /> },
+              { label: "Ngày tiếp nhận từ", el: <Input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
+              { label: "Đến ngày", el: <Input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
               { label: "Hình thức đơn", el: <select value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><optgroup label="— Đơn"><option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option><option value="Đơn khiếu nại tố cáo trong tố tụng">2. Đơn khiếu nại tố cáo trong tố tụng</option><option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option><option value="Đơn khác">4. Đơn khác</option></optgroup><optgroup label="— Công văn"><option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option><option value="CV chuyển đơn">2. CV chuyển đơn</option><option value="CV chuyển kiến nghị GĐT-TT">3. CV chuyển kiến nghị GĐT-TT</option><option value="CV khác">4. CV khác</option></optgroup><optgroup label="— Tài liệu"><option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option></optgroup></select> },
               { label: "Loại án", el: <select value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option>Hành chính</option><option>Dân sự</option><option>Hình sự</option><option>Lao động</option><option>Kinh doanh thương mại</option></select> },
               { label: "Cán bộ tiếp nhận", el: <select value={fCanBo} onChange={e => setFCanBo(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option>{CAN_BO_LIST_LT.map(cb => <option key={cb} value={cb}>{cb}</option>)}</select> },
@@ -607,7 +608,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       {/* Xác nhận phân loại cho can-bo-phan-loai */}
       {isCanBoPhanLoai && (activeTab === "tat-ca" || activeTab === "cho-xu-ly") && (
         <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-surface-container bg-white">
-          <button onClick={() => {
+          <Button onClick={() => {
             if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân loại"); return; }
 
             // Tìm các đơn GĐT
@@ -635,20 +636,20 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           }}
             className="h-[28px] px-3 bg-primary text-white rounded-[3px] text-[11.5px] font-medium hover:bg-primary-container transition-colors">
             Chuyển đơn
-          </button>
+          </Button>
         </div>
       )}
 
       {isTruongPhong && (activeTab === "cho-xu-ly") && (
         <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-surface-container bg-white">
-          <button onClick={() => {
+          <Button onClick={() => {
             if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
             setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-xu-ly" } : r));
             setSelectedIds(new Set());
           }}
             className="h-[28px] px-3 bg-primary text-white rounded-[3px] text-[11.5px] font-medium hover:bg-primary-container transition-colors">
             Phân công tự động
-          </button>
+          </Button>
 
           <select
             value=""
@@ -680,7 +681,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <thead>
             <tr className="bg-surface-container-low border-b border-surface-container">
               <th className="px-2.5 py-2 w-[32px]">
-                <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0}
+                <Input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0}
                   onChange={toggleAll} className="cursor-pointer" />
               </th>
               {["STT", "Nguồn", "Mã đơn", "Ngày tiếp nhận", "Người làm đơn", "Hình thức đơn", "Loại án", "Trạng thái (gợi ý)", "Đơn vị tiếp nhận (gợi ý)", "Thao tác"].map(h => (
@@ -697,7 +698,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               return (
                 <tr key={don.maDon} className="border-b border-surface-container hover:bg-[#faf6f6]" onDoubleClick={() => setChiTietPopup(don)} title="Kích đúp để xem chi tiết">
                   <td className="px-2.5 py-2.5 text-center">
-                    <input type="checkbox" checked={selectedIds.has(don.maDon)} onChange={() => toggleSelect(don.maDon)} className="cursor-pointer" />
+                    <Input type="checkbox" checked={selectedIds.has(don.maDon)} onChange={() => toggleSelect(don.maDon)} className="cursor-pointer" />
                   </td>
                   <td className="px-2.5 py-2.5 text-center font-medium text-on-surface-variant">{idx + 1}</td>
                   <td className="px-2.5 py-2.5">
@@ -706,10 +707,10 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   <td className="px-2.5 py-2.5">
                     <div className="font-semibold text-primary">{don.maDon}</div>
                     {don.coDonLienQuan && (
-                      <button onClick={() => setDonLienQuanPopup(don)}
+                      <Button onClick={() => setDonLienQuanPopup(don)}
                         className="block mt-0.5 text-[9.5px] font-medium text-[#8b5e00] bg-[#fffbf0] border border-[#f5c842] rounded px-1.5 py-[1px] hover:bg-[#fff0bc] transition-colors cursor-pointer">
                         Có đơn liên quan
-                      </button>
+                      </Button>
                     )}
                   </td>
                   <td className="px-2.5 py-2.5 whitespace-nowrap text-on-surface-variant">{don.ngayTiepNhan}</td>
@@ -758,15 +759,15 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   </td>
                   <td className="px-2.5 py-2.5">
                     <div className="flex items-center gap-1.5 justify-center">
-                      <button
+                      <Button
                         onClick={(e) => { e.stopPropagation(); setChiTietPopup(don); }}
                         title="Chi tiết"
                         className="w-[24px] h-[24px] flex items-center justify-center border border-surface-container bg-white text-on-surface-variant hover:text-primary hover:border-primary hover:bg-[#f0f6ff] rounded-[3px] transition-colors">
                         <Eye size={13} />
-                      </button>
+                      </Button>
 
                       {isCanBoPhanLoai && (
-                        <button onClick={(e) => {
+                        <Button onClick={(e) => {
                           e.stopPropagation();
 
                           if (don.donViTiepNhanGoiY === "Phòng GĐKTTT và THA") {
@@ -787,15 +788,15 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                           title="Xác nhận & Chuyển"
                           className="w-[24px] h-[24px] flex items-center justify-center border border-primary bg-info-container text-primary hover:bg-[#d2e3fc] rounded-[3px] transition-colors">
                           <Send size={11} />
-                        </button>
+                        </Button>
                       )}
 
                       {(!isCanBoPhanLoai || isChanhVP) && don.trangThai !== "tra-lai" && (
-                        <button onClick={(e) => { e.stopPropagation(); setTraLaiPopup(don); }}
+                        <Button onClick={(e) => { e.stopPropagation(); setTraLaiPopup(don); }}
                           title="Trả lại"
                           className="w-[24px] h-[24px] flex items-center justify-center border border-surface-container bg-white text-error hover:bg-[#fdeaea] rounded-[3px] transition-colors">
                           <CornerUpLeft size={13} />
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>

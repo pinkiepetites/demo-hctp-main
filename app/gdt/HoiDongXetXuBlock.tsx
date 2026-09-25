@@ -3,7 +3,8 @@ import { Users, Clock, X, Plus, Trash2 } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, TH_STYLE, TD_STYLE } from "./shared";
 import { formatSoBA } from "./AppHelpers";
 import { DANH_SACH_THAM_PHAN } from "./hdxxConfig";
-import type { LoaiHoiDong } from "./hdxxStore";
+import type { LoaiHoiDong } from "./hdxxStore";import { Button } from "antd";
+
 
 // ── Dòng vụ án của bảng tham mưu (mục 3.3b) ──────────────────────────────────
 
@@ -69,7 +70,7 @@ export function HoiDongXetXuBlock({
           {members.length} thẩm phán
         </span>
         {lichSu && (
-          <button
+          <Button
             onClick={lichSu.onOpen}
             title="Lịch sử chỉnh sửa"
             style={{
@@ -89,7 +90,7 @@ export function HoiDongXetXuBlock({
           >
             <Clock size={13} />
             {lichSu.soThayDoi > 0 ? `${lichSu.soThayDoi} thay đổi` : "Lịch sử sửa"}
-          </button>
+          </Button>
         )}
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 12, color: MUTED, fontFamily: F }}>
@@ -102,12 +103,12 @@ export function HoiDongXetXuBlock({
         <div>
           <div style={{ fontSize: 11, color: MUTED, fontFamily: F, marginBottom: 6 }}>Loại hội đồng</div>
           <div style={{ display: "inline-flex", border: `1px solid ${BORDER}`, borderRadius: 6, overflow: "hidden", background: "#fff" }}>
-            <button disabled={!editable} onClick={() => onChangeLoai("tham-phan")} style={segBtn(loai === "tham-phan")}>
+            <Button disabled={!editable} onClick={() => onChangeLoai("tham-phan")} style={segBtn(loai === "tham-phan")}>
               Ủy ban Thẩm phán gồm {members.length} Thẩm phán
-            </button>
-            <button disabled={!editable} onClick={() => onChangeLoai("toan-the")} style={segBtn(loai === "toan-the")}>
+            </Button>
+            <Button disabled={!editable} onClick={() => onChangeLoai("toan-the")} style={segBtn(loai === "toan-the")}>
               Toàn thể Ủy ban Thẩm phán
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -133,13 +134,13 @@ export function HoiDongXetXuBlock({
               >
                 {ten}
                 {suaThanhVien && (
-                  <button
+                  <Button
                     onClick={() => onRemoveMember?.(ten)}
                     title={`Bỏ ${ten} khỏi hội đồng`}
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", color: RED }}
                   >
                     <X size={13} />
-                  </button>
+                  </Button>
                 )}
               </span>
             ))}
@@ -149,12 +150,12 @@ export function HoiDongXetXuBlock({
             )}
 
             {suaThanhVien && !dangThem && (
-              <button
+              <Button
                 onClick={() => setDangThem(true)}
                 style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", background: "#fff", border: `1px solid ${RED}`, borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F, color: RED }}
               >
                 <Plus size={13} /> Thêm thẩm phán
-              </button>
+              </Button>
             )}
 
             {suaThanhVien && dangThem && (
@@ -277,7 +278,7 @@ export function BangVuAnThamMuu({
                 </div>
               </td>
               <td style={{ ...TD, textAlign: "center" }}>
-                <button
+                <Button
                   disabled={!editable}
                   onClick={() => onRemove?.(r.id)}
                   title={editable ? "Bỏ vụ án khỏi danh sách" : "Bấm “Sửa thông tin” để bỏ vụ án"}
@@ -293,7 +294,7 @@ export function BangVuAnThamMuu({
                   }}
                 >
                   <Trash2 size={14} />
-                </button>
+                </Button>
               </td>
             </tr>
           ))

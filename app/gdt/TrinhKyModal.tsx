@@ -15,7 +15,8 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge } from "./shared";import { Button, Input } from "antd";
+
 
 // ── Modal / Màn hình Hồ sơ tờ trình (Đồng bộ chuẩn giao diện theo mẫu ảnh) ─────────────
 export function HoSoToTrinhModal({
@@ -98,7 +99,7 @@ export function HoSoToTrinhModal({
 
       {/* ── Top Header Bar ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: `1px solid ${BORDER}`, flexShrink: 0, background: "#fff" }}>
-        <button
+        <Button
           onClick={onClose}
           style={{
             background: "none",
@@ -114,7 +115,7 @@ export function HoSoToTrinhModal({
           }}
         >
           <ArrowLeft size={16} /> Hồ sơ tờ trình
-        </button>
+        </Button>
       </div>
 
       {/* ── Main Layout Body ── */}
@@ -127,7 +128,7 @@ export function HoSoToTrinhModal({
               Danh sách văn bản ({docList.length})
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button
+              <Button
                 onClick={handleBatchDelete}
                 style={{
                   display: "flex",
@@ -145,8 +146,8 @@ export function HoSoToTrinhModal({
                 }}
               >
                 <Trash2 size={13} /> Xóa
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowChonTaiLieuModal(true)}
                 style={{
                   display: "flex",
@@ -164,7 +165,7 @@ export function HoSoToTrinhModal({
                 }}
               >
                 + Thêm tài liệu
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -204,7 +205,7 @@ export function HoSoToTrinhModal({
                     }}
                   >
                     {/* Checkbox */}
-                    <input
+                    <Input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => {}}
@@ -240,7 +241,7 @@ export function HoSoToTrinhModal({
                     </div>
 
                     {/* Trash Delete Icon */}
-                    <button
+                    <Button
                       onClick={e => handleDeleteDoc(doc.id, e)}
                       style={{
                         background: "none",
@@ -256,7 +257,7 @@ export function HoSoToTrinhModal({
                       onMouseLeave={e => (e.currentTarget.style.color = "#888888")}
                     >
                       <Trash2 size={15} />
-                    </button>
+                    </Button>
                   </div>
                 );
               })
@@ -281,34 +282,34 @@ export function HoSoToTrinhModal({
           >
             {/* Zoom Controls */}
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <button
+              <Button
                 onClick={() => setZoomLevel(prev => Math.max(50, prev - 10))}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="Thu nhỏ"
               >
                 <ZoomOut size={16} />
-              </button>
+              </Button>
               <span style={{ fontSize: 12, fontWeight: 500, color: "#333333", minWidth: 45, textAlign: "center" }}>
                 {zoomLevel}%
               </span>
-              <button
+              <Button
                 onClick={() => setZoomLevel(prev => Math.min(300, prev + 10))}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="Phóng to"
               >
                 <ZoomIn size={16} />
-              </button>
+              </Button>
             </div>
 
             {/* Page Navigation */}
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <button
+              <Button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="Trang trước"
               >
                 ‹
-              </button>
+              </Button>
               <div
                 style={{
                   display: "flex",
@@ -318,7 +319,7 @@ export function HoSoToTrinhModal({
                   color: "#333333",
                 }}
               >
-                <input
+                <Input
                   type="text"
                   value={currentPage}
                   onChange={() => {}}
@@ -334,31 +335,31 @@ export function HoSoToTrinhModal({
                 />
                 <span>/ {totalPages}</span>
               </div>
-              <button
+              <Button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="Trang sau"
               >
                 ›
-              </button>
+              </Button>
             </div>
 
             {/* Action Tools */}
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button
+              <Button
                 onClick={() => alert("Đang tải xuống tài liệu: " + currentDoc?.ten)}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="Tải xuống PDF"
               >
                 <Download size={16} />
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => window.print()}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#333333" }}
                 title="In tài liệu"
               >
                 <Printer size={16} />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -588,7 +589,7 @@ function ChonTaiLieuBoSungModal({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
+            <Button
               onClick={onClose}
               style={{
                 background: "none",
@@ -602,7 +603,7 @@ function ChonTaiLieuBoSungModal({
               title="Quay lại"
             >
               <ArrowLeft size={17} />
-            </button>
+            </Button>
             <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>
               Hồ sơ lưu trữ - Vụ án: {tenVuAn}
             </span>
@@ -610,7 +611,7 @@ function ChonTaiLieuBoSungModal({
 
           {/* Quick state switcher */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button
+            <Button
               onClick={() => {
                 setHasData(!hasData);
                 setSelectedDocKey(null);
@@ -628,7 +629,7 @@ function ChonTaiLieuBoSungModal({
               }}
             >
               {hasData ? "● Đang xem: Dữ liệu hồ sơ mẫu" : "○ Đang xem: Trạng thái chưa có hồ sơ"}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -657,7 +658,7 @@ function ChonTaiLieuBoSungModal({
           </div>
 
           {/* Right History Tab */}
-          <button
+          <Button
             onClick={() => setShowHistory(!showHistory)}
             style={{
               background: "none",
@@ -673,7 +674,7 @@ function ChonTaiLieuBoSungModal({
             }}
           >
             <span>🕒</span> Lịch sử
-          </button>
+          </Button>
         </div>
 
         {/* ── Main Split Body ── */}
@@ -711,7 +712,7 @@ function ChonTaiLieuBoSungModal({
                 ).map(tab => {
                   const active = phamViTai === tab.id;
                   return (
-                    <button
+                    <Button
                       key={tab.id}
                       onClick={() => setPhamViTai(tab.id)}
                       style={{
@@ -731,7 +732,7 @@ function ChonTaiLieuBoSungModal({
                       }}
                     >
                       {tab.label}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -757,7 +758,7 @@ function ChonTaiLieuBoSungModal({
                 ).map(tab => {
                   const active = hienThiTheo === tab.id;
                   return (
-                    <button
+                    <Button
                       key={tab.id}
                       onClick={() => setHienThiTheo(tab.id)}
                       style={{
@@ -777,7 +778,7 @@ function ChonTaiLieuBoSungModal({
                       }}
                     >
                       {tab.label}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -843,7 +844,7 @@ function ChonTaiLieuBoSungModal({
                           transition: "all 0.15s",
                         }}
                       >
-                        <input
+                        <Input
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => {}}
@@ -876,7 +877,7 @@ function ChonTaiLieuBoSungModal({
 
             {/* Bottom Button */}
             <div style={{ padding: "10px 14px", borderTop: `1px solid ${BORDER}`, background: "#fafafa" }}>
-              <button
+              <Button
                 onClick={() => alert("Chức năng tải hồ sơ xuống máy")}
                 style={{
                   width: "100%",
@@ -896,7 +897,7 @@ function ChonTaiLieuBoSungModal({
                 }}
               >
                 <Download size={14} /> Tải hồ sơ xuống
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -1014,7 +1015,7 @@ function ChonTaiLieuBoSungModal({
             flexShrink: 0,
           }}
         >
-          <button
+          <Button
             onClick={onClose}
             style={{
               padding: "7px 20px",
@@ -1028,8 +1029,8 @@ function ChonTaiLieuBoSungModal({
             }}
           >
             Đóng
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleConfirm}
             style={{
               padding: "7px 22px",
@@ -1044,7 +1045,7 @@ function ChonTaiLieuBoSungModal({
             }}
           >
             Xác nhận bổ sung tài liệu
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -1169,7 +1170,7 @@ export function TrinhKyHoSoTab() {
               style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 8px 5px 20px", borderRadius: 4, cursor: "pointer", background: selectedFile === f.key ? "#fce7e7" : "none", marginBottom: 2 }}
               onMouseEnter={e => { if (selectedFile !== f.key) e.currentTarget.style.background = "#fafafa"; }}
               onMouseLeave={e => { if (selectedFile !== f.key) e.currentTarget.style.background = "none"; }}>
-              <input type="checkbox" readOnly checked={selectedFile === f.key} style={{ cursor: "pointer", accentColor: RED }} />
+              <Input type="checkbox" readOnly checked={selectedFile === f.key} style={{ cursor: "pointer", accentColor: RED }} />
               <span>{f.type === "PDF" ? "📄" : "📝"}</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: selectedFile === f.key ? 600 : 400, color: TEXT }}>{f.label}</div>
@@ -1300,10 +1301,10 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
           {/* Sub-tabs */}
           <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
             {([["noi-dung", "Nội dung xin ý kiến"], ["thong-tin", "Thông tin tờ trình"], ["ho-so", "Hồ sơ tờ trình"]] as const).map(([k, lbl]) => (
-              <button key={k} onClick={() => setLeftTab(k)}
+              <Button key={k} onClick={() => setLeftTab(k)}
                 style={{ flex: 1, padding: "9px 4px", fontSize: 11, fontFamily: F, fontWeight: leftTab === k ? 700 : 400, background: "none", border: "none", cursor: "pointer", color: leftTab === k ? RED : MUTED, borderBottom: leftTab === k ? `2px solid ${RED}` : "2px solid transparent", marginBottom: -1 }}>
                 {lbl}
-              </button>
+              </Button>
             ))}
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 0" }}>
@@ -1337,7 +1338,7 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
                     <div style={{ border: `1px solid ${BORDER}`, borderRadius: 4, maxHeight: 180, overflowY: "auto", background: "#fafafa" }}>
                       {checkboxList.map(person => (
                         <label key={person} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", fontSize: 11, fontFamily: F, cursor: "pointer", borderBottom: `1px solid ${BORDER}` }}>
-                          <input
+                          <Input
                             type="checkbox"
                             checked={!!checkedPeople[person]}
                             onChange={() => togglePerson(person)}
@@ -1349,11 +1350,11 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
                     </div>
                   )}
                 </div>
-                <button
+                <Button
                   onClick={handleAddDanhSach}
                   style={{ width: "100%", padding: "7px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, fontWeight: 600, marginBottom: 14 }}>
                   Thêm người được trình
-                </button>
+                </Button>
                 {/* Danh sách đã thêm */}
                 <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", fontSize: 11 }}>
                   <colgroup><col style={{ width: "32%" }} /><col style={{ width: "33%" }} /><col style={{ width: "22%" }} /><col style={{ width: 36 }} /></colgroup>
@@ -1375,7 +1376,7 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
                             <Badge color={uuCfg.color} bg={uuCfg.bg}>{uuCfg.label}</Badge>
                           </td>
                           <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                            <button onClick={() => setDanhSach(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", padding: 1, color: "#c0392b" }}>🗑</button>
+                            <Button onClick={() => setDanhSach(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", padding: 1, color: "#c0392b" }}>🗑</Button>
                           </td>
                         </tr>
                       );
@@ -1392,22 +1393,22 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
             )}
           </div>
           <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderTop: `1px solid ${BORDER}`, flexShrink: 0 }}>
-            <button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</button>
-            <button style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Trình ký</button>
+            <Button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</Button>
+            <Button style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Trình ký</Button>
           </div>
         </div>
 
         {/* Right – PDF preview */}
         <div style={{ flex: 1, background: "#666666", overflow: "auto", display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 16px", background: "#555555", flexShrink: 0 }}>
-            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>🔄</button>
+            <Button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>🔄</Button>
             <span style={{ fontSize: 12, color: "#cccccc", fontFamily: F }}>100%</span>
-            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>⛶</button>
+            <Button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>⛶</Button>
             <div style={{ flex: 1 }} />
             <span style={{ fontSize: 12, color: "#cccccc", fontFamily: F }}>‹ 1 / 2 ›</span>
             <div style={{ flex: 1 }} />
-            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>⬇</button>
-            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>🖨</button>
+            <Button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>⬇</Button>
+            <Button style={{ background: "none", border: "none", cursor: "pointer", color: "#cccccc", fontSize: 13 }}>🖨</Button>
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "center", padding: 32, overflowY: "auto" }}>
             <div style={{ background: "#fff", width: "100%", maxWidth: 640, padding: "48px 64px", boxShadow: "0 4px 24px rgba(0,0,0,0.3)", fontFamily: "serif", lineHeight: 1.9, fontSize: 13 }}>

@@ -31,8 +31,8 @@ export type LoaiAn =
 export type VuPhuTrach =
   | "Vụ GD, KT về hình sự"
   | "Vụ GDT, KT về dân sự"
-  | "Tòa Hành chính"
-  | "Tòa Kinh tế, gia đình và người chưa thành niên";
+  | "Vụ Giám đốc, kiểm tra về hành chính"
+  | "Vụ Giám đốc, kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên";
 
 export const LOAI_AN_OPTIONS: LoaiAn[] = [
   "Hình sự",
@@ -48,8 +48,8 @@ export const LOAI_AN_OPTIONS: LoaiAn[] = [
 export const VU_OPTIONS: VuPhuTrach[] = [
   "Vụ GD, KT về hình sự",
   "Vụ GDT, KT về dân sự",
-  "Tòa Hành chính",
-  "Tòa Kinh tế, gia đình và người chưa thành niên",
+  "Vụ Giám đốc, kiểm tra về hành chính",
+  "Vụ Giám đốc, kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên",
 ];
 
 export function getVuByLoaiAn(loaiAn: LoaiAn): VuPhuTrach {
@@ -59,9 +59,9 @@ export function getVuByLoaiAn(loaiAn: LoaiAn): VuPhuTrach {
     case "Dân sự":
       return "Vụ GDT, KT về dân sự";
     case "Hành chính":
-      return "Tòa Hành chính";
+      return "Vụ Giám đốc, kiểm tra về hành chính";
     default:
-      return "Tòa Kinh tế, gia đình và người chưa thành niên";
+      return "Vụ Giám đốc, kiểm tra về kinh doanh, thương mại, phá sản, lao động, gia đình và người chưa thành niên";
   }
 }
 
@@ -97,7 +97,7 @@ export interface DonCase {
   thamPhan: string;
   capThamPhan: string;
   hinhThuc: string;
-  tags: string[]; // "an-quoc-hoi" | "an-chi-dao" | "an-tvtn"
+  tags: string[]; // "an-dan-de" | "an-tu-hinh"
 
   // Đương sự
   nguoiKhieuNai?: string;
@@ -211,8 +211,8 @@ const LOAI_AN_META: LoaiAnMeta[] = [
       "Vụ án TRẦN THỊ HÀ – Tranh chấp thừa kế di sản nhà đất và yêu cầu hủy Giấy chứng nhận quyền sử dụng đất cấp sai đối tượng",
       "Vụ án ĐỖ VĂN HÙNG – Tranh chấp hợp đồng vay tài sản và xử lý tài sản thế chấp",
       "Vụ án LÊ THỊ KHÁNH – Tranh chấp đòi lại tài sản và bồi thường thiệt hại ngoài hợp đồng",
-      "Vụ án NGÔ MAI TRANG – Tranh chấp hợp đồng mua bán nhà ở và quyền sử dụng đất tại Hà Nội",
-      "Vụ án LÊ VĂN HÙNG – Tranh chấp phân chia quyền sử dụng đất do cha mẹ để lại tại Hà Nội",
+      "Vụ án NGÔ MAI TRANG – Tranh chấp hợp đồng mua bán nhà ở và quyền sử dụng đất tại Bắc Ninh",
+      "Vụ án LÊ VĂN HÙNG – Tranh chấp phân chia quyền sử dụng đất do cha mẹ để lại tại Đà Nẵng",
       "Vụ án PHẠM THỊ BÍCH NGỌC – Tranh chấp lối đi chung và ranh giới quyền sử dụng đất liền kề",
       "Vụ án BÙI THỊ LAN – Tranh chấp hợp đồng ủy quyền định đoạt nhà đất và tuyên bố giao dịch vô hiệu",
       "Vụ án TRẦN QUANG HUY – Tranh chấp hợp đồng đặt cọc mua bán căn hộ chung cư cao cấp",
@@ -224,7 +224,7 @@ const LOAI_AN_META: LoaiAnMeta[] = [
       "Vụ án PHẠM VĂN LÂM – Khiếu kiện Quyết định thu hồi đất, Quyết định phê duyệt phương án bồi thường, hỗ trợ tái định cư và Quyết định cưỡng chế thu hồi đất của UBND tỉnh",
       "Vụ án NGUYỄN THỊ MINH – Khiếu kiện quyết định xử phạt vi phạm hành chính trong lĩnh vực xây dựng",
       "Vụ án TRẦN VĂN PHÚC – Khiếu kiện Quyết định cấp Giấy chứng nhận quyền sử dụng đất và hành vi không giải quyết thủ tục đăng ký biến động đất đai của Văn phòng ĐKĐĐ",
-      "Vụ án LÊ THỊ QUỲNH – Khiếu kiện quyết định kỷ luật buộc thôi việc Công chức nghiên cứu",
+      "Vụ án LÊ THỊ QUỲNH – Khiếu kiện quyết định kỷ luật buộc thôi việc công chức",
       "Vụ án HOÀNG VĂN SƠN – Khiếu kiện quyết định thu hồi giấy phép xây dựng dự án thương mại",
       "Vụ án PHẠM VĂN CƯỜNG – Khiếu kiện Quyết định thu hồi đất và phương án bồi thường tái định cư huyện Yên Dũng",
       "Vụ án HOÀNG VĂN MINH – Khiếu kiện Quyết định xử phạt vi phạm hành chính trong lĩnh vực đất đai TP Nha Trang",
@@ -271,7 +271,7 @@ const LOAI_AN_META: LoaiAnMeta[] = [
       "Vụ án LÊ VĂN GIÁP – Tranh chấp bồi thường chi phí đào tạo và cam kết làm việc tối thiểu 5 năm",
       "Vụ án PHẠM THỊ HƯƠNG – Tranh chấp quyền lợi bảo hiểm xã hội, bảo hiểm y tế và tiền lương ngừng việc",
       "Vụ án VŨ VĂN ÍCH – Tranh chấp bồi thường tai nạn lao động và bệnh nghề nghiệp nặng",
-      "Vụ án NGUYỄN VĂN TOÀN – Tranh chấp đơn phương chấm dứt HĐLĐ và bồi thường tổn thất thu nhập tại Hà Nội",
+      "Vụ án NGUYỄN VĂN TOÀN – Tranh chấp đơn phương chấm dứt HĐLĐ và bồi thường tổn thất thu nhập tại Bình Dương",
       "Vụ án ĐÀO THỊ MAI – Tranh chấp bảo hộ thai sản và chấm dứt HĐLĐ đối với lao động nữ",
       "Vụ án LÝ THÀNH LONG – Tranh chấp thỏa thuận bảo mật thông tin và không cạnh tranh (NDA/NCA)",
       "Vụ án PHAN VĂN HẬU – Tranh chấp chế độ trợ cấp mất việc làm khi tái cơ cấu doanh nghiệp",
@@ -323,18 +323,17 @@ const THAM_PHAN_LIST = [
   "Lê Quang Vinh",
 ];
 const CAP_THAM_PHAN_LIST = ["TPB3", "TPB2", "TPTC", "TPB1", "TPB3", "TPTC", "TPB2", "TPB1", "TPB3", "TPTC"];
-/** Tòa đã ra bản án bị đề nghị GĐT/TT. Tòa đang đăng nhập là TAND thành phố Hà
- *  Nội nên chỉ có chính tòa này (phúc thẩm) và các TAND khu vực thuộc Hà Nội
- *  (sơ thẩm). Bản trước là danh mục của TANDTC — trải khắp các tỉnh, và có cả
- *  một mục vô nghĩa "TAND khu vực 1 - Hà Nội tại thành phố Hồ Chí Minh". */
 const TOA_LIST = [
-  "Tòa án nhân dân thành phố Hà Nội",
-  "Tòa án nhân dân khu vực 1 - Hà Nội",
-  "Tòa án nhân dân khu vực 2 - Hà Nội",
-  "Tòa án nhân dân khu vực 3 - Hà Nội",
-  "Tòa án nhân dân khu vực 4 - Hà Nội",
-  "Tòa án nhân dân khu vực 5 - Hà Nội",
-  "Tòa án nhân dân khu vực 6 - Hà Nội",
+  "Tòa án nhân dân cấp cao tại thành phố Hồ Chí Minh",
+  "TAND tỉnh Bắc Ninh",
+  "Tòa án nhân dân cấp cao tại Hà Nội",
+  "TAND tỉnh Quảng Ninh",
+  "Tòa án nhân dân thành phố Đà Nẵng",
+  "Tòa án nhân dân tỉnh Thanh Hóa",
+  "Tòa án nhân dân TP Hải Phòng",
+  "Tòa án nhân dân tỉnh Bình Dương",
+  "Tòa án nhân dân tỉnh Khánh Hòa",
+  "Tòa án nhân dân tỉnh Đồng Nai",
 ];
 const NKN_LIST = [
   "Tổng Công ty Cổ phần Xây dựng & Khoáng sản Thương mại Miền Bắc",
@@ -367,7 +366,7 @@ const NDD_LIST = [
   "Đặng Hoàng Nam",
   "Hoàng Mỹ Linh",
   "Luật sư Phan Thị Lan",
-  "UBND Thành phố Hà Nội",
+  "UBND Tỉnh Bắc Giang",
   "Luật sư Đặng Minh Tuấn",
   "Luật sư Vũ Ngọc Hùng",
   "Lập Thái Phúc",
@@ -411,10 +410,10 @@ function buildCase(loaiIdx: number, recIdx: number, globalId: number): DonCase {
   // Phân bổ số lượng tag linh hoạt (1, 2-3, 4 label)
   let caseTags: string[] = [];
   if (loaiAn === "Hình sự") {
-    if (recIdx % 5 === 0) caseTags = ["an-quoc-hoi", "an-chi-dao", "an-tvtn"];
-    else if (recIdx % 5 === 1) caseTags = ["an-chi-dao", "an-quoc-hoi"];
-    else if (recIdx % 5 === 2) caseTags = ["an-tvtn"];
-    else if (recIdx % 5 === 3) caseTags = [];
+    if (recIdx % 5 === 0) caseTags = ["an-quoc-hoi", "an-chi-dao", "an-tvtn", "an-tu-hinh"];
+    else if (recIdx % 5 === 1) caseTags = ["an-tu-hinh", "an-chi-dao", "an-quoc-hoi"];
+    else if (recIdx % 5 === 2) caseTags = ["an-tu-hinh", "an-tvtn"];
+    else if (recIdx % 5 === 3) caseTags = ["an-tu-hinh"];
     else caseTags = ["an-chi-dao"];
   } else {
     if (recIdx % 5 === 0) caseTags = ["an-quoc-hoi", "an-chi-dao"];
@@ -450,11 +449,11 @@ function buildCase(loaiIdx: number, recIdx: number, globalId: number): DonCase {
 
   // Phân bổ trường hợp trình Lãnh đạo & Trạng thái để test Badge màu
   const leadershipOptions = [
-    { name: "Nguyễn Hòa Bình", role: "Chánh án TAND thành phố Hà Nội", decision: "thuy-moi" as const, date: "10/07/2026" },
-    { name: "Nguyễn Văn Tiến", role: "Phó Chánh án TAND thành phố Hà Nội", decision: "khong-thu-ly" as const, date: "11/07/2026" },
-    { name: "Nguyễn Thị Bình", role: "Trưởng phòng Vụ GD, KT I", decision: "thuy-moi" as const, date: "12/07/2026" },
-    { name: "Trần Văn Hải", role: "Phó Trưởng phòng Vụ GD, KT I", decision: "khong-thu-ly" as const, date: "13/07/2026" },
-    { name: "Đỗ Tất Thống", role: "Thẩm phán TAND thành phố Hà Nội", decision: "thuy-moi" as const, date: "14/07/2026" },
+    { name: "Nguyễn Hòa Bình", role: "Chánh án TANDTC", decision: "thuy-moi" as const, date: "10/07/2026" },
+    { name: "Nguyễn Văn Tiến", role: "Phó Chánh án TANDTC", decision: "khong-thu-ly" as const, date: "11/07/2026" },
+    { name: "Nguyễn Thị Bình", role: "Vụ trưởng Vụ GD, KT I", decision: "thuy-moi" as const, date: "12/07/2026" },
+    { name: "Trần Văn Hải", role: "Phó Vụ trưởng Vụ GD, KT I", decision: "khong-thu-ly" as const, date: "13/07/2026" },
+    { name: "Đỗ Tất Thống", role: "Thẩm phán TANDTC", decision: "thuy-moi" as const, date: "14/07/2026" },
   ];
 
   const statusOptions: TrangThaiVuAn[] = [
@@ -629,34 +628,5 @@ export function getCasesByVu(vu: VuPhuTrach): DonCase[] {
   return CASES.filter((c) => c.vu === vu);
 }
 
-// ─── Danh bạ nhân sự của tòa án đang đăng nhập (TAND thành phố Hà Nội) ───────
-// Các ô tìm kiếm "Thẩm phán", "Công chức nghiên cứu giải quyết", "Lãnh đạo phụ trách"
-// đều đổ từ đây, thay vì mỗi màn gõ một danh sách riêng — trước đây cùng một ô
-// ở hai màn lại ra hai bộ tên khác nhau.
-
-/** Thẩm phán của tòa án đang đăng nhập. */
-export const THAM_PHAN_TOA = [
-  "Nguyễn Biên Thuỳ",
-  "Trần Minh Đức",
-  "Lê Văn Minh",
-  "Chu Thị Thu Hiền",
-  "Trần Thị Lan",
-  "Lê Hoàng Nam",
-];
-
-/** Công chức nghiên cứu của phòng tại tòa án đang đăng nhập. */
-export const THAM_TRA_VIEN_PHONG = [
-  "Lý Thái Phúc",
-  "Vũ Biêu Thư",
-  "Trần Thị Mai",
-  "Vũ Xuân Hiển",
-  "Đỗ Thị Thu Hằng",
-  "Nguyễn Minh Tú",
-];
-
-/** Lãnh đạo phụ trách = Trưởng phòng và các Phó Trưởng phòng của phòng. */
-export const LANH_DAO_PHU_TRACH = [
-  "Nguyễn Văn Hùng – Trưởng phòng",
-  "Nguyễn Thị Thu Hương – Phó Trưởng phòng",
-  "Trần Quốc Hành – Phó Trưởng phòng",
-];
+export const THAM_PHAN_TOA = ['Nguy?n Van A', 'Tr?n Th? B', 'L� Van C'];
+export const THAM_TRA_VIEN_PHONG = ['Ph?m Th? D', 'Ho�ng Van E'];

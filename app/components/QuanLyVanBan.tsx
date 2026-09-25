@@ -30,7 +30,8 @@ import {
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
   Inbox, Home, List, FilePlus,
 } from "lucide-react";
-import PheDuyetToTrinhModal from "./PheDuyetToTrinhPhanCong";
+import PheDuyetToTrinhModal from "./PheDuyetToTrinhPhanCong";import { Button, Input } from "antd";
+
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
 export type TrangThaiVB =
@@ -381,30 +382,30 @@ const ChipSo = ({ vb }: { vb: VanBanTrinh }) => {
 
 // ─── Nút ─────────────────────────────────────────────────────────────────────
 const BtnPrimary = ({ children, onClick, disabled, title }: any) => (
-  <button type="button" onClick={onClick} disabled={disabled} title={title}
+  <Button htmlType="button" onClick={onClick} disabled={disabled} title={title}
     className={`inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] text-[12px] font-medium text-white transition-colors
       ${disabled ? "bg-[#d9c4c4] cursor-not-allowed" : "bg-error hover:bg-error-container"}`}>
     {children}
-  </button>
+  </Button>
 );
 const BtnOutline = ({ children, onClick }: any) => (
-  <button type="button" onClick={onClick}
+  <Button htmlType="button" onClick={onClick}
     className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-error text-error bg-white text-[12px] font-medium hover:bg-[#fdeaea] transition-colors">
     {children}
-  </button>
+  </Button>
 );
 const NutKiemTraDanhSachDon = ({ onClick, compact = false }: { onClick: () => void; compact?: boolean }) => (
-  <button type="button" onClick={onClick}
+  <Button htmlType="button" onClick={onClick}
     className={`inline-flex items-center gap-1.5 border border-[#1a5a96] rounded-[4px] bg-white text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors font-medium
       ${compact ? "h-[28px] px-2.5 text-[12px]" : "h-[28px] px-3 text-[12px]"}`}>
     <List size={compact ? 12 : 13} /> Kiểm tra danh sách đơn
-  </button>
+  </Button>
 );
 const BtnNeutral = ({ children, onClick }: any) => (
-  <button type="button" onClick={onClick}
+  <Button htmlType="button" onClick={onClick}
     className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-surface-container-highest text-on-surface bg-white text-[12px] font-medium hover:bg-surface-container-low transition-colors">
     {children}
-  </button>
+  </Button>
 );
 
 // ─── Dữ liệu mẫu ─────────────────────────────────────────────────────────────
@@ -850,7 +851,7 @@ const SoSanhPhienBan = ({ vb, moc, onClose }: { vb: VanBanTrinh; moc: MocLichSu;
         <div className="bg-white rounded-[6px] w-[560px] overflow-hidden" onClick={e => e.stopPropagation()}>
           <div className="bg-tertiary text-white px-4 py-2.5 flex items-center justify-between">
             <div className="text-[15px] font-bold">So sánh phiên bản</div>
-            <button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></button>
+            <Button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></Button>
           </div>
           <div className="py-11 px-4 text-center text-[12px] text-on-surface-variant">
             <ArrowLeftRight size={26} className="mx-auto mb-2.5 opacity-30" />
@@ -877,7 +878,7 @@ const SoSanhPhienBan = ({ vb, moc, onClose }: { vb: VanBanTrinh; moc: MocLichSu;
             <div className="text-[15px] font-bold">So sánh phiên bản</div>
             <div className="text-[11px] opacity-70 mt-0.5 font-mono">{vb.soVanBan ?? "— chưa số —"}</div>
           </div>
-          <button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></button>
+          <Button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></Button>
         </div>
 
         <div className="px-4 py-3 border-b border-surface-container-highest bg-surface-bright flex-shrink-0">
@@ -1056,11 +1057,11 @@ const TabLichSu = ({ vb, onXemThayDoi }: { vb: VanBanTrinh; onXemThayDoi: (m: Mo
 
                       {/* Không có thảo luận 2 chiều ⇒ nút này là kênh giao tiếp duy nhất. */}
                       {m.phienBanTruoc !== undefined && m.phienBanSau !== undefined && (
-                        <button type="button" onClick={() => onXemThayDoi(m)}
+                        <Button htmlType="button" onClick={() => onXemThayDoi(m)}
                           className="mt-1.5 inline-flex items-center gap-1.5 h-[22px] px-2.5 rounded-[3px] border bg-white text-[11px] font-medium"
                           style={{ borderColor: voHieu ? "#999" : "#1a73e8", color: voHieu ? "#999" : "#1a73e8" }}>
                           <ArrowLeftRight size={11} /> Xem thay đổi
-                        </button>
+                        </Button>
                       )}
                     </div>
                   ))}
@@ -1081,7 +1082,7 @@ const KhungHopThoai = ({ tieuDe, children, chan, onClose, rong = 520 }: any) => 
       onClick={(e: any) => e.stopPropagation()}>
       <div className="bg-tertiary text-white px-4 py-2.5 flex items-center justify-between">
         <div className="text-[15px] font-bold">{tieuDe}</div>
-        <button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></button>
+        <Button onClick={onClose} className="text-white/70 hover:text-white"><X size={16} /></Button>
       </div>
       <div className="p-4">{children}</div>
       <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2">{chan}</div>
@@ -1443,7 +1444,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
                 )}
               </div>
             </div>
-            <button onClick={onClose} className="text-white/70 hover:text-white flex-shrink-0 ml-3"><X size={16} /></button>
+            <Button onClick={onClose} className="text-white/70 hover:text-white flex-shrink-0 ml-3"><X size={16} /></Button>
           </div>
 
           <div className="flex gap-[18px] px-4 border-b border-surface-container-highest bg-white flex-shrink-0">
@@ -1624,10 +1625,10 @@ const CotThaoTac = ({ vb, nguoiDung, onMo }: { vb: VanBanTrinh; nguoiDung: strin
   const suaDuoc = !!giu && giu.nguoi === nguoiDung && !["DaBanHanh", "DaHuy"].includes(vb.trangThai);
   return (
     <td className="px-3 py-2 align-top text-center whitespace-nowrap text-primary" onClick={e => e.stopPropagation()}>
-      <button onClick={onMo} title={suaDuoc ? "Sửa" : "Xem chi tiết"} className="hover:text-[#1152a3] px-1">
+      <Button onClick={onMo} title={suaDuoc ? "Sửa" : "Xem chi tiết"} className="hover:text-[#1152a3] px-1">
         {suaDuoc ? <Pencil size={14} /> : <Eye size={15} />}
-      </button>
-      <button onClick={onMo} title="Lịch sử" className="hover:text-[#1152a3] px-1"><History size={14} /></button>
+      </Button>
+      <Button onClick={onMo} title="Lịch sử" className="hover:text-[#1152a3] px-1"><History size={14} /></Button>
     </td>
   );
 };
@@ -1769,14 +1770,14 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
           <span>Đang lọc từ Trang chủ:</span>
           <span className="inline-flex items-center gap-1.5 bg-white border border-[#e0c274] rounded-full pl-2.5 pr-1 py-0.5 font-semibold text-error">
             {locTuTrangChu.nhan}
-            <button
-              type="button"
+            <Button
+              htmlType="button"
               onClick={onXoaLocTuTrangChu}
               title="Bỏ lọc, xem toàn bộ danh sách"
               className="w-[16px] h-[16px] rounded-full flex items-center justify-center hover:bg-[#f3e3c0] transition-colors"
             >
               <X size={11} />
-            </button>
+            </Button>
           </span>
           <span className="text-[#a08340]">— {loc.length} văn bản</span>
         </div>
@@ -1801,7 +1802,7 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
       <div className="flex items-center gap-2 px-5 py-3">
         <div className="relative">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-          <input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm số / trích yếu…"
+          <Input value={tim} onChange={e => setTim(e.target.value)} placeholder="Tìm số / trích yếu…"
             className="h-[30px] w-[240px] border border-surface-container-highest rounded-[3px] pl-7 pr-2 text-[12px] focus:outline-none focus:border-primary" />
         </div>
         {/* Hai bộ lọc thật, thay cho việc lọc ngầm theo người đăng nhập.
@@ -1821,10 +1822,10 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
           {dsMaDon.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
         {(coLocThem || tim.trim()) && (
-          <button onClick={xoaBoLoc}
+          <Button onClick={xoaBoLoc}
             className="h-[30px] px-2.5 rounded-[3px] border border-surface-container-highest text-[12px] text-on-surface-variant hover:bg-surface-container-low">
             Xoá bộ lọc
-          </button>
+          </Button>
         )}
         <div className="flex-1" />
         <span className="text-[11px] text-on-surface-variant italic mr-1">Tạo văn bản mới từ màn Danh sách đơn</span>
@@ -1911,10 +1912,10 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                   <div className="text-[12px] text-on-surface-variant">{rong().m}</div>
                   {(rong() as any).phu && <div className="text-[11px] text-on-surface-variant mt-1.5">{(rong() as any).phu}</div>}
                   {(rong() as any).nut && (
-                    <button onClick={xoaBoLoc}
+                    <Button onClick={xoaBoLoc}
                       className="mt-3 h-[28px] px-3 rounded-[3px] border border-surface-container-highest text-[12px] font-medium hover:bg-surface-container-low">
                       Xoá bộ lọc
-                    </button>
+                    </Button>
                   )}
                 </td></tr>
               )}
@@ -2076,29 +2077,29 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
           <div className="mb-3 flex items-center gap-2 h-[38px] px-3 rounded-[4px] bg-[#eaf7ee] border border-[#a9debb] text-[13px] text-[#1a7a45]">
             <Check size={15} />
             <span className="flex-1">{thongBao}</span>
-            <button onClick={() => setThongBao("")} className="text-[#1a7a45] hover:text-[#0d5c31] px-1">×</button>
+            <Button onClick={() => setThongBao("")} className="text-[#1a7a45] hover:text-[#0d5c31] px-1">×</Button>
           </div>
         )}
 
         <div className="flex justify-between items-center mb-3">
           <div className="text-[13px] font-semibold text-on-surface">Danh sách đề xuất</div>
           <div className="flex gap-2">
-            <button type="button" onClick={pheDuyetHangLoat} disabled={!apDuocHangLoat}
+            <Button htmlType="button" onClick={pheDuyetHangLoat} disabled={!apDuocHangLoat}
               title={apDuocHangLoat ? undefined : lyDoChan}
               className={`h-[28px] px-3 rounded-[3px] text-[12px] font-medium text-white transition-colors
                 ${apDuocHangLoat ? "bg-error hover:bg-error-container" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
               Phê duyệt
-            </button>
-            <button type="button" onClick={() => setHopThoaiTraLai(true)} disabled={!apDuocHangLoat}
+            </Button>
+            <Button htmlType="button" onClick={() => setHopThoaiTraLai(true)} disabled={!apDuocHangLoat}
               title={apDuocHangLoat ? undefined : lyDoChan}
               className={`h-[28px] px-3 border rounded-[3px] bg-white text-[12px] font-medium transition-colors
                 ${apDuocHangLoat ? "border-error text-error hover:bg-[#fdeaea]" : "border-surface-container text-[#bbb] cursor-not-allowed"}`}>
               Trả lại
-            </button>
-            <button type="button"
+            </Button>
+            <Button htmlType="button"
               className="flex items-center gap-1.5 h-[28px] px-3 border border-surface-container-highest text-on-surface bg-white rounded-[3px] text-[12px] font-medium hover:bg-gray-50 transition-colors">
               <Download size={14} /> Kết xuất
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -2107,7 +2108,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
             <thead className="bg-surface-container-low text-on-surface border-b border-surface-container-highest">
               <tr>
                 <th className="px-3 py-2 text-center w-[40px]">
-                  <input type="checkbox"
+                  <Input type="checkbox"
                     checked={loc.length > 0 && tick.length === loc.length}
                     onChange={e => setTick(e.target.checked ? loc.map(v => v.id) : [])} />
                 </th>
@@ -2133,7 +2134,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
                     className={`border-b border-surface-container last:border-0 hover:bg-surface-bright cursor-pointer
                     ${dangOToi(v) ? "bg-[#fffdf5]" : ""}`}>
                     <td className="px-3 py-2 text-center align-top">
-                      <input type="checkbox" checked={tick.includes(v.id)}
+                      <Input type="checkbox" checked={tick.includes(v.id)}
                         onClick={e => e.stopPropagation()}
                         onChange={e => setTick(p => e.target.checked ? [...p, v.id] : p.filter(x => x !== v.id))} />
                     </td>
@@ -2153,7 +2154,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
                       {/* Tab "Chờ duyệt": trạng thái thay bằng nút phê duyệt luôn,
                           bấm là chuyển sang đã phê duyệt — bớt một lần mở popup. */}
                       {tab === "cho_duyet" && dangChoXuLy(v.trangThai) ? (
-                        <button type="button"
+                        <Button htmlType="button"
                           onClick={e => {
                             e.stopPropagation();
                             setDanhSach(ds => ds.map(x => x.id !== v.id ? x
@@ -2163,7 +2164,7 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
                           }}
                           className="inline-flex items-center gap-1 h-[26px] px-2.5 rounded-[3px] bg-error hover:bg-error-container text-white text-[11px] font-medium transition-colors whitespace-nowrap">
                           <Check size={12} /> Phê duyệt
-                        </button>
+                        </Button>
                       ) : (
                         <>
                           <span className={`inline-block px-2 py-[2px] rounded-[10px] text-[10px] font-medium border ${NHAN_NHOM[nhom].cls}`}>
@@ -2213,10 +2214,10 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole, initialTab 
                       <div className="text-[13px] text-on-surface-variant mt-1">{tabHienTai.rong}</div>
                       {/* Trống vì phạm vi của tab chứ không phải hệ thống rỗng */}
                       {tab !== "all" && trongLuong.length > 0 && (
-                        <button onClick={() => { setTab("all"); setTick([]); }}
+                        <Button onClick={() => { setTab("all"); setTick([]); }}
                           className="text-[12px] text-primary hover:underline mt-2">
                           Xem tất cả {trongLuong.length} đề xuất
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -2290,10 +2291,10 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
   };
 
   const NutIcon = ({ children, onClick, title }: any) => (
-    <button onClick={onClick} title={title}
+    <Button onClick={onClick} title={title}
       className="w-[26px] h-[26px] flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container transition-colors">
       {children}
-    </button>
+    </Button>
   );
 
   return (
@@ -2310,9 +2311,9 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
               Công tác lãnh đạo / Phê duyệt đề xuất / Ý kiến lãnh đạo
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors flex-shrink-0">
+          <Button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors flex-shrink-0">
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 flex min-h-0">
@@ -2424,8 +2425,8 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
                           <div className="text-[12px] text-on-surface leading-relaxed">{g.noiDung}</div>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[10px] text-on-surface-variant">{g.nguoi} · {g.thoiGian}</span>
-                            <button onClick={() => setGhiChu(p => p.filter(x => x.id !== g.id))}
-                              className="ml-auto text-[10px] text-error hover:underline">Xóa</button>
+                            <Button onClick={() => setGhiChu(p => p.filter(x => x.id !== g.id))}
+                              className="ml-auto text-[10px] text-error hover:underline">Xóa</Button>
                           </div>
                         </div>
                       ))}
@@ -2438,21 +2439,21 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
                         placeholder="Nhập nội dung ghi chú…"
                         className="w-full border border-surface-container-highest rounded-[3px] px-2 py-1.5 text-[12px] leading-relaxed resize-none focus:outline-none focus:border-primary" />
                       <div className="flex justify-end gap-2 mt-1.5">
-                        <button onClick={() => { setDangThemGhiChu(false); setGhiChuMoi(""); }}
-                          className="h-[26px] px-2.5 border border-surface-container-highest rounded-[3px] text-[11px] text-on-surface-variant hover:bg-surface-container-low">Hủy</button>
-                        <button disabled={!ghiChuMoi.trim()}
+                        <Button onClick={() => { setDangThemGhiChu(false); setGhiChuMoi(""); }}
+                          className="h-[26px] px-2.5 border border-surface-container-highest rounded-[3px] text-[11px] text-on-surface-variant hover:bg-surface-container-low">Hủy</Button>
+                        <Button disabled={!ghiChuMoi.trim()}
                           onClick={() => {
                             setGhiChu(p => [...p, { id: p.length + 1, noiDung: ghiChuMoi.trim(), nguoi: nguoiDung, thoiGian: bayGio() }]);
                             setGhiChuMoi(""); setDangThemGhiChu(false);
                           }}
-                          className="h-[26px] px-3 rounded-[3px] bg-error hover:bg-error-container disabled:opacity-40 text-white text-[11px] font-semibold">Lưu</button>
+                          className="h-[26px] px-3 rounded-[3px] bg-error hover:bg-error-container disabled:opacity-40 text-white text-[11px] font-semibold">Lưu</Button>
                       </div>
                     </div>
                   ) : (
-                    <button onClick={() => setDangThemGhiChu(true)}
+                    <Button onClick={() => setDangThemGhiChu(true)}
                       className="w-full mt-2 h-[32px] rounded-[4px] bg-error hover:bg-error-container text-white text-[12px] font-semibold transition-colors">
                       + Thêm ghi chú mới
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -2476,22 +2477,22 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
 
             {/* Footer hành động */}
             <div className="flex items-center justify-end gap-2 px-3 py-2.5 border-t border-[#e5e5e5] bg-surface-bright flex-shrink-0">
-              <button onClick={onClose}
+              <Button onClick={onClose}
                 className="h-[32px] px-3 border border-surface-container-highest rounded-[4px] bg-white text-[12px] text-on-surface-variant hover:bg-surface-container-low transition-colors">
                 Quay lại
-              </button>
+              </Button>
               {laNguoiGiu && (
                 <>
-                  <button onClick={tuChoi} disabled={yKien.trim().length < 10}
+                  <Button onClick={tuChoi} disabled={yKien.trim().length < 10}
                     title={yKien.trim().length < 10 ? "Nhập ý kiến từ chối (tối thiểu 10 ký tự)" : undefined}
                     className="h-[32px] px-3 border border-error rounded-[4px] bg-white text-[12px] font-medium text-error hover:bg-[#fdecea] disabled:opacity-40 disabled:hover:bg-white transition-colors">
                     <span className="inline-flex items-center gap-1.5"><Ban size={13} /> Từ chối</span>
-                  </button>
-                  <button onClick={duyet} disabled={thieuYKien}
+                  </Button>
+                  <Button onClick={duyet} disabled={thieuYKien}
                     title={thieuYKien ? "Nhập nội dung bút phê để tiếp tục" : undefined}
                     className="h-[32px] px-4 rounded-[4px] bg-[#1a7a45] hover:bg-[#14653a] disabled:opacity-40 disabled:hover:bg-[#1a7a45] text-white text-[12px] font-semibold transition-colors">
                     <span className="inline-flex items-center gap-1.5">{nutChinh.icon} {nutChinh.nhan}</span>
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -2609,10 +2610,10 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
   };
 
   const NutIcon = ({ children, onClick, title }: any) => (
-    <button onClick={onClick} title={title}
+    <Button onClick={onClick} title={title}
       className="w-[26px] h-[26px] flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container transition-colors">
       {children}
-    </button>
+    </Button>
   );
   const OSel = ({ value, onChange, holder, options }: any) => (
     <div className="relative">
@@ -2642,20 +2643,20 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
             {vb.soVanBan ?? "— chưa số —"} · {vb.trichYeu}
           </div>
         </div>
-        <button onClick={onClose}
+        <Button onClick={onClose}
           className="flex items-center gap-1.5 h-[34px] px-3.5 border border-surface-container-highest rounded-[4px] bg-white text-[13px] text-on-surface hover:bg-surface-container-low transition-colors flex-shrink-0">
           <ChevronRight size={14} className="rotate-180" /> Quay lại
-        </button>
+        </Button>
       </div>
 
       {/* Tabs */}
       <div className="px-6 border-b border-surface-container-high flex items-end gap-6 flex-shrink-0">
         {([["ykien", "Ý kiến lãnh đạo"], ["thongtin", "Thông tin tờ trình"]] as const).map(([id, nhan]) => (
-          <button key={id} onClick={() => setTab(id)}
+          <Button key={id} onClick={() => setTab(id)}
             className={`py-2.5 text-[14px] border-b-2 transition-colors ${tab === id
               ? "border-error text-error font-semibold" : "border-transparent text-on-surface-variant hover:text-on-surface"}`}>
             {nhan}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -2686,10 +2687,10 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                           <div className="text-[13px] font-semibold text-primary leading-snug">
                             Ý kiến đề xuất <span className="font-normal text-on-surface-variant">|</span> {yKienTruoc.chucVu} - {yKienTruoc.nguoi}
                           </div>
-                          <button onClick={() => setXemDienBien(v => !v)}
+                          <Button onClick={() => setXemDienBien(v => !v)}
                             className="ml-auto flex items-center gap-1 text-[12px] text-primary hover:underline flex-shrink-0">
                             <History size={12} /> Xem diễn biến
-                          </button>
+                          </Button>
                         </div>
                         <div className="text-[13px] text-on-surface mt-1 leading-relaxed">{yKienTruoc.yKien}</div>
                         {xemDienBien && (
@@ -2709,8 +2710,8 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                     <div className="border border-[#e5e5e5] rounded-[4px]">
                       <div className="flex items-center px-3 py-2 border-b border-surface-container-high">
                         <span className="text-[13px] text-on-surface-variant">Ý kiến lãnh đạo</span>
-                        <button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
-                          className="ml-auto text-on-surface-variant hover:text-on-surface"><RotateCcw size={13} /></button>
+                        <Button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
+                          className="ml-auto text-on-surface-variant hover:text-on-surface"><RotateCcw size={13} /></Button>
                       </div>
                       <div className="p-3">
                         {/* Không đánh dấu bắt buộc cố định: trình ký thì để trống
@@ -2740,8 +2741,8 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                   <div className="border border-[#e5e5e5] rounded-[4px]">
                     <div className="flex items-center px-3 py-2 border-b border-[#eee]">
                       <span className="text-[13px] text-[#555]">Ý kiến lãnh đạo</span>
-                      <button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
-                        className="ml-auto text-[#888] hover:text-[#333]"><RotateCcw size={13} /></button>
+                      <Button onClick={() => setYKien("Lãnh đạo đề xuất ý kiến:")} title="Đặt lại"
+                        className="ml-auto text-[#888] hover:text-[#333]"><RotateCcw size={13} /></Button>
                     </div>
                     <div className="p-3">
                       <label className="block text-[13px] text-[#333] mb-1.5">
@@ -2787,56 +2788,56 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                 )}
 
                 <div className="flex items-center justify-end gap-2 px-4 pb-4">
-                  <button onClick={() => setSuaWord(s => !s)}
+                  <Button onClick={() => setSuaWord(s => !s)}
                     className={`h-[36px] px-3.5 border rounded-[4px] text-[13px] transition-colors ${suaWord
                       ? "border-primary bg-[#eaf4ff] text-primary font-medium"
                       : "border-surface-container-highest bg-white text-on-surface hover:bg-surface-container-low"}`}>
                     {suaWord ? "Xong chỉnh sửa" : "Chỉnh sửa Word"}
-                  </button>
-                  <button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
+                  </Button>
+                  <Button onClick={() => setBao("Đã lưu ý kiến. Văn bản vẫn ở bước hiện tại.")}
                     className="h-[36px] px-4 border border-surface-container-highest rounded-[4px] bg-white text-[13px] text-on-surface hover:bg-surface-container-low transition-colors">
                     Lưu
-                  </button>
+                  </Button>
                   {laNguoiGiu && (
                     <>
                       {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
-                      <button onClick={tuChoi}
+                      <Button onClick={tuChoi}
                         title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
                         className="h-[36px] px-4 border border-error rounded-[4px] bg-white text-[13px] font-medium text-error hover:bg-[#fdecea] transition-colors">
                         <span className="inline-flex items-center gap-1.5"><Ban size={14} /> Từ chối</span>
-                      </button>
+                      </Button>
                       {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
-                      <button onClick={() => luuVaKy(false)}
+                      <Button onClick={() => luuVaKy(false)}
                         className="h-[36px] px-4 rounded-[4px] bg-error hover:bg-error-container text-white text-[13px] font-semibold transition-colors">
                         Lưu và ký
-                      </button>
-                      <button onClick={() => luuVaKy(true)}
+                      </Button>
+                      <Button onClick={() => luuVaKy(true)}
                         title="Ký logic — xác nhận trên hệ thống, không dùng chứng thư số"
                         className="h-[36px] px-4 rounded-[4px] bg-error hover:bg-error-container text-white text-[13px] font-semibold transition-colors">
                         Lưu và ký logic
-                      </button>
-                      <button onClick={luuYKien}
+                      </Button>
+                      <Button onClick={luuYKien}
                         className="h-[36px] px-4 border border-[#ccc] rounded-[4px] bg-white text-[13px] text-[#333] hover:bg-[#f5f5f5] transition-colors">
                         Lưu
-                      </button>
+                      </Button>
                       {laNguoiGiu && (
                         <>
                           {/* Từ chối — trả văn bản về người tạo, bắt buộc nêu lý do. */}
-                          <button onClick={tuChoi}
+                          <Button onClick={tuChoi}
                             title={duLyDoTuChoi ? undefined : "Nhập nội dung đề xuất (tối thiểu 10 ký tự) để từ chối"}
                             className="h-[36px] px-4 border border-[#c0392b] rounded-[4px] bg-white text-[13px] font-medium text-[#c0392b] hover:bg-[#fdecea] transition-colors flex items-center gap-1.5">
                             <Ban size={14} /> Từ chối
-                          </button>
+                          </Button>
                           {/* Trình ký: nội dung đề xuất không bắt buộc nên nút không khoá. */}
-                          <button onClick={() => luuVaKy(false)}
+                          <Button onClick={() => luuVaKy(false)}
                             className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
                             Lưu và ký
-                          </button>
-                          <button onClick={() => luuVaKy(true)}
+                          </Button>
+                          <Button onClick={() => luuVaKy(true)}
                             title="Ký logic — xác nhận trên hệ thống, không dùng chứng thư số"
                             className="h-[36px] px-4 rounded-[4px] bg-[#8b1a1a] hover:bg-[#6e1414] text-white text-[13px] font-semibold transition-colors">
                             Lưu và ký logic
-                          </button>
+                          </Button>
                         </>
                       )}
                     </>
@@ -2855,7 +2856,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
               </div>
               <div className="p-2 space-y-1">
                 {/* Gốc: chính tờ trình */}
-                <button type="button" onClick={() => setTaiLieuXem(null)}
+                <Button htmlType="button" onClick={() => setTaiLieuXem(null)}
                   className={`w-full text-left flex items-start gap-2 px-2 py-2 rounded-[4px] border transition-colors
                     ${taiLieuXem === null
                       ? "bg-[#fdeaea] border-error-container text-error"
@@ -2867,11 +2868,11 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                       {vb.soVanBan ?? "— chưa số —"}{vb.trangThaiSo === "tam" ? " (số tạm)" : ""}
                     </span>
                   </span>
-                </button>
+                </Button>
 
                 {/* Các danh sách đơn kèm theo — bấm để xem nội dung bên phải */}
                 {vb.donDinhKem.map(d => (
-                  <button key={d.ma} type="button" onClick={() => setTaiLieuXem(d.ma)}
+                  <Button key={d.ma} htmlType="button" onClick={() => setTaiLieuXem(d.ma)}
                     className={`w-full text-left flex items-start gap-2 pl-6 pr-2 py-2 rounded-[4px] border transition-colors
                       ${taiLieuXem === d.ma
                         ? "bg-[#eaf4ff] border-surface-variant text-primary"
@@ -2881,7 +2882,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, currentRole, danhSach, onCapN
                       <span className="block text-[12px] font-medium leading-snug">Danh sách đơn — {d.ma}</span>
                       <span className="block text-[11px] text-on-surface-variant mt-0.5 truncate">{d.nguoiGui} · {d.soBA}</span>
                     </span>
-                  </button>
+                  </Button>
                 ))}
                 {vb.donDinhKem.length === 0 && (
                   <div className="pl-6 py-2 text-[12px] text-outline italic">Không có tài liệu kèm theo</div>
@@ -3027,7 +3028,7 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
       <div className="flex items-center gap-2 px-5 py-3">
         <div className="relative">
           <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-          <input placeholder="Tìm số / trích yếu…"
+          <Input placeholder="Tìm số / trích yếu…"
             className="h-[30px] w-[240px] border border-surface-container-highest rounded-[3px] pl-7 pr-2 text-[12px] focus:outline-none focus:border-primary" />
         </div>
         <div className="flex-1" />

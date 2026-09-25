@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from "react";import { Button } from "antd";
+
 import {
   ArrowLeft,
   BarChart3,
@@ -122,25 +123,25 @@ export default function SoSanhLoaiAnChiTiet({ initialPeriod = "week", onBack }: 
   return (
     <div className="p-5 space-y-5 bg-[#f4f7f9] min-h-full font-sans">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <button
+        <Button
           onClick={onBack}
           className="flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0f172a] transition-colors"
         >
           <ArrowLeft size={16} /> Quay lại Trang chủ
-        </button>
+        </Button>
         {/* Bộ lọc kỳ riêng của màn này — mở ra đã đúng kỳ đang chọn ở Trang chủ,
             đổi tiếp ở đây không ảnh hưởng Trang chủ. */}
         <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
           {(["day", "week", "month", "year"] as const).map((p, idx) => {
             const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay"];
             return (
-              <button
+              <Button
                 key={p}
                 onClick={() => setKy(p)}
                 className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${ky === p ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
               >
                 {labels[idx]}
-              </button>
+              </Button>
             );
           })}
         </div>

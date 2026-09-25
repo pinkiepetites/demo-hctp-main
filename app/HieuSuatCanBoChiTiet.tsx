@@ -2,7 +2,8 @@ import React, { useMemo } from "react";
 import {
   Inbox, CheckCircle2, Clock, AlertTriangle, ArrowLeft, Lock,
 } from "lucide-react";
-import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";
+import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";import { Button } from "antd";
+
 import {
   daGiaiQuyetXong, laQuaHan, nguoiGiuViec, TRANG_THAI_THU_LY, type DonChiSo,
 } from "./ChiSoTrangChu";
@@ -118,12 +119,12 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", donList =
   return (
     <div className="p-5 space-y-5 bg-[#f4f7f9] min-h-full font-sans">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <button
+        <Button
           onClick={onBack}
           className="flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0f172a] transition-colors"
         >
           <ArrowLeft size={16} /> Quay lại Trang chủ
-        </button>
+        </Button>
         <div className="flex items-center gap-2.5 flex-wrap">
           {/* Nói rõ nguồn ngay trên màn: đây là lý do con số ở đây bằng đúng con số
               ở Trang chủ, và cũng là thứ phải sửa nếu sau này lệch. */}

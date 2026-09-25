@@ -18,7 +18,8 @@ import {
   Trash2,
   Check,
 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG } from "./shared";import { Button, Input } from "antd";
+
 
 // Common Form Controls Styling
 const inputStyle: React.CSSProperties = {
@@ -87,7 +88,7 @@ function FormInput({ label, value, defaultValue, placeholder, onChange }: {
   return (
     <div style={{ flex: 1, minWidth: 140 }}>
       <label style={labelStyle}>{label}</label>
-      <input
+      <Input
         type="text"
         value={value}
         defaultValue={defaultValue}
@@ -104,7 +105,7 @@ function FormDate({ label, placeholder = "Chọn ngày" }: { label: string; plac
     <div style={{ flex: 1, minWidth: 140 }}>
       <label style={labelStyle}>{label}</label>
       <div style={{ position: "relative" }}>
-        <input
+        <Input
           type="text"
           placeholder={placeholder}
           style={{ ...inputStyle, paddingRight: 28 }}
@@ -137,58 +138,58 @@ function WordToolbar({
     <div style={{ border: `1px solid ${BORDER}`, borderRadius: "4px 4px 0 0", background: "#fafafa", overflow: "hidden", fontFamily: F }}>
       {/* Top Bar Controls & Mode Toggle */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px", background: "#f5f5f5", borderBottom: `1px solid ${BORDER}`, fontSize: 12, flexWrap: "wrap" }}>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="Side panel">
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="Side panel">
           <Grid size={14} color={MUTED} />
-        </button>
+        </Button>
         <div style={{ width: 1, height: 16, background: BORDER, margin: "0 2px" }} />
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <ChevronUp size={14} color={MUTED} />
-        </button>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        </Button>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <ChevronDown size={14} color={MUTED} />
-        </button>
-        <input
+        </Button>
+        <Input
           type="text"
           defaultValue="1"
           style={{ width: 28, height: 22, textAlign: "center", fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 2 }}
         />
         <span style={{ color: MUTED }}>/{totalPages}</span>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <ChevronDown size={12} color={MUTED} />
-        </button>
+        </Button>
 
         <div style={{ width: 1, height: 16, background: BORDER, margin: "0 4px" }} />
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <ZoomOut size={14} color={MUTED} />
-        </button>
+        </Button>
         <div style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
           <span>100%</span>
           <ChevronDown size={12} color={MUTED} />
         </div>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <ZoomIn size={14} color={MUTED} />
-        </button>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        </Button>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <Search size={14} color={MUTED} />
-        </button>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
+        </Button>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }}>
           <Hand size={14} color={MUTED} />
-        </button>
+        </Button>
 
         <div style={{ width: 1, height: 16, background: BORDER, margin: "0 4px" }} />
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="Tải xuống">
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="Tải xuống">
           <Download size={14} color={MUTED} />
-        </button>
-        <button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="In báo cáo">
+        </Button>
+        <Button style={{ border: "none", background: "none", cursor: "pointer", padding: 2 }} title="In báo cáo">
           <Printer size={14} color={MUTED} />
-        </button>
+        </Button>
 
         {/* Word Mode Toggle Button */}
         <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
           {isEditing ? (
             <>
               {onAddRow && (
-                <button
+                <Button
                   onClick={onAddRow}
                   style={{
                     display: "flex", alignItems: "center", gap: 4,
@@ -198,9 +199,9 @@ function WordToolbar({
                   }}
                 >
                   <Plus size={13} /> Thêm hàng
-                </button>
+                </Button>
               )}
-              <button
+              <Button
                 onClick={onSave || onToggleEdit}
                 style={{
                   display: "flex", alignItems: "center", gap: 4,
@@ -210,10 +211,10 @@ function WordToolbar({
                 }}
               >
                 <Save size={13} /> Lưu văn bản
-              </button>
+              </Button>
             </>
           ) : (
-            <button
+            <Button
               onClick={onToggleEdit}
               style={{
                 display: "flex", alignItems: "center", gap: 4,
@@ -223,7 +224,7 @@ function WordToolbar({
               }}
             >
               <Edit3 size={13} /> Chỉnh sửa như Word
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -257,30 +258,30 @@ function WordToolbar({
 
           <div style={{ width: 1, height: 16, background: BORDER, margin: "0 2px" }} />
 
-          <button onClick={() => formatDoc("bold")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", fontWeight: 700, cursor: "pointer" }} title="In đậm (Ctrl+B)">
+          <Button onClick={() => formatDoc("bold")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", fontWeight: 700, cursor: "pointer" }} title="In đậm (Ctrl+B)">
             B
-          </button>
-          <button onClick={() => formatDoc("italic")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", fontStyle: "italic", cursor: "pointer" }} title="In nghiêng (Ctrl+I)">
+          </Button>
+          <Button onClick={() => formatDoc("italic")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", fontStyle: "italic", cursor: "pointer" }} title="In nghiêng (Ctrl+I)">
             I
-          </button>
-          <button onClick={() => formatDoc("underline")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", textDecoration: "underline", cursor: "pointer" }} title="Gạch chân (Ctrl+U)">
+          </Button>
+          <Button onClick={() => formatDoc("underline")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", textDecoration: "underline", cursor: "pointer" }} title="Gạch chân (Ctrl+U)">
             U
-          </button>
-          <button onClick={() => formatDoc("strikeThrough")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", textDecoration: "line-through", cursor: "pointer" }} title="Gạch ngang">
+          </Button>
+          <Button onClick={() => formatDoc("strikeThrough")} style={{ padding: "2px 8px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", textDecoration: "line-through", cursor: "pointer" }} title="Gạch ngang">
             S
-          </button>
+          </Button>
 
           <div style={{ width: 1, height: 16, background: BORDER, margin: "0 2px" }} />
 
-          <button onClick={() => formatDoc("justifyLeft")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn trái">
+          <Button onClick={() => formatDoc("justifyLeft")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn trái">
             ≡
-          </button>
-          <button onClick={() => formatDoc("justifyCenter")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn giữa">
+          </Button>
+          <Button onClick={() => formatDoc("justifyCenter")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn giữa">
             equiv;
-          </button>
-          <button onClick={() => formatDoc("justifyRight")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn phải">
+          </Button>
+          <Button onClick={() => formatDoc("justifyRight")} style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 3, background: "#fff", cursor: "pointer" }} title="Căn phải">
             ≡
-          </button>
+          </Button>
 
           <div style={{ width: 1, height: 16, background: BORDER, margin: "0 2px" }} />
 
@@ -462,7 +463,7 @@ export function AnQuocHoiView() {
             <FormSelect label="Thẩm phán" />
             <FormInput label="Thông tin cơ quan chuyển đơn" placeholder="Nhập thông tin cơ quan chuyển đơn" />
             <div style={{ display: "flex", gap: 8, marginLeft: "auto", flexShrink: 0, marginTop: 4 }}>
-              <button
+              <Button
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "0 16px", height: 34, background: RED, color: "#fff",
@@ -470,8 +471,8 @@ export function AnQuocHoiView() {
                 }}
               >
                 <FileText size={14} /> Xem Báo cáo
-              </button>
-              <button
+              </Button>
+              <Button
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "0 16px", height: 34, background: "#fff", color: TEXT,
@@ -479,7 +480,7 @@ export function AnQuocHoiView() {
                 }}
               >
                 <RotateCcw size={14} color={MUTED} /> Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -740,7 +741,7 @@ export function AnThoiHieuView() {
             <FormSelect label="Thẩm phán" />
             <FormSelect label="Tình trạng giải quyết" />
             <div style={{ display: "flex", gap: 8, marginLeft: "auto", flexShrink: 0, marginTop: 4 }}>
-              <button
+              <Button
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "0 16px", height: 34, background: RED, color: "#fff",
@@ -748,8 +749,8 @@ export function AnThoiHieuView() {
                 }}
               >
                 <FileText size={14} /> Xem Báo cáo
-              </button>
-              <button
+              </Button>
+              <Button
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "0 16px", height: 34, background: "#fff", color: TEXT,
@@ -757,7 +758,7 @@ export function AnThoiHieuView() {
                 }}
               >
                 <RotateCcw size={14} color={MUTED} /> Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>

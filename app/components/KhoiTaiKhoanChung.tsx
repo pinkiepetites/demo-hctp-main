@@ -81,37 +81,56 @@ export const KhoiTaiKhoanChung: React.FC<Props> = ({
         key: "role-toicao-group",
         type: "group",
         label: (
-          <div className="text-[10px] font-bold tracking-wider text-[#8b1a1a] uppercase flex items-center justify-between -mx-3 px-3 py-1 bg-[#fdeaea]/50">
+          <div className="text-[10px] font-bold tracking-wider text-[#8b1a1a] uppercase flex items-center justify-between -mx-3 px-3 py-1 bg-[#fdeaea]/50 mt-1">
             <span>Nhóm vai trò Tối cao</span>
             <span className="text-[9px] font-normal text-[#666]">TAND Tối cao</span>
           </div>
         ),
       });
 
-      NHOM_VAI_TRO_TOICAO.forEach((r) => {
-        const isActive =
-          currentCap === "toicao" && (currentRoleKey === r.key || currentRoleKey === r.innerRole);
+      // Group Tối cao by donVi
+      const groupedToiCao = NHOM_VAI_TRO_TOICAO.reduce((acc, r) => {
+        if (!acc[r.donVi]) acc[r.donVi] = [];
+        acc[r.donVi].push(r);
+        return acc;
+      }, {} as Record<string, typeof NHOM_VAI_TRO_TOICAO>);
+
+      Object.entries(groupedToiCao).forEach(([tenDonVi, roles]) => {
         menuItems.push({
-          key: `role-${r.key}`,
-          onClick: () => {
-            onDoiVaiTro(r.key);
-            setOpen(false);
-          },
+          key: `toicao-donvi-${tenDonVi}`,
+          type: "group",
           label: (
-            <div
-              className={`flex items-center gap-2 text-[12px] ${
-                isActive ? "text-[#8b1a1a] font-semibold" : "text-[#444]"
-              }`}
-            >
-              {isActive ? (
-                <Check size={12} className="flex-shrink-0 text-[#8b1a1a]" />
-              ) : (
-                <span className="w-[12px] flex-shrink-0" />
-              )}
-              <span>{r.label}</span>
+            <div className="text-[11px] font-semibold text-[#666] -mx-1 px-1 pt-1.5 pb-0.5 border-b border-[#f0f0f0] mb-0.5 uppercase tracking-wide">
+              {tenDonVi}
             </div>
           ),
-          style: isActive ? { backgroundColor: "#fdeaea" } : {},
+        });
+
+        roles.forEach((r) => {
+          const isActive =
+            currentCap === "toicao" && (currentRoleKey === r.key || currentRoleKey === r.innerRole);
+          menuItems.push({
+            key: `role-${r.key}`,
+            onClick: () => {
+              onDoiVaiTro(r.key);
+              setOpen(false);
+            },
+            label: (
+              <div
+                className={`flex items-center gap-2 text-[12px] pl-1 ${
+                  isActive ? "text-[#8b1a1a] font-semibold" : "text-[#444]"
+                }`}
+              >
+                {isActive ? (
+                  <Check size={12} className="flex-shrink-0 text-[#8b1a1a]" />
+                ) : (
+                  <span className="w-[12px] flex-shrink-0" />
+                )}
+                <span>{r.label}</span>
+              </div>
+            ),
+            style: isActive ? { backgroundColor: "#fdeaea" } : {},
+          });
         });
       });
 
@@ -119,37 +138,56 @@ export const KhoiTaiKhoanChung: React.FC<Props> = ({
         key: "role-tinh-group",
         type: "group",
         label: (
-          <div className="text-[10px] font-bold tracking-wider text-[#1a5a96] uppercase flex items-center justify-between -mx-3 px-3 py-1 bg-[#e8f4ff]/50 border-t border-[#eee]">
+          <div className="text-[10px] font-bold tracking-wider text-[#1a5a96] uppercase flex items-center justify-between -mx-3 px-3 py-1 bg-[#e8f4ff]/50 border-t border-[#eee] mt-2">
             <span>Nhóm vai trò Tỉnh</span>
             <span className="text-[9px] font-normal text-[#666]">TAND TP Hà Nội</span>
           </div>
         ),
       });
 
-      NHOM_VAI_TRO_TINH.forEach((r) => {
-        const isActive =
-          currentCap === "tinh" && (currentRoleKey === r.key || currentRoleKey === r.innerRole);
+      // Group Tỉnh by donVi
+      const groupedTinh = NHOM_VAI_TRO_TINH.reduce((acc, r) => {
+        if (!acc[r.donVi]) acc[r.donVi] = [];
+        acc[r.donVi].push(r);
+        return acc;
+      }, {} as Record<string, typeof NHOM_VAI_TRO_TINH>);
+
+      Object.entries(groupedTinh).forEach(([tenDonVi, roles]) => {
         menuItems.push({
-          key: `role-${r.key}`,
-          onClick: () => {
-            onDoiVaiTro(r.key);
-            setOpen(false);
-          },
+          key: `tinh-donvi-${tenDonVi}`,
+          type: "group",
           label: (
-            <div
-              className={`flex items-center gap-2 text-[12px] ${
-                isActive ? "text-[#1a5a96] font-semibold" : "text-[#444]"
-              }`}
-            >
-              {isActive ? (
-                <Check size={12} className="flex-shrink-0 text-[#1a5a96]" />
-              ) : (
-                <span className="w-[12px] flex-shrink-0" />
-              )}
-              <span>{r.label}</span>
+            <div className="text-[11px] font-semibold text-[#666] -mx-1 px-1 pt-1.5 pb-0.5 border-b border-[#f0f0f0] mb-0.5 uppercase tracking-wide">
+              {tenDonVi}
             </div>
           ),
-          style: isActive ? { backgroundColor: "#e8f4ff" } : {},
+        });
+
+        roles.forEach((r) => {
+          const isActive =
+            currentCap === "tinh" && (currentRoleKey === r.key || currentRoleKey === r.innerRole);
+          menuItems.push({
+            key: `role-${r.key}`,
+            onClick: () => {
+              onDoiVaiTro(r.key);
+              setOpen(false);
+            },
+            label: (
+              <div
+                className={`flex items-center gap-2 text-[12px] pl-1 ${
+                  isActive ? "text-[#1a5a96] font-semibold" : "text-[#444]"
+                }`}
+              >
+                {isActive ? (
+                  <Check size={12} className="flex-shrink-0 text-[#1a5a96]" />
+                ) : (
+                  <span className="w-[12px] flex-shrink-0" />
+                )}
+                <span>{r.label}</span>
+              </div>
+            ),
+            style: isActive ? { backgroundColor: "#e8f4ff" } : {},
+          });
         });
       });
     }
@@ -171,7 +209,7 @@ export const KhoiTaiKhoanChung: React.FC<Props> = ({
         placement="topRight"
         open={open}
         onOpenChange={setOpen}
-        overlayStyle={{ minWidth: 260, maxHeight: 520, overflow: 'auto' }}
+        overlayStyle={{ minWidth: 280, maxHeight: 600, overflow: 'auto' }}
       >
         <div className="flex items-center gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-[#f5f5f5] transition-colors">
           <Avatar
@@ -189,7 +227,7 @@ export const KhoiTaiKhoanChung: React.FC<Props> = ({
             <div className="text-[12px] font-semibold text-[#1d2e4f] truncate">{hoTen}</div>
             <div className="text-[11px] text-[#666] truncate flex items-center gap-1 mt-0.5">
               <span
-                className={`inline-block px-1 py-0.2 rounded text-[9px] font-medium leading-none ${
+                className={`inline-block px-1 py-0.5 rounded text-[9px] font-medium leading-none ${
                   currentCap === "toicao"
                     ? "bg-[#fdeaea] text-[#8b1a1a]"
                     : "bg-[#e8f4ff] text-[#1a5a96]"

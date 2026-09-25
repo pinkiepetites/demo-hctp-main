@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from "react";import { Button } from "antd";
+
 import {
   FileCheck, PenLine, Users, MessageSquareWarning, AlertTriangle, RotateCcw,
   ArrowRight, CheckCircle2, Gauge,
@@ -100,8 +101,8 @@ const TheViec = ({ nhan, giaTri, phuChu, canhBao, icon, mauIcon, nenIcon, onClic
   nhan: string; giaTri: number; phuChu?: string; canhBao?: string;
   icon: React.ReactNode; mauIcon: string; nenIcon: string; onClick?: () => void;
 }) => (
-  <button
-    type="button"
+  <Button
+    htmlType="button"
     onClick={onClick}
     className="group text-left bg-white rounded-[10px] border border-[#eef1f4] p-4 shadow-sm hover:shadow-md hover:border-[#cbd5e1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] transition-all duration-200 flex flex-col"
   >
@@ -124,7 +125,7 @@ const TheViec = ({ nhan, giaTri, phuChu, canhBao, icon, mauIcon, nenIcon, onClic
     <span className="mt-auto pt-3 text-[11px] font-medium text-[#94a3b8] group-hover:text-[#3b82f6] flex items-center gap-1 transition-colors">
       Xử lý ngay <ArrowRight size={11} />
     </span>
-  </button>
+  </Button>
 );
 
 // ─── Tầng 2: Cảnh báo ────────────────────────────────────────────────────────
@@ -155,10 +156,10 @@ const KhungCanhBao = ({ tieuDe, icon, mauIcon, soLuong, trong, onXemTatCa, child
     </div>
     {soLuong > 0 && (
       <div className="p-3 border-t border-surface-container-high bg-[#f8fafc] rounded-b-[8px] text-center">
-        <button type="button" onClick={onXemTatCa}
+        <Button htmlType="button" onClick={onXemTatCa}
           className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
           Xem tất cả {soLuong} mục
-        </button>
+        </Button>
       </div>
     )}
   </div>
@@ -167,7 +168,7 @@ const KhungCanhBao = ({ tieuDe, icon, mauIcon, soLuong, trong, onXemTatCa, child
 const DongCanhBao = ({ tieuDe, moTa, nhanPhai, mauNhan, onClick }: {
   tieuDe: string; moTa: string; nhanPhai: string; mauNhan: string; onClick?: () => void;
 }) => (
-  <button type="button" onClick={onClick}
+  <Button htmlType="button" onClick={onClick}
     className="w-full text-left p-3 border border-surface-container-high rounded-[6px] hover:border-error/30 hover:bg-[#fef2f2]/50 transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]">
     <div className="flex items-start justify-between gap-2 mb-1.5">
       <span className="text-[13px] font-bold text-[#1e293b] group-hover:text-error transition-colors truncate">{tieuDe}</span>
@@ -177,7 +178,7 @@ const DongCanhBao = ({ tieuDe, moTa, nhanPhai, mauNhan, onClick }: {
       <p className="text-[12px] text-[#64748b] line-clamp-1">{moTa}</p>
       <ArrowRight size={14} className="text-[#cbd5e1] group-hover:text-error transition-colors flex-shrink-0" />
     </div>
-  </button>
+  </Button>
 );
 
 // ─── Tầng 3: Tải việc của phòng ──────────────────────────────────────────────
@@ -230,10 +231,10 @@ const BangTaiViec = ({ canBo, onXemChiTiet }: {
           <span className="text-[11px] text-[#94a3b8]">
             Trung bình <span className="font-semibold text-[#475569]">{trungBinh.toFixed(1).replace(".", ",")}</span> đơn/người
           </span>
-          <button type="button" onClick={onXemChiTiet}
+          <Button htmlType="button" onClick={onXemChiTiet}
             className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
             Xem hiệu suất chi tiết <ArrowRight size={11} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -516,14 +517,14 @@ export default function TrangChuTruongPhong({
               // Trước đây là <p> tĩnh: người dùng thấy con số thì bấm, nhưng không
               // có gì xảy ra. Mọi con số trên Trang chủ đều phải mở được danh sách
               // đứng sau nó, nếu không thì đó là ngõ cụt.
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => onMoDanhSachDon?.({ nhan: "Sắp đến hạn giải quyết", tienDo: "sap-den-han" })}
                 className="w-full text-left text-[11px] text-[#b45309] bg-[#fffbeb] border border-[#fde68a] rounded-[4px] px-2.5 py-1.5 hover:bg-[#fef3c7] hover:border-[#fcd34d] transition-colors cursor-pointer"
               >
                 Thêm <span className="font-bold">{donSapDenHan}</span> đơn sắp đến hạn — nên xử lý trước khi thành quá hạn.
                 <span className="ml-1 underline underline-offset-2">Xem danh sách</span>
-              </button>
+              </Button>
             )}
           </KhungCanhBao>
 

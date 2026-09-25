@@ -4,7 +4,8 @@ import {
   ArrowLeft, ChevronRight, ChevronDown, List, Eye,
   RefreshCw, CheckCircle2, AlertCircle, X, Layers, Box
 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG, Badge } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG, Badge } from "./shared";import { Button } from "antd";
+
 
 export type ButLucItem = {
   id: string;
@@ -93,7 +94,7 @@ export function HoSoLuuTruView({
       >
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {onBack && (
-            <button
+            <Button
               onClick={onBack}
               style={{
                 background: "none",
@@ -106,7 +107,7 @@ export function HoSoLuuTruView({
               }}
             >
               <ArrowLeft size={17} />
-            </button>
+            </Button>
           )}
           <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F }}>
             Hồ sơ lưu trữ - Vụ án: {tenVuAn}
@@ -115,7 +116,7 @@ export function HoSoLuuTruView({
 
         {/* Quick state switcher for demonstration */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button
+          <Button
             onClick={() => {
               setHasData(!hasData);
               setSelectedItem(null);
@@ -133,7 +134,7 @@ export function HoSoLuuTruView({
             }}
           >
             {hasData ? "● Đang xem: Dữ liệu hồ sơ mẫu" : "○ Đang xem: Trạng thái chưa có hồ sơ"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -165,12 +166,12 @@ export function HoSoLuuTruView({
             <span style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>
               Hồ sơ lưu trữ
             </span>
-            <button
+            <Button
               title="Danh sách"
               style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
             >
               <List size={15} />
-            </button>
+            </Button>
           </div>
 
           {/* Filter 1: Phạm vi tải */}
@@ -193,7 +194,7 @@ export function HoSoLuuTruView({
               ).map(tab => {
                 const active = phamViTai === tab.id;
                 return (
-                  <button
+                  <Button
                     key={tab.id}
                     onClick={() => setPhamViTai(tab.id)}
                     style={{
@@ -213,7 +214,7 @@ export function HoSoLuuTruView({
                     }}
                   >
                     {tab.label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -239,7 +240,7 @@ export function HoSoLuuTruView({
               ).map(tab => {
                 const active = hienThiTheo === tab.id;
                 return (
-                  <button
+                  <Button
                     key={tab.id}
                     onClick={() => setHienThiTheo(tab.id)}
                     style={{
@@ -259,7 +260,7 @@ export function HoSoLuuTruView({
                     }}
                   >
                     {tab.label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -349,7 +350,7 @@ export function HoSoLuuTruView({
               background: "#fff",
             }}
           >
-            <button
+            <Button
               onClick={() => {
                 showToast("Đang chuẩn bị gói tải xuống hồ sơ lưu trữ...");
                 setTimeout(() => showToast("Đã tải trọn bộ hồ sơ lưu trữ về máy tính!"), 1500);
@@ -372,7 +373,7 @@ export function HoSoLuuTruView({
               }}
             >
               <Download size={13} /> Tải hồ sơ xuống
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -397,7 +398,7 @@ export function HoSoLuuTruView({
 
             {selectedItem && (
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <button
+                <Button
                   onClick={() => showToast("Đang tải bút lục đã chọn...")}
                   style={{
                     padding: "4px 10px",
@@ -414,7 +415,7 @@ export function HoSoLuuTruView({
                   }}
                 >
                   <Download size={12} /> Tải tài liệu này
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -577,12 +578,12 @@ export function HoSoLuuTruView({
                   <span style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F }}>
                     Lịch sử hồ sơ lưu trữ
                   </span>
-                  <button
+                  <Button
                     onClick={() => setShowHistory(false)}
                     style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 2 }}
                   >
                     <X size={16} />
-                  </button>
+                  </Button>
                 </div>
 
                 <div style={{ flex: 1, overflowY: "auto", padding: "14px 16px", display: "flex", flexDirection: "column", gap: 14 }}>

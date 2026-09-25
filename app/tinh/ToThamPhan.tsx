@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { Button, Input } from "antd";
+
 import {
   Search, Plus, RotateCw, Pencil, Users, Trash2, X, Check, AlertCircle,
   ChevronDown, ChevronLeft, ChevronRight, ChevronsRight, ChevronsLeft, UserPlus,
@@ -107,14 +109,14 @@ const bayGio = () => {
 /** Công tắc bật/tắt. Có nhãn chữ bên trong, không chỉ dựa vào màu — ảnh chụp
  *  đen trắng hoặc người khó phân biệt màu vẫn đọc được trạng thái. */
 const CongTac = ({ bat, onToggle }: { bat: boolean; onToggle: () => void }) => (
-  <button type="button" onClick={onToggle} role="switch" aria-checked={bat}
+  <Button htmlType="button" onClick={onToggle} role="switch" aria-checked={bat}
     title={bat ? "Đang dùng — bấm để tạm dừng" : "Đang tắt — bấm để bật"}
     className={`relative inline-flex items-center h-[22px] w-[48px] rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
       ${bat ? "bg-error" : "bg-[#d5d9de]"}`}>
     <span className={`absolute text-[10px] font-bold text-white transition-all ${bat ? "left-[7px] opacity-100" : "opacity-0"}`}>Bật</span>
     <span className={`absolute text-[10px] font-bold text-[#6b7280] transition-all ${bat ? "opacity-0" : "right-[6px] opacity-100"}`}>Tắt</span>
     <span className={`absolute w-[16px] h-[16px] rounded-full bg-white shadow transition-all ${bat ? "left-[29px]" : "left-[3px]"}`} />
-  </button>
+  </Button>
 );
 
 const Nhan = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
@@ -128,13 +130,13 @@ const ONhap = ({ value, onChange, placeholder, autoFocus }: {
   value: string; onChange: (v: string) => void; placeholder?: string; autoFocus?: boolean;
 }) => (
   <div className="relative">
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} autoFocus={autoFocus}
+    <Input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} autoFocus={autoFocus}
       className="w-full h-[32px] pl-2.5 pr-7 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
     {value && (
-      <button type="button" onClick={() => onChange("")} title="Xóa nội dung"
+      <Button htmlType="button" onClick={() => onChange("")} title="Xóa nội dung"
         className="absolute right-2 top-1/2 -translate-y-1/2 text-outline hover:text-error">
         <X size={13} />
-      </button>
+      </Button>
     )}
   </div>
 );
@@ -201,14 +203,14 @@ export default function ToThamPhan() {
 
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-stretch">
-                <input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
+                <Input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
                   onKeyDown={e => { if (e.key === "Enter") setDangTim(tuKhoa); }}
                   placeholder="Nhập từ khóa tìm kiếm…"
                   className="w-[230px] h-[32px] px-2.5 text-[13px] border border-surface-container-highest rounded-l-[3px] focus:outline-none focus:border-primary" />
-                <button type="button" onClick={() => setDangTim(tuKhoa)} title="Tìm kiếm"
+                <Button htmlType="button" onClick={() => setDangTim(tuKhoa)} title="Tìm kiếm"
                   className="h-[32px] px-3 bg-error hover:bg-error-container text-white rounded-r-[3px] transition-colors">
                   <Search size={14} />
-                </button>
+                </Button>
               </div>
 
               <div className="flex-1" />
@@ -220,16 +222,16 @@ export default function ToThamPhan() {
                 </OChon>
               </div>
 
-              <button type="button" onClick={() => { setThemMoi(true); setDangSua(null); }}
+              <Button htmlType="button" onClick={() => { setThemMoi(true); setDangSua(null); }}
                 className="flex items-center gap-1.5 h-[32px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[13px] font-medium transition-colors">
                 <Plus size={14} /> Thêm mới
-              </button>
+              </Button>
 
-              <button type="button" title="Bỏ lọc, tải lại danh sách"
+              <Button htmlType="button" title="Bỏ lọc, tải lại danh sách"
                 onClick={() => { setTuKhoa(""); setDangTim(""); setLocLoaiAn(""); }}
                 className="h-[32px] w-[32px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant transition-colors">
                 <RotateCw size={14} />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -237,7 +239,7 @@ export default function ToThamPhan() {
             <div className="flex items-center gap-2 px-4 py-2 bg-[#eaf7ee] border-b border-[#a9debb] text-[12px] text-[#1a7a45]">
               <Check size={14} className="flex-shrink-0" />
               <span className="flex-1">{thongBao}</span>
-              <button type="button" onClick={() => setThongBao("")} className="px-1 hover:text-[#0d5c31]">×</button>
+              <Button htmlType="button" onClick={() => setThongBao("")} className="px-1 hover:text-[#0d5c31]">×</Button>
             </div>
           )}
 
@@ -285,15 +287,15 @@ export default function ToThamPhan() {
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-center gap-3">
-                        <button type="button" title="Chỉnh sửa thông tin Ủy ban Thẩm phán"
+                        <Button htmlType="button" title="Chỉnh sửa thông tin Ủy ban Thẩm phán"
                           onClick={() => { setDangSua(r); setThemMoi(false); }}
-                          className="text-primary hover:text-[#0f4fa8] transition-colors"><Pencil size={15} /></button>
-                        <button type="button" title="Gán người dùng vào Ủy ban"
+                          className="text-primary hover:text-[#0f4fa8] transition-colors"><Pencil size={15} /></Button>
+                        <Button htmlType="button" title="Gán người dùng vào Ủy ban"
                           onClick={() => setGanThanhVien(r)}
-                          className="text-primary hover:text-[#0f4fa8] transition-colors"><UserPlus size={15} /></button>
-                        <button type="button" title="Xóa Ủy ban"
+                          className="text-primary hover:text-[#0f4fa8] transition-colors"><UserPlus size={15} /></Button>
+                        <Button htmlType="button" title="Xóa Ủy ban"
                           onClick={() => setXoaRow(r)}
-                          className="text-error hover:text-error transition-colors"><Trash2 size={15} /></button>
+                          className="text-error hover:text-error transition-colors"><Trash2 size={15} /></Button>
                       </div>
                     </td>
                   </tr>
@@ -372,7 +374,7 @@ function PopupSuaTo({ banGhi, onDong, onLuu }: {
           <div className="text-[15px] font-bold text-tertiary">
             {banGhi ? "Chỉnh sửa thông tin Ủy ban Thẩm phán" : "Thêm Ủy ban Thẩm phán"}
           </div>
-          <button type="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface"><X size={17} /></button>
+          <Button htmlType="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface"><X size={17} /></Button>
         </div>
 
         <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
@@ -429,14 +431,14 @@ function PopupSuaTo({ banGhi, onDong, onLuu }: {
             {luuDuoc ? "" : `Còn thiếu: ${thieu.join(" · ")}`}
           </span>
           <div className="flex gap-2 flex-shrink-0">
-            <button type="button" onClick={onDong}
-              className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</button>
-            <button type="button" disabled={!luuDuoc}
+            <Button htmlType="button" onClick={onDong}
+              className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</Button>
+            <Button htmlType="button" disabled={!luuDuoc}
               onClick={() => onLuu({ maTo: maTo.trim(), ten: ten.trim(), loaiAn, loaiToNhom, moTa, bat })}
               className={`h-[30px] px-4 rounded-[3px] text-[13px] font-medium text-white transition-colors
                 ${luuDuoc ? "bg-error hover:bg-error-container" : "bg-[#d9c4c4] cursor-not-allowed"}`}>
               {banGhi ? "Cập nhật" : "Thêm mới"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -472,7 +474,7 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
       </div>
 
       <label className="px-3 py-2 border-b border-surface-container-high flex items-center gap-2 text-[12px] font-medium text-on-surface-variant cursor-pointer">
-        <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
+        <Input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
           checked={tatCaDuocChon}
           onChange={() => setChon(tatCaDuocChon
             ? chon.filter(id => !phanHienThi.some(u => u.id === id))
@@ -487,7 +489,7 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
           </div>
         ) : phanHienThi.map(u => (
           <label key={u.id} className="px-3 py-2 border-b border-[#f2f2f2] flex items-start gap-2 cursor-pointer hover:bg-[#f8fafc] transition-colors">
-            <input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a] mt-[3px] flex-shrink-0"
+            <Input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a] mt-[3px] flex-shrink-0"
               checked={chon.includes(u.id)}
               onChange={() => setChon(chon.includes(u.id) ? chon.filter(x => x !== u.id) : [...chon, u.id])} />
             <div className="min-w-0">
@@ -501,16 +503,16 @@ function CotNguoiDung({ tieuDe, ds, chon, setChon }: {
 
       <div className="px-3 py-2 border-t border-surface-container-highest bg-surface-bright flex items-center gap-2 text-[11px] text-on-surface-variant">
         <span className="flex-1 truncate">{ds.length} người dùng</span>
-        <button type="button" disabled={trangHienTai <= 1} onClick={() => setTrang(trangHienTai - 1)}
+        <Button htmlType="button" disabled={trangHienTai <= 1} onClick={() => setTrang(trangHienTai - 1)}
           className="w-[22px] h-[22px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white disabled:opacity-40">
           <ChevronLeft size={12} />
-        </button>
+        </Button>
         <span className="px-2 h-[22px] leading-[20px] border border-surface-container-highest rounded-[3px] bg-white tabular-nums">{trangHienTai}</span>
         <span className="tabular-nums">/ {soTrang}</span>
-        <button type="button" disabled={trangHienTai >= soTrang} onClick={() => setTrang(trangHienTai + 1)}
+        <Button htmlType="button" disabled={trangHienTai >= soTrang} onClick={() => setTrang(trangHienTai + 1)}
           className="w-[22px] h-[22px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white disabled:opacity-40">
           <ChevronRight size={12} />
-        </button>
+        </Button>
         <select value={moiTrang} onChange={e => { setMoiTrang(Number(e.target.value)); setTrang(1); }}
           className="h-[22px] px-1 border border-surface-container-highest rounded-[3px] bg-white text-[11px]">
           {KICH_THUOC_TRANG.map(n => <option key={n} value={n}>{n} / trang</option>)}
@@ -563,12 +565,12 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
           <div className="text-[15px] font-bold text-tertiary truncate">
             Gán người dùng vào {to.ten}
           </div>
-          <button type="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface flex-shrink-0"><X size={17} /></button>
+          <Button htmlType="button" onClick={onDong} className="text-on-surface-variant hover:text-on-surface flex-shrink-0"><X size={17} /></Button>
         </div>
 
         {/* Thanh lọc */}
         <div className="px-4 py-3 flex items-center gap-2 flex-wrap border-b border-surface-container">
-          <input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
+          <Input value={tuKhoa} onChange={e => setTuKhoa(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") { setLocTuKhoa(tuKhoa); setLocDonVi(donVi); } }}
             placeholder="Tìm tên, tài khoản, số định danh…"
             className="w-[250px] h-[32px] px-2.5 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
@@ -578,27 +580,27 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
               {DON_VI.map(d => <option key={d} value={d}>{d}</option>)}
             </OChon>
           </div>
-          <button type="button" onClick={() => { setLocTuKhoa(tuKhoa); setLocDonVi(donVi); }}
+          <Button htmlType="button" onClick={() => { setLocTuKhoa(tuKhoa); setLocDonVi(donVi); }}
             className="flex items-center gap-1.5 h-[32px] px-4 bg-error hover:bg-error-container text-white rounded-[3px] text-[13px] font-medium transition-colors">
             <Search size={13} /> Lọc
-          </button>
-          <button type="button"
+          </Button>
+          <Button htmlType="button"
             onClick={() => { setTuKhoa(""); setDonVi(""); setLocTuKhoa(""); setLocDonVi(""); }}
             className="flex items-center gap-1.5 h-[32px] px-3 border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-[13px] text-on-surface-variant transition-colors">
             <RotateCw size={13} /> Xóa lọc
-          </button>
+          </Button>
 
           <div className="flex-1" />
 
           {/* "Gán tất cả" chỉ gán những người ĐANG hiện theo bộ lọc — nếu gán cả
               danh bạ thì một cú bấm nhầm kéo theo hàng chục người vào tổ. */}
-          <button type="button"
+          <Button htmlType="button"
             onClick={() => { setDaGan(p => [...new Set([...p, ...chuaGan.map(u => u.id)])]); setChonTrai([]); }}
             disabled={chuaGan.length === 0}
             title={chuaGan.length === 0 ? "Không còn ai để gán" : `Gán ${chuaGan.length} người đang hiển thị`}
             className="flex items-center gap-1.5 h-[32px] px-3 border border-error text-error rounded-[3px] bg-white hover:bg-[#fcf5f5] text-[13px] font-medium transition-colors disabled:opacity-40 disabled:hover:bg-white">
             <Users size={13} /> Gán tất cả ({chuaGan.length})
-          </button>
+          </Button>
         </div>
 
         {/* Hai cột */}
@@ -607,16 +609,16 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
             <CotNguoiDung tieuDe="Người dùng chưa được gán" ds={chuaGan} chon={chonTrai} setChon={setChonTrai} />
 
             <div className="flex flex-col items-center justify-center gap-2 flex-shrink-0">
-              <button type="button" onClick={sangPhai} disabled={chonTrai.length === 0}
+              <Button htmlType="button" onClick={sangPhai} disabled={chonTrai.length === 0}
                 title="Gán người đã chọn vào tổ"
                 className="w-[34px] h-[30px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant disabled:opacity-40 disabled:hover:bg-white transition-colors">
                 <ChevronsRight size={15} />
-              </button>
-              <button type="button" onClick={sangTrai} disabled={chonPhai.length === 0}
+              </Button>
+              <Button htmlType="button" onClick={sangTrai} disabled={chonPhai.length === 0}
                 title="Bỏ người đã chọn khỏi tổ"
                 className="w-[34px] h-[30px] flex items-center justify-center border border-surface-container-highest rounded-[3px] bg-white hover:bg-surface-container-low text-on-surface-variant disabled:opacity-40 disabled:hover:bg-white transition-colors">
                 <ChevronsLeft size={15} />
-              </button>
+              </Button>
             </div>
 
             <CotNguoiDung tieuDe="Người dùng đã được gán" ds={dsDaGan} chon={chonPhai} setChon={setChonPhai} />
@@ -634,12 +636,12 @@ function PopupGanNguoiDung({ to, onDong, onLuu }: {
         </div>
 
         <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2 flex-shrink-0">
-          <button type="button" onClick={onDong}
-            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Đóng</button>
-          <button type="button" onClick={() => onLuu(daGan)}
+          <Button htmlType="button" onClick={onDong}
+            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Đóng</Button>
+          <Button htmlType="button" onClick={() => onLuu(daGan)}
             className="h-[30px] px-4 rounded-[3px] bg-error hover:bg-error-container text-white text-[13px] font-medium transition-colors">
             Cập nhật
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -676,12 +678,12 @@ function PopupXacNhanXoa({ ten, soThanhVien, onDong, onXoa }: {
           </div>
         </div>
         <div className="px-4 pb-4 flex justify-end gap-2">
-          <button type="button" onClick={onDong}
-            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</button>
-          <button type="button" onClick={onXoa}
+          <Button htmlType="button" onClick={onDong}
+            className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-[13px] font-medium text-on-surface hover:bg-surface-container-low">Hủy</Button>
+          <Button htmlType="button" onClick={onXoa}
             className="h-[30px] px-4 rounded-[3px] bg-[#e5484d] hover:bg-error text-white text-[13px] font-medium transition-colors">
             Xóa
-          </button>
+          </Button>
         </div>
       </div>
     </div>

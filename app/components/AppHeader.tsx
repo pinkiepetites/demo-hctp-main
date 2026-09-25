@@ -67,7 +67,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     <div className="w-[320px] bg-white rounded-[4px] shadow-lg border border-gray-200 z-50 text-gray-800 overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
         <span className="font-semibold text-[13px]">Thông báo</span>
-        <button onClick={onMarkAllRead} className="text-[11px] text-[#8b1a1a] hover:underline">Đánh dấu đã đọc</button>
+        <Button onClick={onMarkAllRead} className="text-[11px] text-[#8b1a1a] hover:underline">Đánh dấu đã đọc</Button>
       </div>
       <div className="max-h-[300px] overflow-y-auto">
         {notifications.length === 0 ? (
@@ -112,32 +112,32 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         
         {donChiTietTabMoi ? (
           <div className="flex items-center gap-2 border-l border-white/20 pl-4">
-            <button type="button" onClick={() => window.close()}
+            <Button htmlType="button" onClick={() => window.close()}
               className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-white/50 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors">
               <X size={13} /> Đóng tab
-            </button>
+            </Button>
           </div>
         ) : view === "form" ? (
           <div className="flex items-center gap-2 border-l border-white/20 pl-4 h-full py-2">
             {renderOcrBadge()}
             {ocrFieldsSize > 0 && (
-              <button onClick={onClearOcrFields}
+              <Button onClick={onClearOcrFields}
                 className="flex items-center gap-1 h-[28px] px-2 rounded-[3px] border border-white/20 text-white/80 hover:bg-white/10 text-[11px] transition-colors">
                 <X size={10} /> Xóa highlight
-              </button>
+              </Button>
             )}
-            <button type="button" onClick={onShowTraLaiForm}
+            <Button htmlType="button" onClick={onShowTraLaiForm}
               className="inline-flex items-center gap-1.5 h-[28px] px-3 rounded-[3px] border border-white/50 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors">
               <RotateCcw size={13} /> Trả lại
-            </button>
-            <button type="button" onClick={onCancelForm}
+            </Button>
+            <Button htmlType="button" onClick={onCancelForm}
               className="inline-flex items-center h-[28px] px-4 rounded-[3px] border border-white/50 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors">
               Hủy
-            </button>
-            <button type="button" onClick={onSaveForm}
+            </Button>
+            <Button htmlType="button" onClick={onSaveForm}
               className="inline-flex items-center h-[28px] px-4 rounded-[3px] bg-white text-[#8b1a1a] text-[12px] font-bold hover:bg-gray-100 transition-colors">
               Lưu
-            </button>
+            </Button>
           </div>
         ) : null}
       </div>

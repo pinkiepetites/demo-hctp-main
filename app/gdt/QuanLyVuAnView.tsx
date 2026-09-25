@@ -14,7 +14,8 @@ import { HoSoLuuTruView } from "./HoSoLuuTruView";
 
 import { ThemKetQuaModal, ThemQuyetDinhHoanModal } from "./ThemKetQuaModal";
 import { TaoDuThaoModal } from "./TaoDuThaoModal";
-import { HoSoToTrinhModal, TrinhKyModal } from "./TrinhKyModal";
+import { HoSoToTrinhModal, TrinhKyModal } from "./TrinhKyModal";import { Button, Input } from "antd";
+
 
 // ── Types & Interfaces ────────────────────────────────────────────────────────
 export interface VuAnRow {
@@ -575,7 +576,7 @@ export function QuickViewDanhSachDonModal({
             </span>
             <Badge color="#1a5a96" bg="#e8f4ff">{donList.length} đơn</Badge>
           </div>
-          <button
+          <Button
             onClick={onClose}
             style={{
               background: "none",
@@ -588,7 +589,7 @@ export function QuickViewDanhSachDonModal({
             }}
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Info Strip */}
@@ -765,7 +766,7 @@ export function QuickViewDanhSachDonModal({
             Tổng cộng: <b style={{ color: TEXT }}>{donList.length} đơn</b> thuộc {isKhieuNai ? "vụ việc khiếu nại" : "vụ án"}
           </span>
           <div style={{ display: "flex", gap: 10 }}>
-            <button
+            <Button
               onClick={() => {
                 onClose();
                 onSelectVuAn(group.id, "danh-sach-don");
@@ -786,8 +787,8 @@ export function QuickViewDanhSachDonModal({
               }}
             >
               Xem toàn bộ chi tiết {isKhieuNai ? "khiếu nại" : "vụ án"} →
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onClose}
               style={{
                 padding: "7px 16px",
@@ -801,7 +802,7 @@ export function QuickViewDanhSachDonModal({
               }}
             >
               Đóng
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -881,10 +882,10 @@ export default function QuanLyVuAnView({
           {tabs.map((t) => {
             const active = t.id === activeTab;
             return (
-              <button key={t.id} onClick={() => setActiveTab(t.id as VuAnTabId)}
+              <Button key={t.id} onClick={() => setActiveTab(t.id as VuAnTabId)}
                 style={{ padding: "10px 16px", fontSize: 13, fontFamily: F, fontWeight: active ? 600 : 400, background: "none", border: "none", cursor: "pointer", color: active ? RED : MUTED, borderBottom: active ? `2px solid ${RED}` : "2px solid transparent", marginBottom: -1, whiteSpace: "nowrap" }}>
                 {t.label}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -899,12 +900,12 @@ export default function QuanLyVuAnView({
       {/* Action bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 20px", background: "#fff", borderBottom: `1px solid ${BORDER}`, flexShrink: 0 }}>
         <div style={{ flex: 1 }} />
-        <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
+        <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
           + Thêm mới
-        </button>
-        <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
+        </Button>
+        <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
           <Printer size={13} /> In biểu đồ
-        </button>
+        </Button>
       </div>
 
       {/* Table — chỉ giữ cuộn NGANG cho bảng rộng; cuộn dọc trả về khung ngoài,
@@ -923,7 +924,7 @@ export default function QuanLyVuAnView({
           </colgroup>
           <thead>
             <tr>
-              <th style={TH_STYLE}><input type="checkbox" /></th>
+              <th style={TH_STYLE}><Input type="checkbox" /></th>
               <th style={TH_STYLE}>THÔNG TIN ĐƠN & THỤ LÝ</th>
               <th style={TH_STYLE}>THÔNG TIN BẢN ÁN/QĐ & QHPL</th>
               <th style={TH_STYLE}>ĐƯƠNG SỰ & NGƯỜI ĐỀ NGHỊ</th>
@@ -947,7 +948,7 @@ export default function QuanLyVuAnView({
                       }}
                     >
                       <td style={{ ...TD_STYLE, textAlign: "center", background: "#fdf3f2", padding: "4px 8px" }}>
-                        <input type="checkbox" style={{ cursor: "pointer" }} />
+                        <Input type="checkbox" style={{ cursor: "pointer" }} />
                       </td>
                       <td colSpan={6} style={{ ...TD_STYLE, background: "#fdf3f2", padding: "5px 10px" }}>
                         <div
@@ -985,7 +986,7 @@ export default function QuanLyVuAnView({
                             onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
                           >
                             <td style={{ ...TD_STYLE, textAlign: "center", padding: "4px 8px" }}>
-                              <input type="checkbox" style={{ cursor: "pointer" }} />
+                              <Input type="checkbox" style={{ cursor: "pointer" }} />
                             </td>
 
                             {/* Cột gộp chung: STT, THÔNG TIN ĐƠN & THỤ LÝ */}
@@ -1073,7 +1074,7 @@ export default function QuanLyVuAnView({
 
                             {/* Cột 5: Trạng thái (Tờ trình) */}
                             <td style={{ ...TD_STYLE, padding: "5px 8px" }}>
-                              <button
+                              <Button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setQuickViewDonGroup(group);
@@ -1094,18 +1095,18 @@ export default function QuanLyVuAnView({
                                 }}
                               >
                                 📄 {row.soToTrinh || 1} tờ trình
-                              </button>
+                              </Button>
                             </td>
 
                             {/* Cột 6: Thao tác */}
                             <td style={{ ...TD_STYLE, textAlign: "center", padding: "5px 8px" }}>
-                              <button
+                              <Button
                                 onClick={() => onSelectVuAn(group.id)}
                                 style={{ background: "none", border: "none", cursor: "pointer", padding: 3, borderRadius: 4 }}
                                 title="Xem chi tiết"
                               >
                                 <Eye size={14} color="#666666" />
-                              </button>
+                              </Button>
                             </td>
                           </tr>
                         );
@@ -1127,7 +1128,7 @@ export default function QuanLyVuAnView({
                       onMouseLeave={(e) => (e.currentTarget.style.background = globalIdx % 2 === 0 ? "#fff" : "#fafafa")}
                     >
                       <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                        <input type="checkbox" />
+                        <Input type="checkbox" />
                       </td>
                       <td style={{ ...TD_STYLE, textAlign: "center", color: MUTED, fontSize: 12, fontFamily: F }}>
                         {globalIdx + 1}
@@ -1138,7 +1139,7 @@ export default function QuanLyVuAnView({
                             Số: <b>{row.soThuLy}</b>
                           </span>
                           <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>Ngày TL: {row.ngayThuLy}</span>
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               setQuickViewDonGroup(group);
@@ -1158,7 +1159,7 @@ export default function QuanLyVuAnView({
                             title="Xem nhanh danh sách đơn và thông tin trình"
                           >
                             Số đơn {group.rows.length}
-                          </button>
+                          </Button>
                         </div>
                       </td>
                       <td style={TD_STYLE}>
@@ -1276,13 +1277,13 @@ export default function QuanLyVuAnView({
                         </div>
                       </td>
                       <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                        <button
+                        <Button
                           onClick={() => onSelectVuAn(group.id)}
                           style={{ background: "none", border: "none", cursor: "pointer", padding: 4, borderRadius: 4, fontSize: 18, color: MUTED, lineHeight: 1 }}
                           title="Tùy chọn"
                         >
                           ⋮
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   );
@@ -1294,9 +1295,9 @@ export default function QuanLyVuAnView({
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderTop: `1px solid ${BORDER}`, background: "#fff", fontSize: 12, color: MUTED, fontFamily: F }}>
           <span>Hiển thị 1–{filteredGroups.reduce((s, g) => s + g.rows.length, 0)} trong tổng {filteredGroups.reduce((s, g) => s + g.rows.length, 0)} bản ghi</span>
           <div style={{ flex: 1 }} />
-          <button style={paginBtn} disabled>‹</button>
-          <button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</button>
-          <button style={paginBtn}>›</button>
+          <Button style={paginBtn} disabled>‹</Button>
+          <Button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</Button>
+          <Button style={paginBtn}>›</Button>
           <select style={{ padding: "3px 8px", border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, fontSize: 12 }}><option>10 / trang</option></select>
         </div>
       </div>
@@ -1382,12 +1383,12 @@ function TabDanhSachDon({ detail }: { detail: VuAnDetailData }) {
         <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: `1px solid ${BORDER}` }}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F, margin: 0 }}>Danh sách đơn</h3>
           <div style={{ flex: 1 }} />
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
+          <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
             Tách vụ kiện
-          </button>
-          <button style={{ marginLeft: 8, display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
+          </Button>
+          <Button style={{ marginLeft: 8, display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
             <RefreshCw size={12} color={MUTED} />
-          </button>
+          </Button>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <colgroup>
@@ -1432,7 +1433,7 @@ function TabDanhSachDon({ detail }: { detail: VuAnDetailData }) {
                 </td>
                 <td style={{ ...TD_STYLE, fontSize: 11, color: MUTED, lineHeight: 1.5 }}>{d.noiDung}</td>
                 <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} title="Xem"><Eye size={14} color={MUTED} /></button>
+                  <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} title="Xem"><Eye size={14} color={MUTED} /></Button>
                 </td>
               </tr>
             ))}
@@ -1471,17 +1472,17 @@ function XemBieuMauScreen({ loaiPhieu, onClose }: { loaiPhieu: string; onClose: 
           {isSaved && <span style={{ fontSize: 11, background: "#e8f5e9", color: "#1b5e20", border: "1px solid #a5d6a7", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>✓ Đã lưu</span>}
           {hasNumber && <span style={{ fontSize: 11, background: "#f3e8ff", color: "#6b21a8", border: "1px solid #d8b4fe", padding: "2px 8px", borderRadius: 12, fontWeight: 700 }}>🔢 Số: {soHieu}</span>}
           <div style={{ display: "flex", gap: 6 }}>
-            <button onClick={() => { setIsSaved(true); }} style={{ padding: "5px 14px", background: "#27ae60", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>💾 Lưu</button>
-            <button onClick={() => setHasNumber(v => !v)} style={{ padding: "5px 14px", background: hasNumber ? "#c0392b" : "#7c3aed", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>{hasNumber ? "✕ Hủy số" : "🔢 Lấy số"}</button>
-            <button style={{ padding: "5px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>📩 Trình ký</button>
-            <button onClick={onClose} style={{ padding: "5px 14px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>✕ Đóng</button>
+            <Button onClick={() => { setIsSaved(true); }} style={{ padding: "5px 14px", background: "#27ae60", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>💾 Lưu</Button>
+            <Button onClick={() => setHasNumber(v => !v)} style={{ padding: "5px 14px", background: hasNumber ? "#c0392b" : "#7c3aed", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>{hasNumber ? "✕ Hủy số" : "🔢 Lấy số"}</Button>
+            <Button style={{ padding: "5px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>📩 Trình ký</Button>
+            <Button onClick={onClose} style={{ padding: "5px 14px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>✕ Đóng</Button>
           </div>
         </div>
 
         {/* Ribbon toolbar */}
         <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", background: "#fafafa", borderBottom: `1px solid ${BORDER}`, flexShrink: 0, flexWrap: "wrap" }}>
-          <button onClick={() => execCmd("undo")} style={tbBtnSt}>↩ Hoàn tác</button>
-          <button onClick={() => execCmd("redo")} style={tbBtnSt}>↪ Làm lại</button>
+          <Button onClick={() => execCmd("undo")} style={tbBtnSt}>↩ Hoàn tác</Button>
+          <Button onClick={() => execCmd("redo")} style={tbBtnSt}>↪ Làm lại</Button>
           <div style={sepSt} />
           <select onChange={e => execCmd("fontName", e.target.value)} style={{ ...tbBtnSt, padding: "4px 6px" }}>
             <option value="Times New Roman">Times New Roman</option>
@@ -1491,19 +1492,19 @@ function XemBieuMauScreen({ loaiPhieu, onClose }: { loaiPhieu: string; onClose: 
             {["11pt", "12pt", "13pt", "14pt"].map(s => <option key={s}>{s}</option>)}
           </select>
           <div style={sepSt} />
-          <button onClick={() => execCmd("bold")} style={tbBtnSt}><b>B</b></button>
-          <button onClick={() => execCmd("italic")} style={tbBtnSt}><i>I</i></button>
-          <button onClick={() => execCmd("underline")} style={tbBtnSt}><u>U</u></button>
+          <Button onClick={() => execCmd("bold")} style={tbBtnSt}><b>B</b></Button>
+          <Button onClick={() => execCmd("italic")} style={tbBtnSt}><i>I</i></Button>
+          <Button onClick={() => execCmd("underline")} style={tbBtnSt}><u>U</u></Button>
           <div style={sepSt} />
-          <button onClick={() => execCmd("justifyLeft")} style={tbBtnSt}>⬅</button>
-          <button onClick={() => execCmd("justifyCenter")} style={tbBtnSt}>↔</button>
-          <button onClick={() => execCmd("justifyRight")} style={tbBtnSt}>➡</button>
-          <button onClick={() => execCmd("justifyFull")} style={tbBtnSt}>☰</button>
+          <Button onClick={() => execCmd("justifyLeft")} style={tbBtnSt}>⬅</Button>
+          <Button onClick={() => execCmd("justifyCenter")} style={tbBtnSt}>↔</Button>
+          <Button onClick={() => execCmd("justifyRight")} style={tbBtnSt}>➡</Button>
+          <Button onClick={() => execCmd("justifyFull")} style={tbBtnSt}>☰</Button>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ fontSize: 11, color: MUTED }}>Zoom:</span>
-            <button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</button>
+            <Button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</Button>
             <span style={{ fontSize: 11, fontWeight: 700 }}>{zoom}%</span>
-            <button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</button>
+            <Button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</Button>
           </div>
         </div>
 
@@ -1680,7 +1681,7 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
             <span style={{ fontSize: 15, fontWeight: 700, color: RED, fontFamily: F, flex: 1 }}>
               {loaiPhieu === "Công văn XM, BS" ? "Tạo công văn xác minh, bổ sung" : loaiPhieu === "Công văn khác" ? "Tạo công văn" : loaiPhieu ? `Tạo ${loaiPhieu.toLowerCase()}` : "Tạo phiếu"}
             </span>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}><X size={18} color={MUTED} /></button>
+            <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}><X size={18} color={MUTED} /></Button>
           </div>
 
           <div style={{ padding: "16px 20px", overflowY: "auto" }}>
@@ -1732,11 +1733,11 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px 14px", marginBottom: 10 }}>
                 <div>
                   {lbl("Ngày lập phiếu", true)}
-                  <input placeholder="Chọn ngày quyết định" style={inSt} />
+                  <Input placeholder="Chọn ngày quyết định" style={inSt} />
                 </div>
                 <div>
                   {lbl("Số phiếu")}
-                  <input value={soPhieu} onChange={e => setSoPhieu(e.target.value)} placeholder="Nhập số quyết định" style={inSt} />
+                  <Input value={soPhieu} onChange={e => setSoPhieu(e.target.value)} placeholder="Nhập số quyết định" style={inSt} />
                 </div>
                 <div>
                   {lbl("Người ký ban hành", true)}
@@ -1745,7 +1746,7 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                 {loaiPhieu !== "Công văn XM, BS" && loaiPhieu !== "Công văn khác" && (
                   <div>
                     {lbl("Số bút lục")}
-                    <input placeholder="Nhập số bút lục" style={inSt} />
+                    <Input placeholder="Nhập số bút lục" style={inSt} />
                   </div>
                 )}
               </div>
@@ -1756,7 +1757,7 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   {lbl("Tên đơn vị")}
-                  <input placeholder="Nhập tên đơn vị" style={inSt} />
+                  <Input placeholder="Nhập tên đơn vị" style={inSt} />
                 </div>
                 <div>
                   {lbl("Cán bộ", true)}
@@ -1764,7 +1765,7 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div>
                   {lbl("Tên cán bộ", true)}
-                  <input placeholder="Nhập tên cán bộ" style={inSt} />
+                  <Input placeholder="Nhập tên cán bộ" style={inSt} />
                 </div>
               </div>
               <div>
@@ -1779,11 +1780,11 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                 <span style={{ fontSize: 12, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>
                   <span style={{ color: RED }}>* </span>Nơi nhận
                 </span>
-                <button
+                <Button
                   onClick={() => setAddingRow(true)}
                   style={{ padding: "5px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
                   Thêm nơi nhận
-                </button>
+                </Button>
               </div>
               <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                 <colgroup>
@@ -1809,8 +1810,8 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                       <td style={{ ...TD_STYLE, fontSize: 12, color: TEXT }}>{r.ghiChu}</td>
                       <td style={{ ...TD_STYLE, textAlign: "center" }}>
                         <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a73e8", fontFamily: F }}>✏ Sửa</button>
-                          <button onClick={() => setNoiNhanRows(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#c0392b", fontFamily: F }}>🗑 Xóa</button>
+                          <Button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a73e8", fontFamily: F }}>✏ Sửa</Button>
+                          <Button onClick={() => setNoiNhanRows(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#c0392b", fontFamily: F }}>🗑 Xóa</Button>
                         </div>
                       </td>
                     </tr>
@@ -1834,12 +1835,12 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
                         </select>
                       </td>
                       <td style={TD_STYLE}>
-                        <input value={newRow.ghiChu} onChange={e => setNewRow(p => ({ ...p, ghiChu: e.target.value }))} placeholder="Nhập ghi chú" style={{ ...inSt, fontSize: 11 }} />
+                        <Input value={newRow.ghiChu} onChange={e => setNewRow(p => ({ ...p, ghiChu: e.target.value }))} placeholder="Nhập ghi chú" style={{ ...inSt, fontSize: 11 }} />
                       </td>
                       <td style={{ ...TD_STYLE, textAlign: "center" }}>
                         <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                          <button onClick={() => { if (newRow.noiNhan) { setNoiNhanRows(p => [...p, { id: Date.now(), ...newRow, editing: false }]); setNewRow({ noiNhan: "", chiTiet: "", ghiChu: "" }); setAddingRow(false); } }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a5a96", fontFamily: F, fontWeight: 600 }}>Lưu</button>
-                          <button onClick={() => { setAddingRow(false); setNewRow({ noiNhan: "", chiTiet: "", ghiChu: "" }); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: MUTED, fontFamily: F }}>Hủy</button>
+                          <Button onClick={() => { if (newRow.noiNhan) { setNoiNhanRows(p => [...p, { id: Date.now(), ...newRow, editing: false }]); setNewRow({ noiNhan: "", chiTiet: "", ghiChu: "" }); setAddingRow(false); } }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a5a96", fontFamily: F, fontWeight: 600 }}>Lưu</Button>
+                          <Button onClick={() => { setAddingRow(false); setNewRow({ noiNhan: "", chiTiet: "", ghiChu: "" }); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: MUTED, fontFamily: F }}>Hủy</Button>
                         </div>
                       </td>
                     </tr>
@@ -1856,13 +1857,13 @@ function TaoPhieuModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div style={{ display: "flex", justifyContent: "center", gap: 8, paddingTop: 4, borderTop: `1px solid ${BORDER}` }}>
-              <button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</button>
-              <button style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Lưu</button>
-              <button onClick={handleToggleLaySo} style={{ padding: "7px 20px", background: daLaySo ? "#fdf3f2" : "#fff", color: daLaySo ? "#c0392b" : "#333333", border: `1px solid ${daLaySo ? "#f3c0bb" : BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
+              <Button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</Button>
+              <Button style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Lưu</Button>
+              <Button onClick={handleToggleLaySo} style={{ padding: "7px 20px", background: daLaySo ? "#fdf3f2" : "#fff", color: daLaySo ? "#c0392b" : "#333333", border: `1px solid ${daLaySo ? "#f3c0bb" : BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
                 {daLaySo ? "✕ Hủy cấp số" : "Lấy số"}
-              </button>
-              <button style={{ padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Trình ký</button>
-              <button onClick={() => setShowBieuMau(true)} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Xem biểu mẫu</button>
+              </Button>
+              <Button style={{ padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Trình ký</Button>
+              <Button onClick={() => setShowBieuMau(true)} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Xem biểu mẫu</Button>
             </div>
           </div>
         </div>
@@ -1882,15 +1883,15 @@ function TabMuonTraHoSo({ detail }: { detail: VuAnDetailData }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, flexWrap: "wrap" }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: F }}>Tổng số phiếu: {muonTraHoSo.length}</span>
           <div style={{ flex: 1 }} />
-          <button onClick={() => setShowModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
+          <Button onClick={() => setShowModal(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
             + Tạo phiếu
-          </button>
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
+          </Button>
+          <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
             <Printer size={13} /> In danh sách
-          </button>
-          <button style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
+          </Button>
+          <Button style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
             <RefreshCw size={12} color={MUTED} />
-          </button>
+          </Button>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
           <colgroup>
@@ -1934,9 +1935,9 @@ function TabMuonTraHoSo({ detail }: { detail: VuAnDetailData }) {
                 <td style={{ ...TD_STYLE, fontSize: 12, color: TEXT }}>{r.ghiChu}</td>
                 <td style={{ ...TD_STYLE, textAlign: "center" }}>
                   <div style={{ display: "flex", gap: 2, justifyContent: "center" }}>
-                    <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Sửa"><Eye size={13} color={MUTED} /></button>
-                    <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="In"><Printer size={13} color={MUTED} /></button>
-                    <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa"><X size={13} color="#c0392b" /></button>
+                    <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Sửa"><Eye size={13} color={MUTED} /></Button>
+                    <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="In"><Printer size={13} color={MUTED} /></Button>
+                    <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa"><X size={13} color="#c0392b" /></Button>
                   </div>
                 </td>
               </tr>
@@ -1964,9 +1965,9 @@ function TabPhanCong({ detail }: { detail: VuAnDetailData }) {
   const sectionHdr = (title: string) => (
     <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
       <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>{title}</span>
-      <button style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
+      <Button style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer" }}>
         <RefreshCw size={13} color={MUTED} />
-      </button>
+      </Button>
     </div>
   );
 
@@ -2116,9 +2117,9 @@ function XemBieuMauToTrinhVuAnModal({
     <div style={{ position: "fixed", inset: 0, background: "#f5f5f5", zIndex: 3500, display: "flex", flexDirection: "column", width: "100vw", height: "100vh", overflow: "hidden", fontFamily: F }}>
       <div style={{ background: "#2b579a", color: "#fff", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 14px", background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
+          <Button onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 14px", background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>
             ← Quay lại
-          </button>
+          </Button>
           <FileText size={20} color="#fff" />
           <div>
             <div style={{ fontWeight: 700, fontSize: 15, fontFamily: F, display: "flex", alignItems: "center", gap: 8 }}>
@@ -2129,18 +2130,18 @@ function XemBieuMauToTrinhVuAnModal({
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => alert("Đã lưu nội dung Tờ trình Word thành công!")} style={{ padding: "7px 20px", background: "#1b5e20", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F, display: "flex", alignItems: "center", gap: 6 }}>
+          <Button onClick={() => alert("Đã lưu nội dung Tờ trình Word thành công!")} style={{ padding: "7px 20px", background: "#1b5e20", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F, display: "flex", alignItems: "center", gap: 6 }}>
             💾 Lưu thay đổi
-          </button>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 4 }}>
+          </Button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 4 }}>
             <X size={22} />
-          </button>
+          </Button>
         </div>
       </div>
 
       <div style={{ background: "#fff", borderBottom: `1px solid ${BORDER}`, padding: "7px 16px", display: "flex", alignItems: "center", gap: 6, flexShrink: 0, flexWrap: "wrap", fontSize: 12, fontFamily: F }}>
-        <button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác">↩ Hoàn tác</button>
-        <button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại">↪ Làm lại</button>
+        <Button onClick={() => execCmd("undo")} style={tbBtnSt} title="Hoàn tác">↩ Hoàn tác</Button>
+        <Button onClick={() => execCmd("redo")} style={tbBtnSt} title="Làm lại">↪ Làm lại</Button>
         <div style={sepSt} />
 
         <select onChange={e => { setFontFamily(e.target.value); execCmd("fontName", e.target.value); }} value={fontFamily} style={selectSt}>
@@ -2158,27 +2159,27 @@ function XemBieuMauToTrinhVuAnModal({
         </select>
         <div style={sepSt} />
 
-        <button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm"><b>B</b></button>
-        <button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng"><i>I</i></button>
-        <button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân"><u>U</u></button>
+        <Button onClick={() => execCmd("bold")} style={tbBtnSt} title="In đậm"><b>B</b></Button>
+        <Button onClick={() => execCmd("italic")} style={tbBtnSt} title="In nghiêng"><i>I</i></Button>
+        <Button onClick={() => execCmd("underline")} style={tbBtnSt} title="Gạch chân"><u>U</u></Button>
         <div style={sepSt} />
 
-        <button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</button>
-        <button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</button>
-        <button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</button>
-        <button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều">☰</button>
+        <Button onClick={() => execCmd("justifyLeft")} style={tbBtnSt} title="Căn trái">⬅</Button>
+        <Button onClick={() => execCmd("justifyCenter")} style={tbBtnSt} title="Căn giữa">↔</Button>
+        <Button onClick={() => execCmd("justifyRight")} style={tbBtnSt} title="Căn phải">➡</Button>
+        <Button onClick={() => execCmd("justifyFull")} style={tbBtnSt} title="Căn đều">☰</Button>
         <div style={sepSt} />
 
-        <button onClick={() => window.print()} style={tbBtnSt}><Printer size={13} /> In</button>
-        <button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
+        <Button onClick={() => window.print()} style={tbBtnSt}><Printer size={13} /> In</Button>
+        <Button onClick={() => alert("Đang tải file Word (.docx) về máy...")} style={{ ...tbBtnSt, background: "#e8f5e9", color: "#1b5e20", borderColor: "#a5d6a7", fontWeight: 600 }}>
           <Download size={13} /> Tải file Word
-        </button>
+        </Button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: "auto", fontSize: 12, color: MUTED }}>
           <span>Thu phóng:</span>
-          <button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</button>
+          <Button onClick={() => setZoom(z => Math.max(60, z - 10))} style={tbBtnSt}>-</Button>
           <span style={{ fontWeight: 600, color: TEXT, minWidth: 36, textAlign: "center" }}>{zoom}%</span>
-          <button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</button>
+          <Button onClick={() => setZoom(z => Math.min(150, z + 10))} style={tbBtnSt}>+</Button>
         </div>
       </div>
 
@@ -2413,7 +2414,7 @@ function TaoToTrinhModal({
           <span style={{ fontSize: 16, fontWeight: 700, color: "#222222", fontFamily: F, flex: 1 }}>
             {isKhieuNai ? "Thêm mới tờ trình khiếu nại" : "Thêm mới tờ trình vụ án"}
           </span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#666666", padding: 4, display: "flex", alignItems: "center" }}><X size={18} /></button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#666666", padding: 4, display: "flex", alignItems: "center" }}><X size={18} /></Button>
         </div>
 
         <div style={{ padding: "16px 20px 24px", display: "flex", flexDirection: "column", gap: 16, maxHeight: "82vh", overflowY: "auto" }}>
@@ -2453,7 +2454,7 @@ function TaoToTrinhModal({
 
           <div>
             <label style={{ fontSize: 12, color: "#333333", fontFamily: F, display: "block", marginBottom: 6 }}><span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Ngày lập tờ trình</label>
-            <input type="text" value={ngayLap} onChange={e => setNgayLap(e.target.value)} placeholder="dd/mm/yyyy" style={{ padding: "8px 12px", fontSize: 13, border: "1px solid #cccccc", borderRadius: 4, fontFamily: F, width: 200, outline: "none", background: "#fff", boxSizing: "border-box", color: "#222222" }} />
+            <Input type="text" value={ngayLap} onChange={e => setNgayLap(e.target.value)} placeholder="dd/mm/yyyy" style={{ padding: "8px 12px", fontSize: 13, border: "1px solid #cccccc", borderRadius: 4, fontFamily: F, width: 200, outline: "none", background: "#fff", boxSizing: "border-box", color: "#222222" }} />
           </div>
 
           <div>
@@ -2479,13 +2480,13 @@ function TaoToTrinhModal({
                   <span style={{ display: "inline-block", width: 10, height: 10, background: RED, borderRadius: 2 }} />
                   III. ĐỀ XUẤT GIẢI QUYẾT KHIẾU NẠI
                 </span>
-                <button
-                  type="button"
+                <Button
+                  htmlType="button"
                   onClick={() => setShowBieuMau(true)}
                   style={{ background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, padding: "5px 12px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                 >
                   <FileText size={13} /> Xem biểu mẫu
-                </button>
+                </Button>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -2514,7 +2515,7 @@ function TaoToTrinhModal({
                             color: "#222222",
                           }}
                         >
-                          <input
+                          <Input
                             type="radio"
                             name="de-xuat-khieu-nai"
                             checked={isChecked}
@@ -2546,13 +2547,13 @@ function TaoToTrinhModal({
             <div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, borderBottom: "1px solid #e0e0e0", paddingBottom: 6 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#222222", fontFamily: F }}>III. ĐỀ XUẤT GIẢI QUYẾT</span>
-                <button
-                  type="button"
+                <Button
+                  htmlType="button"
                   onClick={() => setShowBieuMau(true)}
                   style={{ background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, padding: "5px 12px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                 >
                   <FileText size={13} /> Xem biểu mẫu
-                </button>
+                </Button>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div>
@@ -2588,7 +2589,7 @@ function TaoToTrinhModal({
             <div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "#222222", fontFamily: F }}>III. ĐỀ XUẤT GIẢI QUYẾT</span>
-                <button type="button" onClick={handleAddDonXuLy} style={{ background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, padding: "6px 14px", fontSize: 12, fontWeight: 700, fontFamily: F, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>Thêm đơn xử lý</button>
+                <Button htmlType="button" onClick={handleAddDonXuLy} style={{ background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, padding: "6px 14px", fontSize: 12, fontWeight: 700, fontFamily: F, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}>Thêm đơn xử lý</Button>
               </div>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: F }}>
                 <thead>
@@ -2626,8 +2627,8 @@ function TaoToTrinhModal({
                       </td>
                       <td style={{ padding: "12px 10px", textAlign: "center" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
-                          <button type="button" onClick={() => setShowBieuMau(true)} title="Xem biểu mẫu" style={{ background: "none", border: "none", cursor: "pointer", color: "#666666", fontSize: 13, padding: 2 }}>◇</button>
-                          <button type="button" onClick={() => handleDeleteDon(item.id)} title="Xóa đơn" style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", fontSize: 13, padding: 2 }}><Trash2 size={14} color="#c0392b" /></button>
+                          <Button htmlType="button" onClick={() => setShowBieuMau(true)} title="Xem biểu mẫu" style={{ background: "none", border: "none", cursor: "pointer", color: "#666666", fontSize: 13, padding: 2 }}>◇</Button>
+                          <Button htmlType="button" onClick={() => handleDeleteDon(item.id)} title="Xóa đơn" style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", fontSize: 13, padding: 2 }}><Trash2 size={14} color="#c0392b" /></Button>
                         </div>
                       </td>
                     </tr>
@@ -2639,8 +2640,8 @@ function TaoToTrinhModal({
         </div>
 
         <div style={{ display: "flex", justifyContent: "center", gap: 12, padding: "14px 20px", borderTop: "1px solid #e0e0e0", background: "#fff" }}>
-          <button type="button" onClick={onClose} style={{ padding: "7px 24px", background: "#fff", color: "#333333", border: "1px solid #cccccc", borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F, fontWeight: 500 }}>Đóng</button>
-          <button type="button" onClick={handleSave} style={{ padding: "7px 32px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Lưu</button>
+          <Button htmlType="button" onClick={onClose} style={{ padding: "7px 24px", background: "#fff", color: "#333333", border: "1px solid #cccccc", borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F, fontWeight: 500 }}>Đóng</Button>
+          <Button htmlType="button" onClick={handleSave} style={{ padding: "7px 32px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Lưu</Button>
         </div>
       </div>
     </div>
@@ -2653,14 +2654,14 @@ function ThuHoiConfirmDialog({ onClose, onConfirm }: { onClose: () => void; onCo
       <div style={{ background: "#fff", borderRadius: 8, width: 420, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", fontFamily: F, overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: `1px solid ${BORDER}` }}>
           <span style={{ fontWeight: 700, fontSize: 15, color: TEXT }}>Xác nhận thu hồi lần trình</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: MUTED, lineHeight: 1 }}>×</button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: MUTED, lineHeight: 1 }}>×</Button>
         </div>
         <div style={{ padding: "20px 20px 24px" }}>
           <p style={{ fontSize: 13, color: TEXT, margin: 0 }}>Bạn có chắc chắn muốn thu hồi lần trình này không?</p>
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 20px", borderTop: `1px solid ${BORDER}` }}>
-          <button onClick={onClose} style={{ padding: "7px 24px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Hủy</button>
-          <button onClick={onConfirm} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Xác nhận thu hồi</button>
+          <Button onClick={onClose} style={{ padding: "7px 24px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Hủy</Button>
+          <Button onClick={onConfirm} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Xác nhận thu hồi</Button>
         </div>
       </div>
     </div>
@@ -2763,18 +2764,18 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
       <div style={{ background: "#fff", borderRadius: 8, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: `1px solid ${BORDER}`, gap: 8, flexWrap: "wrap" }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>Danh sách văn bản & Tờ trình</span>
-          <button onClick={handleTrinhVanBanClick} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          <Button onClick={handleTrinhVanBanClick} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             <Send size={13} /> Trình văn bản
-          </button>
-          <button onClick={() => setShowTaoDuThao(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          </Button>
+          <Button onClick={() => setShowTaoDuThao(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             + Tạo dự thảo
-          </button>
-          <button onClick={() => setShowTaoTT(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          </Button>
+          <Button onClick={() => setShowTaoTT(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             <RefreshCw size={13} /> Tạo tờ trình
-          </button>
-          <button onClick={() => setShowHoSo(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          </Button>
+          <Button onClick={() => setShowHoSo(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#fff", color: RED, border: `1px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             <Archive size={13} /> Hồ sơ tờ trình
-          </button>
+          </Button>
         </div>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", minWidth: 600 }}>
@@ -2828,23 +2829,23 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
                     <td style={{ ...TD, textAlign: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                         {isToTrinh && (
-                          <button onClick={() => setShowTrinhKy(true)} title="Trình lại tờ trình" style={{ background: "none", border: "none", cursor: "pointer", padding: 3, display: "inline-flex", alignItems: "center" }}>
+                          <Button onClick={() => setShowTrinhKy(true)} title="Trình lại tờ trình" style={{ background: "none", border: "none", cursor: "pointer", padding: 3, display: "inline-flex", alignItems: "center" }}>
                             <RotateCcw size={14} color="#1a5a96" />
-                          </button>
+                          </Button>
                         )}
                         {isToTrinh && (
-                          <button onClick={() => handleDeleteVanBan(r.stt)} title="Xóa tờ trình" style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }}>
+                          <Button onClick={() => handleDeleteVanBan(r.stt)} title="Xóa tờ trình" style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }}>
                             <Trash2 size={14} color="#c0392b" />
-                          </button>
+                          </Button>
                         )}
                         {!isToTrinh && (r.trangThai === "Chưa ký số" || r.trangThai === "Chờ ký số") && (
-                          <button onClick={() => handleDeleteVanBan(r.stt)} title="Xóa dự thảo" style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }}>
+                          <Button onClick={() => handleDeleteVanBan(r.stt)} title="Xóa dự thảo" style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }}>
                             <Trash2 size={14} color="#c0392b" />
-                          </button>
+                          </Button>
                         )}
-                        <button onClick={() => { if (isToTrinh) setShowTaoTT(true); else setShowTaoDuThao(true); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title={isToTrinh ? "Xem chi tiết tờ trình" : "Xem chi tiết dự thảo"}>
+                        <Button onClick={() => { if (isToTrinh) setShowTaoTT(true); else setShowTaoDuThao(true); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 3 }} title={isToTrinh ? "Xem chi tiết tờ trình" : "Xem chi tiết dự thảo"}>
                           <Eye size={14} color="#1a5a96" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -2908,24 +2909,24 @@ function TabToTrinh({ detail, userRole }: { detail?: VuAnDetailData; userRole?: 
                       </td>
                       <td style={{ ...TD, textAlign: "center" }}>
                         <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "center" }}>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem">
+                          <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem">
                             <Eye size={13} color="#1a5a96" />
-                          </button>
+                          </Button>
                           {r.trangThai === "cho-duyet" && (
-                            <button title="Thu hồi" onClick={() => setThuHoiIdx(realIdx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                            <Button title="Thu hồi" onClick={() => setThuHoiIdx(realIdx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                                 <path d="M2 8a6 6 0 1 0 1.5-3.9" stroke="#c0392b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
-                            </button>
+                            </Button>
                           )}
                           {r.trangThai === "tu-choi" ? (
-                            <button title="Trình lại tờ trình" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "inline-flex", alignItems: "center" }}>
+                            <Button title="Trình lại tờ trình" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "inline-flex", alignItems: "center" }}>
                               <RotateCcw size={13} color="#1a5a96" />
-                            </button>
+                            </Button>
                           ) : (
-                            <button title="Trình ký" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "inline-flex", alignItems: "center" }}>
+                            <Button title="Trình ký" onClick={() => setShowTrinhKy(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "inline-flex", alignItems: "center" }}>
                               <Send size={13} color={RED} />
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </td>
@@ -3055,9 +3056,9 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
         <div style={{ position: "fixed", inset: 0, zIndex: 2000, background: "#fff", display: "flex", flexDirection: "column" }}>
           <div style={{ padding: "8px 16px", background: "#8b1a1a", color: "#fff", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
             <span style={{ fontSize: 13, fontWeight: 700, fontFamily: F }}>📁 Quản lý tài liệu hồ sơ số hóa - Vụ án {detail?.maVuAn || "VA26-00321"}</span>
-            <button onClick={() => setShowTaiLieuHoSoModal(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, fontFamily: F }}>
+            <Button onClick={() => setShowTaiLieuHoSoModal(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, fontFamily: F }}>
               <X size={16} /> Đóng xem hồ sơ
-            </button>
+            </Button>
           </div>
           <div style={{ flex: 1, overflow: "hidden" }}>
             <TaiLieuHoSoView vuAnId={detail?.maVuAn || "VA26-00321"} tenVuAn={detail?.tenVuAn || "Vụ án"} onBack={() => setShowTaiLieuHoSoModal(false)} />
@@ -3077,7 +3078,7 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: TEXT, cursor: "pointer", fontFamily: F }}>
-                <input
+                <Input
                   type="checkbox"
                   checked={isHoanChecked}
                   onChange={e => setIsHoanChecked(e.target.checked)}
@@ -3086,7 +3087,7 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
                 <span>Quyết định hoãn thi hành án</span>
               </label>
               <div style={{ position: "relative", width: 220 }}>
-                <input
+                <Input
                   type="text"
                   placeholder="Tìm kiếm..."
                   value={searchHoan}
@@ -3106,7 +3107,7 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={() => setShowThemHoan(true)}
               style={{
                 display: "flex",
@@ -3124,7 +3125,7 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
               }}
             >
               + Thêm mới
-            </button>
+            </Button>
           </div>
 
           <div style={{ overflowX: "auto" }}>
@@ -3162,12 +3163,12 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
                         <td style={{ ...tdSt, color: "#666666" }}>{r.nguoiTao}</td>
                         <td style={{ ...tdSt, textAlign: "center" }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                            <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem chi tiết">
+                            <Button style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xem chi tiết">
                               <Eye size={14} color="#1a5a96" />
-                            </button>
-                            <button onClick={() => setQuyetDinhHoanList(prev => prev.filter((_, i) => i !== idx))} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa">
+                            </Button>
+                            <Button onClick={() => setQuyetDinhHoanList(prev => prev.filter((_, i) => i !== idx))} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }} title="Xóa">
                               <Trash2 size={14} color="#c0392b" />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -3189,9 +3190,9 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
           <span style={{ fontSize: 15, fontWeight: 700, color: "#222222", fontFamily: F }}>
             {isKhieuNai ? "Kết quả giải quyết khiếu nại" : "Kết quả giải quyết đơn"}
           </span>
-          <button onClick={() => { setSelectedDetail(detail); setShowThemKetQua(true); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F }}>
+          <Button onClick={() => { setSelectedDetail(detail); setShowThemKetQua(true); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: F }}>
             + Thêm kết quả giải quyết
-          </button>
+          </Button>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -3205,8 +3206,8 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
                     <span style={{ fontSize: 12, color: "#666666" }}>{isCollapsed ? "▼" : "▲"}</span>
                   </div>
                   {(g.id === "khang-nghi" || g.title.toLowerCase().includes("kháng nghị")) && (
-                    <button
-                      type="button"
+                    <Button
+                      htmlType="button"
                       onClick={() => setShowTaiLieuHoSoModal(true)}
                       style={{
                         background: "none",
@@ -3222,7 +3223,7 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
                       }}
                     >
                       + Thêm hồ sơ
-                    </button>
+                    </Button>
                   )}
                 </div>
 
@@ -3277,9 +3278,9 @@ function TabGiaiQuyetVB({ detail }: { detail?: VuAnDetailData }) {
                               </div>
                             </td>
                             <td style={{ ...tdSt, textAlign: "center" }}>
-                              <button onClick={() => { setSelectedDetail({ ...detail, soQuyetDinh: r.soQuyetDinh }); setShowThemKetQua(true); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} title="Xem chi tiết">
+                              <Button onClick={() => { setSelectedDetail({ ...detail, soQuyetDinh: r.soQuyetDinh }); setShowThemKetQua(true); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} title="Xem chi tiết">
                                 <Eye size={15} color="#666666" />
-                              </button>
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -3358,9 +3359,9 @@ export function ChiTietVuAnView({
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#fafafa", overflow: "hidden", fontFamily: F }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: `1px solid ${BORDER}`, background: "#fff", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 12px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
+          <Button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 4, padding: "5px 12px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>
             ← Quay lại
-          </button>
+          </Button>
           <div style={{ fontSize: 12, color: MUTED, fontFamily: F }}>
             Trang chủ › Quản lý án GĐT/TT › {moduleLabel} › <b style={{ color: TEXT }}>{detailLabel}: {detail.maVuAn}</b>
           </div>
@@ -3377,7 +3378,7 @@ export function ChiTietVuAnView({
         {tabs.map((t) => {
           const isActive = t.id === activeTab;
           return (
-            <button
+            <Button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               style={{
@@ -3391,7 +3392,7 @@ export function ChiTietVuAnView({
               }}
             >
               {t.label}
-            </button>
+            </Button>
           );
         })}
       </div>

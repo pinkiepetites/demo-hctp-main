@@ -3,7 +3,8 @@ import { FileText, Calendar, X } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, TH_STYLE, TD_STYLE } from "./shared";
 import { TrinhKyModal } from "./TrinhKyModal";
 import { XemBieuMauDuThaoModal } from "./TaoDuThaoModal";
-import { TaiLieuHoSoView } from "./TaiLieuHoSoView";
+import { TaiLieuHoSoView } from "./TaiLieuHoSoView";import { Button, Input } from "antd";
+
 
 export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; detail?: any }) {
   const isKhieuNai = detail?.isKhieuNai || detail?.entityWord === "Khiếu nại" || detail?.moduleLabel === "Quản lý khiếu nại" || (typeof detail?.maVuAn === "string" && detail.maVuAn.includes("KN")) || (typeof detail?.id === "string" && detail.id.includes("KN")) || (typeof detail?.tenVuAn === "string" && detail.tenVuAn.toLowerCase().includes("khiếu nại"));
@@ -361,9 +362,9 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
             <span style={{ fontSize: 15, fontWeight: 700, color: TEXT, flex: 1 }}>
               {isKhieuNai ? "Thêm kết quả giải quyết khiếu nại" : "Tạo kết quả giải quyết văn bản đề nghị"}
             </span>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}>
+            <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}>
               <X size={18} color={MUTED} />
-            </button>
+            </Button>
           </div>
 
           <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
@@ -452,8 +453,8 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                     <label style={lblSt}>
                       <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Đơn liên quan / Người đứng đơn
                     </label>
-                    <button
-                      type="button"
+                    <Button
+                      htmlType="button"
                       onClick={() => setShowAddNguoiModal(true)}
                       style={{
                         background: "none",
@@ -469,7 +470,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                       }}
                     >
                       + Thêm người đứng đơn
-                    </button>
+                    </Button>
                   </div> */}
 
                   <div style={{ position: "relative" }}>
@@ -525,7 +526,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                                   background: isWholeDonChecked || anyNguoiChecked ? "#fdf3f2" : "#fff",
                                 }}
                               >
-                                <input
+                                <Input
                                   type="checkbox"
                                   checked={isWholeDonChecked}
                                   ref={el => { if (el) el.indeterminate = !isWholeDonChecked && anyNguoiChecked; }}
@@ -535,13 +536,13 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                                 <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: "#222222" }}>
                                   {don.label}
                                 </span>
-                                <button
-                                  type="button"
+                                <Button
+                                  htmlType="button"
                                   onClick={e => { e.stopPropagation(); setDonExpanded(p => ({ ...p, [don.id]: !p[don.id] })); }}
                                   style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#1a73e8", padding: "2px 4px" }}
                                 >
                                   {isExpanded ? "▲ Thu gọn người đứng đơn" : `▼ Xem ${don.nguoi.length} người đứng đơn`}
-                                </button>
+                                </Button>
                               </div>
                               {isExpanded && don.nguoi.map(nguoi => (
                                 <div
@@ -555,7 +556,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                                     background: donCheckedList[`${don.id}::${nguoi}`] ? "#fff5f5" : "#fafafa",
                                   }}
                                 >
-                                  <input
+                                  <Input
                                     type="checkbox"
                                     checked={!!donCheckedList[`${don.id}::${nguoi}`] || isWholeDonChecked}
                                     onChange={() => toggleNguoiCheck(don.id, nguoi)}
@@ -568,20 +569,20 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                           );
                         })}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderTop: "1px solid #e0e0e0", background: "#fafafa" }}>
-                          <button
-                            type="button"
+                          <Button
+                            htmlType="button"
                             onClick={() => { setShowAddNguoiModal(true); setDonOpen(false); }}
                             style={{ fontSize: 11, color: "#8b1a1a", fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}
                           >
                             + Thêm mới người đứng đơn
-                          </button>
-                          <button
-                            type="button"
+                          </Button>
+                          <Button
+                            htmlType="button"
                             onClick={() => setDonOpen(false)}
                             style={{ padding: "5px 16px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600 }}
                           >
                             Xác nhận
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -596,7 +597,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                 <div style={{ display: "flex", gap: 20, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
                   {RADIO_OPTIONS.map(o => (
                     <label key={o.value} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, fontFamily: F, color: "#222222" }}>
-                      <input
+                      <Input
                         type="radio"
                         name="ketqua-tkq"
                         checked={ketQua === o.value}
@@ -645,7 +646,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                     <div>
                       <label style={lblSt}>Ngày quyết định</label>
                       <div style={{ position: "relative" }}>
-                        <input
+                        <Input
                           type="text"
                           value={ngayQuyetDinh}
                           onChange={e => setNgayQuyetDinh(e.target.value)}
@@ -658,7 +659,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
 
                     <div>
                       <label style={lblSt}>Số quyết định</label>
-                      <input
+                      <Input
                         type="text"
                         value={soQuyetDinh}
                         onChange={e => setSoQuyetDinh(e.target.value)}
@@ -688,7 +689,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                     <div>
                       <label style={lblSt}>Ngày phát hành</label>
                       <div style={{ position: "relative" }}>
-                        <input
+                        <Input
                           type="text"
                           value={ngayPhatHanh}
                           onChange={e => setNgayPhatHanh(e.target.value)}
@@ -743,7 +744,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                         <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Ngày xếp đơn
                       </label>
                       <div style={{ position: "relative" }}>
-                        <input
+                        <Input
                           type="text"
                           value={ngayXepDon}
                           onChange={e => setNgayXepDon(e.target.value)}
@@ -792,8 +793,8 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                   <label style={{ ...lblSt, marginBottom: 0, fontWeight: 600 }}>
                     <span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Nơi nhận
                   </label>
-                  <button
-                    type="button"
+                  <Button
+                    htmlType="button"
                     onClick={() => setIsAddingNoiNhan(true)}
                     style={{
                       background: "#8b1a1a",
@@ -808,7 +809,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                     }}
                   >
                     + Thêm nơi nhận
-                  </button>
+                  </Button>
                 </div>
 
                 <div style={{ border: `1px solid ${BORDER}`, borderRadius: 4, overflow: "hidden" }}>
@@ -844,7 +845,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                           </td>
                           <td style={TD_STYLE}>
                             {editingId === r.id ? (
-                              <input
+                              <Input
                                 type="text"
                                 value={editChiTiet}
                                 onChange={e => setEditChiTiet(e.target.value)}
@@ -856,7 +857,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                           </td>
                           <td style={TD_STYLE}>
                             {editingId === r.id ? (
-                              <input
+                              <Input
                                 type="text"
                                 value={editGhiChu}
                                 onChange={e => setEditGhiChu(e.target.value)}
@@ -869,37 +870,37 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                           <td style={{ ...TD_STYLE, textAlign: "center" }}>
                             {editingId === r.id ? (
                               <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                                <button
-                                  type="button"
+                                <Button
+                                  htmlType="button"
                                   onClick={() => handleSaveEdit(r.id)}
                                   style={{ background: "none", border: "none", color: "#27ae60", fontWeight: 700, cursor: "pointer", fontSize: 11 }}
                                 >
                                   Lưu
-                                </button>
-                                <button
-                                  type="button"
+                                </Button>
+                                <Button
+                                  htmlType="button"
                                   onClick={() => setEditingId(null)}
                                   style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", fontSize: 11 }}
                                 >
                                   Hủy
-                                </button>
+                                </Button>
                               </div>
                             ) : (
                               <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                                <button
-                                  type="button"
+                                <Button
+                                  htmlType="button"
                                   onClick={() => handleStartEdit(r)}
                                   style={{ background: "none", border: "none", color: "#1a73e8", cursor: "pointer", fontSize: 11 }}
                                 >
                                   ✏ Sửa
-                                </button>
-                                <button
-                                  type="button"
+                                </Button>
+                                <Button
+                                  htmlType="button"
                                   onClick={() => handleDeleteNoiNhan(r.id)}
                                   style={{ background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 11 }}
                                 >
                                   🗑 Xóa
-                                </button>
+                                </Button>
                               </div>
                             )}
                           </td>
@@ -923,7 +924,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                             </select>
                           </td>
                           <td style={TD_STYLE}>
-                            <input
+                            <Input
                               type="text"
                               placeholder="Nhập nơi nhận chi tiết"
                               value={newChiTiet}
@@ -932,7 +933,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                             />
                           </td>
                           <td style={TD_STYLE}>
-                            <input
+                            <Input
                               type="text"
                               placeholder="Ghi chú"
                               value={newGhiChu}
@@ -942,20 +943,20 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                           </td>
                           <td style={{ ...TD_STYLE, textAlign: "center" }}>
                             <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                              <button
-                                type="button"
+                              <Button
+                                htmlType="button"
                                 onClick={handleSaveNewNoiNhan}
                                 style={{ background: "none", border: "none", color: "#27ae60", fontWeight: 700, cursor: "pointer", fontSize: 11 }}
                               >
                                 Lưu
-                              </button>
-                              <button
-                                type="button"
+                              </Button>
+                              <Button
+                                htmlType="button"
                                 onClick={() => setIsAddingNoiNhan(false)}
                                 style={{ background: "none", border: "none", color: MUTED, cursor: "pointer", fontSize: 11 }}
                               >
                                 Hủy
-                              </button>
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -969,23 +970,23 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
 
           {/* Footer */}
           <div style={{ display: "flex", justifyContent: "center", gap: 10, padding: "12px 20px", borderTop: `1px solid ${BORDER}`, flexShrink: 0, flexWrap: "wrap" }}>
-            <button
-              type="button"
+            <Button
+              htmlType="button"
               onClick={onClose}
               style={{ padding: "7px 20px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}
             >
               Đóng
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              htmlType="button"
               onClick={handleSave}
               style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
             >
               Lưu
-            </button>
+            </Button>
             {(isTraLoi || isVks || isKhangNghi) && (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={handleToggleLaySo}
                 style={{
                   padding: "7px 20px",
@@ -999,25 +1000,25 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
                 }}
               >
                 {daLaySo ? "✕ Hủy cấp số" : "Lấy số"}
-              </button>
+              </Button>
             )}
             {(isTraLoi || isVks || isKhangNghi) && (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => setShowTrinhKy(true)}
                 style={{ padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
               >
                 Trình ký
-              </button>
+              </Button>
             )}
             {!isXepDon && (
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => setShowBieuMau(true)}
                 style={{ padding: "7px 20px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}
               >
                 Xem biểu mẫu
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -1028,9 +1029,9 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
         <div style={{ position: "fixed", inset: 0, zIndex: 2000, background: "#fff", display: "flex", flexDirection: "column" }}>
           <div style={{ padding: "8px 16px", background: "#8b1a1a", color: "#fff", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
             <span style={{ fontSize: 13, fontWeight: 700, fontFamily: F }}>📁 Quản lý tài liệu hồ sơ số hóa - Vụ án {maVuAn}</span>
-            <button onClick={() => setShowTaiLieuHoSoModal(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, fontFamily: F }}>
+            <Button onClick={() => setShowTaiLieuHoSoModal(false)} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, fontFamily: F }}>
               <X size={16} /> Đóng xem hồ sơ
-            </button>
+            </Button>
           </div>
           <div style={{ flex: 1, overflow: "hidden" }}>
             <TaiLieuHoSoView vuAnId={maVuAn} tenVuAn={tenVuAn} onBack={() => setShowTaiLieuHoSoModal(false)} />
@@ -1044,7 +1045,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
           <div style={{ background: "#fff", borderRadius: 8, width: 440, padding: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.2)", fontFamily: F }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: "#222222" }}>Thêm người đứng đơn</span>
-              <button onClick={() => setShowAddNguoiModal(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: MUTED }}>✕</button>
+              <Button onClick={() => setShowAddNguoiModal(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: MUTED }}>✕</Button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1058,7 +1059,7 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
               </div>
               <div>
                 <label style={lblSt}><span style={{ color: "#c0392b", marginRight: 3 }}>*</span>Họ và tên người đứng đơn</label>
-                <input
+                <Input
                   type="text"
                   placeholder="Nhập họ và tên người đứng đơn"
                   value={newNguoiTen}
@@ -1069,8 +1070,8 @@ export function ThemKetQuaModal({ onClose, detail }: { onClose: () => void; deta
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 18 }}>
-              <button onClick={() => setShowAddNguoiModal(false)} style={{ padding: "6px 16px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Hủy</button>
-              <button onClick={handleAddNewNguoiDungDon} style={{ padding: "6px 18px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</button>
+              <Button onClick={() => setShowAddNguoiModal(false)} style={{ padding: "6px 16px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Hủy</Button>
+              <Button onClick={handleAddNewNguoiDungDon} style={{ padding: "6px 18px", background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</Button>
             </div>
           </div>
         </div>
@@ -1173,7 +1174,7 @@ export function ThemQuyetDinhHoanModal({
           <span style={{ fontSize: 15, fontWeight: 700, color: TEXT, flex: 1 }}>
             Thêm mới quyết định hoãn thi hành án
           </span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: MUTED, lineHeight: 1 }}>×</button>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: MUTED, lineHeight: 1 }}>×</Button>
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
@@ -1198,26 +1199,26 @@ export function ThemQuyetDinhHoanModal({
             </div>
             <div>
               <label style={lblSt}><span style={{ color: RED }}>* </span>Tên quyết định</label>
-              <input value={tenQuyetDinh} onChange={e => setTenQuyetDinh(e.target.value)} placeholder="Nhập tên quyết định hoãn" style={inSt} />
+              <Input value={tenQuyetDinh} onChange={e => setTenQuyetDinh(e.target.value)} placeholder="Nhập tên quyết định hoãn" style={inSt} />
             </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
             <div>
               <label style={lblSt}><span style={{ color: RED }}>* </span>Số quyết định</label>
-              <input value={soQuyetDinh} onChange={e => setSoQuyetDinh(e.target.value)} placeholder="Nhập số QĐ" style={inSt} />
+              <Input value={soQuyetDinh} onChange={e => setSoQuyetDinh(e.target.value)} placeholder="Nhập số QĐ" style={inSt} />
             </div>
             <div>
               <label style={lblSt}><span style={{ color: RED }}>* </span>Ngày ra quyết định</label>
-              <input value={ngayQuyetDinh} onChange={e => setNgayQuyetDinh(e.target.value)} placeholder="dd/mm/yyyy" style={inSt} />
+              <Input value={ngayQuyetDinh} onChange={e => setNgayQuyetDinh(e.target.value)} placeholder="dd/mm/yyyy" style={inSt} />
             </div>
             <div>
               <label style={lblSt}>Thời hạn hoãn</label>
-              <input value={thoiHan} onChange={e => setThoiHan(e.target.value)} placeholder="VD: 06 tháng" style={inSt} />
+              <Input value={thoiHan} onChange={e => setThoiHan(e.target.value)} placeholder="VD: 06 tháng" style={inSt} />
             </div>
             <div>
               <label style={lblSt}>Ngày phát hành</label>
-              <input value={ngayPhatHanh} onChange={e => setNgayPhatHanh(e.target.value)} placeholder="dd/mm/yyyy" style={inSt} />
+              <Input value={ngayPhatHanh} onChange={e => setNgayPhatHanh(e.target.value)} placeholder="dd/mm/yyyy" style={inSt} />
             </div>
           </div>
 
@@ -1232,7 +1233,7 @@ export function ThemQuyetDinhHoanModal({
             </div>
             <div>
               <label style={lblSt}>Cơ quan thi hành án</label>
-              <input value={coQuanTHA} onChange={e => setCoQuanTHA(e.target.value)} placeholder="Nhập cơ quan THA" style={inSt} />
+              <Input value={coQuanTHA} onChange={e => setCoQuanTHA(e.target.value)} placeholder="Nhập cơ quan THA" style={inSt} />
             </div>
           </div>
 
@@ -1245,7 +1246,7 @@ export function ThemQuyetDinhHoanModal({
           <div style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
               <label style={{ ...lblSt, marginBottom: 0 }}><span style={{ color: RED }}>* </span>Nơi nhận</label>
-              <button onClick={() => setAddingRow(true)} style={{ padding: "4px 12px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 11, fontWeight: 600, fontFamily: F }}>+ Thêm nơi nhận</button>
+              <Button onClick={() => setAddingRow(true)} style={{ padding: "4px 12px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 11, fontWeight: 600, fontFamily: F }}>+ Thêm nơi nhận</Button>
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
               <thead>
@@ -1265,7 +1266,7 @@ export function ThemQuyetDinhHoanModal({
                     <td style={TD_STYLE}>{r.chiTiet}</td>
                     <td style={TD_STYLE}>{r.ghiChu}</td>
                     <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                      <button onClick={() => setNnRows(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", fontSize: 11 }}>Xóa</button>
+                      <Button onClick={() => setNnRows(p => p.filter(x => x.id !== r.id))} style={{ background: "none", border: "none", cursor: "pointer", color: "#c0392b", fontSize: 11 }}>Xóa</Button>
                     </td>
                   </tr>
                 ))}
@@ -1276,8 +1277,8 @@ export function ThemQuyetDinhHoanModal({
 
         {/* Footer */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "12px 20px", borderTop: `1px solid ${BORDER}`, background: "#fff", flexShrink: 0 }}>
-          <button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</button>
-          <button onClick={handleSave} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Lưu</button>
+          <Button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</Button>
+          <Button onClick={handleSave} style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Lưu</Button>
         </div>
       </div>
     </div>

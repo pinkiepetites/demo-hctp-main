@@ -15,7 +15,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { dangChoXuLy, nguoiDangGiu, nguoiTheoVaiTro, type VanBanTrinh, type TabDS } from "./components/QuanLyVanBan";
-import { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";
+import { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";import { Button, Input } from "antd";
+
 
 // ─── Tiện ích chung ──────────────────────────────────────────────────────────
 
@@ -71,9 +72,9 @@ const TheViecCuaToi = ({ title, value, icon, bgColorClass, colorClass, canhBao, 
     ) : (
       <p className="text-[12px] text-[#94a3b8] mb-3">{moTa}</p>
     )}
-    <button onClick={onXuLy} className="mt-auto self-start text-[12px] font-medium text-[#64748b] hover:text-[#3b82f6] transition-colors flex items-center gap-1">
+    <Button onClick={onXuLy} className="mt-auto self-start text-[12px] font-medium text-[#64748b] hover:text-[#3b82f6] transition-colors flex items-center gap-1">
       Xử lý ngay <ArrowRight size={11} />
-    </button>
+    </Button>
   </div>
 );
 
@@ -117,13 +118,13 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
             </span>
             <div className="flex items-center bg-[#f1f5f9] rounded-[6px] p-1 border border-[#e2e8f0]">
               {(["toi", "phong"] as const).map(pham => (
-                <button
+                <Button
                   key={pham}
                   onClick={() => onDoiPhamVi(pham)}
                   className={`px-3 py-1 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${phamVi === pham ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] border border-transparent"}`}
                 >
                   {pham === "toi" ? "Của tôi" : "Toàn phòng"}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -131,9 +132,9 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
             <span className="text-[11px] text-[#94a3b8]">
               {phamVi === "toi" ? "Đơn do tôi nhập, chưa giải quyết xong" : "Đơn toàn phòng, chưa giải quyết xong"} · cập nhật theo thời gian thực
             </span>
-            <button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
+            <Button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
               Xem hiệu suất chi tiết <ArrowRight size={11} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -155,9 +156,9 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#22c55e]" />Đã giải quyết</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#f97316]" />Chưa giải quyết</span>
             </div>
-            <button onClick={() => onXemDanhSachDon?.(phamVi === "toi" ? 1 : 0)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+            <Button onClick={() => onXemDanhSachDon?.(phamVi === "toi" ? 1 : 0)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
               Xem danh sách <ArrowRight size={11} />
-            </button>
+            </Button>
           </div>
 
           {/* Đã giải quyết xong */}
@@ -173,9 +174,9 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
               <span className="text-[12px] font-semibold text-[#16a34a]">{pct1(hienTrang.daGiaiQuyet, tongDon)}% tổng số đơn</span>
             </div>
             <p className="text-[12px] text-[#64748b] mb-3">Đơn đã trả lại, không thụ lý, hoặc đã phân công và chuyển sang Phòng GĐKTTT và THA.</p>
-            <button onClick={() => onXemDanhSachDon?.(6)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+            <Button onClick={() => onXemDanhSachDon?.(6)} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
               Xem danh sách <ArrowRight size={11} />
-            </button>
+            </Button>
           </div>
 
           {/* Chưa giải quyết */}
@@ -191,9 +192,9 @@ const HienTrangDon = ({ hienTrang, phamVi, onDoiPhamVi, onXemDanhSachDon, onXemD
               <span className="text-[12px] font-semibold text-[#e67e22]">{pct1(hienTrang.chuaGiaiQuyet, tongDon)}% tổng số đơn</span>
             </div>
             <p className="text-[12px] text-[#64748b] mb-3">Đơn đang trong quá trình thụ lý, xem xét hoặc chờ ý kiến — chưa ra kết quả cuối cùng.</p>
-            <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
+            <Button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-medium text-[#3b82f6] hover:underline flex items-center gap-1">
               Xem danh sách <ArrowRight size={11} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -220,7 +221,7 @@ const DonTheoTrangThaiThuLy = ({ trangThai, onXemDanhSachDon }: {
     </div>
     <div className="grid grid-cols-6 gap-3">
       {trangThai.map(t => (
-        <button
+        <Button
           key={t.nhan}
           onClick={() => onXemDanhSachDon?.(t.tab)}
           className="text-left border border-[#eee] rounded-[8px] p-3 hover:border-[#cbd5e1] hover:bg-[#f8fafc] transition-colors group"
@@ -233,7 +234,7 @@ const DonTheoTrangThaiThuLy = ({ trangThai, onXemDanhSachDon }: {
             <span className="text-[20px] font-bold text-[#1d2e4f] leading-none">{t.soLuong}</span>
             <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors" />
           </div>
-        </button>
+        </Button>
       ))}
     </div>
   </div>
@@ -305,13 +306,13 @@ const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon, onXemSoSanhLoaiAn }: 
           {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
             const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
             return (
-              <button
+              <Button
                 key={period}
                 onClick={() => setChartPeriod(period)}
                 className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
               >
                 {labels[idx]}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -321,7 +322,7 @@ const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon, onXemSoSanhLoaiAn }: 
         {chartPeriod === "custom" && (
           <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
             <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
-            <input
+            <Input
               type="date"
               value={customStartDate}
               onChange={e => setCustomStartDate(e.target.value)}
@@ -329,7 +330,7 @@ const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon, onXemSoSanhLoaiAn }: 
             />
             <span className="text-[#94a3b8]">-</span>
             <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
-            <input
+            <Input
               type="date"
               value={customEndDate}
               onChange={e => setCustomEndDate(e.target.value)}
@@ -351,10 +352,10 @@ const BaoCaoKetQuaTheoKy = ({ trangThai, onXemDanhSachDon, onXemSoSanhLoaiAn }: 
             </h3>
             {/* Sang màn "So sánh loại án chi tiết" — mang theo đúng kỳ đang chọn
                 để hai màn không lệch số. */}
-            <button onClick={() => onXemSoSanhLoaiAn?.(chartPeriod)}
+            <Button onClick={() => onXemSoSanhLoaiAn?.(chartPeriod)}
               className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
               Xem chi tiết <ArrowRight size={11} />
-            </button>
+            </Button>
           </div>
 
           <div className="flex-1 p-5 flex flex-col">
@@ -739,14 +740,14 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                   {SO_DON_SAP_DEN_HAN_PHONG > 0 && (
                     <div className="px-3 py-2 rounded-[6px] bg-[#fffbeb] border border-[#fde68a] text-[12px] text-[#92400e]">
                       Thêm <b>{SO_DON_SAP_DEN_HAN_PHONG}</b> đơn sắp đến hạn — nên xử lý trước khi thành quá hạn.{" "}
-                      <button onClick={() => onXemDonQuaHan?.()} className="font-semibold underline hover:text-[#78350f]">Xem danh sách</button>
+                      <Button onClick={() => onXemDonQuaHan?.()} className="font-semibold underline hover:text-[#78350f]">Xem danh sách</Button>
                     </div>
                   )}
                 </div>
                 <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-                  <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+                  <Button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                     Xem tất cả {DON_QUA_HAN_PHONG.length} mục
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -780,9 +781,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                   ))}
                 </div>
                 <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-                  <button onClick={() => onXemDanhSachVanBan?.("BiTraLai")} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+                  <Button onClick={() => onXemDanhSachVanBan?.("BiTraLai")} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                     Xem tất cả {vanBanToiTraLai.length} mục
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -798,9 +799,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
               </h3>
               <div className="flex items-center gap-3">
                 <span className="text-[11px] text-[#94a3b8]">Trung bình {trungBinhTaiViec} đơn/người</span>
-                <button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
+                <Button onClick={onXemChiTietHieuSuat} className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1 whitespace-nowrap">
                   Xem hiệu suất chi tiết <ArrowRight size={11} />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -889,9 +890,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                 )}
               </div>
               <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-                <button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+                <Button onClick={() => onXemDonQuaHan?.()} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                   Xem tất cả {DON_QUA_HAN_CUA_TOI.length} mục
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -925,9 +926,9 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, onXemDa
                 ))}
               </div>
               <div className="mt-auto p-3 border-t border-[#f1f5f9] bg-[#f8fafc] rounded-b-[8px] text-center">
-                <button onClick={() => onXemDanhSachVanBan?.("BiTraLai")} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
+                <Button onClick={() => onXemDanhSachVanBan?.("BiTraLai")} className="text-[12px] font-semibold text-[#3b82f6] hover:text-[#2563eb] transition-colors">
                   Xem tất cả {vanBanTraLai.length} mục
-                </button>
+                </Button>
               </div>
             </div>
           </div>

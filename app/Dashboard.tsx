@@ -6,7 +6,8 @@ import {
 import { type VanBanTrinh, type LocVanBanTuTrangChu } from "./components/QuanLyVanBan";
 import ChiSoTrangChu, { type DonChiSo, type BoLocTuTrangChu } from "./ChiSoTrangChu";
 import TrangChuTruongPhong, { TieuDeMuc, NhomCon, nguoiXemTrangChu } from "./TrangChuTruongPhong";
-import { DU_LIEU_CAN_BO } from "./HieuSuatCanBoChiTiet";
+import { DU_LIEU_CAN_BO } from "./HieuSuatCanBoChiTiet";import { Button, Input } from "antd";
+
 
 // "Kết quả xử lý đơn" — bar ngang xếp hạng theo giá trị giảm dần, mỗi hạng mục một màu riêng
 // (nominal categorical, không phải chuỗi theo Vụ GĐKT), nhãn giá trị + % đặt ngay đầu mút bar.
@@ -262,13 +263,13 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
             {(["day", "week", "month", "year", "custom"] as const).map((period, idx) => {
               const labels = ["Hôm nay", "Tuần này", "Tháng này", "Năm nay", "Tùy chọn"];
               return (
-                <button
+                <Button
                   key={period}
                   onClick={() => setChartPeriod(period)}
                   className={`px-3.5 py-1.5 text-[12px] font-medium rounded-[4px] transition-all duration-200 ${chartPeriod === period ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]" : "text-[#64748b] hover:text-[#0f172a] hover:bg-[#e2e8f0]/50 border border-transparent"}`}
                 >
                   {labels[idx]}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -278,7 +279,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
           {chartPeriod === "custom" && (
             <div className="flex items-center gap-2.5 animate-in fade-in slide-in-from-left-2 duration-300">
               <label className="text-[13px] font-medium text-[#475569]">Từ:</label>
-              <input 
+              <Input 
                 type="date" 
                 value={customStartDate} 
                 onChange={e => setCustomStartDate(e.target.value)} 
@@ -286,7 +287,7 @@ export default function Dashboard({ onXemChiTietHieuSuat, onXemPheDuyet, vanBanL
               />
               <span className="text-[#94a3b8]">-</span>
               <label className="text-[13px] font-medium text-[#475569]">Đến:</label>
-              <input 
+              <Input 
                 type="date" 
                 value={customEndDate} 
                 onChange={e => setCustomEndDate(e.target.value)} 

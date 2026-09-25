@@ -33,4 +33,10 @@ export type View =
   | "quan-ly-vu-xet-xu"
   | "phe-duyet-de-xuat"
   | "an-quoc-hoi"
-  | "an-thoi-hieu";
+  | "an-thoi-hieu"
+  | "phan-cong-hdxx"
+  | "ho-so-tu-hinh"
+  | "don-xin-an-giam"
+  | "phan-cong-tptc"
+  | "chuyen-hinh-phat"
+  | "cau-hinh-chuyen-hinh-phat";

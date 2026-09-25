@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Search, RotateCcw, Calendar, ChevronDown, ChevronUp, X } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED } from "./shared";
 import { LOAI_AN_OPTIONS } from "./data";
-import { UserRoleType } from "./App";
+import { UserRoleType } from "./App";import { Button, Input } from "antd";
+
 
 export const DANH_SACH_TOA_AN_FILTER = [
   "Tòa án nhân dân thành phố Hà Nội",
@@ -252,14 +253,14 @@ export function VuAnSearchFilterPanel({
           {/* 3. Số BA/QĐ */}
           <div>
             <label style={labelStyle}>Số BA/QĐ</label>
-            <input placeholder="Nhập số BA/QĐ" value={filters.soBA} onChange={(e) => handleChange("soBA", e.target.value)} style={inputStyle} />
+            <Input placeholder="Nhập số BA/QĐ" value={filters.soBA} onChange={(e) => handleChange("soBA", e.target.value)} style={inputStyle} />
           </div>
 
           {/* 4. Ngày BA/QĐ */}
           <div>
             <label style={labelStyle}>Ngày BA/QĐ</label>
             <div style={{ position: "relative" }}>
-              <input placeholder="dd/mm/yyyy" value={filters.ngayBA} onChange={(e) => handleChange("ngayBA", e.target.value)} style={inputStyle} />
+              <Input placeholder="dd/mm/yyyy" value={filters.ngayBA} onChange={(e) => handleChange("ngayBA", e.target.value)} style={inputStyle} />
               <Calendar size={13} color={MUTED} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
             </div>
           </div>
@@ -267,13 +268,13 @@ export function VuAnSearchFilterPanel({
           {/* 5. Bị cáo / Đương sự */}
           <div>
             <label style={labelStyle}>Bị cáo / Đương sự</label>
-            <input placeholder="Nhập tên bị cáo/đương sự" value={filters.biCao} onChange={(e) => handleChange("biCao", e.target.value)} style={inputStyle} />
+            <Input placeholder="Nhập tên bị cáo/đương sự" value={filters.biCao} onChange={(e) => handleChange("biCao", e.target.value)} style={inputStyle} />
           </div>
 
           {/* 6. Số thụ lý */}
           <div>
             <label style={labelStyle}>Số thụ lý</label>
-            <input placeholder="Nhập số thụ lý" value={filters.soThuLy} onChange={(e) => handleChange("soThuLy", e.target.value)} style={inputStyle} />
+            <Input placeholder="Nhập số thụ lý" value={filters.soThuLy} onChange={(e) => handleChange("soThuLy", e.target.value)} style={inputStyle} />
           </div>
 
           {/* 7. Lãnh đạo phụ trách */}
@@ -361,7 +362,7 @@ export function VuAnSearchFilterPanel({
             <div>
               <label style={labelStyle}>Thụ lý từ ngày – Đến ngày</label>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <input
+                <Input
                   placeholder="Từ ngày"
                   value={filters.thuLyTuNgay}
                   onChange={(e) => handleChange("thuLyTuNgay", e.target.value)}
@@ -369,7 +370,7 @@ export function VuAnSearchFilterPanel({
                 />
                 <span style={{ color: MUTED, fontSize: 11 }}>→</span>
                 <div style={{ position: "relative", flex: 1 }}>
-                  <input
+                  <Input
                     placeholder="Đến ngày"
                     value={filters.thuLyDenNgay}
                     onChange={(e) => handleChange("thuLyDenNgay", e.target.value)}
@@ -395,7 +396,7 @@ export function VuAnSearchFilterPanel({
             <div>
               <label style={labelStyle}>Tờ trình từ ngày – Đến ngày</label>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <input
+                <Input
                   placeholder="Từ ngày"
                   value={filters.toTrinhTuNgay}
                   onChange={(e) => handleChange("toTrinhTuNgay", e.target.value)}
@@ -403,7 +404,7 @@ export function VuAnSearchFilterPanel({
                 />
                 <span style={{ color: MUTED, fontSize: 11 }}>→</span>
                 <div style={{ position: "relative", flex: 1 }}>
-                  <input
+                  <Input
                     placeholder="Đến ngày"
                     value={filters.toTrinhDenNgay}
                     onChange={(e) => handleChange("toTrinhDenNgay", e.target.value)}
@@ -472,11 +473,11 @@ export function VuAnSearchFilterPanel({
             </div>
             <div>
               <label style={labelStyle}>Kết quả xét xử</label>
-              <input placeholder="Nhập kết quả xét xử" value={filters.ketQuaXetXu} onChange={(e) => handleChange("ketQuaXetXu", e.target.value)} style={inputStyle} />
+              <Input placeholder="Nhập kết quả xét xử" value={filters.ketQuaXetXu} onChange={(e) => handleChange("ketQuaXetXu", e.target.value)} style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Ngày tuyên án</label>
-              <input placeholder="dd/mm/yyyy" value={filters.ngayTuyenAn} onChange={(e) => handleChange("ngayTuyenAn", e.target.value)} style={inputStyle} />
+              <Input placeholder="dd/mm/yyyy" value={filters.ngayTuyenAn} onChange={(e) => handleChange("ngayTuyenAn", e.target.value)} style={inputStyle} />
             </div>
 
             {/* Rút kháng nghị */}
@@ -490,7 +491,7 @@ export function VuAnSearchFilterPanel({
             </div>
             <div>
               <label style={labelStyle}>Ngày rút kháng nghị</label>
-              <input placeholder="dd/mm/yyyy" value={filters.ngayRutKhangNghi} onChange={(e) => handleChange("ngayRutKhangNghi", e.target.value)} style={inputStyle} />
+              <Input placeholder="dd/mm/yyyy" value={filters.ngayRutKhangNghi} onChange={(e) => handleChange("ngayRutKhangNghi", e.target.value)} style={inputStyle} />
             </div>
           </div>
         )}
@@ -523,7 +524,7 @@ export function VuAnSearchFilterPanel({
                 />
               </span>
             ))}
-            <button
+            <Button
               onClick={handleReset}
               style={{
                 background: "none",
@@ -537,13 +538,13 @@ export function VuAnSearchFilterPanel({
               }}
             >
               Xóa tất cả
-            </button>
+            </Button>
           </div>
         )}
 
         {/* ── NÚT THAO TÁC (TÌM KIẾM MÀU ĐỎ & XÓA BỘ LỌC) ── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 4 }}>
-          <button
+          <Button
             onClick={() => setFilterExpanded((v) => !v)}
             style={{
               display: "flex",
@@ -561,10 +562,10 @@ export function VuAnSearchFilterPanel({
           >
             {filterExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             {filterExpanded ? "Thu gọn bộ lọc nâng cao" : "Mở rộng bộ lọc nâng cao"}
-          </button>
+          </Button>
 
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <button
+            <Button
               onClick={handleSearch}
               style={{
                 display: "flex",
@@ -583,9 +584,9 @@ export function VuAnSearchFilterPanel({
               }}
             >
               <Search size={14} /> Tìm kiếm
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={handleReset}
               style={{
                 display: "flex",
@@ -602,7 +603,7 @@ export function VuAnSearchFilterPanel({
               }}
             >
               <RotateCcw size={13} /> Xóa bộ lọc
-            </button>
+            </Button>
           </div>
         </div>
       </div>

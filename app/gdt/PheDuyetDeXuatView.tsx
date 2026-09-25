@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search, Download, Printer, ChevronDown, Eye, RotateCcw, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, X } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG, Badge, type UserRoleType } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG, Badge, type UserRoleType } from "./shared";import { Button, Input } from "antd";
+
 
 type Screen = "list" | "detail" | "bieu-mau";
 type ListTab = "tat-ca" | "cho-duyet" | "da-duyet" | "tu-choi";
@@ -55,31 +56,31 @@ export function XemBieuMauScreen({ onClose, loaiPhieu }: { onClose: () => void; 
     <div style={{ position: "fixed", inset: 0, zIndex: 3000, display: "flex", flexDirection: "column", background: "#f3f3f3", fontFamily: F }}>
       {/* Top bar */}
       <div style={{ background: "#1e3a5f", color: "#fff", display: "flex", alignItems: "center", padding: "0 16px", height: 40, gap: 8 }}>
-        <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", gap: 4 }}>
+        <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", gap: 4 }}>
           <ChevronLeft size={16} /> Quay lại
-        </button>
+        </Button>
         <span style={{ fontSize: 13, fontWeight: 600, flex: 1 }}>{docTitle}</span>
-        <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 16px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+        <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 16px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
           ✏ Trình ký
-        </button>
+        </Button>
       </div>
 
       {/* Menu bar */}
       <div style={{ background: "#1e3a5f", borderTop: "1px solid rgba(255,255,255,0.15)", display: "flex", alignItems: "center", padding: "0 16px", height: 32 }}>
         {menuItems.map(m => (
-          <button key={m} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontSize: 12, padding: "0 10px", height: "100%" }}
+          <Button key={m} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.85)", fontSize: 12, padding: "0 10px", height: "100%" }}
             onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
             onMouseLeave={e => (e.currentTarget.style.background = "none")}>
             {m}
-          </button>
+          </Button>
         ))}
       </div>
 
       {/* Toolbar */}
       <div style={{ background: "#fff", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", padding: "4px 16px", gap: 6, height: 36 }}>
-        <button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>↩</button>
-        <button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>↪</button>
-        <button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>🖨</button>
+        <Button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>↩</Button>
+        <Button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>↪</Button>
+        <Button style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, color: MUTED }}>🖨</Button>
         <div style={{ width: 1, height: 20, background: BORDER, margin: "0 4px" }} />
         <select style={{ fontSize: 12, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "1px 4px", fontFamily: "Times New Roman, serif" }}>
           <option>Times New Roman</option>
@@ -89,7 +90,7 @@ export function XemBieuMauScreen({ onClose, loaiPhieu }: { onClose: () => void; 
         </select>
         <div style={{ width: 1, height: 20, background: BORDER, margin: "0 4px" }} />
         {tools.map((t, i) => (
-          <button key={i} style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, fontFamily: "serif", fontWeight: t === "B" ? 700 : 400, fontStyle: t === "I" ? "italic" : "normal", textDecoration: t === "U" ? "underline" : t === "abo" ? "line-through" : "none", color: TEXT }}>{t}</button>
+          <Button key={i} style={{ padding: "2px 6px", border: "none", background: "none", cursor: "pointer", fontSize: 12, fontFamily: "serif", fontWeight: t === "B" ? 700 : 400, fontStyle: t === "I" ? "italic" : "normal", textDecoration: t === "U" ? "underline" : t === "abo" ? "line-through" : "none", color: TEXT }}>{t}</Button>
         ))}
         <div style={{ width: 1, height: 20, background: BORDER, margin: "0 4px" }} />
         <span style={{ fontSize: 11, color: MUTED }}>CharacterSt</span>
@@ -102,7 +103,7 @@ export function XemBieuMauScreen({ onClose, loaiPhieu }: { onClose: () => void; 
         {/* Side icons */}
         <div style={{ position: "fixed", left: 12, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 12, zIndex: 3100 }}>
           {["📋", "💬", "ℹ", "🖼"].map((ic, i) => (
-            <button key={i} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "#555" }}>{ic}</button>
+            <Button key={i} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "#555" }}>{ic}</Button>
           ))}
         </div>
         {/* Search icon on right */}
@@ -348,9 +349,9 @@ function LichSuModal({ idx, onClose }: { idx: number; onClose: () => void }) {
               Đơn: {data.don} | Người gửi: {data.nguoiGui} | Ngày nhận: {data.ngayNhan}
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}>
             <X size={16} />
-          </button>
+          </Button>
         </div>
 
         {/* Table */}
@@ -375,7 +376,7 @@ function LichSuModal({ idx, onClose }: { idx: number; onClose: () => void }) {
 
         {/* Footer */}
         <div style={{ padding: "12px 20px", borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={onClose} style={{ padding: "6px 24px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</button>
+          <Button onClick={onClose} style={{ padding: "6px 24px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</Button>
         </div>
       </div>
     </div>
@@ -466,8 +467,8 @@ function HoSoVuAnTab() {
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto" as const }}>
       <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}` }}>
-        <button style={subTabStyle(subTab === "hien-tai")} onClick={() => setSubTab("hien-tai")}>Giai đoạn hiện tại</button>
-        <button style={subTabStyle(subTab === "con-lai")} onClick={() => setSubTab("con-lai")}>Các giai đoạn còn lại</button>
+        <Button style={subTabStyle(subTab === "hien-tai")} onClick={() => setSubTab("hien-tai")}>Giai đoạn hiện tại</Button>
+        <Button style={subTabStyle(subTab === "con-lai")} onClick={() => setSubTab("con-lai")}>Các giai đoạn còn lại</Button>
       </div>
       {subTab === "hien-tai" && (
         <div>
@@ -516,7 +517,7 @@ function CopyYKienModal({ fromIdx, donYKien, donData, onApply, onClose }: {
         {/* Header */}
         <div style={{ background: RED, color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 14, fontWeight: 700 }}>Áp dụng ý kiến cho đơn khác</span>
-          <button onClick={onClose} style={{ background: "none", border: "1px solid rgba(255,255,255,0.5)", borderRadius: 4, cursor: "pointer", color: "#fff", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>&#x2715;</button>
+          <Button onClick={onClose} style={{ background: "none", border: "1px solid rgba(255,255,255,0.5)", borderRadius: 4, cursor: "pointer", color: "#fff", width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>&#x2715;</Button>
         </div>
         {/* List */}
         <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 10, maxHeight: 260, overflowY: "auto" }}>
@@ -524,7 +525,7 @@ function CopyYKienModal({ fromIdx, donYKien, donData, onApply, onClose }: {
             if (i === fromIdx) return null;
             return (
               <label key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
-                <input
+                <Input
                   type="checkbox"
                   checked={selected.includes(i)}
                   onChange={() => toggle(i)}
@@ -540,8 +541,8 @@ function CopyYKienModal({ fromIdx, donYKien, donData, onApply, onClose }: {
         </div>
         {/* Footer */}
         <div style={{ padding: "12px 16px", borderTop: `1px solid ${BORDER}`, display: "flex", gap: 8, justifyContent: "center" }}>
-          <button onClick={() => onApply(selected)} style={{ flex: 1, padding: "8px 0", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Áp dụng</button>
-          <button onClick={onClose} style={{ flex: 1, padding: "8px 0", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</button>
+          <Button onClick={() => onApply(selected)} style={{ flex: 1, padding: "8px 0", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: F }}>Áp dụng</Button>
+          <Button onClick={onClose} style={{ flex: 1, padding: "8px 0", background: "#fff", color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 13, fontFamily: F }}>Đóng</Button>
         </div>
       </div>
     </div>
@@ -604,7 +605,7 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
             {(["y-kien", "Hồ sơ tờ trình", "Hồ sơ vụ án"] as const).map((k, ki) => {
               const labels = ["Ý kiến lãnh đạo", "Hồ sơ tờ trình", "Hồ sơ vụ án"];
               const keys: DetailTab[] = ["y-kien", "ho-so-to-trinh", "ho-so-vu-an"];
-              return <button key={k} onClick={() => setTab(keys[ki])} style={tabStyle(tab === keys[ki])}>{labels[ki]}</button>;
+              return <Button key={k} onClick={() => setTab(keys[ki])} style={tabStyle(tab === keys[ki])}>{labels[ki]}</Button>;
             })}
           </div>
 
@@ -612,7 +613,7 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
             <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16, flex: 1 }}>
               {/* Checkbox rút gọn */}
               <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, cursor: "pointer", justifyContent: "flex-end" }}>
-                <input type="checkbox" checked={gqRutGon} onChange={e => setGqRutGon(e.target.checked)} style={{ width: 14, height: 14, accentColor: "#1a5a96" }} />
+                <Input type="checkbox" checked={gqRutGon} onChange={e => setGqRutGon(e.target.checked)} style={{ width: 14, height: 14, accentColor: "#1a5a96" }} />
                 Giải quyết theo thủ tục rút gọn
               </label>
 
@@ -649,12 +650,12 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
                           </td>
                           <td style={{ padding: "6px 8px", borderBottom: `1px solid ${BORDER}`, textAlign: "center" as const }}>
                             <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                              <button title="Lịch sử" onClick={() => setLichSuIdx(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                              <Button title="Lịch sử" onClick={() => setLichSuIdx(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                              </button>
-                              <button title="Sao chép ý kiến" onClick={() => setCopyFromIdx(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+                              </Button>
+                              <Button title="Sao chép ý kiến" onClick={() => setCopyFromIdx(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={MUTED} strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-                              </button>
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -673,7 +674,7 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
                   <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "8px 20px", marginBottom: 10 }}>
                     {["Kháng nghị", "Không kháng nghị", "Nghiên cứu, xác minh, bổ sung", "Xếp đơn", "VKS đang xử lý"].map(opt => (
                       <label key={opt} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, cursor: "pointer", color: TEXT }}>
-                        <input
+                        <Input
                           type="radio"
                           name="y-kien-ldao"
                           checked={yKienOption === opt}
@@ -722,11 +723,11 @@ function PheDuyetDetail({ onClose, onXemBieuMau, userRole, noiDung }: { onClose:
 
           {/* Footer buttons */}
           <div style={{ borderTop: `1px solid ${BORDER}`, padding: "12px 20px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const, flexShrink: 0 }}>
-            <button style={{ padding: "6px 18px", background: RED, color: "#fff", border: `2px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</button>
-            <button style={{ padding: "6px 18px", background: "#fff", color: RED, border: `2px dashed ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>Sửa biểu mẫu</button>
-            <button style={{ padding: "6px 18px", background: RED, color: "#fff", border: `2px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu và ký</button>
-            <button style={{ padding: "6px 18px", background: "#fff", color: TEXT, border: `2px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Trả lại</button>
-            <button onClick={onClose} style={{ padding: "6px 18px", background: "#fff", color: TEXT, border: `2px dashed ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</button>
+            <Button style={{ padding: "6px 18px", background: RED, color: "#fff", border: `2px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu</Button>
+            <Button style={{ padding: "6px 18px", background: "#fff", color: RED, border: `2px dashed ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}>Sửa biểu mẫu</Button>
+            <Button style={{ padding: "6px 18px", background: RED, color: "#fff", border: `2px solid ${RED}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Lưu và ký</Button>
+            <Button style={{ padding: "6px 18px", background: "#fff", color: TEXT, border: `2px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Trả lại</Button>
+            <Button onClick={onClose} style={{ padding: "6px 18px", background: "#fff", color: TEXT, border: `2px dashed ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</Button>
           </div>
         </div>
 
@@ -857,7 +858,7 @@ export default function PheDuyetDeXuatView({
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, marginBottom: 16 }}>
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)} style={tabStyle(activeTab === t.id)}>
+          <Button key={t.id} onClick={() => setActiveTab(t.id)} style={tabStyle(activeTab === t.id)}>
             {t.label}
             <span style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
@@ -865,7 +866,7 @@ export default function PheDuyetDeXuatView({
               background: activeTab === t.id ? RED : "#e0e0e0",
               color: activeTab === t.id ? "#fff" : MUTED, padding: "0 5px",
             }}>{t.count}</span>
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -886,19 +887,19 @@ export default function PheDuyetDeXuatView({
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <label style={{ fontSize: 11, color: MUTED, fontFamily: F }}>Ngày tạo đề xuất</label>
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <input type="date" defaultValue="2026-07-21" style={{ flex: 1, padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none" }} />
+              <Input type="date" defaultValue="2026-07-21" style={{ flex: 1, padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none" }} />
               <span style={{ color: MUTED, fontSize: 12 }}>→</span>
-              <input type="date" defaultValue="2026-07-21" style={{ flex: 1, padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none" }} />
+              <Input type="date" defaultValue="2026-07-21" style={{ flex: 1, padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none" }} />
             </div>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
+          <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>
             <Search size={13} color="#fff" /> Tìm kiếm
-          </button>
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: MUTED }}>
+          </Button>
+          <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: MUTED }}>
             <X size={13} /> Xóa bộ lọc
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -907,12 +908,12 @@ export default function PheDuyetDeXuatView({
         {/* Table header bar */}
         <div style={{ display: "flex", alignItems: "center", padding: "10px 14px", borderBottom: `1px solid ${BORDER}` }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: F, flex: 1 }}>Danh sách đề xuất</span>
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>
+          <Button style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}>
             <Download size={13} /> Kết xuất
-          </button>
-          <button style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 8px", cursor: "pointer", marginLeft: 6 }}>
+          </Button>
+          <Button style={{ background: "none", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "5px 8px", cursor: "pointer", marginLeft: 6 }}>
             <RotateCcw size={13} color={MUTED} />
-          </button>
+          </Button>
         </div>
 
         <div style={{ overflowX: "auto" }}>
@@ -957,10 +958,10 @@ export default function PheDuyetDeXuatView({
                   </td>
                   <td style={{ ...TD, color: r.yKien === "–" ? MUTED : "#27ae60", fontWeight: r.yKien === "–" ? 400 : 600 }}>{r.yKien}</td>
                   <td style={{ ...TD, textAlign: "center" as const }}>
-                    <button onClick={e => { e.stopPropagation(); setScreen("detail"); }}
+                    <Button onClick={e => { e.stopPropagation(); setScreen("detail"); }}
                       style={{ background: "none", border: selectedRow === r.id ? `1px dashed #1a73e8` : "none", borderRadius: 4, cursor: "pointer", padding: "4px 8px" }}>
                       <Eye size={15} color="#1a5a96" />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}

@@ -11,7 +11,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, TH_STYLE, TD_STYLE } from "./shared";
-import { LOAI_AN_OPTIONS } from "./data";
+import { LOAI_AN_OPTIONS } from "./data";import { Button, Input } from "antd";
+
 
 const DANH_SACH_TTV = [
   "Nguyễn Thị Thúy Hường",
@@ -397,7 +398,7 @@ export function PhanCongTTVView() {
 
         {/* Tab Navigation */}
         <div style={{ display: "flex", gap: 24, borderBottom: `1px solid ${BORDER}`, background: "transparent" }}>
-          <button
+          <Button
             onClick={() => {
               setActiveTab("chua-phan-cong");
               setSelectedIds([]);
@@ -415,8 +416,8 @@ export function PhanCongTTVView() {
             }}
           >
             Chưa phân công Công chức nghiên cứu
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => {
               setActiveTab("da-phan-cong");
               setSelectedIds([]);
@@ -434,7 +435,7 @@ export function PhanCongTTVView() {
             }}
           >
             Đã phân công Công chức nghiên cứu
-          </button>
+          </Button>
         </div>
 
         {/* Đã bỏ cặp radio "ngẫu nhiên / chỉ định": chỉ còn phân công chỉ định
@@ -449,7 +450,7 @@ export function PhanCongTTVView() {
                 <div>
                   <label style={labelStyle}>Ngày thụ lý</label>
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <input
+                    <Input
                       placeholder="Từ ngày"
                       value={fNgayTLTu}
                       onChange={(e) => setFNgayTLTu(e.target.value)}
@@ -457,7 +458,7 @@ export function PhanCongTTVView() {
                     />
                     <span style={{ color: MUTED, fontSize: 11 }}>→</span>
                     <div style={{ position: "relative", flex: 1 }}>
-                      <input
+                      <Input
                         placeholder="Đến ngày"
                         value={fNgayTLDen}
                         onChange={(e) => setFNgayTLDen(e.target.value)}
@@ -470,7 +471,7 @@ export function PhanCongTTVView() {
 
                 <div>
                   <label style={labelStyle}>Số thụ lý</label>
-                  <input
+                  <Input
                     placeholder="Số thụ lý"
                     value={fSoTL}
                     onChange={(e) => setFSoTL(e.target.value)}
@@ -528,7 +529,7 @@ export function PhanCongTTVView() {
 
                 <div>
                   <label style={labelStyle}>Số bản án/quyết định</label>
-                  <input
+                  <Input
                     placeholder="Nhập số bản án/quyết định"
                     value={fSoBA}
                     onChange={(e) => setFSoBA(e.target.value)}
@@ -539,7 +540,7 @@ export function PhanCongTTVView() {
                 <div>
                   <label style={labelStyle}>Ngày bản án/quyết định</label>
                   <div style={{ position: "relative" }}>
-                    <input
+                    <Input
                       placeholder="Vui lòng chọn"
                       value={fNgayBA}
                       onChange={(e) => setFNgayBA(e.target.value)}
@@ -551,7 +552,7 @@ export function PhanCongTTVView() {
 
                 <div>
                   <label style={labelStyle}>Nguyên đơn/Người khiếu nại</label>
-                  <input
+                  <Input
                     placeholder="Nhập tên"
                     value={fNguoiKN}
                     onChange={(e) => setFNguoiKN(e.target.value)}
@@ -564,7 +565,7 @@ export function PhanCongTTVView() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px 16px" }}>
                 <div>
                   <label style={labelStyle}>Bị đơn/Bị cáo</label>
-                  <input
+                  <Input
                     placeholder="Nhập tên"
                     value={fBiDon}
                     onChange={(e) => setFBiDon(e.target.value)}
@@ -594,7 +595,7 @@ export function PhanCongTTVView() {
 
           {/* Filter Footer Actions */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: filterExpanded ? 14 : 0 }}>
-            <button
+            <Button
               onClick={() => setFilterExpanded(!filterExpanded)}
               style={{
                 display: "flex",
@@ -612,10 +613,10 @@ export function PhanCongTTVView() {
             >
               {filterExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               {filterExpanded ? "Thu gọn" : "Mở rộng"}
-            </button>
+            </Button>
 
             <div style={{ display: "flex", gap: 10 }}>
-              <button
+              <Button
                 onClick={() => alert("Đang lọc danh sách phân công Công chức nghiên cứu...")}
                 style={{
                   display: "flex",
@@ -633,9 +634,9 @@ export function PhanCongTTVView() {
                 }}
               >
                 <Search size={13} /> Tìm kiếm
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleResetFilters}
                 style={{
                   display: "flex",
@@ -652,7 +653,7 @@ export function PhanCongTTVView() {
                 }}
               >
                 <RotateCcw size={13} /> Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -660,7 +661,7 @@ export function PhanCongTTVView() {
         {/* Table Action Bar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
           {activeTab === "chua-phan-cong" ? (
-            <button
+            <Button
               onClick={handleExecutePhanCong}
               style={{
                 padding: "7px 18px",
@@ -675,9 +676,9 @@ export function PhanCongTTVView() {
               }}
             >
               Phân công
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={() => alert("Đã lưu thông tin phân công thành công!")}
               style={{
                 padding: "7px 16px",
@@ -692,10 +693,10 @@ export function PhanCongTTVView() {
               }}
             >
               Lưu phân công
-            </button>
+            </Button>
           )}
 
-          <button
+          <Button
             onClick={() => window.print()}
             style={{
               display: "flex",
@@ -713,9 +714,9 @@ export function PhanCongTTVView() {
             }}
           >
             <Printer size={13} /> In báo cáo
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => alert("Đã làm mới danh sách!")}
             style={{
               display: "flex",
@@ -732,7 +733,7 @@ export function PhanCongTTVView() {
             title="Làm mới"
           >
             <RotateCcw size={14} color={MUTED} />
-          </button>
+          </Button>
         </div>
 
         {/* Main Data Table */}
@@ -742,7 +743,7 @@ export function PhanCongTTVView() {
               <thead>
                 <tr>
                   <th style={{ ...TH_CUSTOM, width: 36, textAlign: "center" }}>
-                    <input
+                    <Input
                       type="checkbox"
                       checked={selectedIds.length === currentRows.length && currentRows.length > 0}
                       onChange={(e) => handleSelectAll(e, currentRows)}
@@ -778,7 +779,7 @@ export function PhanCongTTVView() {
                         }}
                       >
                         <td style={{ ...TD_CUSTOM, textAlign: "center" }}>
-                          <input
+                          <Input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleToggleRow(r.id)}
@@ -844,7 +845,7 @@ export function PhanCongTTVView() {
                           </div>
                         </td>
                         <td style={{ ...TD_CUSTOM, textAlign: "center", borderRight: "none" }}>
-                          <button
+                          <Button
                             onClick={() => setShowDetailModal(r)}
                             style={{
                               background: "none",
@@ -857,7 +858,7 @@ export function PhanCongTTVView() {
                             title="Xem chi tiết"
                           >
                             <Eye size={16} />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -874,15 +875,15 @@ export function PhanCongTTVView() {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <button style={{ padding: "4px 8px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>‹</button>
-              <button style={{ padding: "4px 10px", border: `1px solid ${RED}`, background: RED, color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>1</button>
-              <button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>2</button>
-              <button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>3</button>
-              <button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>4</button>
-              <button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>5</button>
+              <Button style={{ padding: "4px 8px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>‹</Button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${RED}`, background: RED, color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>1</Button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>2</Button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>3</Button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>4</Button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>5</Button>
               <span>...</span>
-              <button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>65</button>
-              <button style={{ padding: "4px 8px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>›</button>
+              <Button style={{ padding: "4px 10px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>65</Button>
+              <Button style={{ padding: "4px 8px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>›</Button>
               <select style={{ padding: "4px 8px", border: `1px solid ${BORDER}`, borderRadius: 4, fontSize: 12, fontFamily: F, background: "#fff", outline: "none", marginLeft: 8 }}>
                 <option>10 / trang</option>
                 <option>20 / trang</option>
@@ -901,9 +902,9 @@ export function PhanCongTTVView() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: 15, color: RED }}>
                 <UserCheck size={18} /> Phân công chỉ định Công chức nghiên cứu
               </div>
-              <button onClick={() => setShowAssignModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
+              <Button onClick={() => setShowAssignModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
@@ -929,18 +930,18 @@ export function PhanCongTTVView() {
             </div>
 
             <div style={{ padding: "12px 20px", background: "#fafafa", borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "flex-end", gap: 10 }}>
-              <button
+              <Button
                 onClick={() => setShowAssignModal(false)}
                 style={{ padding: "7px 16px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 500 }}
               >
                 Hủy bỏ
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleConfirmChiDinh}
                 style={{ padding: "7px 20px", border: "none", background: RED, color: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700 }}
               >
                 ✓ Xác nhận phân công
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -954,9 +955,9 @@ export function PhanCongTTVView() {
               <div style={{ fontWeight: 700, fontSize: 15, color: RED }}>
                 📄 Thông tin chi tiết vụ án
               </div>
-              <button onClick={() => setShowDetailModal(null)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
+              <Button onClick={() => setShowDetailModal(null)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
                 <X size={20} />
-              </button>
+              </Button>
             </div>
             <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 12, fontSize: 12 }}>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, padding: "6px 0", borderBottom: `1px solid ${BORDER}` }}>
@@ -985,12 +986,12 @@ export function PhanCongTTVView() {
               </div>
             </div>
             <div style={{ padding: "12px 20px", background: "#fafafa", borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "flex-end" }}>
-              <button
+              <Button
                 onClick={() => setShowDetailModal(null)}
                 style={{ padding: "7px 20px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600 }}
               >
                 Đóng
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -9,7 +9,8 @@ import {
   X,
   Users,
 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE } from "./shared";import { Button, Input } from "antd";
+
 
 const DANH_SACH_THAM_PHAN = [
   "Lê Thị Thu Hiền",
@@ -247,7 +248,7 @@ export function PhanCongThamPhanView() {
 
         {/* Main Tabs */}
         <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, background: "transparent", gap: 32 }}>
-          <button
+          <Button
             onClick={() => {
               setActiveTab("ngau-nhien");
               setSelectedRowIds([]);
@@ -265,9 +266,9 @@ export function PhanCongThamPhanView() {
             }}
           >
             DS chưa phân công ngẫu nhiên ({countNgauNhien})
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => {
               setActiveTab("chi-dinh");
               setSelectedRowIds([1]);
@@ -285,9 +286,9 @@ export function PhanCongThamPhanView() {
             }}
           >
             DS chưa phân công chỉ định ({countChiDinh})
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => {
               setActiveTab("ket-qua");
               setSelectedRowIds([]);
@@ -305,7 +306,7 @@ export function PhanCongThamPhanView() {
             }}
           >
             Quản lý kết quả phân công
-          </button>
+          </Button>
         </div>
 
         {/* Search Filter Panel */}
@@ -313,7 +314,7 @@ export function PhanCongThamPhanView() {
           {/* Radio filter judge level */}
           <div style={{ display: "flex", alignItems: "center", gap: 32, marginBottom: 16 }}>
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: TEXT, cursor: "pointer" }}>
-              <input
+              <Input
                 type="radio"
                 name="filter-judge-level"
                 checked={filterJudgeType === "tat-ca"}
@@ -324,7 +325,7 @@ export function PhanCongThamPhanView() {
             </label>
 
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, color: TEXT, cursor: "pointer" }}>
-              <input
+              <Input
                 type="radio"
                 name="filter-judge-level"
                 checked={filterJudgeType === "bac-3"}
@@ -335,7 +336,7 @@ export function PhanCongThamPhanView() {
             </label>
 
             <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: TEXT, cursor: "pointer" }}>
-              <input
+              <Input
                 type="radio"
                 name="filter-judge-level"
                 checked={filterJudgeType === "toi-cao"}
@@ -352,7 +353,7 @@ export function PhanCongThamPhanView() {
               <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1.2fr 1fr", gap: "10px 16px" }}>
                 <div>
                   <label style={labelStyle}>Tên tòa án</label>
-                  <input
+                  <Input
                     value={fTenToaAn}
                     onChange={(e) => setFTenToaAn(e.target.value)}
                     style={{ ...inputStyle, background: "#fafafa" }}
@@ -362,7 +363,7 @@ export function PhanCongThamPhanView() {
                 <div>
                   <label style={labelStyle}>Nhập đơn từ ngày đến ngày</label>
                   <div style={{ position: "relative" }}>
-                    <input
+                    <Input
                       placeholder="Vui lòng chọn"
                       value={fNhapDonTuNgay}
                       onChange={(e) => setFNhapDonTuNgay(e.target.value)}
@@ -374,7 +375,7 @@ export function PhanCongThamPhanView() {
 
                 <div>
                   <label style={labelStyle}>Số BA/QĐ</label>
-                  <input
+                  <Input
                     placeholder="Nhập dữ liệu"
                     value={fSoBA}
                     onChange={(e) => setFSoBA(e.target.value)}
@@ -400,7 +401,7 @@ export function PhanCongThamPhanView() {
 
                 <div>
                   <label style={labelStyle}>Số thụ lý</label>
-                  <input
+                  <Input
                     placeholder="nhập dữ liệu"
                     value={fSoThuLy}
                     onChange={(e) => setFSoThuLy(e.target.value)}
@@ -411,7 +412,7 @@ export function PhanCongThamPhanView() {
                 <div>
                   <label style={labelStyle}>Ngày thụ lý từ ngày đến ngày</label>
                   <div style={{ position: "relative" }}>
-                    <input
+                    <Input
                       placeholder="Vui lòng chọn"
                       value={fNgayTLTuNgay}
                       onChange={(e) => setFNgayTLTuNgay(e.target.value)}
@@ -444,7 +445,7 @@ export function PhanCongThamPhanView() {
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20 }}>
                     {LOAI_AN_CHECKBOXES.slice(0, 5).map((item) => (
                       <label key={item} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: TEXT, cursor: "pointer" }}>
-                        <input
+                        <Input
                           type="checkbox"
                           checked={selectedLoaiAn.includes(item)}
                           onChange={() => toggleLoaiAn(item)}
@@ -459,7 +460,7 @@ export function PhanCongThamPhanView() {
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 20 }}>
                     {LOAI_AN_CHECKBOXES.slice(5).map((item) => (
                       <label key={item} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: TEXT, cursor: "pointer" }}>
-                        <input
+                        <Input
                           type="checkbox"
                           checked={selectedLoaiAn.includes(item)}
                           onChange={() => toggleLoaiAn(item)}
@@ -476,7 +477,7 @@ export function PhanCongThamPhanView() {
 
           {/* Filter Footer Actions */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 14, paddingTop: 4 }}>
-            <button
+            <Button
               onClick={() => setShowJudgeListModal(true)}
               style={{
                 background: "none",
@@ -491,10 +492,10 @@ export function PhanCongThamPhanView() {
               }}
             >
               Danh sách thẩm phán
-            </button>
+            </Button>
 
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <button
+              <Button
                 onClick={() => setFilterExpanded(!filterExpanded)}
                 style={{
                   display: "flex",
@@ -512,9 +513,9 @@ export function PhanCongThamPhanView() {
               >
                 {filterExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 {filterExpanded ? "Thu gọn" : "Mở rộng"}
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => alert("Đang tìm kiếm đơn theo bộ lọc...")}
                 style={{
                   display: "flex",
@@ -532,9 +533,9 @@ export function PhanCongThamPhanView() {
                 }}
               >
                 <Search size={13} /> Tìm kiếm
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleResetFilters}
                 style={{
                   display: "flex",
@@ -551,7 +552,7 @@ export function PhanCongThamPhanView() {
                 }}
               >
                 <RotateCcw size={13} /> Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -577,7 +578,7 @@ export function PhanCongThamPhanView() {
             )}
 
             {activeTab === "chi-dinh" ? (
-              <button
+              <Button
                 onClick={handleBulkAssign}
                 style={{
                   padding: "7px 18px",
@@ -592,9 +593,9 @@ export function PhanCongThamPhanView() {
                 }}
               >
                 Phân công chỉ định ({selectedRowIds.length} đơn)
-              </button>
+              </Button>
             ) : activeTab === "ngau-nhien" ? (
-              <button
+              <Button
                 onClick={handleBulkAssign}
                 style={{
                   padding: "7px 18px",
@@ -609,10 +610,10 @@ export function PhanCongThamPhanView() {
                 }}
               >
                 Phân công ngẫu nhiên ({selectedRowIds.length} đơn)
-              </button>
+              </Button>
             ) : null}
 
-            <button
+            <Button
               onClick={() => window.print()}
               style={{
                 display: "flex",
@@ -630,9 +631,9 @@ export function PhanCongThamPhanView() {
               }}
             >
               <Printer size={14} /> In danh sách
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={handleDeleteSelected}
               style={{
                 display: "flex",
@@ -649,7 +650,7 @@ export function PhanCongThamPhanView() {
               }}
             >
               <RotateCcw size={13} /> Xóa
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -754,7 +755,7 @@ export function PhanCongThamPhanView() {
                           onClick={(e) => e.stopPropagation()}
                           style={{ ...TD_STYLE, fontFamily: F, borderRight: "none", verticalAlign: "top" }}
                         >
-                          <input
+                          <Input
                             placeholder="Nhập ghi chú"
                             value={r.ghiChu}
                             onChange={(e) => {
@@ -786,9 +787,9 @@ export function PhanCongThamPhanView() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: 15, color: RED }}>
                 <Users size={18} /> Danh sách Thẩm phán TAND thành phố Hà Nội
               </div>
-              <button onClick={() => setShowJudgeListModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
+              <Button onClick={() => setShowJudgeListModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED }}>
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             <div style={{ padding: 20, maxHeight: 400, overflowY: "auto" }}>
@@ -815,12 +816,12 @@ export function PhanCongThamPhanView() {
             </div>
 
             <div style={{ padding: "12px 20px", background: "#fafafa", borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "flex-end" }}>
-              <button
+              <Button
                 onClick={() => setShowJudgeListModal(false)}
                 style={{ padding: "7px 20px", border: `1px solid ${BORDER}`, background: "#fff", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600 }}
               >
                 Đóng
-              </button>
+              </Button>
             </div>
           </div>
         </div>

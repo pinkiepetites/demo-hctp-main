@@ -1,7 +1,8 @@
 import React from "react";
 import { Search, RotateCcw, ChevronUp, ChevronDown } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, getAnDacThuOptions, getThoiHieuOptions, type UserRoleType } from "./shared";
-import { LOAI_AN_OPTIONS, THAM_PHAN_TOA, THAM_TRA_VIEN_PHONG } from "./data";
+import { LOAI_AN_OPTIONS, THAM_PHAN_TOA, THAM_TRA_VIEN_PHONG } from "./data";import { Button, Input } from "antd";
+
 
 type FieldType = "input" | "select" | "date" | "dateRange";
 
@@ -154,18 +155,18 @@ export function SearchFilterPanel({
         </select>
       ) : type === "dateRange" ? (
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input
+          <Input
             type="date"
             style={{ ...inputStyle, flex: 1 }}
           />
           <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>đến</span>
-          <input
+          <Input
             type="date"
             style={{ ...inputStyle, flex: 1 }}
           />
         </div>
       ) : (
-        <input
+        <Input
           type={type === "date" ? "date" : "text"}
           placeholder={placeholder ?? label}
           style={inputStyle}
@@ -253,7 +254,7 @@ export function SearchFilterPanel({
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
-        <button
+        <Button
           onClick={onToggle}
           style={{
             display: "flex",
@@ -271,10 +272,10 @@ export function SearchFilterPanel({
         >
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           {expanded ? "Thu gọn" : "Mở rộng"}
-        </button>
+        </Button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button
+          <Button
             style={{
               display: "flex",
               alignItems: "center",
@@ -292,8 +293,8 @@ export function SearchFilterPanel({
           >
             <Search size={13} />
             Tìm kiếm
-          </button>
-          <button
+          </Button>
+          <Button
             style={{
               display: "flex",
               alignItems: "center",
@@ -310,7 +311,7 @@ export function SearchFilterPanel({
           >
             <RotateCcw size={13} />
             Xóa bộ lọc
-          </button>
+          </Button>
         </div>
       </div>
     </div>

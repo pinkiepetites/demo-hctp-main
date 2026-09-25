@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, FileText, Printer, Download, Eye, Trash2 } from "lucide-react";
-import { F, RED, BORDER, TEXT, MUTED } from "./shared";
+import { F, RED, BORDER, TEXT, MUTED } from "./shared";import { Button, Input } from "antd";
+
 import {
   DANH_SACH_THAM_PHAN,
   DANH_SACH_VIEN_KIEM_SAT,
@@ -100,37 +101,37 @@ export function XemBieuMauMS03({
       {/* Thanh trên nền tối */}
       <div style={{ background: "#222222", color: "#fff", padding: "10px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-          <button
+          <Button
             onClick={onClose}
             title="Đóng"
             style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 0, display: "flex" }}
           >
             <X size={18} />
-          </button>
+          </Button>
           <FileText size={17} />
           <span style={{ fontSize: 14, fontWeight: 700, fontFamily: F, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             Biểu mẫu: {tenBieuMau}
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <button
+          <Button
             onClick={() => window.alert("Chức năng xuất file Word chưa được đấu nối trong repo này.")}
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: "#1a73e8", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}
           >
             <Download size={14} /> Tải file Word (.docx)
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => window.print()}
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: "#fff", color: TEXT, border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}
           >
             <Printer size={14} /> In văn bản
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onClose}
             style={{ padding: "7px 20px", background: RED, color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
           >
             Đóng
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -337,9 +338,9 @@ export function QDThayDoiHDXXModal({
           <span style={{ fontSize: 15, fontWeight: 700, fontFamily: F }}>
             Thay đổi Thẩm phán, Hội thẩm, Thư ký trước khi mở phiên tòa (MS 03)
           </span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}>
+          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}>
             <X size={18} color={MUTED} />
-          </button>
+          </Button>
         </div>
 
         <div style={{ overflow: "auto", padding: "16px 22px", display: "flex", flexDirection: "column", gap: 20 }}>
@@ -377,15 +378,15 @@ export function QDThayDoiHDXXModal({
               </div>
               <div>
                 <label style={lbl}>Ngày quyết định</label>
-                <input type="date" value={ngayQD} onChange={e => setNgayQD(e.target.value)} placeholder="dd/mm/yyyy" style={inp} />
+                <Input type="date" value={ngayQD} onChange={e => setNgayQD(e.target.value)} placeholder="dd/mm/yyyy" style={inp} />
               </div>
               <div>
                 <label style={lbl}>Số quyết định <span style={{ fontWeight: 400, color: MUTED }}>(tự sinh)</span></label>
-                <input disabled value={soQD} style={inpDis} />
+                <Input disabled value={soQD} style={inpDis} />
               </div>
               <div>
                 <label style={lbl}>Căn cứ điều luật</label>
-                <input disabled value={canCu} style={inpDis} />
+                <Input disabled value={canCu} style={inpDis} />
               </div>
 
               <div style={{ gridColumn: "span 2" }}>
@@ -399,7 +400,7 @@ export function QDThayDoiHDXXModal({
               </div>
               <div style={{ gridColumn: "span 2" }}>
                 <label style={lbl}>Thay thế theo quyết định <span style={{ fontWeight: 400, color: MUTED }}>(tự hiển thị)</span></label>
-                <input disabled value={soQDHieuLuc || "–"} style={inpDis} />
+                <Input disabled value={soQDHieuLuc || "–"} style={inpDis} />
               </div>
 
               <div style={{ gridColumn: "span 4" }}>
@@ -429,7 +430,7 @@ export function QDThayDoiHDXXModal({
               </div>
               <div>
                 <label style={lbl}>Nơi nhận khác</label>
-                <input value={noiNhanKhac} onChange={e => setNoiNhanKhac(e.target.value)} placeholder="Nhập nơi nhận khác" style={inp} />
+                <Input value={noiNhanKhac} onChange={e => setNoiNhanKhac(e.target.value)} placeholder="Nhập nơi nhận khác" style={inp} />
               </div>
             </div>
           </div>
@@ -479,7 +480,7 @@ export function QDThayDoiHDXXModal({
                           </select>
                         </td>
                         <td style={{ ...TD, textAlign: "center" }}>
-                          <button
+                          <Button
                             disabled={!daChon}
                             onClick={() => setThayThe(prev => ({ ...prev, [i]: KHONG_THAY_DOI }))}
                             title={daChon ? "Bỏ chọn người thay thế" : "Chưa chọn người thay thế"}
@@ -495,7 +496,7 @@ export function QDThayDoiHDXXModal({
                             }}
                           >
                             <Trash2 size={14} />
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -518,25 +519,25 @@ export function QDThayDoiHDXXModal({
 
         {/* Nút */}
         <div style={{ padding: "14px 22px", borderTop: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 10 }}>
-          <button
+          <Button
             onClick={() => setXemBieuMau(true)}
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "#fff", color: "#1a5a96", border: "1px solid #a8cdf0", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: F }}
           >
             <Eye size={14} /> Xem biểu mẫu
-          </button>
+          </Button>
           <div style={{ flex: 1 }} />
-          <button
+          <Button
             onClick={onClose}
             style={{ padding: "8px 20px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 6, cursor: "pointer", fontSize: 12, fontFamily: F, color: TEXT }}
           >
             Hủy bỏ
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={luu}
             style={{ padding: "8px 24px", background: RED, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
           >
             Lưu quyết định
-          </button>
+          </Button>
         </div>
       </div>
     </div>

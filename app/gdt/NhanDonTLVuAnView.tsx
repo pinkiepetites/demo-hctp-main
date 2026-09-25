@@ -11,7 +11,8 @@ import {
 import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge, VuAnBtn, Tag, type UserRoleType } from "./shared";
 import { formatSoBA } from "./AppHelpers";
 import { getPartyLabels, isVu234, getQuanHePhapLuat } from "./App";
-import { SearchFilterPanel } from "./SearchFilterPanel";
+import { SearchFilterPanel } from "./SearchFilterPanel";import { Button, Input } from "antd";
+
 
 // ── Thông tin đơn cell ───────────────────────────────────────────────────────
 
@@ -333,7 +334,7 @@ function ActionBar({
       }}
     >
       <div style={{ flex: 1 }} />
-      <button
+      <Button
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "6px 14px", background: "#fff", color: RED,
@@ -342,9 +343,9 @@ function ActionBar({
         }}
       >
         ↩ Trả đơn
-      </button>
+      </Button>
       {tab === "da-co-vu-an" && (
-        <button
+        <Button
           onClick={onGiaoTieuHoSo}
           style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -354,9 +355,9 @@ function ActionBar({
           }}
         >
           ✓ Giao tiểu hồ sơ
-        </button>
+        </Button>
       )}
-      <button
+      <Button
         onClick={onInBaoCao}
         style={{
           display: "flex", alignItems: "center", gap: 6,
@@ -366,8 +367,8 @@ function ActionBar({
         }}
       >
         <Printer size={13} /> In báo cáo
-      </button>
-      <button
+      </Button>
+      <Button
         style={{
           display: "flex", alignItems: "center", justifyContent: "center",
           width: 30, height: 30, background: "#fff",
@@ -375,7 +376,7 @@ function ActionBar({
         }}
       >
         <RefreshCw size={13} color={MUTED} />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -460,7 +461,7 @@ function CaseTable({
         <thead>
           <tr>
             <th style={TH_STYLE}>
-              <input type="checkbox" />
+              <Input type="checkbox" />
             </th>
             <th style={TH_STYLE}>STT</th>
             <th style={TH_STYLE}>THÔNG TIN ĐƠN</th>
@@ -489,7 +490,7 @@ function CaseTable({
               }
             >
               <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                <input type="checkbox" />
+                <Input type="checkbox" />
               </td>
               <td style={{ ...TD_STYLE, textAlign: "center", color: MUTED, fontSize: 13, fontFamily: F }}>
                 {idx + 1}
@@ -526,7 +527,7 @@ function CaseTable({
                 </td>
               )}
               <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                <button
+                <Button
                   style={{
                     background: "none", border: "none", cursor: "pointer",
                     padding: 4, borderRadius: 4,
@@ -534,7 +535,7 @@ function CaseTable({
                   title="Xem chi tiết"
                 >
                   <Eye size={15} color="#666666" />
-                </button>
+                </Button>
               </td>
             </tr>
           ))}
@@ -551,9 +552,9 @@ function CaseTable({
       >
         <span>Hiển thị 1–{Math.min(cases.length, 10)} trong tổng {cases.length} bản ghi</span>
         <div style={{ flex: 1 }} />
-        <button style={paginBtn} disabled>‹</button>
-        <button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</button>
-        <button style={paginBtn}>›</button>
+        <Button style={paginBtn} disabled>‹</Button>
+        <Button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</Button>
+        <Button style={paginBtn}>›</Button>
         <select style={{ padding: "3px 8px", border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, fontSize: 12 }}>
           <option>10 / trang</option>
         </select>
@@ -634,7 +635,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
 
   const DateInputBox = ({ placeholder }: { placeholder: string }) => (
     <div style={{ position: "relative", display: "flex", alignItems: "center", width: "100%" }}>
-      <input
+      <Input
         type="text"
         placeholder={placeholder}
         style={{
@@ -673,7 +674,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
         {mainTabs.map((t) => {
           const active = activeTab === t.id;
           return (
-            <button
+            <Button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               style={{
@@ -691,7 +692,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
               }}
             >
               {t.label}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -703,11 +704,11 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
           <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: expanded ? 10 : 0 }}>
             <div>
               <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Người đứng đơn</div>
-              <input placeholder="Người gửi đơn" style={filterInputStyle} />
+              <Input placeholder="Người gửi đơn" style={filterInputStyle} />
             </div>
             <div>
               <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Số bản án/quyết định</div>
-              <input placeholder="Số bản án/quyết định" style={filterInputStyle} />
+              <Input placeholder="Số bản án/quyết định" style={filterInputStyle} />
             </div>
             <div>
               <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Ngày bản án/quyết định</div>
@@ -732,7 +733,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
             <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Số công văn chuyển</div>
-                <input placeholder="Số công văn chuyển" style={filterInputStyle} />
+                <Input placeholder="Số công văn chuyển" style={filterInputStyle} />
               </div>
               <div>
                 <div style={{ fontSize: 11, color: MUTED, marginBottom: 4 }}>Ngày công văn chuyển</div>
@@ -759,7 +760,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
 
           {/* Filter Footer Buttons */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 4 }}>
-            <button
+            <Button
               onClick={() => setExpanded((v) => !v)}
               style={{
                 display: "flex",
@@ -775,9 +776,9 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
               }}
             >
               {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />} {expanded ? "Thu gọn" : "Mở rộng"}
-            </button>
+            </Button>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button
+              <Button
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -794,8 +795,8 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                 }}
               >
                 <Search size={13} /> Tìm kiếm
-              </button>
-              <button
+              </Button>
+              <Button
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -811,7 +812,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                 }}
               >
                 <RotateCcw size={13} /> Xóa bộ lọc
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -819,7 +820,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
 
       {/* Action Buttons Bar Above Table */}
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 10, padding: "0 20px 10px", flexShrink: 0 }}>
-        <button
+        <Button
           style={{
             padding: "7px 22px",
             background: "#8b1a1a",
@@ -833,8 +834,8 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
           }}
         >
           Lưu
-        </button>
-        <button
+        </Button>
+        <Button
           style={{
             padding: "7px 18px",
             background: "#0088a9",
@@ -848,8 +849,8 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
           }}
         >
           In danh sách
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onClose}
           style={{
             padding: "7px 20px",
@@ -863,7 +864,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
           }}
         >
           Đóng
-        </button>
+        </Button>
       </div>
 
       {/* Table Container */}
@@ -991,7 +992,7 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                       </td>
                       <td style={TD_STYLE}>
                         <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                          <input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
+                          <Input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
                           <Calendar size={12} color="#888888" style={{ position: "absolute", right: 6, pointerEvents: "none" }} />
                         </div>
                       </td>
@@ -1005,12 +1006,12 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                       </td>
                       <td style={TD_STYLE}>
                         <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                          <input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
+                          <Input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
                           <Calendar size={12} color="#888888" style={{ position: "absolute", right: 6, pointerEvents: "none" }} />
                         </div>
                       </td>
                       <td style={TD_STYLE}>
-                        <input placeholder="Nhập ghi chú" style={cellInputStyle} />
+                        <Input placeholder="Nhập ghi chú" style={cellInputStyle} />
                       </td>
                     </>
                   ) : (
@@ -1031,12 +1032,12 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
                       </td>
                       <td style={TD_STYLE}>
                         <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                          <input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
+                          <Input placeholder="dd/mm/yyyy" style={{ ...cellInputStyle, paddingRight: 22 }} />
                           <Calendar size={12} color="#888888" style={{ position: "absolute", right: 6, pointerEvents: "none" }} />
                         </div>
                       </td>
                       <td style={TD_STYLE}>
-                        <input placeholder="Nhập ghi chú" style={cellInputStyle} />
+                        <Input placeholder="Nhập ghi chú" style={cellInputStyle} />
                       </td>
                     </>
                   )}
@@ -1049,11 +1050,11 @@ export function GiaoTieuHoSoView({ onClose, userRole }: { onClose: () => void; u
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", borderTop: `1px solid ${BORDER}`, background: "#fff", fontSize: 12, color: MUTED }}>
             <span>Hiển thị 1–{giaoCases.length} trong tổng {giaoCases.length} bản ghi</span>
             <div style={{ flex: 1 }} />
-            <button style={{ padding: "2px 7px", border: `1px solid ${BORDER}`, borderRadius: 4, background: "#fff", cursor: "pointer", fontSize: 11 }} disabled>‹</button>
+            <Button style={{ padding: "2px 7px", border: `1px solid ${BORDER}`, borderRadius: 4, background: "#fff", cursor: "pointer", fontSize: 11 }} disabled>‹</Button>
             <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 22, height: 22, borderRadius: "50%", border: "1px solid #8b1a1a", color: "#8b1a1a", fontSize: 12, fontWeight: 700 }}>
               1
             </span>
-            <button style={{ padding: "2px 7px", border: `1px solid ${BORDER}`, borderRadius: 4, background: "#fff", cursor: "pointer", fontSize: 11 }} disabled>›</button>
+            <Button style={{ padding: "2px 7px", border: `1px solid ${BORDER}`, borderRadius: 4, background: "#fff", cursor: "pointer", fontSize: 11 }} disabled>›</Button>
             <select style={{ padding: "2px 6px", border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, fontSize: 11, outline: "none" }}>
               <option>10 / trang</option>
             </select>
@@ -1098,7 +1099,7 @@ function TabBar({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const _count = countByTab(t.id as TabId, userRole);
         return (
-          <button
+          <Button
             key={t.id}
             onClick={() => onTabChange(t.id as TabId)}
             style={{
@@ -1111,7 +1112,7 @@ function TabBar({
             }}
           >
             {t.label}
-          </button>
+          </Button>
         );
       })}
     </div>

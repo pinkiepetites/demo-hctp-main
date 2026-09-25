@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
-import { Inbox, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
+import { Inbox, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";import { Button } from "antd";
+
 
 /** Kiểu tối thiểu mà khối chỉ số cần đọc — cố ý khai báo theo cấu trúc (structural)
  *  để nhận thẳng `DanhSachDonRow` của màn Danh sách đơn mà không tạo vòng import.
@@ -134,15 +135,15 @@ const phanTram = (n: number) => `${n.toFixed(1).replace(".", ",")}%`;
 
 // ─── Thành phần giao diện ────────────────────────────────────────────────────
 
-/** Ô chỉ số bấm được. Toàn bộ ô là một <button> để bấm đâu cũng vào, và để
+/** Ô chỉ số bấm được. Toàn bộ ô là một <Button> để bấm đâu cũng vào, và để
  *  di chuyển bằng bàn phím (Tab → Enter) vẫn dùng được. */
 const OChiSo = ({ nhan, giaTri, phuDe, icon, mauIcon, nenIcon, onClick, children }: {
   nhan: string; giaTri: number; phuDe?: React.ReactNode;
   icon: React.ReactNode; mauIcon: string; nenIcon: string;
   onClick?: () => void; children?: React.ReactNode;
 }) => (
-  <button
-    type="button"
+  <Button
+    htmlType="button"
     onClick={onClick}
     className="group text-left bg-white rounded-[10px] border border-[#eef1f4] p-4 shadow-sm hover:shadow-md hover:border-[#cbd5e1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] transition-all duration-200 flex flex-col"
   >
@@ -162,7 +163,7 @@ const OChiSo = ({ nhan, giaTri, phuDe, icon, mauIcon, nenIcon, onClick, children
     <span className="mt-auto pt-3 text-[11px] font-medium text-[#94a3b8] group-hover:text-[#3b82f6] flex items-center gap-1 transition-colors">
       Xem danh sách <ArrowRight size={11} />
     </span>
-  </button>
+  </Button>
 );
 
 export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaToi = false, onXemHieuSuat }: {
@@ -206,14 +207,14 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
             {toiLaAi && (
               <div className="flex items-center bg-surface-container-high rounded-[6px] p-1 border border-[#e2e8f0]">
                 {([["toi", "Của tôi"], ["phong", "Toàn phòng"]] as const).map(([gt, nhan]) => (
-                  <button key={gt} type="button" onClick={() => setPham(gt)}
+                  <Button key={gt} htmlType="button" onClick={() => setPham(gt)}
                     aria-pressed={pham === gt}
                     className={`px-3 py-1 text-[12px] font-medium rounded-[4px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] ${
                       pham === gt
                         ? "bg-white shadow-sm text-[#0f172a] border border-[#cbd5e1]"
                         : "text-[#64748b] hover:text-[#0f172a] border border-transparent"}`}>
                     {nhan}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -223,10 +224,10 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
               {cuaToi ? "Đơn do tôi nhập, chưa giải quyết xong" : "Toàn bộ đơn đang theo dõi"} · cập nhật theo thời gian thực
             </span>
             {onXemHieuSuat && (
-              <button type="button" onClick={onXemHieuSuat}
+              <Button htmlType="button" onClick={onXemHieuSuat}
                 className="text-[#3b82f6] text-[12px] font-medium hover:underline flex items-center gap-1">
                 Xem hiệu suất chi tiết <ArrowRight size={11} />
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -325,9 +326,9 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
 
         <div className="grid grid-cols-6 gap-3">
           {cs.theoTrangThai.map(t => (
-            <button
+            <Button
               key={t.nhan}
-              type="button"
+              htmlType="button"
               onClick={() => mo({ nhan: t.nhan, trangThai: t.nhan })}
               className="group text-left bg-white rounded-[10px] border border-[#eef1f4] p-3.5 shadow-sm hover:shadow-md hover:border-[#cbd5e1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] transition-all duration-200"
             >
@@ -341,7 +342,7 @@ export default function ChiSoTrangChu({ rows, onMoDanhSach, toiLaAi, macDinhCuaT
                 <span className="text-[22px] font-bold text-tertiary leading-none tracking-tight">{t.soLuong}</span>
                 <ArrowRight size={13} className="text-[#cbd5e1] group-hover:text-[#3b82f6] transition-colors mb-0.5" />
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       </div>

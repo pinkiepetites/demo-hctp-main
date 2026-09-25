@@ -4,7 +4,7 @@ import { CapSwitcherPill } from "./CapSwitcherPill";
 import { KhoiTaiKhoanChung } from "./KhoiTaiKhoanChung";
 import {
   Inbox, FolderOpen, Gavel, Users, Scale, MessageSquare, Clock, Mail, Settings,
-  LayoutList, FileText, List, Send, RefreshCw, Check
+  LayoutList, FileText, List, Send, RefreshCw, Check, Archive, ArrowLeftRight
 } from "lucide-react";
 import type { MenuProps } from "antd";
 
@@ -88,7 +88,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         label: "Quản lý án GĐT/TT",
         children: [
           { key: "gdt:don-cho-phe-duyet", label: "Nhận đơn và TL vụ án", icon: <Inbox size={15} /> },
-          { key: "gdt:ho-so-khang-nghi", label: "Hồ sơ kháng nghị", icon: <FolderOpen size={15} /> },
+          { key: "gdt:ho-so-khang-nghi", label: "Quản lý hồ sơ giao nhận", icon: <FolderOpen size={15} /> },
           { key: "gdt:quan-ly-vu-an", label: "Quản lý vụ án", icon: <Gavel size={15} /> },
           { key: "gdt:phan-cong-ttv", label: "Phân công Công chức nghiên cứu", icon: <Users size={15} /> },
           { key: "gdt:quan-ly-vu-xet-xu", label: "Quản lý vụ xét xử GĐT", icon: <Scale size={15} /> },
@@ -97,6 +97,17 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           { key: "gdt:an-thoi-hieu", label: "Án thời hiệu", icon: <Clock size={15} /> },
           { key: "gdt:cong-van-trao-doi", label: "Công văn trao đổi", icon: <Mail size={15} /> },
           { key: "gdt:cau-hinh-ttv", label: "Cấu hình Công chức nghiên cứu báo cáo", icon: <Settings size={15} /> },
+          {
+            key: "gdt_tu_hinh",
+            label: "Quản lý hồ sơ tử hình",
+            icon: <Archive size={15} />,
+            children: [
+              { key: "gdt:don-xin-an-giam", label: "Đơn xin ân giảm", icon: <FileText size={15} /> },
+              { key: "gdt:ho-so-tu-hinh", label: "Hồ sơ tử hình", icon: <FolderOpen size={15} /> },
+              { key: "gdt:chuyen-hinh-phat", label: "Chuyển hình phạt", icon: <ArrowLeftRight size={15} /> },
+              { key: "gdt:cau-hinh-chuyen-hinh-phat", label: "Cấu hình chuyển đổi", icon: <Settings size={15} /> },
+            ]
+          },
         ]
       });
     }
@@ -117,7 +128,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       icon: <Settings size={16} />,
       label: "Cấu hình chung",
       children: [
-        { key: "to_tham_phan", icon: <Users size={15} />, label: "Danh sách Ủy ban Thẩm phán" }
+        { key: "to_tham_phan", icon: <Users size={15} />, label: "Cấu hình Ủy ban Thẩm phán" }
       ]
     });
 

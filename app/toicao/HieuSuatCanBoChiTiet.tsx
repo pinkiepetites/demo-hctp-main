@@ -1,5 +1,6 @@
 import { ArrowLeft, Lock } from "lucide-react";
-import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";
+import { nguoiTheoVaiTro } from "./components/QuanLyVanBan";import { Button } from "antd";
+
 
 type TrangThaiCanBo = {
   name: string;
@@ -58,12 +59,12 @@ export default function HieuSuatCanBoChiTiet({ currentRole = "can-bo", onBack }:
   return (
     <div className="p-5 space-y-5 bg-[#f4f7f9] min-h-full font-sans">
       <div className="flex items-center justify-between">
-        <button
+        <Button
           onClick={onBack}
           className="flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0f172a] transition-colors"
         >
           <ArrowLeft size={16} /> Quay lại Trang chủ
-        </button>
+        </Button>
         {!xemDuocTatCa && (
           <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#92400e] bg-[#fffbeb] border border-[#f59e0b]/40 px-2.5 py-1 rounded-[4px]">
             <Lock size={12} /> Bạn chỉ xem được dữ liệu xử lý đơn của chính mình

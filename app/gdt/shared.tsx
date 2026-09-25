@@ -1,4 +1,5 @@
 import React from "react";
+import { Tag as AntTag, Button as AntButton } from "antd";
 import type { DonCase, VuAnAction } from "./data";
 
 // ── Bộ màu dùng chung ────────────────────────────────────────────────────────
@@ -28,17 +29,15 @@ export function Badge({
   children: React.ReactNode;
 }) {
   return (
-    <span
+    <AntTag
       style={{
-        display: "inline-flex", alignItems: "center",
-        padding: "2px 8px", borderRadius: 20,
+        color, borderColor: color, borderRadius: 20,
         fontSize: 11, fontWeight: 500, fontFamily: F,
-        color, background: bg, whiteSpace: "nowrap",
-        alignSelf: "flex-start",
+        background: bg,
       }}
     >
       {children}
-    </span>
+    </AntTag>
   );
 }
 
@@ -64,16 +63,16 @@ export function VuAnBtn({ action, onClick }: { action: VuAnAction; onClick?: () 
   };
   const s = map[action];
   return (
-    <button
+    <AntButton 
+      size="small"
       onClick={onClick}
       style={{
-        padding: "3px 10px", borderRadius: 4, fontSize: 11, fontWeight: 500,
-        color: s.color, background: s.bg, border: `1px solid ${s.border}`,
-        cursor: "pointer", fontFamily: F, whiteSpace: "nowrap",
+        color: s.color, backgroundColor: s.bg, borderColor: s.border,
+        fontWeight: 500, fontFamily: F,
       }}
     >
       {s.label}
-    </button>
+    </AntButton>
   );
 }
 

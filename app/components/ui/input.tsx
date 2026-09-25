@@ -1,10 +1,11 @@
 import * as React from "react";
 
 import { cn } from "./utils";
+import { Input } from "antd";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
-    <input
+    <Input
       type={type}
       data-slot="input"
       className={cn(

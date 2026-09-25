@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";import { Button, Input } from "antd";
+
 import { 
   X, ChevronDown, ChevronRight, AlertTriangle, MoreVertical,
   Check, Info, FileText, Save, Send, Printer, User, Edit, Trash2,
@@ -683,14 +684,14 @@ const PopupChanTrinhDuyet = ({ soDon, lyDo, onBoDon, onDong }: {
       </div>
 
       <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
-        <button onClick={onDong}
+        <Button onClick={onDong}
           className="px-5 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors">
           Đóng
-        </button>
-        <button onClick={onBoDon}
+        </Button>
+        <Button onClick={onBoDon}
           className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-error hover:bg-error-container rounded-[4px] transition-colors">
           <Trash2 size={14} /> Bỏ {soDon} đơn không hợp lệ
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -744,15 +745,15 @@ const PopupTrinhDuyetXong = ({ loaiVanBan, soVanBan, daLaySo, nguoiDuyet, nguoiK
 
       <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
         {onXem && (
-          <button onClick={onXem}
+          <Button onClick={onXem}
             className="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-tertiary bg-white border border-tertiary hover:bg-[#eef1f5] rounded-[4px] transition-colors">
             <FileText size={14} /> Xem văn bản đã trình
-          </button>
+          </Button>
         )}
-        <button onClick={onDong}
+        <Button onClick={onDong}
           className="px-6 py-2 text-[13px] font-semibold text-white bg-tertiary hover:bg-[#15223a] rounded-[4px] transition-colors">
           Đóng
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -781,14 +782,14 @@ const PopupTrinhDuyetLoi = ({ lyDo, onDong, onThuLai }: { lyDo?: string; onDong:
       )}
 
       <div className="flex justify-end gap-2 px-6 py-4 border-t border-surface-container-high bg-surface-bright">
-        <button onClick={onDong}
+        <Button onClick={onDong}
           className="px-5 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors">
           Đóng
-        </button>
-        <button onClick={onThuLai}
+        </Button>
+        <Button onClick={onThuLai}
           className="flex items-center gap-1.5 px-5 py-2 text-[13px] font-semibold text-white bg-error hover:bg-[#7a1717] rounded-[4px] transition-colors">
           <Send size={14} /> Thử lại
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -902,7 +903,7 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
   // Ô sửa được — trả JSX trực tiếp nên không bị mất focus khi gõ
   const edLine = (value: string, onChange: (v: string) => void, cls = "", w = "") =>
     editing ? (
-      <input value={value} onChange={e => onChange(e.target.value)}
+      <Input value={value} onChange={e => onChange(e.target.value)}
         className={`bg-[#f0f7ff] border-b border-dashed border-primary outline-none px-1 ${w} ${cls}`} />
     ) : (
       <span className={cls}>{value}</span>
@@ -1001,19 +1002,19 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
         <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
           <span className="text-[15px] font-bold">Biểu mẫu {loaiVanBan}</span>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={() => setEditing(e => !e)}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-[4px] transition-colors ${
                 editing ? "bg-[#27ae60] hover:bg-[#219653]" : "bg-white/15 hover:bg-white/25"}`}>
               {editing ? <><Check size={14} /> Xong</> : <><Edit size={14} /> Sửa thông tin</>}
-            </button>
-            <button onClick={() => window.print()}
+            </Button>
+            <Button onClick={() => window.print()}
               className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-[4px] bg-white/15 hover:bg-white/25 transition-colors">
               <Printer size={14} /> In
-            </button>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+            </Button>
+            <Button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors">
               <X size={18} />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -1028,13 +1029,13 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
           {/* Tab dọc */}
           <div className="w-[236px] flex-shrink-0 border-r border-surface-container bg-[#f7f9fb] py-2 overflow-y-auto">
             {danhSachTab.map((t, i) => (
-              <button key={t} onClick={() => setTab(i)}
+              <Button key={t} onClick={() => setTab(i)}
                 className={`w-full text-left px-4 py-2.5 text-[13px] leading-snug border-l-[3px] transition-colors ${
                   tab === i
                     ? "border-error bg-white text-error font-semibold"
                     : "border-transparent text-on-surface-variant hover:bg-[#eef1f5]"}`}>
                 {t}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -1422,23 +1423,23 @@ const ActionMenu = ({ onClose, onLaySo }: { onClose: () => void; onLaySo?: () =>
     <div ref={ref} className="absolute right-0 top-full mt-1 z-50 w-40 bg-white border border-surface-container shadow-lg py-1 rounded-[4px] text-on-surface">
       {onLaySo && (
         <>
-          <button onClick={() => { onLaySo(); onClose(); }}
+          <Button onClick={() => { onLaySo(); onClose(); }}
             className="w-full text-left px-3 py-1.5 text-[13px] font-medium text-tertiary hover:bg-[#eef1f5] flex items-center gap-2">
             <Save size={14} /> Lấy số
-          </button>
+          </Button>
           <div className="h-px bg-surface-container-high my-1" />
         </>
       )}
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
+      <Button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
         <Edit size={14} className="text-on-surface-variant"/> Sửa
-      </button>
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
+      </Button>
+      <Button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-surface-container-low flex items-center gap-2">
         <FileText size={14} className="text-on-surface-variant"/> Chi tiết
-      </button>
+      </Button>
       <div className="h-px bg-surface-container-high my-1" />
-      <button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#fdeaea] text-error flex items-center gap-2">
+      <Button onClick={onClose} className="w-full text-left px-3 py-1.5 text-[13px] hover:bg-[#fdeaea] text-error flex items-center gap-2">
         <Trash2 size={14} /> Xóa
-      </button>
+      </Button>
     </div>
   );
 };
@@ -1487,10 +1488,10 @@ const HangTaiLieu = ({
 
   const menu = (
     <div className="relative inline-block">
-      <button onClick={() => setShowMenu(!showMenu)}
+      <Button onClick={() => setShowMenu(!showMenu)}
         className="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
         <MoreVertical size={15} />
-      </button>
+      </Button>
       {showMenu && (
         <ActionMenu
           onClose={() => setShowMenu(false)}
@@ -1507,10 +1508,10 @@ const HangTaiLieu = ({
         <tr className={level === 0 ? "bg-[#eef1f5]" : "bg-[#f7f9fb]"}>
           <td colSpan={SO_COT} className={`border-b border-surface-container px-3 py-2 ${khongHopLe ? "bg-[#fdf3f2]" : ""}`}>
             <div className="flex items-center gap-2" style={{ paddingLeft: level * 22 }}>
-              <button onClick={() => onToggleExpand(node.id)}
+              <Button onClick={() => onToggleExpand(node.id)}
                 className="w-5 h-5 flex items-center justify-center text-on-surface-variant hover:bg-black/5 rounded flex-shrink-0">
                 {node.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-              </button>
+              </Button>
               <FileText size={14} className={`flex-shrink-0 ${level === 0 ? "text-error" : "text-primary"}`} />
               <span className={`${level === 0 ? "text-[13px] font-bold text-tertiary" : "text-[12.5px] font-semibold text-on-surface"}`}>
                 {node.name}
@@ -1621,12 +1622,12 @@ const DocumentTreeRow = ({
           style={{ paddingLeft: `${16 + level * 24}px` }}
         >
           {hasChildren ? (
-            <button 
+            <Button 
               onClick={() => onToggleExpand(node.id)}
               className="w-5 h-5 flex items-center justify-center mr-1 mt-0.5 text-on-surface-variant hover:bg-surface-container-high rounded flex-shrink-0"
             >
               {node.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            </button>
+            </Button>
           ) : (
             <div className="w-5 mr-1 flex-shrink-0" />
           )}
@@ -1709,12 +1710,12 @@ const DocumentTreeRow = ({
 
         {/* Actions Column */}
         <div className="w-12 px-3 flex justify-end relative py-2.5 flex-shrink-0">
-          <button 
+          <Button 
             onClick={() => setShowMenu(!showMenu)}
             className="w-7 h-7 flex items-center justify-center rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors"
           >
             <MoreVertical size={15} />
-          </button>
+          </Button>
           {showMenu && (
             <ActionMenu
               onClose={() => setShowMenu(false)}
@@ -1977,9 +1978,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             <h2 className="text-[16px] font-bold">Lưu số văn bản & In báo cáo</h2>
             {selectedRows && selectedRows.length > 0 && <p className="text-[12px] text-white/70 mt-0.5">Mã tài liệu gốc: {selectedRows.map(r => r.maDon).join(", ")}</p>}
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+          <Button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors">
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
 
@@ -2055,8 +2056,8 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 Văn bản đi kèm
               </NhanTruong>
               <div className="relative">
-                <button
-                  type="button"
+                <Button
+                  htmlType="button"
                   onClick={() => setOpenDiKem(o => !o)}
                   className={`${oNhapCls()} text-left flex items-center ${openDiKem ? "border-primary ring-2 ring-primary/15" : ""}`}>
                   <span className={`truncate ${vanBanDiKem.length ? "text-on-surface" : "text-outline"}`}>
@@ -2066,7 +2067,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                         ? vanBanDiKem[0]
                         : `Đã chọn ${vanBanDiKem.length} văn bản`}
                   </span>
-                </button>
+                </Button>
                 <ChevronDown size={14} className={`absolute right-2.5 top-[10px] pointer-events-none transition-transform ${
                   openDiKem ? "rotate-180 text-primary" : vanBanDiKem.length ? "text-on-surface-variant" : "text-surface-container-highest"}`} />
 
@@ -2074,7 +2075,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   <div className="absolute left-0 top-[38px] z-50 w-full min-w-[300px] bg-white border border-surface-container-highest rounded-[4px] shadow-lg py-1 max-h-[280px] overflow-y-auto">
                     {loaiDiKemChoPhep.map(v => (
                       <label key={v} className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-on-surface hover:bg-surface-container-low cursor-pointer">
-                        <input type="checkbox" className="w-[14px] h-[14px] accent-[#1d2e4f] flex-shrink-0"
+                        <Input type="checkbox" className="w-[14px] h-[14px] accent-[#1d2e4f] flex-shrink-0"
                           checked={vanBanDiKem.includes(v)}
                           onChange={e => setVanBanDiKem(prev =>
                             e.target.checked ? [...prev, v] : prev.filter(x => x !== v))} />
@@ -2084,10 +2085,10 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     {vanBanDiKem.length > 0 && (
                       <>
                         <div className="h-px bg-surface-container-high my-1" />
-                        <button type="button" onClick={() => setVanBanDiKem([])}
+                        <Button htmlType="button" onClick={() => setVanBanDiKem([])}
                           className="w-full text-left px-3 py-1.5 text-[12px] text-error hover:bg-[#fdeaea]">
                           Bỏ chọn tất cả
-                        </button>
+                        </Button>
                       </>
                     )}
                   </div>
@@ -2103,7 +2104,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 Ý kiến của từng người duyệt/ký giờ được ghi tại đúng bước của họ. */}
             <div className="col-span-12 md:col-span-6">
               <NhanTruong phu="(tuỳ chọn)">Ý kiến trình</NhanTruong>
-              <input
+              <Input
                 value={yKienDuyet}
                 onChange={e => setYKienDuyet(e.target.value)}
                 placeholder="Điều muốn lưu ý người duyệt…"
@@ -2123,14 +2124,14 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                   ? <span className="text-error font-medium">{countInvalidDocs(treeData)} đơn không hợp lệ</span>
                   : "tất cả đơn hợp lệ"}
               </span>
-              <button
-                type="button"
+              <Button
+                htmlType="button"
                 onClick={() => datMoTatCa(dangDongBot)}
                 title={dangDongBot ? "Mở toàn bộ cây tài liệu" : "Thu gọn toàn bộ cây tài liệu"}
                 className="inline-flex items-center gap-1 h-[24px] px-2 rounded-[3px] border border-surface-container bg-white text-[11px] font-medium text-on-surface-variant hover:bg-[#f2f5f8] hover:border-[#bbb] hover:text-primary transition-colors">
                 {dangDongBot ? <ChevronsDown size={12} /> : <ChevronsUp size={12} />}
                 {dangDongBot ? "Mở tất cả" : "Thu gọn tất cả"}
-              </button>
+              </Button>
             </div>
             <table className="w-full border-collapse">
               <thead>
@@ -2197,17 +2198,17 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
             </div>
             {/* Bỏ tất cả đơn không hợp lệ bằng 1 nút, thay vì xóa từng dòng */}
             {soDonKhongHopLe > 0 && (
-              <button
+              <Button
                 onClick={() => setTreeData(prev => validateTree(pruneInvalidDocs(prev), docType, trungMap))}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors whitespace-nowrap">
                 <Trash2 size={14} /> Bỏ {soDonKhongHopLe} đơn không hợp lệ
-              </button>
+              </Button>
             )}
           </div>
           <div className="flex items-center gap-3">
             {/* Lấy số chung cho toàn bộ văn bản trong danh sách */}
             {treeData.some(n => n.coTheLaySo) && (
-              <button
+              <Button
                 onClick={laySoTatCa}
                 disabled={soVanBanChuaLaySo === 0}
                 title={soVanBanChuaLaySo === 0 ? "Tất cả văn bản đã có số" : undefined}
@@ -2216,57 +2217,57 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                     ? "text-outline bg-surface-container-low border border-surface-container cursor-not-allowed"
                     : "text-white bg-tertiary hover:bg-[#15223a] shadow-sm"}`}>
                 <Save size={15} /> Lấy số tạm (tuỳ chọn)
-              </button>
+              </Button>
             )}
 
-            <button
+            <Button
               onClick={onClose}
               className="px-4 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container-low transition-colors"
             >
               Đóng
-            </button>
+            </Button>
 
             {(
-              <button
+              <Button
                 onClick={() => setShowBieuMau(true)}
                 className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-primary bg-white border border-primary rounded-[4px] hover:bg-[#f0f7ff] transition-colors">
                 <FileText size={15} /> Xem biểu mẫu
-              </button>
+              </Button>
             )}
 
             {/* Role-based action buttons */}
             {currentRole === "truong-phong" ? (
               <>
-                <button className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#27ae60] rounded-[4px] hover:bg-[#219653] transition-colors shadow-sm">
+                <Button className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white bg-[#27ae60] rounded-[4px] hover:bg-[#219653] transition-colors shadow-sm">
                   <Check size={15} /> Phê duyệt
-                </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
+                </Button>
+                <Button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
                   Từ chối
-                </button>
+                </Button>
               </>
             ) : currentRole === "pho-vp" || currentRole === "lanh-dao" ? (
               <>
                 {/* Ký số button styled like screenshot */}
-                <button
+                <Button
                   className="flex items-center gap-2 px-5 py-2 text-[13px] font-bold text-white rounded-[4px] transition-all shadow-md hover:opacity-90"
                   style={{ background: "linear-gradient(135deg, #e91e8c 0%, #c2185b 100%)" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                   Ký số
-                </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container transition-colors">
+                </Button>
+                <Button className="px-4 py-2 text-[13px] font-semibold text-on-surface-variant bg-white border border-surface-container-highest rounded-[4px] hover:bg-surface-container transition-colors">
                   Ký logic
-                </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
+                </Button>
+                <Button className="px-4 py-2 text-[13px] font-semibold text-error bg-white border border-error rounded-[4px] hover:bg-[#fdeaea] transition-colors">
                   Từ chối
-                </button>
-                <button className="px-4 py-2 text-[13px] font-semibold text-white bg-primary rounded-[4px] hover:bg-[#154a7a] transition-colors shadow-sm">
+                </Button>
+                <Button className="px-4 py-2 text-[13px] font-semibold text-white bg-primary rounded-[4px] hover:bg-[#154a7a] transition-colors shadow-sm">
                   Đồng ý
-                </button>
+                </Button>
               </>
             ) : (
               // Can bo: Luu & Trinh duyet — chặn khi chưa chọn Người duyệt / Người ký
-              <button
+              <Button
                 onClick={() => {
                   // Còn đơn không hợp lệ thì cảnh báo, không cho lưu
                   if (soDonKhongHopLe > 0) { setChanTrinhDuyet(true); return; }
@@ -2309,7 +2310,7 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
                 className={`flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold text-white rounded-[4px] transition-colors shadow-sm ${
                   thieuNguoiDuyetKy ? "bg-error/50 cursor-not-allowed" : "bg-error hover:bg-[#7a1717]"}`}>
                 <Send size={15} /> Trình duyệt
-              </button>
+              </Button>
             )}
           </div>
         </div>

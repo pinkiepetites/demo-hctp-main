@@ -29,7 +29,8 @@ import {
   type VuAnGroup,
   QuickViewDanhSachDonModal,
 } from "./QuanLyVuAnView";
-import { VuAnSearchFilterPanel } from "./VuAnSearchFilterPanel";
+import { VuAnSearchFilterPanel } from "./VuAnSearchFilterPanel";import { Button, Input } from "antd";
+
 
 const paginBtn: React.CSSProperties = {
   padding: "4px 10px",
@@ -103,7 +104,7 @@ export function QuanLyKhieuNaiView({
           {tabs.map((t) => {
             const active = t.id === activeTab;
             return (
-              <button
+              <Button
                 key={t.id}
                 onClick={() => setActiveTab(t.id)}
                 style={{
@@ -121,7 +122,7 @@ export function QuanLyKhieuNaiView({
                 }}
               >
                 {t.label}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -146,7 +147,7 @@ export function QuanLyKhieuNaiView({
         }}
       >
         <div style={{ flex: 1 }} />
-        <button
+        <Button
           onClick={() => alert("Mở form thêm mới khiếu nại")}
           style={{
             display: "flex",
@@ -164,9 +165,9 @@ export function QuanLyKhieuNaiView({
           }}
         >
           <Plus size={13} /> Thêm mới
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => window.print()}
           style={{
             display: "flex",
@@ -183,7 +184,7 @@ export function QuanLyKhieuNaiView({
           }}
         >
           <Printer size={13} /> In biểu đồ
-        </button>
+        </Button>
       </div>
 
       {/* Table Section */}
@@ -201,7 +202,7 @@ export function QuanLyKhieuNaiView({
           </colgroup>
           <thead>
             <tr>
-              <th style={TH_STYLE}><input type="checkbox" /></th>
+              <th style={TH_STYLE}><Input type="checkbox" /></th>
               <th style={TH_STYLE}>STT</th>
               <th style={TH_STYLE}>SỐ & NGÀY THỤ LÝ</th>
               <th style={TH_STYLE}>THÔNG TIN BẢN ÁN/QĐ & QHPL</th>
@@ -225,7 +226,7 @@ export function QuanLyKhieuNaiView({
                   >
                     {/* Checkbox */}
                     <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                      <input type="checkbox" />
+                      <Input type="checkbox" />
                     </td>
 
                     {/* STT */}
@@ -240,7 +241,7 @@ export function QuanLyKhieuNaiView({
                           Số: <b>{row.soThuLy}</b>
                         </span>
                         <span style={{ fontSize: 11, color: MUTED, fontFamily: F }}>Ngày TL: {row.ngayThuLy}</span>
-                        <button
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             setQuickViewDonGroup(group);
@@ -260,7 +261,7 @@ export function QuanLyKhieuNaiView({
                           title="Xem nhanh danh sách đơn và thông tin trình"
                         >
                           Số đơn {group.rows.length}
-                        </button>
+                        </Button>
                       </div>
                     </td>
 
@@ -384,7 +385,7 @@ export function QuanLyKhieuNaiView({
 
                     {/* Thao tác */}
                     <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                      <button
+                      <Button
                         onClick={() => onSelectKhieuNai(group.id)}
                         style={{
                           background: "none",
@@ -399,7 +400,7 @@ export function QuanLyKhieuNaiView({
                         title="Tùy chọn chi tiết"
                       >
                         ⋮
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 );
@@ -412,9 +413,9 @@ export function QuanLyKhieuNaiView({
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderTop: `1px solid ${BORDER}`, background: "#fff", fontSize: 12, color: MUTED, fontFamily: F }}>
           <span>Hiển thị 1–{filteredGroups.reduce((s, g) => s + g.rows.length, 0)} trong tổng {filteredGroups.reduce((s, g) => s + g.rows.length, 0)} bản ghi</span>
           <div style={{ flex: 1 }} />
-          <button style={paginBtn} disabled>‹</button>
-          <button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</button>
-          <button style={paginBtn}>›</button>
+          <Button style={paginBtn} disabled>‹</Button>
+          <Button style={{ ...paginBtn, background: RED, color: "#fff", border: `1px solid ${RED}` }}>1</Button>
+          <Button style={paginBtn}>›</Button>
           <select style={{ padding: "3px 8px", border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, fontSize: 12 }}><option>10 / trang</option></select>
         </div>
       </div>

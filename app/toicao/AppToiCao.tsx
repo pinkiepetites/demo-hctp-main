@@ -1,5 +1,7 @@
 import { KhoiTaiKhoanChung } from "../components/KhoiTaiKhoanChung";
 import { CapSwitcherPill } from "../components/CapSwitcherPill";
+import QuanLyAnGDTTT from "../gdt/App";
+import type { View as GdtView } from "../gdt/views";
 import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import { Input, Select, DatePicker, ConfigProvider, Radio, Checkbox, Space } from "antd";
 import dayjs from "dayjs";
@@ -19,6 +21,7 @@ import { AppSidebar } from "../components/AppSidebar";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import SoSanhLoaiAnChiTiet, { type KyBaoCao } from "./SoSanhLoaiAnChiTiet";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import CauHinhUyBanThamPhan from "../components/CauHinhUyBanThamPhan";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
@@ -1768,6 +1771,20 @@ const NHAN_VAI_TRO: Record<string, string> = {
   "chanh-an": "Chánh án / Phó Chánh án",
 };
 // Thứ tự hiện trong menu "Chuyển vai trò" của khối tài khoản
+
+const MENU_GDT: { nav: string; label: string; icon: React.ReactNode }[] = [
+  { nav: "gdt:don-cho-phe-duyet", label: "Nhận đơn và TL vụ án", icon: <Inbox size={13} /> },
+  { nav: "gdt:ho-so-khang-nghi", label: "Quản lý hồ sơ giao nhận", icon: <FolderOpen size={13} /> },
+  { nav: "gdt:quan-ly-vu-an", label: "Quản lý vụ án", icon: <Gavel size={13} /> },
+  { nav: "gdt:phan-cong-ttv", label: "Phân công Công chức nghiên cứu", icon: <Users size={13} /> },
+  { nav: "gdt:quan-ly-vu-xet-xu", label: "Quản lý vụ xét xử GĐT", icon: <Scale size={13} /> },
+  { nav: "gdt:quan-ly-khieu-nai", label: "Quản lý khiếu nại", icon: <MessageSquare size={13} /> },
+  { nav: "gdt:an-quoc-hoi", label: "Án quốc hội", icon: <Scale size={13} /> },
+  { nav: "gdt:an-thoi-hieu", label: "Án thời hiệu", icon: <Clock size={13} /> },
+  { nav: "gdt:cong-van-trao-doi", label: "Công văn trao đổi", icon: <Mail size={13} /> },
+  { nav: "gdt:cau-hinh-ttv", label: "Cấu hình Công chức nghiên cứu báo cáo", icon: <Settings size={13} /> },
+];
+
 const DS_VAI_TRO = ["can-bo", "truong-phong", "pho-vp", "lanh-dao", "chanh-an"] as const;
 const TAI_KHOAN = {
   hoTen: "Nguyễn Văn A",
@@ -1882,6 +1899,7 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", globalRoleKey, onD
 
   const [quanLyAnOpen, setQuanLyAnOpen] = useState(true);
   const [congTacLanhDaoOpen, setCongTacLanhDaoOpen] = useState(true);
+  const [cauHinhOpen, setCauHinhOpen] = useState(true);
 
   const SubItem = ({ icon, label, active, nav, badge }: { icon: React.ReactNode; label: string; active?: boolean; nav?: string; badge?: number }) => (
     <div onClick={() => nav && onNav?.(nav)}
@@ -1962,10 +1980,10 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", globalRoleKey, onD
             open={quanLyAnOpen} onToggle={() => setQuanLyAnOpen(!quanLyAnOpen)} />
           {quanLyAnOpen && (
             <div className="pb-1">
-              <SubItem icon={<Inbox size={13} />} label="Nhận đơn và TL vụ án"
-                active={activePage === "nhandon_tl"} nav="nhandon_tl" />
-              <SubItem icon={<Scale size={13} />} label="Cấu hình phân công TP"
-                active={activePage === "cauhinh_pctp"} nav="cauhinh_pctp" />
+              {MENU_GDT.map(m => (
+                <SubItem key={m.nav} icon={m.icon} label={m.label}
+                  active={activePage === m.nav} nav={m.nav} />
+              ))}
             </div>
           )}
         </div>
@@ -1991,9 +2009,15 @@ const Sidebar = ({ activePage, onNav, currentRole = "can-bo", globalRoleKey, onD
         )}
 
         {/* Cấu hình chung */}
-        <div className="flex items-center gap-2.5 px-3 py-[8px] cursor-pointer hover:bg-[#f5f5f5] transition-colors text-[13px] text-[#333]">
-          <Settings size={15} className="text-[#666]" />
-          <span>Cấu hình chung</span>
+        <div>
+          <GroupItem icon={<Settings size={15} />} label="Cấu hình chung"
+            open={cauHinhOpen} onToggle={() => setCauHinhOpen(!cauHinhOpen)} />
+          {cauHinhOpen && (
+            <div className="pb-1">
+              <SubItem icon={<Users size={13} />} label="Cấu hình Ủy ban Thẩm phán"
+                active={activePage === "to_tham_phan"} nav="to_tham_phan" />
+            </div>
+          )}
         </div>
 
 
@@ -13439,7 +13463,9 @@ export default function AppToiCao({
   const [isLienThongMode, setIsLienThongMode] = useState(false);
   const [activeDonLienThong, setActiveDonLienThong] = useState<DonTiepNhan | null>(null);
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong" | "gdt" | "to_tham_phan">(donChiTietTabMoi ? "form" : "list");
+  const [gdtView, setGdtView] = useState<GdtView>("don-cho-phe-duyet");
+  const [gdtNavSeq, setGdtNavSeq] = useState(0);
   const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
 
   // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
@@ -14073,7 +14099,15 @@ export default function AppToiCao({
       <div className="flex" style={{ height: "calc(100vh - 46px)" }}>
 
         {/* Sidebar */}
-        <Sidebar activePage={view} currentRole={currentRole} onNav={(page) => { setView(page as any); }}
+        <Sidebar activePage={view === "gdt" ? `gdt:${gdtView}` : view} currentRole={currentRole} onNav={(page) => {
+            if (page.startsWith("gdt:")) {
+              setGdtView(page.slice(4) as GdtView);
+              setGdtNavSeq(n => n + 1);
+              setView("gdt");
+              return;
+            }
+            setView(page as any);
+          }}
           onDoiVaiTro={(v) => {
             if (onDoiVaiTro) onDoiVaiTro(v);
             else setCurrentRole(v as any);
@@ -14115,6 +14149,8 @@ export default function AppToiCao({
                           <ChevronRight size={12} />
                           <span className="text-[#333]">Chỉnh sửa biểu mẫu</span>
                         </>
+                        : view === "to_tham_phan"
+                          ? <span className="text-[#333]">Cấu hình chung · Cấu hình Ủy ban Thẩm phán</span>
                         : view === "phancong"
                           ? <span className="text-[#333]">Phân công thẩm phán</span>
                           : view === "phe_duyet"
@@ -14270,6 +14306,14 @@ export default function AppToiCao({
           )}
 
           {/* Phân công thẩm phán view */}
+          {view === "gdt" && (
+            <div className="flex-1 overflow-hidden">
+              <QuanLyAnGDTTT view={gdtView} navSeq={gdtNavSeq} onNavigate={setGdtView} />
+            </div>
+          )}
+          {/* Cấu hình Ủy ban Thẩm phán — tối cao xem được Ủy ban của mọi tỉnh/thành */}
+          {view === "to_tham_phan" && <CauHinhUyBanThamPhan cap="toicao" />}
+
           {view === "phancong" && (
             <div className="flex-1 flex flex-col overflow-hidden">
               <PhanCongThamPhan initialTab={phanCongTab} currentRole={currentRole}
