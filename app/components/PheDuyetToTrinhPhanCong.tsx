@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X, Pencil, Ban, Check, MessageSquare, Save, UserRound, AlertCircle } from "lucide-react";
+import { X, Pencil, Ban, Check, MessageSquare, Save, UserRound, AlertCircle } from "lucide-react";import { Button, Input } from "antd";
+
 
 // GHI CHÚ CHO DEV:
 // Modal này bật lên khi Trưởng phòng/Chánh án ấn "Kiểm tra danh sách đơn" trong màn hình chi tiết Tờ trình.
@@ -225,9 +226,9 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
           <h2 className="text-[15px] font-bold">
             Kiểm tra & Phê duyệt Danh sách Đơn (Tờ trình phân công)
           </h2>
-          <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+          <Button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -262,7 +263,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                   <tr key={don.id} className={biTraLai ? "bg-[#fde8e8] opacity-70" : "hover:bg-[#f9f9f9]"}>
                     <td className="border border-[#ddd] px-3 py-2 align-top">
                       <div className="space-y-1.5">
-                        <button 
+                        <Button 
                           onClick={() => {
                             window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
                             onClose();
@@ -270,7 +271,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                           className="text-[#1a73e8] hover:text-[#1152a3] hover:underline font-medium text-[13px] transition-colors"
                         >
                           {don.id}
-                        </button>
+                        </Button>
                         <div className="text-[12px] text-[#333] leading-5">
                           <div><span className="text-[#666]">Tòa án: </span><span className="font-medium text-[#222]">{don.toaAn || don.nguoiGui}</span></div>
                           <div><span className="text-[#666]">Số BA/QĐ: </span><span>{don.soBA}</span></div>
@@ -321,17 +322,17 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                     </td>
                     <td className="border border-[#ddd] px-3 py-2 text-center align-top">
                       {!biTraLai && role === "chanh_an" && don.thamPhan?.trim() && (
-                        <button onClick={() => openAssignmentEditor(don)}
+                        <Button onClick={() => openAssignmentEditor(don)}
                           className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#e8f4ff]">
                           <Pencil size={13} /> Đổi thẩm phán
-                        </button>
+                        </Button>
                       )}
                       {!biTraLai && role === "chanh_an" && !don.thamPhan?.trim() && (
                         <div className="text-[11px] text-[#b45309]">Chưa có thẩm phán ban đầu</div>
                       )}
                       {!biTraLai && role === "truong_phong" && (
                         <div className="flex justify-center gap-2">
-                          <button 
+                          <Button 
                             onClick={() => {
                               window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
                               onClose();
@@ -340,23 +341,23 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                             className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white transition-colors hover:bg-[#e8f4ff]"
                           >
                             Sửa
-                          </button>
-                          <button 
+                          </Button>
+                          <Button 
                             onClick={() => setModalLyDo({ idDon: don.id, type: "tra_lai" })}
                             title="Trả lại riêng đơn này"
                             className="text-[#8b1a1a] hover:text-[#6e1414] flex items-center gap-1 text-[12px] border border-[#f5b7b7] px-2 py-1.5 rounded-[3px] bg-white transition-colors hover:bg-[#fde8e8]"
                           >
                             <Ban size={13} /> Trả lại
-                          </button>
+                          </Button>
                         </div>
                       )}
                       {role === "chanh_an" && (
-                        <button 
+                        <Button 
                           onClick={() => setModalLyDo({ idDon: don.id, type: "cho_y_kien" })}
                           className="text-[#6d28d9] hover:text-[#4c1d95] flex items-center gap-1.5 text-[12px] border border-[#d8b4fe] px-3 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#f3e8ff]"
                         >
                           <MessageSquare size={13} /> Cho ý kiến
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>
@@ -368,16 +369,16 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
         {/* Footer */}
         <div className="mt-auto border-t border-[#ddd] px-4 py-3 bg-[#f9f9f9] flex justify-end gap-3 rounded-b-[4px] shrink-0">
-          <button onClick={onClose} className="px-4 py-[6px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] transition-colors font-medium text-[#333]">
+          <Button onClick={onClose} className="px-4 py-[6px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] transition-colors font-medium text-[#333]">
             Đóng
-          </button>
-          <button 
+          </Button>
+          <Button 
             onClick={handleLuuToTrinh}
             className="px-4 py-[6px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] hover:bg-[#6e1414] transition-colors flex items-center gap-1.5 font-medium border border-[#6e1414]"
           >
             <Save size={14} /> 
             {role === "truong_phong" ? "Lưu & Cập nhật Tờ trình" : "Lưu ý kiến"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -392,7 +393,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
           <div className="bg-white rounded-[4px] w-[500px] shadow-2xl border border-[#bbb]">
             <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex justify-between items-center rounded-t-[4px]">
               <span className="text-[14px] font-semibold">Điều chỉnh thẩm phán — {editingAssignment}</span>
-              <button onClick={cancelAssignmentEditor} className="text-white/70 hover:text-white"><X size={16} /></button>
+              <Button onClick={cancelAssignmentEditor} className="text-white/70 hover:text-white"><X size={16} /></Button>
             </div>
             <div className="p-4">
               <div className="mb-3 rounded-[4px] border border-[#e5e5e5] bg-[#f8fafc] p-3">
@@ -408,7 +409,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                   ["bac3", "Thẩm phán bậc 3"],
                 ] as const).map(([value, label]) => (
                   <label key={value} className="flex items-center gap-1.5 text-[12px] text-[#444] cursor-pointer">
-                    <input type="radio" name="cap-tham-phan" checked={assignmentFilter === value}
+                    <Input type="radio" name="cap-tham-phan" checked={assignmentFilter === value}
                       onChange={() => setAssignmentFilter(value)} className="accent-[#8b1a1a]" />
                     <span className={assignmentFilter === value ? "font-semibold text-[#8b1a1a]" : ""}>{label}</span>
                   </label>
@@ -418,16 +419,16 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                 {filteredThamPhan.length === 0 ? (
                   <div className="p-4 text-center text-[12px] text-[#888]">Không có thẩm phán phù hợp.</div>
                 ) : filteredThamPhan.map(tp => (
-                  <button key={tp.hoTen} type="button" onClick={() => { setAssignmentDraft(tp.hoTen); setValidationError(""); }}
+                  <Button key={tp.hoTen} htmlType="button" onClick={() => { setAssignmentDraft(tp.hoTen); setValidationError(""); }}
                     className={`w-full flex items-center justify-between px-3 py-2 text-left border-b last:border-b-0 border-[#eee] hover:bg-[#eaf4ff] ${assignmentDraft === tp.hoTen ? "bg-[#eaf4ff] ring-1 ring-inset ring-[#1a73e8]" : "bg-white"}`}>
                     <span className="text-[13px] font-medium text-[#222]">{tp.hoTen}</span>
                     <span className="text-[11px] text-[#666]">{tp.chucDanh}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
-                <button onClick={cancelAssignmentEditor} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
-                <button onClick={saveAssignmentEditor} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">Lưu thay đổi</button>
+                <Button onClick={cancelAssignmentEditor} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</Button>
+                <Button onClick={saveAssignmentEditor} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">Lưu thay đổi</Button>
               </div>
             </div>
           </div>
@@ -442,7 +443,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
               <span className="text-[14px] font-semibold">
                 {modalLyDo.type === "tra_lai" ? `Trả lại đơn ${modalLyDo.idDon}` : `Cho ý kiến đối với đơn ${modalLyDo.idDon}`}
               </span>
-              <button onClick={() => setModalLyDo(null)} className="text-white/70 hover:text-white"><X size={16} /></button>
+              <Button onClick={() => setModalLyDo(null)} className="text-white/70 hover:text-white"><X size={16} /></Button>
             </div>
             <div className="p-4">
               <label className="block text-[13px] font-medium text-[#333] mb-2">
@@ -457,15 +458,15 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                 autoFocus
               />
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
-                <button onClick={() => setModalLyDo(null)} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
+                <Button onClick={() => setModalLyDo(null)} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</Button>
                 {modalLyDo.type === "cho_y_kien" && (
-                  <button onClick={handleGiaiQuyetSau} className="px-4 py-[5px] border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[13px] font-medium hover:bg-[#eaf4ff]">
+                  <Button onClick={handleGiaiQuyetSau} className="px-4 py-[5px] border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[13px] font-medium hover:bg-[#eaf4ff]">
                     Giải quyết sau
-                  </button>
+                  </Button>
                 )}
-                <button onClick={handleXacNhanLyDo} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">
+                <Button onClick={handleXacNhanLyDo} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">
                   Xác nhận
-                </button>
+                </Button>
               </div>
             </div>
           </div>

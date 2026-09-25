@@ -8,8 +8,9 @@ import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
-import { format, isAfter, isBefore, isSameDay } from "date-fns";
-type DonTrangThai = "cho-phan-loai" | "tra-lai";
+import { format, isAfter, isBefore, isSameDay } from "date-fns";import { Button, Input } from "antd";
+
+type DonTrangThai = "cho-xu-ly" | "tra-lai";
 
 interface DonTiepNhan {
   maDon: string;
@@ -38,7 +39,7 @@ const DON_SAMPLE: DonTiepNhan[] = [
     maDon: "001256", ngayTiepNhan: "19/08/2026 08:14", nguoiLamDon: "Nguyễn Văn Bình",
     hinhThucDon: "Đơn khiếu nại tố cáo trong tố tụng", loaiAn: "Hành chính", canBoPhanLoai: "Chưa phân công",
     donViTiepNhanGoiY: "Tòa Hành chính",
-    trangThai: "cho-phan-loai", nguon: "VBDH", coDonLienQuan: true,
+    trangThai: "cho-xu-ly", nguon: "VBDH", coDonLienQuan: true,
     donLienQuan: [
       { maDon: "001025", quanHe: "Trùng số/ngày BA, QĐ" },
       { maDon: "000876", quanHe: "Trùng người đứng đơn" },
@@ -49,21 +50,21 @@ const DON_SAMPLE: DonTiepNhan[] = [
     maDon: "DVTT-2026-00125", ngayTiepNhan: "18/08/2026 14:30", nguoiLamDon: "Trần Thị Lan",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Dân sự", canBoPhanLoai: "Chưa phân công",
     donViTiepNhanGoiY: "Phòng GĐKTTT và THA",
-    trangThai: "cho-phan-loai", nguon: "DVTT", coDonLienQuan: false,
+    trangThai: "cho-xu-ly", nguon: "DVTT", coDonLienQuan: false,
     dieuKienGoiY: { hopLe: false, lyDo: "Thiếu BA/QĐ có hiệu lực" }
   },
   {
     maDon: "001254", ngayTiepNhan: "18/08/2026 09:00", nguoiLamDon: "Lê Minh Tuấn",
     hinhThucDon: "Thông báo phát hiện vi phạm pháp luật", loaiAn: "Hình sự", canBoPhanLoai: "Phạm Quốc Hưng",
     donViTiepNhanGoiY: "Tòa Hình sự",
-    trangThai: "cho-phan-loai", nguon: "VBDH", coDonLienQuan: false,
+    trangThai: "cho-xu-ly", nguon: "VBDH", coDonLienQuan: false,
     dieuKienGoiY: { hopLe: true }
   },
   {
     maDon: "DVC-2026-00312", ngayTiepNhan: "17/08/2026 15:45", nguoiLamDon: "Vũ Thu Hà",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Lao động", canBoPhanLoai: "Nguyễn Hải Trâm",
     donViTiepNhanGoiY: "Phòng GĐKTTT và THA",
-    trangThai: "cho-phan-loai", nguon: "DVC", coDonLienQuan: true,
+    trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: true,
     donLienQuan: [{ maDon: "000921", quanHe: "Có yêu cầu bổ sung trước đó" }],
     dieuKienGoiY: { hopLe: true }
   },
@@ -77,21 +78,21 @@ const DON_SAMPLE: DonTiepNhan[] = [
     maDon: "001248", ngayTiepNhan: "15/08/2026 09:30", nguoiLamDon: "Hoàng Văn Nam",
     hinhThucDon: "CV chuyển đơn", loaiAn: "Hành chính", canBoPhanLoai: "Nguyễn Hải Trâm",
     donViTiepNhanGoiY: "Tòa Hành chính",
-    trangThai: "cho-phan-loai", nguon: "DVTT", coDonLienQuan: false,
+    trangThai: "cho-xu-ly", nguon: "DVTT", coDonLienQuan: false,
     dieuKienGoiY: { hopLe: false, lyDo: "Thiếu thông tin CCCD" }
   },
   {
     maDon: "001258", ngayTiepNhan: "19/08/2026 10:05", nguoiLamDon: "Đặng Bích Ngọc",
     hinhThucDon: "Đơn khác", loaiAn: "Dân sự", canBoPhanLoai: "Chưa phân công",
     donViTiepNhanGoiY: "Tòa Dân sự",
-    trangThai: "cho-phan-loai", nguon: "VBDH", coDonLienQuan: false,
+    trangThai: "cho-xu-ly", nguon: "VBDH", coDonLienQuan: false,
     dieuKienGoiY: { hopLe: true }
   },
   {
     maDon: "DVC-2026-00315", ngayTiepNhan: "19/08/2026 11:20", nguoiLamDon: "Võ Quang Huy",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoPhanLoai: "Trần Văn Minh",
     donViTiepNhanGoiY: "Phòng GĐKTTT và THA",
-    trangThai: "cho-phan-loai", nguon: "DVC", coDonLienQuan: false,
+    trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: false,
     dieuKienGoiY: { hopLe: true },
     soBaqd: "15/2025/KDTM-ST", ngayBaqd: "12/05/2025", toaXetXu: "TAND Quận Cầu Giấy"
   },
@@ -99,7 +100,7 @@ const DON_SAMPLE: DonTiepNhan[] = [
     maDon: "001260", ngayTiepNhan: "20/08/2026 08:30", nguoiLamDon: "Nguyễn Thị Phương",
     hinhThucDon: "CV chuyển kiến nghị GĐT-TT", loaiAn: "Lao động", canBoPhanLoai: "Chưa phân công",
     donViTiepNhanGoiY: "Phòng GĐKTTT và THA",
-    trangThai: "cho-phan-loai", nguon: "VBDH", coDonLienQuan: true,
+    trangThai: "cho-xu-ly", nguon: "VBDH", coDonLienQuan: true,
     donLienQuan: [{ maDon: "001250", quanHe: "Liên quan đến đơn của công ty TNHH ABC" }],
     dieuKienGoiY: { hopLe: true }
   },
@@ -107,15 +108,15 @@ const DON_SAMPLE: DonTiepNhan[] = [
     maDon: "001262", ngayTiepNhan: "20/08/2026 14:15", nguoiLamDon: "Lý Đức Trọng",
     hinhThucDon: "Tài liệu chứng cứ", loaiAn: "Hình sự", canBoPhanLoai: "Lê Thị Hoa",
     donViTiepNhanGoiY: "Tòa Hình sự",
-    trangThai: "cho-phan-loai", nguon: "DVTT", coDonLienQuan: true,
+    trangThai: "cho-xu-ly", nguon: "DVTT", coDonLienQuan: true,
     donLienQuan: [{ maDon: "001254", quanHe: "Tài liệu bổ sung cho vụ Lê Minh Tuấn" }],
     dieuKienGoiY: { hopLe: true }
   }
 ];
 
 const TRANG_THAI_META: Record<DonTrangThai, { label: string; cls: string }> = {
-  "cho-phan-loai": { label: "Chờ phân công", cls: "bg-[#fff4db] text-[#8b5e00] border-[#f5c842]" },
-  "tra-lai":       { label: "Trả lại",        cls: "bg-[#fdecea] text-error border-[#f5a3a3]" },
+  "cho-xu-ly": { label: "Chờ xử lý", cls: "bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]" },
+  "tra-lai": { label: "Trả lại", cls: "bg-[#fdecea] text-error border-[#f5a3a3]" },
 };
 
 const NGUON_META_LT: Record<DonNguon, { label: string; cls: string }> = {
@@ -158,6 +159,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   const [fLoaiAn, setFLoaiAn] = useState("");
   const [fCanBo, setFCanBo] = useState("");
   const [fTrangThai, setFTrangThai] = useState("");
+  const [fDieuKien, setFDieuKien] = useState("tat-ca");
 
   // Popup state
   const [chiTietPopup, setChiTietPopup] = useState<DonTiepNhan | null>(null);
@@ -173,15 +175,15 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   const [phanCongResult] = useState({ canBo: "Nguyễn Hải Trâm", tyLe: "18%", uuTien: "Có BA/QĐ liên quan đã được cán bộ xử lý" });
 
   const counts = useMemo(() => ({
-    "tat-ca":        DON_SAMPLE.length,
-    "cho-phan-loai": DON_SAMPLE.filter(d => d.trangThai === "cho-phan-loai").length,
-    "tra-lai":       DON_SAMPLE.filter(d => d.trangThai === "tra-lai").length,
+    "tat-ca": DON_SAMPLE.length,
+    "cho-xu-ly": DON_SAMPLE.filter(d => d.trangThai === "cho-xu-ly").length,
+    "tra-lai": DON_SAMPLE.filter(d => d.trangThai === "tra-lai").length,
   }), [refreshKey]);
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: "tat-ca",        label: `Tất cả (${counts["tat-ca"]})` },
-    { key: "cho-phan-loai", label: `Chờ phân loại (${counts["cho-phan-loai"]})` },
-    { key: "tra-lai",       label: `Trả lại (${counts["tra-lai"]})` },
+    { key: "tat-ca", label: `Tất cả (${counts["tat-ca"]})` },
+    { key: "cho-xu-ly", label: `Chờ xử lý (${counts["cho-xu-ly"]})` },
+    { key: "tra-lai", label: `Trả lại (${counts["tra-lai"]})` },
   ];
 
   const filtered = useMemo(() => {
@@ -194,10 +196,12 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       if (fCanBo && d.canBoPhanLoai !== fCanBo) return false;
       if (fTrangThai && d.trangThai !== fTrangThai) return false;
       if (fNguoiDon && !d.nguoiLamDon.toLowerCase().includes(fNguoiDon.toLowerCase())) return false;
+      if (fDieuKien === "du" && (!d.dieuKienGoiY || !d.dieuKienGoiY.hopLe)) return false;
+      if (fDieuKien === "chua-du" && d.dieuKienGoiY?.hopLe !== false) return false;
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoPhanLoai].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, refreshKey]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, fDieuKien, refreshKey]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -227,7 +231,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 <div className="text-[15px] font-bold text-tertiary">Chi tiết đơn: {chiTietPopup.maDon}</div>
                 <div className="text-[12px] text-on-surface-variant mt-0.5">Hình thức: {chiTietPopup.hinhThucDon}</div>
               </div>
-              <button onClick={() => setChiTietPopup(null)} className="text-outline hover:text-on-surface text-[20px]">×</button>
+              <Button onClick={() => setChiTietPopup(null)} className="text-outline hover:text-on-surface text-[20px]">×</Button>
             </div>
             <div className="flex-1 flex overflow-hidden">
               <div className="w-[280px] border-r border-surface-container-high flex flex-col bg-surface-bright">
@@ -278,7 +282,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[480px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Đơn liên quan</div>
-              <button onClick={() => setDonLienQuanPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setDonLienQuanPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4">
               <table className="w-full text-[12px] border-collapse">
@@ -307,7 +311,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[420px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Kết quả phân công</div>
-              <button onClick={() => setPhanCongAutoPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setPhanCongAutoPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div className="grid grid-cols-2 gap-2">
@@ -319,12 +323,12 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 Ưu tiên: {phanCongResult.uuTien}
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setPhanCongAutoPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => {
-                  setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-phan-loai" } : r));
+                <Button onClick={() => setPhanCongAutoPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => {
+                  setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-xu-ly" } : r));
                   setSelectedIds(new Set());
                   setPhanCongAutoPopup(null);
-                }} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân công</button>
+                }} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận phân công</Button>
               </div>
             </div>
           </div>
@@ -337,7 +341,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[380px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Chọn cán bộ tiếp nhận</div>
-              <button onClick={() => setPhanCongChiDinhPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setPhanCongChiDinhPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div>
@@ -352,8 +356,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 Tỷ lệ phân công hiện tại: Phạm Quốc Hưng 22% | Nguyễn Hải Trâm 18% | Trần Văn Minh 32% | Lê Thị Hoa 28%
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</button>
+                <Button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setPhanCongChiDinhPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</Button>
               </div>
             </div>
           </div>
@@ -366,7 +370,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[380px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Thay đổi phân công</div>
-              <button onClick={() => setThayDoiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setThayDoiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div className="text-on-surface-variant">Cán bộ hiện tại: <span className="font-semibold text-tertiary">{thayDoiPopup.canBoPhanLoai}</span></div>
@@ -379,8 +383,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                 </select>
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</button>
+                <Button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setThayDoiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận</Button>
               </div>
             </div>
           </div>
@@ -393,7 +397,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[440px] shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between">
               <div className="text-[13px] font-bold text-tertiary">Trả lại đơn</div>
-              <button onClick={() => setTraLaiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setTraLaiPopup(null)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
             <div className="p-4 space-y-3 text-[12px]">
               <div>
@@ -414,8 +418,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   className="w-full text-[12px] px-2 py-1.5 border border-surface-container rounded-[3px] focus:outline-none focus:border-error resize-none h-[64px]" />
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</button>
-                <button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận trả lại</button>
+                <Button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low">Hủy</Button>
+                <Button onClick={() => setTraLaiPopup(null)} className="h-[28px] px-4 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616]">Xác nhận trả lại</Button>
               </div>
             </div>
           </div>
@@ -430,16 +434,16 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
         </div>
         <div className="flex items-center gap-2">
           {isTruongPhong && (
-            <button onClick={() => setShowDanhSachCanBo(true)}
+            <Button onClick={() => setShowDanhSachCanBo(true)}
               className="h-[28px] px-3 border border-primary text-primary bg-white rounded-[3px] text-[11.5px] font-medium hover:bg-[#f0f6ff] transition-colors">
               Danh sách cán bộ
-            </button>
+            </Button>
           )}
 
-          <button onClick={() => setRefreshKey(k => k + 1)}
+          <Button onClick={() => setRefreshKey(k => k + 1)}
             className="h-[28px] px-3 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
             <RefreshCw size={11} /> Làm mới
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -448,9 +452,9 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="bg-white rounded-[4px] border border-surface-container w-[900px] h-[600px] shadow-xl flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between bg-[#fcfcfc] shrink-0">
               <div className="text-[13px] font-bold text-tertiary">Kiểm soát tải lượng cán bộ tiếp nhận</div>
-              <button onClick={() => setShowDanhSachCanBo(false)} className="text-outline hover:text-on-surface text-[16px]">×</button>
+              <Button onClick={() => setShowDanhSachCanBo(false)} className="text-outline hover:text-on-surface text-[16px]">×</Button>
             </div>
-            
+
             <div className="flex-1 flex min-h-0">
               {/* Left pane: Danh sách cán bộ */}
               <div className="w-[280px] border-r border-surface-container flex flex-col bg-surface-bright">
@@ -460,7 +464,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                     const count = assignmentCounts[cb] || 0;
                     const isSelected = selectedCanBoPopup === cb;
                     return (
-                      <div key={cb} 
+                      <div key={cb}
                         onClick={() => setSelectedCanBoPopup(cb)}
                         className={`px-3 py-2.5 border-b border-surface-container-high cursor-pointer flex justify-between items-center transition-colors
                           ${isSelected ? 'bg-info-container border-l-4 border-l-[#1a5a96]' : 'hover:bg-white border-l-4 border-l-transparent'}`}>
@@ -530,37 +534,53 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       {/* Tabs */}
       <div className="flex items-end border-b border-surface-container px-4 pt-0.5 gap-0 bg-white">
         {tabs.map(t => (
-          <button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
-            className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
-              activeTab === t.key
-                ? "border-error text-error"
-                : "border-transparent text-on-surface-variant hover:text-on-surface"
-            }`}>
+          <Button key={t.key} onClick={() => { setActiveTab(t.key); setSelectedIds(new Set()); }}
+            className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${activeTab === t.key
+              ? "border-error text-error"
+              : "border-transparent text-on-surface-variant hover:text-on-surface"
+              }`}>
             {t.label}
-          </button>
+          </Button>
         ))}
       </div>
 
       {/* Search bar */}
       <div className="px-4 py-2.5 border-b border-surface-container-high bg-surface-bright">
+        <div className="flex items-center gap-6 mb-2.5">
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "tat-ca"} onChange={() => setFDieuKien("tat-ca")} />
+            Tất cả
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "chua-du"} onChange={() => setFDieuKien("chua-du")} />
+            Đơn chưa đủ điều kiện
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
+            <Input type="radio" className="w-3.5 h-3.5 accent-[#8b1a1a]"
+              checked={fDieuKien === "du"} onChange={() => setFDieuKien("du")} />
+            Đơn đủ điều kiện
+          </label>
+        </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1 max-w-[420px]">
             <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-outline" />
-            <input value={search} onChange={e => setSearch(e.target.value)}
+            <Input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Tìm theo số đến, mã đơn, người làm đơn..."
               className="w-full h-[30px] pl-7 pr-2 text-[12px] border border-surface-container rounded-[3px] focus:outline-none focus:border-error" />
           </div>
-          <button onClick={() => setShowAdvanced(v => !v)}
+          <Button onClick={() => setShowAdvanced(v => !v)}
             className={`h-[30px] px-3 border rounded-[3px] text-[11.5px] transition-colors ${showAdvanced ? "border-error text-error bg-[#fdeaea]" : "border-surface-container text-on-surface-variant bg-white hover:bg-surface-container-low"}`}>
             Nâng cao
-          </button>
-          <button className="h-[30px] px-3 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] transition-colors">
+          </Button>
+          <Button className="h-[30px] px-3 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] transition-colors">
             Tìm kiếm
-          </button>
-          <button onClick={() => { setSearch(""); resetAdvanced(); }}
+          </Button>
+          <Button onClick={() => { setSearch(""); resetAdvanced(); }}
             className="h-[30px] px-3 border border-surface-container bg-white text-on-surface-variant rounded-[3px] text-[11.5px] hover:bg-surface-container-low transition-colors">
             Đặt lại
-          </button>
+          </Button>
         </div>
 
         {/* Advanced filter */}
@@ -568,13 +588,13 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <div className="mt-2.5 grid grid-cols-4 gap-2.5">
             {[
               { label: "Nguồn tiếp nhận", el: <select value={fNguon} onChange={e => setFNguon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option>VBDH</option><option>DVTT</option><option>DVC</option></select> },
-              { label: "Người đứng đơn", el: <input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" placeholder="Nhập tên..." /> },
-              { label: "Ngày tiếp nhận từ", el: <input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
-              { label: "Đến ngày", el: <input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
+              { label: "Người đứng đơn", el: <Input value={fNguoiDon} onChange={e => setFNguoiDon(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" placeholder="Nhập tên..." /> },
+              { label: "Ngày tiếp nhận từ", el: <Input type="date" value={fNgayTu} onChange={e => setFNgayTu(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
+              { label: "Đến ngày", el: <Input type="date" value={fNgayDen} onChange={e => setFNgayDen(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error" /> },
               { label: "Hình thức đơn", el: <select value={fHinhThuc} onChange={e => setFHinhThuc(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><optgroup label="— Đơn"><option value="Đơn đề nghị GĐT-TT">1. Đơn đề nghị GĐT-TT</option><option value="Đơn khiếu nại tố cáo trong tố tụng">2. Đơn khiếu nại tố cáo trong tố tụng</option><option value="Thông báo phát hiện vi phạm pháp luật">3. Thông báo phát hiện vi phạm pháp luật</option><option value="Đơn khác">4. Đơn khác</option></optgroup><optgroup label="— Công văn"><option value="CV kiến nghị GĐT-TT">1. CV kiến nghị GĐT-TT</option><option value="CV chuyển đơn">2. CV chuyển đơn</option><option value="CV chuyển kiến nghị GĐT-TT">3. CV chuyển kiến nghị GĐT-TT</option><option value="CV khác">4. CV khác</option></optgroup><optgroup label="— Tài liệu"><option value="Tài liệu chứng cứ">Tài liệu chứng cứ</option></optgroup></select> },
               { label: "Loại án", el: <select value={fLoaiAn} onChange={e => setFLoaiAn(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option>Hành chính</option><option>Dân sự</option><option>Hình sự</option><option>Lao động</option><option>Kinh doanh thương mại</option></select> },
               { label: "Cán bộ tiếp nhận", el: <select value={fCanBo} onChange={e => setFCanBo(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option>{CAN_BO_LIST_LT.map(cb => <option key={cb} value={cb}>{cb}</option>)}</select> },
-              { label: "Trạng thái (gợi ý)", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option value="cho-phan-loai">Chờ phân công</option><option value="cho-phan-loai">Đã phân công</option><option value="cho-phan-loai">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select> },
+              { label: "Trạng thái (gợi ý)", el: <select value={fTrangThai} onChange={e => setFTrangThai(e.target.value)} className="w-full h-[28px] px-2 border border-surface-container rounded-[3px] text-[11.5px] focus:outline-none focus:border-error"><option value="">Tất cả</option><option value="cho-xu-ly">Chờ phân công</option><option value="cho-xu-ly">Đã phân công</option><option value="cho-xu-ly">Chờ xử lý</option><option value="tra-lai">Trả lại</option></select> },
             ].map(({ label, el }) => (
               <div key={label}>
                 <div className="text-[10px] text-on-surface-variant mb-0.5">{label}</div>
@@ -586,27 +606,27 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       </div>
 
       {/* Xác nhận phân loại cho can-bo-phan-loai */}
-      {isCanBoPhanLoai && (activeTab === "tat-ca" || activeTab === "cho-phan-loai") && (
+      {isCanBoPhanLoai && (activeTab === "tat-ca" || activeTab === "cho-xu-ly") && (
         <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-surface-container bg-white">
-          <button onClick={() => {
+          <Button onClick={() => {
             if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân loại"); return; }
-            
+
             // Tìm các đơn GĐT
             const selectedRows = rows.filter(r => selectedIds.has(r.maDon));
             selectedRows.forEach(r => {
-              if (r.donViTiepNhanGoiY === "Phòng GĐKTTT và THA" || r.donViTiepNhanGoiY?.startsWith("Vụ Giám đốc kiểm tra")) {
-                 onPhanLoaiGDT?.({
-                    nguoiGui: r.nguoiLamDon,
-                    diaChi: "Chưa rõ",
-                    trichYeu: r.hinhThucDon,
-                    loaiVanBan: r.loaiAn,
-                    ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
-                    canBoTiepNhan: "Chờ xử lý",
-                    hinhThucTiepNhan: r.nguon,
-                    soBaqd: r.soBaqd,
-                    ngayBaqd: r.ngayBaqd,
-                    toaXetXu: r.toaXetXu
-                 });
+              if (r.donViTiepNhanGoiY === "Phòng GĐKTTT và THA") {
+                onPhanLoaiGDT?.({
+                  nguoiGui: r.nguoiLamDon,
+                  diaChi: "Chưa rõ",
+                  trichYeu: r.hinhThucDon,
+                  loaiVanBan: r.loaiAn,
+                  ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
+                  canBoTiepNhan: "Chờ xử lý",
+                  hinhThucTiepNhan: r.nguon,
+                  soBaqd: r.soBaqd,
+                  ngayBaqd: r.ngayBaqd,
+                  toaXetXu: r.toaXetXu
+                });
               }
             });
 
@@ -616,21 +636,21 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           }}
             className="h-[28px] px-3 bg-primary text-white rounded-[3px] text-[11.5px] font-medium hover:bg-primary-container transition-colors">
             Chuyển đơn
-          </button>
+          </Button>
         </div>
       )}
-      
-      {isTruongPhong && (activeTab === "cho-phan-loai" || activeTab === "cho-phan-loai") && (
+
+      {isTruongPhong && (activeTab === "cho-xu-ly") && (
         <div className="flex items-center justify-end gap-2 px-3 pb-2 pt-2 border-b border-surface-container bg-white">
-          <button onClick={() => {
+          <Button onClick={() => {
             if (selectedIds.size === 0) { alert("Vui lòng chọn ít nhất một đơn để phân công"); return; }
-            setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-phan-loai" } : r));
+            setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? { ...r, canBoPhanLoai: "Phạm Quốc Hưng", trangThai: "cho-xu-ly" } : r));
             setSelectedIds(new Set());
           }}
             className="h-[28px] px-3 bg-primary text-white rounded-[3px] text-[11.5px] font-medium hover:bg-primary-container transition-colors">
             Phân công tự động
-          </button>
-          
+          </Button>
+
           <select
             value=""
             onChange={(e) => {
@@ -640,7 +660,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               setRows(prev => prev.map(r => selectedIds.has(r.maDon) ? {
                 ...r,
                 canBoPhanLoai: val,
-                trangThai: "cho-phan-loai"
+                trangThai: "cho-xu-ly"
               } : r));
               setSelectedIds(new Set());
             }}
@@ -648,8 +668,8 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           >
             <option value="" disabled hidden>Phân công chỉ định...</option>
             {CAN_BO_LIST_LT.map(cb => {
-                const count = assignmentCounts[cb] || 0;
-                return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
+              const count = assignmentCounts[cb] || 0;
+              return <option key={cb} value={cb}>{cb} (Đang xử lý: {count})</option>
             })}
           </select>
         </div>
@@ -661,7 +681,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <thead>
             <tr className="bg-surface-container-low border-b border-surface-container">
               <th className="px-2.5 py-2 w-[32px]">
-                <input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0}
+                <Input type="checkbox" checked={selectedIds.size === filtered.length && filtered.length > 0}
                   onChange={toggleAll} className="cursor-pointer" />
               </th>
               {["STT", "Nguồn", "Mã đơn", "Ngày tiếp nhận", "Người làm đơn", "Hình thức đơn", "Loại án", "Trạng thái (gợi ý)", "Đơn vị tiếp nhận (gợi ý)", "Thao tác"].map(h => (
@@ -678,7 +698,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               return (
                 <tr key={don.maDon} className="border-b border-surface-container hover:bg-[#faf6f6]" onDoubleClick={() => setChiTietPopup(don)} title="Kích đúp để xem chi tiết">
                   <td className="px-2.5 py-2.5 text-center">
-                    <input type="checkbox" checked={selectedIds.has(don.maDon)} onChange={() => toggleSelect(don.maDon)} className="cursor-pointer" />
+                    <Input type="checkbox" checked={selectedIds.has(don.maDon)} onChange={() => toggleSelect(don.maDon)} className="cursor-pointer" />
                   </td>
                   <td className="px-2.5 py-2.5 text-center font-medium text-on-surface-variant">{idx + 1}</td>
                   <td className="px-2.5 py-2.5">
@@ -687,10 +707,10 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   <td className="px-2.5 py-2.5">
                     <div className="font-semibold text-primary">{don.maDon}</div>
                     {don.coDonLienQuan && (
-                      <button onClick={() => setDonLienQuanPopup(don)}
+                      <Button onClick={() => setDonLienQuanPopup(don)}
                         className="block mt-0.5 text-[9.5px] font-medium text-[#8b5e00] bg-[#fffbf0] border border-[#f5c842] rounded px-1.5 py-[1px] hover:bg-[#fff0bc] transition-colors cursor-pointer">
                         Có đơn liên quan
-                      </button>
+                      </Button>
                     )}
                   </td>
                   <td className="px-2.5 py-2.5 whitespace-nowrap text-on-surface-variant">{don.ngayTiepNhan}</td>
@@ -699,14 +719,14 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   <td className="px-2.5 py-2.5 text-on-surface-variant">{don.loaiAn}</td>
 
                   <td className="px-2.5 py-2.5">
-                    {don.trangThai === "cho-phan-loai" && don.dieuKienGoiY ? (
+                    {don.trangThai === "cho-xu-ly" && don.dieuKienGoiY ? (
                       <div className="flex flex-col gap-1 items-start">
-                         <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap w-fit ${don.dieuKienGoiY.hopLe ? 'bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]' : 'bg-[#fdecea] text-error border-[#f5a3a3]'}`}>
-                            {don.dieuKienGoiY.hopLe ? 'Đủ điều kiện' : 'Không đủ điều kiện'}
-                         </span>
-                         {!don.dieuKienGoiY.hopLe && don.dieuKienGoiY.lyDo && (
-                           <span className="text-[10px] text-error italic">{don.dieuKienGoiY.lyDo}</span>
-                         )}
+                        <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap w-fit ${don.dieuKienGoiY.hopLe ? 'bg-[#e8f5e9] text-[#1b5e20] border-[#81c784]' : 'bg-[#fdecea] text-error border-[#f5a3a3]'}`}>
+                          {don.dieuKienGoiY.hopLe ? 'Đủ điều kiện' : 'Không đủ điều kiện'}
+                        </span>
+                        {!don.dieuKienGoiY.hopLe && don.dieuKienGoiY.lyDo && (
+                          <span className="text-[10px] text-error italic">{don.dieuKienGoiY.lyDo}</span>
+                        )}
                       </div>
                     ) : (
                       <span className={`inline-flex items-center px-2 py-[2px] rounded-[10px] border text-[10.5px] font-semibold whitespace-nowrap ${sm.cls}`}>
@@ -726,10 +746,6 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                       >
                         <option value="">-- Chọn đơn vị --</option>
                         <option value="Phòng GĐKTTT và THA">Phòng GĐKTTT và THA</option>
-                        <option value="Vụ Giám đốc kiểm tra I">Vụ Giám đốc kiểm tra I</option>
-                        <option value="Vụ Giám đốc kiểm tra II">Vụ Giám đốc kiểm tra II</option>
-                        <option value="Vụ Giám đốc kiểm tra III">Vụ Giám đốc kiểm tra III</option>
-                        <option value="Vụ Giám đốc kiểm tra IV">Vụ Giám đốc kiểm tra IV</option>
                         <option value="Tòa Hình sự">Tòa Hình sự</option>
                         <option value="Tòa Dân sự">Tòa Dân sự</option>
                         <option value="Tòa Hành chính">Tòa Hành chính</option>
@@ -743,18 +759,18 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   </td>
                   <td className="px-2.5 py-2.5">
                     <div className="flex items-center gap-1.5 justify-center">
-                      <button
+                      <Button
                         onClick={(e) => { e.stopPropagation(); setChiTietPopup(don); }}
                         title="Chi tiết"
                         className="w-[24px] h-[24px] flex items-center justify-center border border-surface-container bg-white text-on-surface-variant hover:text-primary hover:border-primary hover:bg-[#f0f6ff] rounded-[3px] transition-colors">
                         <Eye size={13} />
-                      </button>
-                      
+                      </Button>
+
                       {isCanBoPhanLoai && (
-                        <button onClick={(e) => { 
-                          e.stopPropagation(); 
-                          
-                          if (don.donViTiepNhanGoiY === "Phòng GĐKTTT và THA" || don.donViTiepNhanGoiY?.startsWith("Vụ Giám đốc kiểm tra")) {
+                        <Button onClick={(e) => {
+                          e.stopPropagation();
+
+                          if (don.donViTiepNhanGoiY === "Phòng GĐKTTT và THA") {
                             onPhanLoaiGDT?.({
                               nguoiGui: don.nguoiLamDon,
                               diaChi: "Chưa rõ",
@@ -766,21 +782,21 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                             });
                           }
 
-                          setRows(prev => prev.filter(r => r.maDon !== don.maDon)); 
+                          setRows(prev => prev.filter(r => r.maDon !== don.maDon));
                           alert(`Đã chuyển đơn ${don.maDon} tới ${don.donViTiepNhanGoiY || "đơn vị khác"}.`);
                         }}
                           title="Xác nhận & Chuyển"
                           className="w-[24px] h-[24px] flex items-center justify-center border border-primary bg-info-container text-primary hover:bg-[#d2e3fc] rounded-[3px] transition-colors">
                           <Send size={11} />
-                        </button>
+                        </Button>
                       )}
 
                       {(!isCanBoPhanLoai || isChanhVP) && don.trangThai !== "tra-lai" && (
-                        <button onClick={(e) => { e.stopPropagation(); setTraLaiPopup(don); }}
+                        <Button onClick={(e) => { e.stopPropagation(); setTraLaiPopup(don); }}
                           title="Trả lại"
                           className="w-[24px] h-[24px] flex items-center justify-center border border-surface-container bg-white text-error hover:bg-[#fdeaea] rounded-[3px] transition-colors">
                           <CornerUpLeft size={13} />
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>
