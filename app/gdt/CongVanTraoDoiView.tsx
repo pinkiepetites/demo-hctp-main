@@ -2196,11 +2196,11 @@ export default function CongVanTraoDoiView({
     if (tab === "den" && r.loai !== "den") return false;
     if (tab === "di" && r.loai !== "di") return false;
     if (soCVFilter && !r.soCV.toLowerCase().includes(soCVFilter.toLowerCase())) return false;
-    if (donViNhanFilter && !r.donVi.toLowerCase().includes(donViNhanFilter.toLowerCase())) return false;
-    if (donViGuiFilter && !r.donVi.toLowerCase().includes(donViGuiFilter.toLowerCase())) return false;
+    if (donViNhanFilter && !(r.donVi || '').toLowerCase().includes(donViNhanFilter.toLowerCase())) return false;
+    if (donViGuiFilter && !(r.donVi || '').toLowerCase().includes(donViGuiFilter.toLowerCase())) return false;
     if (ttvFilter && !r.phanCong.toLowerCase().includes(ttvFilter.toLowerCase())) return false;
     if (search && !r.soCV.toLowerCase().includes(search.toLowerCase()) &&
-      !r.donVi.toLowerCase().includes(search.toLowerCase())) return false;
+      !(r.donVi || '').toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
