@@ -101,9 +101,17 @@ export const laSapDenHan = (r: DonChiSo, homNay: Date) => {
   return con >= 0 && con <= NGUONG_SAP_HET_HAN;
 };
 
-/** 6 trạng thái thụ lý. Màu lấy đúng bảng ở `docs/man-hinh-danh-sach-don.md` mục 5.2
+/** Trạng thái chờ Chánh/Phó Chánh văn phòng duyệt để cấp số thụ lý.
+ *  Ở Tòa cấp tỉnh, cán bộ tiếp nhận chỉ kết luận "đơn đủ điều kiện, thụ lý
+ *  mới" — số thụ lý KHÔNG cấp ngay tại bước đó mà đẩy sang tab
+ *  "Chờ duyệt thụ lý", duyệt xong mới cấp số. Nhờ vậy số luôn liên tục do
+ *  một chỗ cấp, không gõ tay rải rác ở nhiều popup. */
+export const CHO_DUYET_THU_LY = "Chờ duyệt thụ lý";
+
+/** 7 trạng thái thụ lý. Màu lấy đúng bảng ở `docs/man-hinh-danh-sach-don.md` mục 5.2
  *  để một trạng thái luôn cùng một màu ở mọi màn hình. */
 export const TRANG_THAI_THU_LY = [
+  { nhan: CHO_DUYET_THU_LY, mau: "#b45309" },
   { nhan: "Thụ lý mới", mau: "#27ae60" },
   { nhan: "Đã thụ lý", mau: "#1a5a96" },
   { nhan: "Chưa đủ điều kiện", mau: "#e67e22" },

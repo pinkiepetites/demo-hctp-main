@@ -1044,7 +1044,7 @@ export default function QuanLyVuAnView({
                                     {row.biCao && (
                                       <span style={{ fontSize: 11, fontFamily: F }}>
                                         <span style={{ color: TEXT, fontWeight: 500 }}>{label2}:</span>{" "}
-                                        <span style={{ fontWeight: 600, color: TEXT }}>{row.biCao}</span>
+                                        <span style={{ fontWeight: 600, color: TEXT }}>{row.biCao} ({group.maSo})</span>
                                       </span>
                                     )}
                                     {row.ndd && (
@@ -1206,7 +1206,7 @@ export default function QuanLyVuAnView({
                           {row.biCao && (
                             <span style={{ fontSize: 11, fontFamily: F }}>
                               <span style={{ color: TEXT, fontWeight: 600 }}>{label2}:</span>{" "}
-                              <span style={{ fontWeight: 600, color: TEXT }}>{row.biCao}</span>
+                              <span style={{ fontWeight: 600, color: TEXT }}>{row.biCao} ({group.maSo})</span>
                             </span>
                           )}
                           {row.ndd && (

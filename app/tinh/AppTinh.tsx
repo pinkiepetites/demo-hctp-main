@@ -9,23 +9,25 @@ import {
   Users, ArrowDownToLine, ArrowUpFromLine, Archive, Clock,
   Gavel, Scale, Settings, RefreshCw, Send, GitMerge, Check, Save, Pencil, ChevronLeft,
   Grid3X3, Moon,
-  AlertCircle, Bell, FilePlus, Loader2, Ban, Inbox, ArrowLeft, History as HistoryIcon
+  AlertCircle, Bell, FilePlus, Loader2, Ban, Inbox, ArrowLeft, BadgeCheck, History as HistoryIcon
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import { AppHeader } from "../components/AppHeader";
 import { AppSidebar } from "../components/AppSidebar";
 import QuanLyAnGDTTT from "../gdt/App";
 import type { View as GdtView } from "../gdt/views";
-import { daGiaiQuyetXong, laQuaHan, laSapDenHan, soNgayQuaHan, type BoLocTuTrangChu } from "./ChiSoTrangChu";
+import { daGiaiQuyetXong, laQuaHan, laSapDenHan, soNgayQuaHan, CHO_DUYET_THU_LY, type BoLocTuTrangChu } from "./ChiSoTrangChu";
+import { apDuyetThuLy, ghiDuyetThuLy } from "./duyetThuLyStore";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
 import TiepNhanDon from "./TiepNhanDon";
 import TiepNhanDonLienThong from "./components/TiepNhanDonLienThong";
 import CauHinhUyBanThamPhan from "../components/CauHinhUyBanThamPhan";
 import DocumentNumberingModal from "./components/DocumentNumberingModal";
+import { PhanCongThamPhanView } from "./PhanCongThamPhanView";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
-  laToTrinhPhanCong, luongToTrinhPhanCong,
+  laToTrinhPhanCong, luongToTrinhPhanCong, taoQuyetDinhPhanCong,
   PanelChiTiet, TienTrinhGon, dangChoXuLy,
   type VanBanTrinh, type BuocKy, type TrangThaiVB, type LocVanBanTuTrangChu,
 } from "./components/QuanLyVanBan";
@@ -2241,7 +2243,7 @@ const PopupThemDonTrung = ({ donGoc, onDong, onLuu }: {
   );
 };
 
-const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS, onChuyenDon, onHuySoThuLy, onThemKetQua, onPhanCong }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; onChuyenDon?: () => void; onHuySoThuLy?: () => void; onThemKetQua?: () => void; onPhanCong?: () => void; }) => {
+const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoYeuCau, onDonTrung, onThemYCBS, onChuyenDon, onHuySoThuLy, onThemKetQua, onDuyetThuLy }: { onClose: () => void; onGhepDon?: () => void; onViewDetail?: () => void; onEdit?: () => void; onBoSung?: () => void; onTaoYeuCau?: () => void; onDonTrung?: () => void; onThemYCBS?: () => void; onChuyenDon?: () => void; onHuySoThuLy?: () => void; onThemKetQua?: () => void; onDuyetThuLy?: () => void; }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -2253,7 +2255,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
   }, [onClose]);
 
   const items: { icon: React.ReactNode; label: string; red?: boolean; divider?: boolean; action?: string }[] = [
-    ...(onPhanCong ? [{ icon: <Users size={13} />, label: "Phân công cán bộ xử lý", action: "phancong" }] : []),
+    ...(onDuyetThuLy ? [{ icon: <BadgeCheck size={13} />, label: "Duyệt thụ lý & cấp số", action: "duyetthuly" }] : []),
     { icon: <PenLine size={13} />, label: "Sửa", action: "edit" },
     { icon: <Eye size={13} />, label: "Xem chi tiết", action: "view" },
     { icon: <FolderOpen size={13} />, label: "Xem hồ sơ đơn" },
@@ -2276,7 +2278,7 @@ const ActionMenu = ({ onClose, onGhepDon, onViewDetail, onEdit, onBoSung, onTaoY
       className="absolute right-0 top-full mt-1 z-50 bg-white border border-surface-container rounded-[4px] shadow-lg py-1 min-w-[190px]">
       {items.map((item, i) => (
         <Button key={i} onClick={() => {
-          if (item.action === "phancong") { onPhanCong?.(); }
+          if (item.action === "duyetthuly") { onDuyetThuLy?.(); }
           if (item.action === "ghep") { onGhepDon?.(); }
           if (item.action === "bosung") { onBoSung?.(); }
           if (item.action === "taoyeucau") { onTaoYeuCau?.(); }
@@ -2331,8 +2333,6 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
   const [thuLyDon, setThuLyDon] = useState("");
   const [lyDoKhongDu, setLyDoKhongDu] = useState("");
   const [lyDoKhongDuKhac, setLyDoKhongDuKhac] = useState("");
-  const [soThuLy, setSoThuLy] = useState("");
-  const [ngayThuLy, setNgayThuLy] = useState("");
 
   const handleConfirm = () => {
     if (!ketQuaXuLy) return;
@@ -2351,12 +2351,16 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
       if (trangThaiDon === "Đơn đủ điều kiện") {
         subDetails += ` | Thụ lý: ${thuLyDon}`;
         if (thuLyDon === "Thụ lý mới") {
-          subDetails += ` (Số TL: ${soThuLy}, Ngày TL: ${ngayThuLy ? ngayThuLy.split("-").reverse().join("/") : ""})`;
-          stl = soThuLy;
-          ngayThuLyVal = ngayThuLy ? ngayThuLy.split("-").reverse().join("/") : "";
+          // Ở Tòa cấp tỉnh, kết luận "Thụ lý mới" KHÔNG kèm cấp số. Đơn chuyển
+          // sang chờ Chánh/Phó Chánh văn phòng duyệt ở tab "Chờ duyệt thụ lý";
+          // duyệt xong mới cấp số thụ lý — xem `duyetThuLyCapSo`.
+          subDetails += " (chờ Chánh văn phòng duyệt cấp số thụ lý)";
+          statusText = CHO_DUYET_THU_LY;
+          statusColor = MAU_CHO_DUYET_THU_LY;
+        } else {
+          statusText = thuLyDon;
+          statusColor = thuLyDon === "Đã thụ lý" ? "#1a5a96" : "#e67e22";
         }
-        statusText = thuLyDon;
-        statusColor = thuLyDon === "Thụ lý mới" ? "#27ae60" : thuLyDon === "Đã thụ lý" ? "#1a5a96" : "#e67e22";
       } else if (trangThaiDon === "Đơn không đủ điều kiện") {
         const ldText = lyDoKhongDu === "Lý do khác" ? lyDoKhongDuKhac : lyDoKhongDu;
         subDetails += ` | Lý do: ${ldText}`;
@@ -2410,7 +2414,6 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
     !donViChuyenDen ||
     !trangThaiDon ||
     (trangThaiDon === "Đơn đủ điều kiện" && !thuLyDon) ||
-    (trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (!soThuLy || !ngayThuLy)) ||
     (trangThaiDon === "Đơn không đủ điều kiện" && (!lyDoKhongDu || (lyDoKhongDu === "Lý do khác" && !lyDoKhongDuKhac.trim())))
   );
 
@@ -2486,19 +2489,10 @@ const PopupThemKetQuaGiaiQuyet = ({ row, onClose, onConfirm }: { row: any, onClo
                     </select>
                   </div>
                   {thuLyDon === "Thụ lý mới" && (
-                    <>
-                      <div>
-                        <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Số thụ lý</label>
-                        <Input type="text" value={soThuLy} onChange={e => setSoThuLy(e.target.value)}
-                          placeholder="Nhập số thụ lý..."
-                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
-                      </div>
-                      <div>
-                        <label className="block text-[13px] text-on-surface mb-1.5"><span className="text-error mr-1">*</span>Ngày thụ lý</label>
-                        <Input type="date" value={ngayThuLy} onChange={e => setNgayThuLy(e.target.value)}
-                          className="w-full h-[38px] px-3 text-[13px] border rounded-[6px] outline-none transition-colors border-surface-container focus:border-primary" />
-                      </div>
-                    </>
+                    <div className="rounded-[6px] border border-surface-container bg-[#f8f9fa] px-3 py-2 text-[12px] leading-[1.5] text-on-surface-variant">
+                      Số thụ lý và ngày thụ lý do <span className="font-semibold text-on-surface">Chánh/Phó Chánh văn phòng</span> cấp khi duyệt.
+                      Đơn sẽ chuyển sang trạng thái <span className="font-semibold" style={{ color: MAU_CHO_DUYET_THU_LY }}>{CHO_DUYET_THU_LY}</span>.
+                    </div>
                   )}
                 </>
               )}
@@ -3607,7 +3601,7 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
   onClose: () => void;
   row?: DanhSachDonRow;
   /** Báo kết quả lần bổ sung mới nhất lên danh sách đơn. */
-  onLuu?: (ketQua: "du" | "chua_du") => void;
+  onLuu?: (ketQua: "du" | "chua_du", thuLyDon?: string) => void;
 }) => {
   const rong = {
     // Form thêm một lần tải tài liệu — mỗi lần chỉ chọn một loại tài liệu,
@@ -3621,8 +3615,6 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
     // Đủ điều kiện thì đi tiếp bước Thụ lý đơn — cùng logic với nhánh
     // "Trạng thái đơn = Đơn đủ điều kiện" ở màn Thêm mới đơn.
     thuLyDon: "",
-    soThuLy: "",
-    ngayThuLy: "",
     ghiChu: "",
   };
 
@@ -3674,15 +3666,13 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
   const thieuLyDo = f.ketQua === "chua_du" && !f.lyDoChuaDu;
   const thieuLyDoKhac = f.ketQua === "chua_du" && f.lyDoChuaDu === "Lý do khác" && !f.lyDoChuaDuKhac.trim();
   const thieuThuLy = f.ketQua === "du" && !f.thuLyDon;
-  const thieuSoThuLy = f.ketQua === "du" && f.thuLyDon === "Thụ lý mới" && !f.soThuLy.trim();
-  const thieuNgayThuLy = f.ketQua === "du" && f.thuLyDon === "Thụ lý mới" && !f.ngayThuLy;
   const thieu = danhSachBoSung.length === 0 || thieuLyDo || thieuLyDoKhac
-    || thieuThuLy || thieuSoThuLy || thieuNgayThuLy;
+    || thieuThuLy;
 
   const luu = () => {
     setDaBam(true);
     if (thieu) return;
-    onLuu?.(f.ketQua);
+    onLuu?.(f.ketQua, f.ketQua === "du" ? f.thuLyDon : undefined);
     onClose();
   };
 
@@ -3871,7 +3861,7 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
               "Trạng thái đơn = Đơn đủ điều kiện" ở màn Thêm mới đơn. */}
           {f.ketQua === "du" && (
             <div className="grid grid-cols-2 gap-4">
-              <div className={f.thuLyDon === "Thụ lý mới" ? "" : "col-span-2"}>
+              <div className="col-span-2">
                 <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Thụ lý đơn</label>
                 <div className="relative">
                   <select value={f.thuLyDon} onChange={e => dat("thuLyDon")(e.target.value)}
@@ -3886,18 +3876,10 @@ const PopupBoSungTaiLieu = ({ onClose, row, onLuu }: {
                 </div>
               </div>
               {f.thuLyDon === "Thụ lý mới" && (
-                <>
-                  <div>
-                    <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Số thụ lý</label>
-                    <Input value={f.soThuLy} onChange={e => dat("soThuLy")(e.target.value)}
-                      placeholder="Nhập số thụ lý" className={oNhap(thieuSoThuLy)} />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] font-medium text-on-surface mb-1"><Sao /> Ngày thụ lý</label>
-                    <Input type="date" value={f.ngayThuLy} onChange={e => dat("ngayThuLy")(e.target.value)}
-                      className={oNhap(thieuNgayThuLy)} />
-                  </div>
-                </>
+                <div className="col-span-2 rounded-[6px] border border-surface-container bg-[#f8f9fa] px-3 py-2 text-[12px] leading-[1.5] text-on-surface-variant">
+                  Số thụ lý và ngày thụ lý do <span className="font-semibold text-on-surface">Chánh/Phó Chánh văn phòng</span> cấp khi duyệt.
+                  Đơn sẽ chuyển sang trạng thái <span className="font-semibold" style={{ color: MAU_CHO_DUYET_THU_LY }}>{CHO_DUYET_THU_LY}</span>.
+                </div>
               )}
             </div>
           )}
@@ -4415,6 +4397,12 @@ const DON_VI_KHANG_NGHI = [
     noiNhan: "Tòa án nhân dân thành phố Hà Nội",
   },
 ];
+
+/** Màu của hai trạng thái thụ lý — khai báo TRƯỚC `SAMPLE_ROWS` vì dữ liệu mẫu
+ *  dùng luôn hai hằng này. Giữ một chỗ khai báo để một trạng thái luôn cùng
+ *  một màu ở mọi nơi ghi vào `giaiQuyet.color`. */
+const MAU_CHO_DUYET_THU_LY = "#b45309";
+const MAU_THU_LY_MOI = "#27ae60";
 
 // ─── Sample list data ────────────────────────────────────────────────────────
 const SAMPLE_ROWS: DanhSachDonRow[] = [
@@ -5076,6 +5064,83 @@ const SAMPLE_ROWS: DanhSachDonRow[] = [
       nguoiNhap: "Vũ Văn Yên", ngayNhap: ngayQD, gioNhap: "08:15:00",
     };
   }),
+
+  // ── Đơn chờ duyệt thụ lý — dữ liệu mẫu cho tab "Chờ duyệt thụ lý" của
+  // Chánh/Phó Chánh văn phòng. Điểm bắt buộc của nhóm này: CHƯA có `stl` và
+  // CHƯA có `ngayThuLy`, vì số thụ lý chỉ sinh ra ở bước duyệt
+  // (`duyetThuLyCapSo`). Nếu mock có sẵn số thụ lý thì số cấp mới sẽ không
+  // nối tiếp được với số lớn nhất đang có — mất đúng thứ cần demo.
+  // Số thụ lý lớn nhất trong dữ liệu mẫu hiện tại là 54682803 (nhóm hồ sơ
+  // kháng nghị), nên lần duyệt đầu tiên sẽ cấp từ 54682804 trở đi.
+  ...([
+    ["Mã 7051", "Nguyễn Thị Hồng Nhung", "Số 12, ngõ 178, phố Nguyễn Chí Thanh, Phường Liên Bảo Thanh, Quận Thanh Xuân, Thành phố Hà Nội",
+      "118/2025/DS-ST", "12/05/2025", "TAND khu vực 1 - Hà Nội", "Dân sự", "Nguyễn Văn Hiền (Thẩm phán)", "Bưu điện",
+      "21/09/2026", "10:12:00", "Vũ Văn Yên", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7052", "Công ty TNHH Đầu tư Phương Nam", "Số 45, đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
+      "207/2025/KDTM-ST", "03/06/2025", "TAND khu vực 3 - Hà Nội", "Kinh doanh thương mại", "Lê Thị Hoa (Thẩm phán)", "Trực tiếp",
+      "21/09/2026", "11:05:40", "Phùng Trâm Anh", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7053", "Viện trưởng Viện kiểm sát nhân dân tỉnh Bắc Ninh", "Số 9, phố Phạm Văn Bạch, Phường Võ Thị Sáu, Thành phố Bắc Ninh",
+      "31/2025/LĐ-ST", "22/04/2025", "TAND khu vực 5 - Hà Nội", "Lao động", "Nguyễn Minh An (Thẩm phán)", "Nội bộ",
+      "22/09/2026", "08:47:19", "Nguyễn Thị Lan", "Công văn đủ điều kiện — thụ lý mới"],
+    ["Mã 7054", "Trần Văn Hùng", "Số 78, đường Lê Lợi, Phường Nghĩa Đô, Quận Ba Đình, Thành phố Hà Nội",
+      "64/2024/HC-ST", "19/08/2024", "TAND khu vực 4 - Hà Nội", "Hành chính", "Đỗ Tất Thống (Thẩm phán)", "Bưu điện",
+      "22/09/2026", "14:21:03", "Vũ Văn Yên", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7055", "Bùi Thị Hồng Ngọc", "Ấp 3, xã Long Hòa, Thành phố Cần Thơ",
+      "15/2023/DS-ST", "15/11/2023", "TAND TP. Cần Thơ", "Dân sự", "Lê Thị Hoa (Thẩm phán)", "Trực tiếp",
+      "23/09/2026", "09:15:58", "Phùng Trâm Anh", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7056", "Uỷ ban nhân dân huyện Mộ Đức", "Số 1, đường Phan Đình Phùng, Thị trấn Mộ Đức, Tỉnh Nghệ An",
+      "09/2026/LĐ-ST", "11/08/2026", "TAND khu vực 2 - Hà Nội", "Lao động", "Nguyễn Văn Hiền (Thẩm phán)", "Nội bộ",
+      "23/09/2026", "16:02:11", "Nguyễn Minh An", "Đơn đủ điều kiện — thụ lý mới"],
+    // Công văn kiến nghị từ VKS tỉnh — kích hoạt nhánh "Công văn kiến nghị"
+    // trong mapper (màu + hình thức khác đơn đề nghị).
+    ["Mã 7057", "Viện trưởng Viện kiểm sát nhân dân tỉnh Nghệ An", "Số 1, đường Phan Chu Trinh, Phường Lê Mao, Thành phố Vinh, Tỉnh Nghệ An",
+      "12/2024/HS-ST", "17/04/2024", "TAND khu vực 2 - Hà Nội", "Hình sự", "Nguyễn Minh An (Thẩm phán)", "Nội bộ",
+      "24/09/2026", "10:44:52", "Nguyễn Thị Lan", "Công văn kiến nghị đủ điều kiện — thụ lý mới"],
+    ["Mã 7058", "Phạm Thị Ngọc Hân", "Số 34, ngõ 12, phố Nguyễn Thái Thọ, Phường Thanh Xuân Trung, Quận Thanh Xuân, Thành phố Hà Nội",
+      "77/2026/DS-ST", "28/02/2026", "TAND khu vực 6 - Hà Nội", "Dân sự", "Nguyễn Văn Hiền (Thẩm phán)", "Bưu điện",
+      "24/09/2026", "08:20:15", "Vũ Văn Yên", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7059", "Ủy ban nhân dân quận Hà Đông", "Số 1, đường Lê Văn Lương, Phường Hà Đông, Quận Hà Đông, Thành phố Hà Nội",
+      "45/2026/HC-ST", "05/06/2026", "TAND khu vực 3 - Hà Nội", "Hành chính", "Lê Thị Hoa (Thẩm phán)", "Trực tiếp",
+      "25/09/2026", "09:05:33", "Phùng Trâm Anh", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7060", "Viện trưởng Viện kiểm sát nhân dân huyện Thanh Oai", "Số 15, đường Lê Thanh Nghị, Thị trấn Thanh Oai, Thành phố Hà Nội",
+      "08/2026/LĐ-ST", "09/07/2026", "TAND khu vực 4 - Hà Nội", "Lao động", "Nguyễn Minh An (Thẩm phán)", "Nội bộ",
+      "25/09/2026", "11:37:26", "Nguyễn Thị Lan", "Công văn kiến nghị đủ điều kiện — thụ lý mới"],
+    ["Mã 7061", "Công ty Cổ phần Công nghệ Viễn Phát", "Tầng 12, tòa nhà Keangnam, số 72 phố Lê Văn Lương, Phường Mai Hưng, Thành phố Hà Nội",
+      "156/2025/KDTM-ST", "11/11/2025", "TAND khu vực 1 - Hà Nội", "Kinh doanh thương mại", "Lê Thị Hoa (Thẩm phán)", "Tiếp công dân",
+      "26/09/2026", "13:52:07", "Vũ Văn Yên", "Đơn đủ điều kiện — thụ lý mới"],
+    ["Mã 7062", "Hoàng Thị Ngọc Bích", "Số 7, ngõ 45, phố Nguyễn Khánh Toàn, Phường Liễu Giai, Quận Cầu Giấy, Thành phố Hà Nội",
+      "29/2026/HNGĐ-ST", "13/08/2026", "TAND khu vực 5 - Hà Nội", "Hôn nhân gia đình", "Nguyễn Văn Hiền (Thẩm phán)", "Bưu điện",
+      "28/09/2026", "15:18:44", "Phùng Trâm Anh", "Đơn đủ điều kiện — thụ lý mới"],
+  ] as const).map(([maDon, nguoiGui, diaChi, soBaqd, ngay, toaXetXu, loaiAn, thamPhan, htNhan, ngayNhap, gioNhap, nguoiNhap, ketLuan], i) => ({
+    id: 60 + i,
+    nguoiGui, diaChi, maDon,
+    // Công văn kiến nghị xen vào giữa các đơn đề nghị để cột "Loại hình thức"
+    // ở tab duyệt có đủ màu, đúng như tab Tổng số.
+    loaiHinhThuc: nguoiGui.startsWith("Viện trưởng") ? "Công văn kiến nghị" : "Đơn đề nghị",
+    loaiHinhThucColor: nguoiGui.startsWith("Viện trưởng") ? "#e67e22" : "#8b1a1a",
+    thongTinDon: {
+      soBaqd, ngay, toaXetXu,
+      thuTuc: "Giám đốc thẩm",
+      hinhThuc: nguoiGui.startsWith("Viện trưởng") ? "CV Kiến nghị GĐT, TT" : "Đơn đề nghị GĐT, TT",
+      soCV: "", ngayCV: "", loaiCV: "", donViGui: nguoiGui,
+      thamPhan,
+      // Chưa chuyển vụ chuyên môn nên chưa có "(Số: …)" — đúng thực tế đơn
+      // mới kết luận thụ lý, còn phải chờ Trưởng phòng phân công sau khi duyệt.
+      donViGiaiQuyet: "Tòa Dân sự",
+    },
+    daNhan: true, soDon: 1, hinhThucTiepNhan: htNhan,
+    giaiQuyet: { nhan: CHO_DUYET_THU_LY, color: MAU_CHO_DUYET_THU_LY, stl: "", coVanBan: false },
+    processingHistory: [
+      { date: ngayNhap, step: "Tiếp nhận hồ sơ", actor: "HCTP - Phòng tiếp nhận", note: "Đã kiểm tra tính hợp lệ" },
+      { date: ngayNhap, step: "Kết luận thụ lý", actor: nguoiNhap, note: ketLuan },
+    ],
+    loaiAn,
+    // false để đơn đang chờ duyệt không chen vào tab "Đơn của tôi" của cán bộ
+    // tiếp nhận — ở Tòa cấp tỉnh, việc chờ duyệt thuộc về Chánh/Phó Chánh VP.
+    cuaToi: false,
+    thoiHieu: "trong-han-1-nam" as ThoiHieuKey,
+    nguoiNhap, ngayNhap, gioNhap,
+  })),
 ];
 
 // ─── Bộ lọc Danh sách đơn: helper + luật nghiệp vụ ───────────────────────────
@@ -5142,6 +5207,7 @@ const LOAI_VAN_BAN_FILTER = [
   "Tờ trình khác",
   "Thông báo phân công TP",
   "Yêu cầu bổ sung",
+  "Biên bản giao nhận hồ sơ đơn",
 ];
 
 // Màn Danh sách đơn viết tắt cho gọn cột; dữ liệu gốc giữ nguyên chữ đầy đủ
@@ -5199,7 +5265,8 @@ const TAB_MATCH: ((r: DanhSachDonRow) => boolean)[] = [
   r => DA_THU_LY.includes(r.giaiQuyet?.nhan ?? ""),                                // Đơn Thụ lý
   r => r.giaiQuyet?.nhan === "Chưa đủ điều kiện",                                  // Chưa đủ điều kiện
   r => r.thoiHieu === "qua-3-nam" || r.thoiHieu === "qua-5-nam",                   // Hết thời hạn kháng nghị
-  r => ![...DA_THU_LY, "Chưa đủ điều kiện"].includes(r.giaiQuyet?.nhan ?? ""),     // Khác
+  // "Chờ duyệt thụ lý" có tab riêng nên không rơi vào "Khác".
+  r => ![...DA_THU_LY, "Chưa đủ điều kiện", CHO_DUYET_THU_LY].includes(r.giaiQuyet?.nhan ?? ""),  // Khác
   r => r.giaiQuyet?.nhan === "Trả lại đơn",                                       // Đơn trả lại
 ];
 
@@ -6442,8 +6509,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [dangPhanCongTP, setDangPhanCongTP] = useState(false);
   const [canBoDuocChon, setCanBoDuocChon] = useState("");
   const [selectedOfficer, setSelectedOfficer] = useState<string>("");
-  const [bulkAssignCb, setBulkAssignCb] = useState("");
-  const [draftAssignments, setDraftAssignments] = useState<Record<number, string>>({});
   /** Kết quả lần phân công vừa xong — giữ dạng có cấu trúc để dải thông báo hiện
    *  gọn một dòng, danh sách mã đơn chỉ bung ra khi người dùng muốn xem. */
   const [ketQuaPhanCong, setKetQuaPhanCong] = useState<{ canBo: string; maDons: string[] } | null>(null);
@@ -6452,7 +6517,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   // Danh sách đơn do App giữ khi được truyền xuống, để đơn vừa nhập ở màn Tiếp
   // nhận đơn hiện ngay tại đây và Trang chủ đếm cùng một tập. Không truyền thì
   // màn vẫn tự chạy độc lập với dữ liệu mẫu.
-  const [rowsNoiBo, setRowsNoiBo] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+  const [rowsNoiBo, setRowsNoiBo] = useState<DanhSachDonRow[]>(() => apDuyetThuLy(SAMPLE_ROWS));
   const rows = rowsData ?? rowsNoiBo;
   const setRows = setRowsData ?? setRowsNoiBo;
 
@@ -6564,7 +6629,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   };
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [showGhepDon, setShowGhepDon] = useState<number | null>(null);
-  const [showPhanCong, setShowPhanCong] = useState<number | number[] | null>(null);
   const [ghepDonChinh, setGhepDonChinh] = useState<number | null>(null);
   const [ghepSelected, setGhepSelected] = useState<GhepRow[]>([]);
   const [showTraLai, setShowTraLai] = useState(false);
@@ -6664,6 +6728,58 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
   const [fLoaiAn, setFLoaiAn] = useState("");
 
   const canReturn = selectedRows.length > 0;
+
+  /** Duyệt thụ lý + cấp số thụ lý cho một hoặc nhiều đơn — bước duyệt DUY NHẤT
+   *  được ghi số thụ lý ở Tòa cấp tỉnh. Cán bộ tiếp nhận chỉ kết luận đơn đủ
+   *  điều kiện rồi đẩy sang trạng thái "Chờ duyệt thụ lý"; số do Chánh/Phó Chánh
+   *  văn phòng cấp ở đây, nên số luôn liên tục và không trùng vì cấp từ số lớn
+   *  nhất đang có trong danh sách rồi đếm lên.
+   *  Dùng chung cho cả duyệt hàng loạt (tick nhiều dòng) và duyệt từng dòng
+   *  (menu ···) nên hai đường không thể lệch nhau. */
+  const duyetThuLyCapSo = (ids: number[]) => {
+    const choDuyet = ids.filter(id =>
+      rows.some(r => r.id === id && r.giaiQuyet?.nhan === CHO_DUYET_THU_LY));
+    if (choDuyet.length === 0) {
+      triggerNoti("Không có đơn nào đang chờ duyệt thụ lý.");
+      return;
+    }
+    const homNay = new Date().toLocaleDateString("vi-VN");
+    let so = rows.reduce((m, r) => {
+      const n = parseInt((r.giaiQuyet?.stl ?? "").replace(/\D/g, ""), 10);
+      return Number.isFinite(n) ? Math.max(m, n) : m;
+    }, 0);
+    // Cấp trước ra bảng id → số để trong một lần setRows, không phụ thuộc thứ tự
+    // map và không tính lại từ dữ liệu đã cập nhật dở.
+    const capSo = new Map<number, string>();
+    choDuyet.forEach(id => { so += 1; capSo.set(id, String(so)); });
+
+    // Số thụ lý chỉ sinh ra ở đúng bước này, nên phải ghi lại — không thì F5 là mất
+    // và lần duyệt sau sẽ cấp lại số cũ. Mảng trả về là nguồn DUY NHẤT cho cả
+    // cập nhật trên màn lẫn giá trị vẽ lại sau khi tải, không chép lần hai.
+    const banGhi = ghiDuyetThuLy(Object.fromEntries(choDuyet.map(id => [id, {
+      nhan: "Thụ lý mới",
+      color: MAU_THU_LY_MOI,
+      soThuLy: capSo.get(id)!,
+      ngayThuLy: homNay,
+      mocLichSu: { date: homNay, step: "Duyệt thụ lý & cấp số", actor: "Chánh văn phòng", note: `Cấp số thụ lý ${capSo.get(id)}` },
+    }])));
+
+    setRows(prev => prev.map(r => {
+      const b = banGhi[r.id];
+      if (!b) return r;
+      return {
+        ...r,
+        giaiQuyet: { ...r.giaiQuyet, nhan: b.nhan, color: b.color, stl: b.soThuLy, ngayThuLy: b.ngayThuLy },
+        processingHistory: [...(r.processingHistory ?? []), b.mocLichSu],
+      };
+    }));
+    setSelectedRows([]);
+    const dau = capSo.get(choDuyet[0]);
+    const cuoi = capSo.get(choDuyet[choDuyet.length - 1]);
+    triggerNoti(choDuyet.length === 1
+      ? `Đã duyệt 1 đơn — cấp số thụ lý ${dau}.`
+      : `Đã duyệt ${choDuyet.length} đơn — cấp số thụ lý ${dau} … ${cuoi}.`);
+  };
 
   const toggleRow = (id: number) =>
     setSelectedRows(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -6780,11 +6896,22 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     fNgayNhapFrom, fNgayNhapTo, fHinhThuc, fHinhThucNhan, fLoaiAn, fNguoiNhap,
     fNoiChuyen, fThuLy, fNgayBAFrom, fNgayBATo, fTrangThai, boLocTrangChu, homNayQuaHan]);
 
+  /** Đang ở tab duyệt của Chánh/Phó Chánh văn phòng không? Ở vai trò đó, tab 1
+   *  đổi từ "Đơn của tôi" thành "Chờ duyệt thụ lý". */
+  const laTabDuyetThuLy = currentRole === "pho-vp";
+
+  /** Tab 1 xét theo trạng thái chờ duyệt, không theo phân công cán bộ. Ở Tòa cấp
+   *  tỉnh, cán bộ tiếp nhận chỉ kết luận "Thụ lý mới" rồi đẩy đơn sang đây; số
+   *  thụ lý do Chánh/Phó Chánh văn phòng cấp sau khi duyệt. */
+  const filterTab1 = laTabDuyetThuLy
+    ? (r: DanhSachDonRow) => r.giaiQuyet?.nhan === CHO_DUYET_THU_LY
+    : TAB_MATCH[1];
+
   // Đơn của tab hiện tại, CHƯA áp bộ lọc tiến độ — ba con số trên dải nút phải
   // đếm ở đây, nếu đếm sau khi lọc thì bấm "Đã giải quyết" là hai nút kia về 0.
   const rowsTheoTab = useMemo(
-    () => rowsByFilters.filter(activeTab === 1 && currentRole === "pho-vp" ? (r) => r.giaiQuyet?.nhan === "Chờ phân công" || r.giaiQuyet?.nhan === "Chờ xử lý" : (TAB_MATCH[activeTab] ?? (() => true))),
-    [rowsByFilters, activeTab, currentRole]);
+    () => rowsByFilters.filter(activeTab === 1 ? filterTab1 : (TAB_MATCH[activeTab] ?? (() => true))),
+    [rowsByFilters, activeTab, filterTab1]);
 
   const rowsTheoTienDo = useMemo(() => {
     const daXong = rowsTheoTab.filter(daGiaiQuyetXong).length;
@@ -6805,13 +6932,9 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     () => filteredRows.reduce((s, r) => s + (r.soDon ?? 0), 0),
     [filteredRows]);
 
-  const filterTab1 = currentRole === "pho-vp"
-    ? (r: DanhSachDonRow) => r.giaiQuyet?.nhan === "Chờ phân công" || r.giaiQuyet?.nhan === "Chờ xử lý"
-    : TAB_MATCH[1];
-
   const tabs = [
     { label: "Tổng số", count: rowsByFilters.length },
-    { label: currentRole === "pho-vp" ? "Đơn chờ phân công" : "Đơn của tôi", count: rowsByFilters.filter(filterTab1).length },
+    { label: laTabDuyetThuLy ? CHO_DUYET_THU_LY : "Đơn của tôi", count: rowsByFilters.filter(filterTab1).length },
     { label: "Đơn Thụ lý", count: rowsByFilters.filter(TAB_MATCH[2]).length },
     { label: "Chưa đủ điều kiện", count: rowsByFilters.filter(TAB_MATCH[3]).length },
     { label: "Hết thời hạn kháng nghị", count: rowsByFilters.filter(TAB_MATCH[4]).length },
@@ -6932,8 +7055,17 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
     <div className="bg-[#eef1f5] min-h-full">
       <div className="p-3 space-y-3">
 
-        {/* Title */}
-        <h2 className="text-[15px] font-semibold text-on-surface">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
+        {/* Title & Actions */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-on-surface">{khangNghi ? "Hồ sơ kháng nghị" : "Danh sách đơn"}</h2>
+          {currentRole === "can-bo-thu-ly" && (
+            <div className="flex gap-2">
+              <Button type="primary" onClick={() => onNav?.("tiepnhan_don_lienthong")} className="bg-[#b31412] h-[28px] text-[12px] px-3"><Plus size={14} className="mr-1" /> Thêm mới đơn</Button>
+              <Button onClick={() => setShowNumberingModal(selectedRows.length ? selectedRows[0] : 1)} className="h-[28px] text-[12px] px-3"><Save size={14} className="mr-1" /> Lưu sổ văn bản</Button>
+              <Button className="h-[28px] text-[12px] px-3"><Printer size={14} className="mr-1" /> In báo cáo</Button>
+            </div>
+          )}
+        </div>
 
         {/* Card */}
         <div className="bg-white border border-surface-container rounded-[3px]">
@@ -7296,7 +7428,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                   <Plus size={13} /> Thêm mới
                 </BtnPrimary>
               )}
-              {/* Hiện ở mọi tab, không riêng tab "Đơn của tôi" (trừ Đơn chờ phân công) */}
+              {/* Hiện ở mọi tab, không riêng tab "Đơn của tôi" (trừ Đơn chờ duyệt thụ lý) */}
               {activeTab !== 1 && (
                 <BtnPrimary onClick={() => setShowNumberingModal(selectedRows.length ? selectedRows[0] : 1)} className="h-[30px] text-[12px] px-3 gap-1">
                   <FileText size={13} /> Lưu số văn bản và in báo cáo
@@ -7308,69 +7440,20 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                 </BtnPrimary>
               )}
 
-              {/* ── Phân công cán bộ xử lý — chỉ Trưởng phòng, chỉ ở tab Tổng số ──
-                  Bước tiếp theo của đơn GĐT/TT vừa tiếp nhận: giao đơn cho cán bộ
-                  thụ lý, nghiên cứu. Việc phân công THẨM PHÁN là bước sau nữa và
-                  có màn riêng vì phải lập tờ trình trình ký. */}
-              {activeTab === 1 && currentRole === "pho-vp" && (
-                selectedRows.length > 0 ? (
-                  <div className="flex items-center gap-1.5">
-                    <select
-                      value={bulkAssignCb}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setBulkAssignCb(val);
-                        setDraftAssignments(prev => {
-                          const next = { ...prev };
-                          selectedRows.forEach(id => {
-                            if (val) next[id] = val;
-                            else delete next[id];
-                          });
-                          return next;
-                        });
-                      }}
-                      className="h-[30px] text-[12px] border border-[#d32f2f] rounded-[4px] px-2 text-[#c62828] font-semibold bg-[#ffebee] outline-none cursor-pointer"
-                    >
-                      <option value="">-- Chọn cán bộ --</option>
-                      {OFFICERS.map(cb => <option key={cb} value={cb}>{cb}</option>)}
-                    </select>
-                    <BtnPrimary
-                      onClick={() => {
-                        let count = 0;
-                        setRows(prev => prev.map(r => {
-                          if (!selectedRows.includes(r.id)) return r;
-                          const cb = draftAssignments[r.id] || bulkAssignCb;
-                          if (!cb) return r;
-                          count++;
-                          return {
-                            ...r,
-                            nguoiNhap: cb,
-                            giaiQuyet: { nhan: "Chờ xử lý", color: "#f39c12", stl: "", coVanBan: false },
-                            processingHistory: [
-                              ...(r.processingHistory || []),
-                              { date: new Date().toLocaleDateString("vi-VN"), step: "Phân công cán bộ xử lý", actor: "Chánh văn phòng", note: `Phân công cho ${cb}` }
-                            ]
-                          };
-                        }));
-                        triggerNoti(`Đã phân công ${count} đơn.`);
-                        setSelectedRows([]);
-                        setDraftAssignments({});
-                        setBulkAssignCb("");
-                      }}
-                      disabled={Object.keys(draftAssignments).filter(id => selectedRows.includes(Number(id))).length === 0 && !bulkAssignCb}
-                      className="h-[30px] text-[12px] px-3 gap-1 !bg-[#d32f2f] !text-white hover:!bg-[#b71c1c]"
-                    >
-                      <Check size={13} /> Phân công cán bộ
-                    </BtnPrimary>
-                  </div>
-                ) : (
-                  <BtnPrimary
-                    disabled
-                    className="h-[30px] text-[12px] px-3 gap-1 opacity-50"
-                  >
-                    <Users size={13} /> Phân công cán bộ
-                  </BtnPrimary>
-                )
+              {/* ── Duyệt thụ lý & cấp số — quyền của Chánh/Phó Chánh văn phòng ──
+                  Ở Tòa cấp tỉnh, cán bộ tiếp nhận chỉ kết luận "đơn đủ điều kiện,
+                  thụ lý mới"; số thụ lý KHÔNG cấp ở bước đó mà chờ duyệt ở đây.
+                  Vì vậy tab này không có phân công cán bộ — việc giao cán bộ xử lý
+                  do Trưởng phòng làm ở tab "Tổng số". */}
+              {laTabDuyetThuLy && activeTab === 1 && (
+                <BtnPrimary
+                  onClick={() => duyetThuLyCapSo(selectedRows)}
+                  disabled={selectedRows.length === 0}
+                  className="h-[30px] text-[12px] px-3 gap-1"
+                >
+                  <BadgeCheck size={13} /> Duyệt & cấp số thụ lý
+                  {selectedRows.length > 0 && ` (${selectedRows.length})`}
+                </BtnPrimary>
               )}
               {activeTab === 0 && currentRole === "truong-phong" && (
                 <BtnPrimary
@@ -7518,9 +7601,7 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     </th>
                   )}
                   <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[19%]">Thông tin giải quyết</th>
-                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[10%]">
-                    {currentRole === "pho-vp" && activeTab === 1 ? "Người được phân công" : "Người nhập / Sửa"}
-                  </th>
+                  <th className="border border-surface-container px-3 py-[9px] text-left font-semibold text-on-surface w-[10%]">Người nhập / Sửa</th>
                   <th className="border border-surface-container px-1 py-[9px] text-center font-semibold text-on-surface w-[5%]">Thao tác</th>
                 </tr>
               </thead>
@@ -7796,6 +7877,13 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               <span className="text-[12px] font-semibold text-on-surface">
                                 {g.nhan}
                               </span>
+                              {g.nhan === CHO_DUYET_THU_LY && (
+                                /* Chưa có số thụ lý ở trạng thái này — nói rõ để không ai
+                                   tưởng là số bị mất, và để biết ai là người phải cấp. */
+                                <div className="text-[12px] text-on-surface-variant mt-1">
+                                  Chưa cấp số — chờ Chánh/Phó Chánh văn phòng duyệt
+                                </div>
+                              )}
                               {g.nhan === "Thụ lý mới" && g.stl && (
                                 <div className="text-[12px] text-on-surface mt-1">
                                   <span className="text-on-surface-variant">Số thụ lý: </span>{g.stl}
@@ -8053,36 +8141,8 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                               {row.nguoiNhap && (
                                 <>
                                   <div className="text-[12px]">
-                                    {!(currentRole === "pho-vp" && activeTab === 1) && (
-                                      <span className="text-on-surface-variant">Nhập: </span>
-                                    )}
-                                    {currentRole === "pho-vp" && activeTab === 1 && (row.nguoiNhap === "Chưa phân công" || row.nguoiNhap === "Chờ xử lý") ? (
-                                      <select
-                                        className="h-[22px] px-1 border border-primary text-primary bg-white rounded-[2px] text-[11px] font-medium focus:outline-none cursor-pointer max-w-[120px]"
-                                        value={draftAssignments[row.id] || ""}
-                                        onClick={(e) => e.stopPropagation()}
-                                        onChange={(e) => {
-                                          const val = e.target.value;
-                                          if (!val) {
-                                            setDraftAssignments(prev => {
-                                              const next = { ...prev };
-                                              delete next[row.id];
-                                              return next;
-                                            });
-                                            return;
-                                          }
-                                          if (!selectedRows.includes(row.id)) {
-                                            setSelectedRows(prev => [...prev, row.id]);
-                                          }
-                                          setDraftAssignments(prev => ({ ...prev, [row.id]: val }));
-                                        }}
-                                      >
-                                        <option value="">-- Chờ xử lý --</option>
-                                        {OFFICERS.map(cb => <option key={cb} value={cb}>{cb}</option>)}
-                                      </select>
-                                    ) : (
-                                      <TenCB ten={row.nguoiNhap} ghiDe={row.nguoiNhapNgaySinh} />
-                                    )}
+                                    <span className="text-on-surface-variant">Nhập: </span>
+                                    <TenCB ten={row.nguoiNhap} ghiDe={row.nguoiNhapNgaySinh} />
                                   </div>
                                   {row.ngayNhap && (
                                     <div className="text-[11px] text-on-surface-variant whitespace-nowrap">
@@ -8120,8 +8180,10 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                           {openMenu === row.id && (
                             <ActionMenu
                               onClose={() => setOpenMenu(null)}
-                              onPhanCong={currentRole === "pho-vp" && (row.giaiQuyet?.nhan === "Chờ phân công" || row.giaiQuyet?.nhan === "Chờ xử lý")
-                                ? () => { setShowPhanCong(row.id); setOpenMenu(null); }
+                              // Duyệt thụ lý & cấp số — chỉ Chánh/Phó Chánh văn phòng,
+                              // và chỉ khi đơn đang chờ duyệt.
+                              onDuyetThuLy={laTabDuyetThuLy && activeTab === 1 && row.giaiQuyet?.nhan === CHO_DUYET_THU_LY
+                                ? () => { duyetThuLyCapSo([row.id]); setOpenMenu(null); }
                                 : undefined}
                               onViewDetail={() => onEditRow?.(row.id)}
                               onEdit={() => onEditRow?.(row.id)}
@@ -8272,21 +8334,31 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
         <PopupBoSungTaiLieu
           row={rows.find(r => r.id === showBoSungTaiLieu)}
           onClose={() => setShowBoSungTaiLieu(null)}
-          // Lưu kết quả bổ sung ⇒ cập nhật luôn trạng thái đơn ngoài danh sách
-          onLuu={(kq) => {
+          // Lưu kết quả bổ sung ⇒ cập nhật luôn trạng thái đơn ngoài danh sách.
+          // "Thụ lý mới" không cấp số ngay: chuyển sang chờ Chánh/Phó Chánh VVP duyệt.
+          onLuu={(kq, thuLyDon) => {
+            const nhan: string = kq !== "du"
+              ? "Chưa đủ điều kiện"
+              : thuLyDon === "Thụ lý mới" ? CHO_DUYET_THU_LY : thuLyDon || "Thụ lý mới";
+            const mau = kq !== "du"
+              ? "#e67e22"
+              : thuLyDon === "Thụ lý mới" ? MAU_CHO_DUYET_THU_LY
+                : thuLyDon === "Đã thụ lý" ? "#1a5a96" : "#e67e22";
             setRows(prev => prev.map(r => r.id === showBoSungTaiLieu
               ? {
                 ...r,
                 giaiQuyet: {
                   ...r.giaiQuyet,
-                  nhan: kq === "du" ? "Thụ lý mới" : "Chưa đủ điều kiện",
-                  color: kq === "du" ? "#27ae60" : "#e67e22",
+                  nhan,
+                  color: mau,
                 },
               }
               : r));
-            triggerNoti(kq === "du"
-              ? "Đã ghi nhận bổ sung tài liệu — đơn chuyển sang Thụ lý mới."
-              : "Đã ghi nhận bổ sung tài liệu — đơn vẫn chưa đủ điều kiện.");
+            triggerNoti(kq !== "du"
+              ? "Đã ghi nhận bổ sung tài liệu — đơn vẫn chưa đủ điều kiện."
+              : thuLyDon === "Thụ lý mới"
+                ? `Đã ghi nhận bổ sung tài liệu — đơn chuyển sang ${CHO_DUYET_THU_LY}, chờ cấp số thụ lý.`
+                : `Đã ghi nhận bổ sung tài liệu — đơn chuyển sang ${nhan}.`);
           }}
         />
       )}
@@ -8491,84 +8563,6 @@ const DanhSachDon = ({ onThemMoi, onBieuMau, onWordEditor, onEditRow, isTruongPh
                     Xác nhận chuyển
                   </Button>
                 )}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Popup Phân công */}
-      {showPhanCong !== null && (() => {
-        const isBulk = Array.isArray(showPhanCong);
-        const row = isBulk ? null : rows.find(r => r.id === showPhanCong);
-        if (!isBulk && !row) return null;
-        const count = isBulk ? showPhanCong.length : 1;
-
-        return (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
-            <div className="bg-white rounded-[6px] shadow-2xl w-[400px] overflow-hidden flex flex-col">
-              <div className="px-4 py-3 border-b border-surface-container-high flex items-center justify-between bg-surface-container-low">
-                <h3 className="text-[15px] font-semibold text-tertiary">Phân công cán bộ xử lý {isBulk && `(${count} đơn)`}</h3>
-                <Button onClick={() => setShowPhanCong(null)} className="text-on-surface-variant hover:text-error transition-colors"><X size={16} /></Button>
-              </div>
-              <div className="p-4 space-y-4 bg-white">
-                {!isBulk && row && (
-                  <div>
-                    <div className="text-[12px] font-medium text-on-surface-variant mb-1">Mã đơn</div>
-                    <div className="text-[13px] text-on-surface font-semibold">{row.maDon}</div>
-                  </div>
-                )}
-                {isBulk && (
-                  <div className="text-[13px] text-on-surface mb-2">Đang chọn <span className="font-semibold text-primary">{count}</span> đơn để phân công.</div>
-                )}
-                <div>
-                  <div className="text-[12px] font-medium text-on-surface-variant mb-1">Cán bộ thụ lý</div>
-                  <select
-                    id="cb_thuly_select"
-                    className="w-full h-[32px] px-2 text-[13px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary"
-                  >
-                    <option value="">-- Chọn cán bộ thụ lý --</option>
-                    <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                    <option value="Trần Thị B">Trần Thị B</option>
-                    <option value="Lê Văn C">Lê Văn C</option>
-                  </select>
-                </div>
-              </div>
-              <div className="px-4 py-3 border-t border-surface-container-high flex items-center justify-end gap-2 bg-surface-container-low">
-                <Button onClick={() => setShowPhanCong(null)}
-                  className="h-[30px] px-4 rounded-[3px] border border-surface-container-highest text-on-surface text-[12px] font-medium hover:bg-surface-container-low transition-colors">
-                  Hủy
-                </Button>
-                <Button
-                  onClick={() => {
-                    const cb = (document.getElementById('cb_thuly_select') as HTMLSelectElement)?.value;
-                    if (!cb) {
-                      triggerNoti("Vui lòng chọn cán bộ thụ lý!");
-                      return;
-                    }
-                    setRows(prev => prev.map(r => {
-                      const shouldUpdate = isBulk ? showPhanCong.includes(r.id) : r.id === showPhanCong;
-                      if (!shouldUpdate) return r;
-                      return {
-                        ...r,
-                        giaiQuyet: { nhan: "Chờ xử lý", color: "#f39c12", stl: "", coVanBan: false },
-                        processingHistory: [
-                          ...(r.processingHistory ?? []),
-                          { date: new Date().toLocaleDateString("vi-VN"), step: "Phân công cán bộ xử lý", actor: "Chánh văn phòng", note: `Phân công cho ${cb}` }
-                        ]
-                      };
-                    }));
-                    if (isBulk) {
-                      triggerNoti(`Đã phân công ${count} đơn cho ${cb}.`);
-                      setSelectedRows([]);
-                    } else {
-                      triggerNoti(`Đã phân công đơn ${row?.maDon} cho ${cb}.`);
-                    }
-                    setShowPhanCong(null);
-                  }}
-                  className="h-[30px] px-4 bg-primary hover:bg-[#1557b0] text-white rounded-[3px] text-[12px] font-medium transition-colors">
-                  Xác nhận
-                </Button>
               </div>
             </div>
           </div>
@@ -10022,614 +10016,6 @@ const DanhSachBieuMau = ({
   );
 };
 
-// ─── Phân công Thẩm phán ──────────────────────────────────────────────────────
-const LOAI_AN_OPTIONS = [
-  "Hình sự", "Dân sự", "Hành chính", "Kinh doanh thương mại",
-  "Hôn nhân gia đình", "Lao động", "Sở hữu trí tuệ", "Phá sản",
-];
-
-// Bối cảnh dữ liệu: TAND thành phố Hà Nội (tòa cấp tỉnh).
-//  · toaBA là tòa ĐÃ RA bản án bị đề nghị → luôn là TAND khu vực trực thuộc,
-//    vì cấp tỉnh chỉ GĐT/TT bản án, quyết định đã có hiệu lực của TAND khu vực.
-//  · Ký hiệu bản án là -ST: TAND khu vực xét xử sơ thẩm; bản án phúc thẩm là
-//    của chính TAND TP Hà Nội, GĐT thuộc TANDTC nên không xuất hiện ở màn này.
-//  · Địa chỉ theo mô hình 2 cấp (phường/xã + thành phố), không còn quận/huyện.
-// TODO nghiệp vụ: số hiệu các TAND khu vực của Hà Nội đang đặt 1–6 cho demo,
-// cần đối chiếu nghị quyết thành lập TAND khu vực để ghi đúng tên.
-const PHANCONG_SAMPLE: {
-  id: number; soThuLy: string; ngayThuLy: string; nguoiDungDon: string; diaChi: string;
-  soBA: string; ngayBA: string; toaBA: string; loaiAn: string; hinhThuc: string; thamPhan: string;
-  /** Số Thông báo phân công HCTP đã lập cho đơn này. Không có = chưa lập. */
-  thongBao?: string;
-  /** Thông báo đã gửi sang Phòng GĐKT & THA hay chưa. Đây mới là mốc quan
-   *  trọng, không phải việc lập: trước khi gửi, phân công còn là chuyện nội
-   *  bộ; sau khi gửi, một đơn vị khác đã nhận việc theo thông tin cũ. */
-  daGui?: boolean;
-}[] = [
-    { id: 1, soThuLy: "01/2026/GĐT-HS", ngayThuLy: "05/07/2026", nguoiDungDon: "Nguyễn Văn An", diaChi: "Số 12 Lê Duẩn, phường Cửa Nam, TP Hà Nội", soBA: "15/2023/HS-ST", ngayBA: "12/03/2023", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
-    { id: 2, soThuLy: "02/2026/GĐT-DS", ngayThuLy: "08/07/2026", nguoiDungDon: "Trần Thị Bình", diaChi: "Số 45 Trần Hưng Đạo, phường Hoàn Kiếm, TP Hà Nội", soBA: "08/2022/DS-ST", ngayBA: "20/06/2022", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan", thongBao: "TB-118/2026", daGui: true },
-    { id: 3, soThuLy: "03/2026/GĐT-KDTM", ngayThuLy: "10/07/2026", nguoiDungDon: "Công ty TNHH Minh Đức", diaChi: "Số 18 Duy Tân, phường Cầu Giấy, TP Hà Nội", soBA: "33/2024/KDTM-ST", ngayBA: "15/11/2024", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng", thongBao: "TB-119/2026" },
-    { id: 4, soThuLy: "04/2026/TT-HC", ngayThuLy: "14/07/2026", nguoiDungDon: "Lê Văn Cường", diaChi: "Số 72 Quang Trung, phường Hà Đông, TP Hà Nội", soBA: "21/2021/HC-ST", ngayBA: "05/09/2021", toaBA: "TAND khu vực 5 - Hà Nội", loaiAn: "Hành chính", hinhThuc: "Đề nghị TT", thamPhan: "Trần Văn Hùng" },
-    { id: 5, soThuLy: "05/2026/GĐT-LĐ", ngayThuLy: "16/07/2026", nguoiDungDon: "Phạm Thị Dung", diaChi: "Số 33 Bà Triệu, phường Hai Bà Trưng, TP Hà Nội", soBA: "07/2023/LĐ-ST", ngayBA: "18/04/2023", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Lao động", hinhThuc: "Đề nghị GĐT", thamPhan: "Trần Văn Hùng" },
-    { id: 6, soThuLy: "06/2026/GĐT-DS", ngayThuLy: "18/07/2026", nguoiDungDon: "Hoàng Văn Thái", diaChi: "Số 20 Trần Thái Tông, phường Cầu Giấy, TP Hà Nội", soBA: "45/2024/DS-ST", ngayBA: "10/01/2025", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
-    { id: 7, soThuLy: "07/2026/TT-HS", ngayThuLy: "19/07/2026", nguoiDungDon: "Lê Thị Hồng", diaChi: "Số 150 Nguyễn Trãi, phường Thanh Xuân, TP Hà Nội", soBA: "12/2023/HS-ST", ngayBA: "22/08/2023", toaBA: "TAND khu vực 4 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị TT", thamPhan: "" },
-    { id: 8, soThuLy: "08/2026/GĐT-HNGĐ", ngayThuLy: "21/07/2026", nguoiDungDon: "Đinh Tuấn Tài", diaChi: "Số 55 Láng Hạ, phường Láng, TP Hà Nội", soBA: "09/2023/HNGĐ-ST", ngayBA: "05/05/2023", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Hôn nhân gia đình", hinhThuc: "Đề nghị GĐT", thamPhan: "Lê Thị Mai", thongBao: "TB-124/2026", daGui: true },
-    { id: 9, soThuLy: "09/2026/TT-KDTM", ngayThuLy: "22/07/2026", nguoiDungDon: "Công ty Cổ phần Alpha", diaChi: "Tòa nhà Discovery, phường Cầu Giấy, TP Hà Nội", soBA: "56/2024/KDTM-ST", ngayBA: "11/12/2024", toaBA: "TAND khu vực 3 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị TT", thamPhan: "" },
-    { id: 10, soThuLy: "10/2026/GĐT-HC", ngayThuLy: "23/07/2026", nguoiDungDon: "Vũ Trọng Phụng", diaChi: "Số 8 Tràng Thi, phường Hoàn Kiếm, TP Hà Nội", soBA: "19/2021/HC-ST", ngayBA: "15/07/2021", toaBA: "TAND khu vực 1 - Hà Nội", loaiAn: "Hành chính", hinhThuc: "Đề nghị GĐT", thamPhan: "Phạm Văn Đức" },
-    { id: 11, soThuLy: "11/2026/GĐT-DS", ngayThuLy: "24/07/2026", nguoiDungDon: "Bùi Thị Yến", diaChi: "KĐT Times City, phường Vĩnh Tuy, TP Hà Nội", soBA: "22/2022/DS-ST", ngayBA: "09/09/2022", toaBA: "TAND khu vực 4 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
-    { id: 12, soThuLy: "12/2026/TT-LĐ", ngayThuLy: "25/07/2026", nguoiDungDon: "Trương Quang Sáng", diaChi: "KCN Quang Minh, xã Quang Minh, TP Hà Nội", soBA: "04/2024/LĐ-ST", ngayBA: "20/02/2024", toaBA: "TAND khu vực 6 - Hà Nội", loaiAn: "Lao động", hinhThuc: "Đề nghị TT", thamPhan: "Hoàng Thị Thu" },
-    { id: 13, soThuLy: "13/2026/GĐT-HS", ngayThuLy: "26/07/2026", nguoiDungDon: "Nguyễn Hải Long", diaChi: "Thôn Đoài, xã Đông Anh, TP Hà Nội", soBA: "31/2023/HS-ST", ngayBA: "17/10/2023", toaBA: "TAND khu vực 6 - Hà Nội", loaiAn: "Hình sự", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
-    { id: 14, soThuLy: "14/2026/TT-DS", ngayThuLy: "27/07/2026", nguoiDungDon: "Lý Mỹ Châu", diaChi: "Số 27 Ngô Quyền, phường Sơn Tây, TP Hà Nội", soBA: "11/2021/DS-ST", ngayBA: "03/04/2021", toaBA: "TAND khu vực 5 - Hà Nội", loaiAn: "Dân sự", hinhThuc: "Đề nghị TT", thamPhan: "Nguyễn Thị Lan" },
-    { id: 15, soThuLy: "15/2026/GĐT-KDTM", ngayThuLy: "28/07/2026", nguoiDungDon: "Ngân hàng Thương mại ABC", diaChi: "Số 194 Trần Quang Khải, phường Hoàn Kiếm, TP Hà Nội", soBA: "77/2024/KDTM-ST", ngayBA: "05/01/2025", toaBA: "TAND khu vực 2 - Hà Nội", loaiAn: "Kinh doanh thương mại", hinhThuc: "Đề nghị GĐT", thamPhan: "" },
-  ];
-
-const THAM_PHAN_OPTIONS = [
-  "Nguyễn Thị Lan", "Trần Văn Hùng", "Lê Thị Mai", "Phạm Văn Đức", "Hoàng Thị Thu",
-];
-
-// Chỉ có MỘT loại thẩm phán — không phân biệt thẩm phán bậc 3 / thẩm phán tối
-// cao, nên màn này không còn bộ lọc cấp thẩm phán và cũng không lọc đơn theo
-// cấp giải quyết nữa.
-// Việc phân công cũng chỉ có MỘT hình thức: chỉ định. Vì vậy màn còn 2 tab —
-// danh sách chờ chỉ định và kết quả đã phân công — thay cho 3 tab cũ.
-const PhanCongThamPhan = ({ initialTab = 0, onOpenThamPhanPopup, currentRole = "can-bo" }: {
-  initialTab?: 0 | 1; onOpenThamPhanPopup?: () => void; currentRole?: string;
-}) => {
-  const [tab, setTab] = useState<0 | 1>(initialTab);
-  // Phân công Thẩm phán là thẩm quyền của CHÁNH ÁN. Trước đây quyền này thuộc
-  // Trưởng phòng — người duyệt tờ trình. Bỏ tờ trình thì quyền cũng chuyển theo,
-  // nếu không người chuẩn bị dữ liệu vẫn sửa được quyết định của Chánh án.
-  // Vai trò "chanh-an" hiện gộp cả Chánh án lẫn Phó Chánh án; khi nào tách được
-  // hai vai trò thì mới kiểm tra được ủy quyền.
-  const laChanhAn = currentRole === "chanh-an";
-  const coQuyenDoiThamPhan = laChanhAn;
-  const [showLyDoPopup, setShowLyDoPopup] = useState<{ show: boolean, thamPhan: string }>({ show: false, thamPhan: "" });
-  const [lyDoChiDinh, setLyDoChiDinh] = useState("");
-  const [loaiAnFilter, setLoaiAnFilter] = useState<string[]>([]);
-  const [hinhThucFilter, setHinhThucFilter] = useState("");
-  // Lọc theo TÒA ĐÃ RA BẢN ÁN/QĐ bị đề nghị, không phải tòa đang giải quyết đơn:
-  // tòa giải quyết luôn là chính TAND tỉnh đang đăng nhập nên không có gì để chọn.
-  const [toaBAFilter, setToaBAFilter] = useState("");
-  const [rows, setRows] = useState(PHANCONG_SAMPLE);
-  const [editingRow, setEditingRow] = useState<number | null>(null);
-  const [editFormMap, setEditFormMap] = useState<Record<number, { ngaySua: string; lyDo: string }>>({});
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const startEdit = (id: number) => {
-    setEditingRow(id);
-    setEditFormMap(prev => {
-      if (prev[id]) return prev;
-      return { ...prev, [id]: { ngaySua: new Date().toISOString().split("T")[0], lyDo: "" } };
-    });
-  };
-  const [assignMap, setAssignMap] = useState<Record<number, string>>(
-    Object.fromEntries(PHANCONG_SAMPLE.map(r => [r.id, r.thamPhan]))
-  );
-  /** Đơn Chánh án vừa đổi thẩm phán SAU KHI Thông báo đã gửi đi. Phòng GĐKT &
-   *  THA đang cầm thông tin cũ, nên HCTP phải lập Thông báo thay đổi phân công
-   *  gửi tiếp — đánh dấu ở đây để việc đó không rơi mất. */
-  const [canTBThayDoi, setCanTBThayDoi] = useState<Record<number, boolean>>({});
-
-  /** Ba trạng thái của Thông báo phân công. Gộp "chưa lập" với "đã lập chưa
-   *  gửi" là chỗ dễ sai nhất: HCTP soạn xong để đấy, Chánh án đổi ý, không ai
-   *  biết bản đã soạn phải bỏ đi. */
-  const trangThaiTB = (row: typeof PHANCONG_SAMPLE[0]) =>
-    !row.thongBao ? "chua-lap" : row.daGui ? "da-gui" : "da-lap";
-  const ASSIGN_WARNING_THRESHOLD = 3;
-  const assignmentCounts = Object.values(assignMap).reduce((acc, tp) => {
-    if (!tp) return acc;
-    acc[tp] = (acc[tp] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  const hasHighLoad = (tp: string) => tp && (assignmentCounts[tp] ?? 0) >= ASSIGN_WARNING_THRESHOLD;
-  const optionLabel = (tp: string) => tp + (assignmentCounts[tp] ? ` (${assignmentCounts[tp]} đơn)` : "");
-
-  const toggleLoaiAn = (v: string) =>
-    setLoaiAnFilter(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-
-  // Danh mục tòa lấy thẳng từ dữ liệu đơn — đổi địa bàn chỉ cần sửa dữ liệu,
-  // không phải sửa thêm một danh sách cứng ở chỗ khác rồi lệch nhau.
-  const toaBAOptions = Array.from(new Set(rows.map(r => r.toaBA))).sort((a, b) => a.localeCompare(b, "vi"));
-
-  const filtered = rows.filter(r => {
-    if (loaiAnFilter.length > 0 && !loaiAnFilter.includes(r.loaiAn)) return false;
-    if (hinhThucFilter && !r.hinhThuc.includes(hinhThucFilter)) return false;
-    if (toaBAFilter && r.toaBA !== toaBAFilter) return false;
-    return tab === 0 ? !assignMap[r.id] : !!assignMap[r.id];
-  });
-
-  const toggleSelectRow = (id: number) => {
-    setSelectedRows(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedRows.length === filtered.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(filtered.map(r => r.id));
-    }
-  };
-
-  // Tồn đọng chưa phân công — đếm trên TOÀN BỘ danh sách, không theo bộ lọc.
-  // Đây là con số "còn bao nhiêu việc phải làm", bộ lọc chỉ là cách nhìn tạm
-  // thời nên không được làm nó nhỏ đi. Phần đang hiển thị nói riêng ở vế sau.
-  const soChuaPhanCong = rows.filter(r => !assignMap[r.id]).length;
-  const soDaPhanCong = rows.length - soChuaPhanCong;
-
-  // Chỉ còn 1 hình thức phân công nên tên tab bỏ chữ "chỉ định"/"ngẫu nhiên":
-  // cán bộ chỉ cần biết đơn đang ở bước nào.
-  const tabs: { label: string; count: number }[] = [
-    { label: "Chờ phân công", count: soChuaPhanCong },
-    { label: "Đã phân công", count: soDaPhanCong },
-  ];
-
-  return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-3">
-      {/* Tabs */}
-      <div className="bg-white rounded-[4px] border border-surface-container overflow-hidden">
-        <div className="flex border-b border-surface-container">
-          {tabs.map((t, i) => (
-            <Button key={i} onClick={() => { setTab(i as 0 | 1); setSelectedRows([]); setEditingRow(null); }}
-              className={`flex items-center gap-1.5 px-4 py-[9px] text-[13px] font-medium transition-colors border-b-2 -mb-px
-                ${tab === i ? "border-error text-error bg-white" : "border-transparent text-on-surface-variant hover:text-on-surface bg-surface-bright"}`}>
-              {t.label}
-              <span className={`inline-flex items-center justify-center min-w-[18px] h-[17px] px-1 rounded-full text-[10px] font-semibold
-                ${tab === i ? "bg-error text-white" : "bg-[#e5e5e5] text-on-surface-variant"}`}>
-                {t.count}
-              </span>
-            </Button>
-          ))}
-          {/* Nhắc tồn đọng — chỉ ở tab Chờ phân công, vì đó là nơi cán bộ đang
-              xử lý việc này. Tab Đã phân công không cần. */}
-          {tab === 0 && (
-            <div className="ml-auto flex items-center pr-4">
-              {soChuaPhanCong > 0 ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-[3px] text-[11px] font-medium bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
-                  <AlertCircle size={12} className="flex-shrink-0" />
-                  Còn <b className="font-bold">{soChuaPhanCong}</b> vụ án chưa được phân công
-                  {/* Bộ lọc đang cắt bớt thì nói rõ, nếu không con số trên nhãn
-                      và số dòng dưới bảng lệch nhau mà không rõ vì sao. */}
-                  {filtered.length !== soChuaPhanCong && (
-                    <span className="font-normal text-[#8a6d3b]">· đang hiển thị {filtered.length}</span>
-                  )}
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-[3px] text-[11px] font-medium bg-[#e8f7ee] text-[#1a7a45] border border-[#a9debb]">
-                  <Check size={12} className="flex-shrink-0" />
-                  Đã phân công hết
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Bộ lọc — DÙNG CHUNG cho cả 2 tab, để cán bộ lọc kiểu gì cũng ra cùng
-            một cách nhìn dù đang ở tab nào. Bộ lọc "Cấp thẩm phán" đã bỏ vì chỉ
-            còn một loại thẩm phán. */}
-        <div className="p-4 space-y-3">
-          {/* Row 1: Tên tòa, Ngày nhập, Hình thức, Người nhập */}
-          <div className="grid grid-cols-4 gap-3">
-            <div>
-              {/* TAND cấp tỉnh giám đốc thẩm/tái thẩm bản án, quyết định đã có
-                    hiệu lực của TAND khu vực, nên ô này lọc theo tòa ĐÃ RA bản án
-                    bị đề nghị — trước đây là danh sách TANDTC/TAND cấp cao và
-                    cũng chưa nối vào bộ lọc. */}
-              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Tòa án ra bản án/QĐ</label>
-              <div className="relative">
-                <select value={toaBAFilter} onChange={e => setToaBAFilter(e.target.value)}
-                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
-                  <option value="">Tất cả tòa án</option>
-                  {toaBAOptions.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Ngày nhập đơn</label>
-              <div className="flex items-center gap-1">
-                <Input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
-                <span className="text-on-surface-variant text-[11px]">—</span>
-                <Input type="date" className="flex-1 h-[30px] px-2 text-[12px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Hình thức</label>
-              <div className="relative">
-                <select value={hinhThucFilter} onChange={e => setHinhThucFilter(e.target.value)}
-                  className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
-                  <option value="">Tất cả hình thức</option>
-                  {optionsHinhThucDonPhanCong()}
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-on-surface-variant mb-1">Người nhập đơn</label>
-              <div className="relative">
-                <select className="w-full h-[30px] px-2 pr-6 text-[12px] border border-surface-container-highest rounded-[3px] bg-white appearance-none focus:outline-none focus:border-primary">
-                  <option value="">-- Chọn người nhập đơn --</option>
-                  {["Vũ Văn Yên", "Lê Thị Hà", "Phùng Trâm Anh"].map(n => <option key={n}>{n}</option>)}
-                </select>
-                <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-              </div>
-            </div>
-          </div>
-
-          {/* Loại án checkboxes */}
-          <div>
-            <label className="block text-[11px] font-medium text-on-surface-variant mb-1.5">Loại án</label>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {LOAI_AN_OPTIONS.map(la => (
-                <label key={la} className="flex items-center gap-1.5 cursor-pointer text-[12px] text-on-surface">
-                  <Input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                    checked={loaiAnFilter.includes(la)} onChange={() => toggleLoaiAn(la)} />
-                  {la}
-                </label>
-              ))}
-            </div>
-          </div>
-
-
-        </div>
-      </div>
-
-      {/* Không dựng khối "Tải việc Thẩm phán" ở đây: số đơn đang giữ đã hiện kèm
-          từng tên trong ô chọn thẩm phán (xem optionLabel) và trong popup Danh
-          sách thẩm phán. Thêm một khối nữa là nói cùng một chuyện ba lần. */}
-
-      {/* Table */}
-      <div className="bg-white rounded-[4px] border border-surface-container overflow-hidden">
-        {/* Thanh thao tác — nút "Danh sách thẩm phán" dùng chung cho cả 2 tab
-            nên chỉ khai báo một lần; phần bên phải mới đổi theo tab. */}
-        <div className="px-4 py-[9px] border-b border-surface-container flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-[13px] font-semibold text-tertiary">
-              {tab === 0 ? "Danh sách chờ phân công" : "Kết quả phân công"}
-            </span>
-            {/* Số đơn đang chọn nằm ngay cạnh tiêu đề — trước đây cán bộ chọn
-                thẩm phán xong mới biết mình chưa tick đơn nào. */}
-            {tab === 0 && selectedRows.length > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2 py-[2px] rounded-[3px] text-[11px] font-medium bg-info-container text-primary border border-surface-variant">
-                Đã chọn {selectedRows.length} đơn
-                <Button onClick={() => setSelectedRows([])}
-                  className="text-primary/70 hover:text-primary" title="Bỏ chọn tất cả">
-                  <X size={11} />
-                </Button>
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button
-              onClick={() => onOpenThamPhanPopup && onOpenThamPhanPopup()}
-              className="flex items-center justify-center gap-1.5 h-[28px] px-3 border border-error text-error hover:bg-[#fcf5f5] rounded-[3px] text-[11px] font-medium transition-colors"
-            >
-              <Users size={12} />
-              <span className="leading-none">Danh sách thẩm phán</span>
-            </Button>
-            {tab === 0 ? (
-              /* Chỉ Chánh án mới chỉ định được. Các vai trò khác vẫn xem đầy đủ
-                 danh sách và tải việc — họ cần thông tin đó để chuẩn bị, nhưng
-                 không phải để quyết. */
-              laChanhAn ? (
-                <>
-                  <span className="text-[12px] font-medium text-on-surface-variant">Chỉ định cho:</span>
-                  <div className="relative w-[210px]">
-                    <select
-                      value=""
-                      disabled={selectedRows.length === 0}
-                      title={selectedRows.length === 0 ? "Tích chọn đơn trong bảng trước khi chỉ định" : undefined}
-                      onChange={(e) => { if (e.target.value) setShowLyDoPopup({ show: true, thamPhan: e.target.value }); e.target.value = ""; }}
-                      className={`w-full h-[28px] px-2 pr-6 text-[12px] border rounded-[3px] appearance-none focus:outline-none
-                      ${selectedRows.length === 0
-                          ? "border-surface-container bg-surface-container-low text-outline cursor-not-allowed"
-                          : "border-surface-container-highest bg-white focus:border-primary"}`}
-                    >
-                      <option value="">-- Chọn thẩm phán --</option>
-                      {/* Kèm số đơn đang giữ để không dồn việc vào một người. */}
-                      {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
-                    </select>
-                    <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-                  </div>
-                </>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-[3px] text-[11px] font-medium bg-surface-container-high text-[#64748b] border border-[#e2e8f0]">
-                  <Ban size={12} className="flex-shrink-0" />
-                  Chỉ Chánh án phân công được
-                </span>
-              )
-            ) : (
-              <Button className="flex items-center justify-center gap-1.5 h-[28px] px-3 bg-error hover:bg-error-container text-white rounded-[3px] text-[11px] font-medium transition-colors">
-                <Search size={12} />
-                <span className="leading-none">Tìm kiếm</span>
-              </Button>
-            )}
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[12px]">
-            <thead>
-              <tr className="bg-surface-container-low">
-                {tab === 0 && (
-                  <th className="border border-surface-container px-2 py-[6px] text-center w-[30px]">
-                    <Input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                      checked={selectedRows.length === filtered.length && filtered.length > 0}
-                      onChange={toggleSelectAll}
-                      title="Chọn tất cả đơn đang hiển thị"
-                    />
-                  </th>
-                )}
-                <th className="border border-surface-container px-2 py-[6px] text-center font-semibold text-on-surface w-[36px]">STT</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[130px]">Số thụ lý</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[95px]">Ngày thụ lý</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin người đứng đơn</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface">Thông tin BA/QĐ đề nghị GĐT, TT</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[130px]">Loại án</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[110px]">Hình thức đơn</th>
-                <th className="border border-surface-container px-3 py-[6px] text-left font-semibold text-on-surface w-[160px]">Thẩm phán</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={tab === 0 ? 9 : 8} className="border border-surface-container px-4 py-10 text-center text-outline">
-                    {tab === 0 ? "Không còn đơn nào chờ phân công" : "Chưa có đơn nào được phân công"}
-                  </td>
-                </tr>
-              ) : filtered.map((row, i) => (
-                <tr key={row.id}
-                  className={`align-top ${selectedRows.includes(row.id) ? "bg-[#eef4fd]" : i % 2 === 1 ? "bg-surface-bright" : "bg-white"}`}>
-                  {tab === 0 && (
-                    <td className="border border-surface-container px-2 py-2 text-center">
-                      <Input type="checkbox" className="w-[13px] h-[13px] accent-[#8b1a1a]"
-                        checked={selectedRows.includes(row.id)}
-                        onChange={() => toggleSelectRow(row.id)}
-                      />
-                    </td>
-                  )}
-                  <td className="border border-surface-container px-2 py-2 text-center text-on-surface-variant">{i + 1}</td>
-                  <td className="border border-surface-container px-3 py-2 font-medium text-primary">{row.soThuLy}</td>
-                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{row.ngayThuLy}</td>
-                  <td className="border border-surface-container px-3 py-2">
-                    <div className="font-medium text-tertiary leading-snug">{row.nguoiDungDon}</div>
-                    <div className="text-[11px] text-on-surface-variant mt-0.5 leading-snug">{row.diaChi}</div>
-                  </td>
-                  <td className="border border-surface-container px-3 py-2">
-                    <div className="space-y-[2px] leading-snug">
-                      <div><span className="text-on-surface-variant">Số BA: </span><span className="font-medium">{row.soBA}</span></div>
-                      <div><span className="text-on-surface-variant">Ngày: </span><span>{row.ngayBA}</span></div>
-                      <div><span className="text-on-surface-variant">Tòa xét xử: </span><span>{row.toaBA}</span></div>
-                    </div>
-                  </td>
-                  <td className="border border-surface-container px-3 py-2">
-                    <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-info-container text-primary border border-surface-variant">{row.loaiAn}</span>
-                  </td>
-                  <td className="border border-surface-container px-3 py-2 text-on-surface-variant">{row.hinhThuc}</td>
-                  <td className="border border-surface-container px-3 py-2">
-                    {tab === 1 ? (
-                      /* Đơn đã có Thông báo phân công: quyết định đã gửi sang Phòng GĐKT
-                         & THA. Sửa lặng lẽ ở đây sẽ khiến nơi nhận và hồ sơ nói hai
-                         chuyện khác nhau, nên khóa lại — trừ Chánh án, vì đổi
-                         phân công là thẩm quyền của chính người đã quyết. */
-                      row.thongBao && !coQuyenDoiThamPhan ? (
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-outline"}`}>
-                              {assignMap[row.id] || "—"}
-                            </span>
-                            <Ban size={11} className="text-[#b45309] flex-shrink-0" />
-                          </div>
-                          <div className="text-[10px] text-[#b45309] leading-snug"
-                            title="Đã lập Thông báo phân công — chỉ Chánh án mới đổi được thẩm phán.">
-                            <b className="font-semibold">{row.thongBao.replace(/^TB-/, "Số thông báo-")}</b>
-                          </div>
-                        </div>
-                      ) : editingRow === row.id ? (
-                        <div className="space-y-2 min-w-[220px]">
-                          {(() => {
-                            const currentEditForm = editFormMap[row.id] ?? { ngaySua: new Date().toISOString().split("T")[0], lyDo: "" };
-                            return (
-                              <>
-                                {/* Thẩm phán mới */}
-                                <div>
-                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">Thẩm phán</label>
-                                  <div className="relative">
-                                    <select value={assignMap[row.id] ?? ""}
-                                      onChange={e => setAssignMap(p => ({ ...p, [row.id]: e.target.value }))}
-                                      className="w-full h-[26px] px-2 pr-6 text-[11px] border border-primary rounded-[3px] bg-white appearance-none focus:outline-none">
-                                      <option value="">-- Chọn thẩm phán --</option>
-                                      {THAM_PHAN_OPTIONS.map(tp => <option key={tp} value={tp}>{optionLabel(tp)}</option>)}
-                                    </select>
-                                    <ChevronDown size={9} className="absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
-                                  </div>
-                                </div>
-                                {/* Ngày sửa */}
-                                <div>
-                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">Ngày sửa</label>
-                                  <Input type="date" value={currentEditForm.ngaySua}
-                                    onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), ngaySua: e.target.value } }))}
-                                    className="w-full h-[26px] px-2 text-[11px] border border-surface-container-highest rounded-[3px] focus:outline-none focus:border-primary" />
-                                </div>
-                                {/* Lý do — BẮT BUỘC. Đổi thẩm phán giữa chừng là thay đổi
-                              có hệ quả tố tụng, hồ sơ phải giải trình được vì sao. */}
-                                <div>
-                                  <label className="block text-[10px] text-on-surface-variant mb-0.5">
-                                    Lý do sửa phân công <span className="text-error">*</span>
-                                  </label>
-                                  <textarea value={currentEditForm.lyDo}
-                                    onChange={e => setEditFormMap(p => ({ ...p, [row.id]: { ...(p[row.id] ?? { ngaySua: "", lyDo: "" }), lyDo: e.target.value } }))}
-                                    placeholder="Nhập lý do..."
-                                    rows={2}
-                                    className={`w-full px-2 py-1 text-[11px] border rounded-[3px] focus:outline-none resize-none
-                                ${currentEditForm.lyDo.trim().length >= 10 ? "border-surface-container-highest focus:border-primary" : "border-error"}`} />
-                                  {currentEditForm.lyDo.trim().length < 10 && (
-                                    <div className="text-[10px] text-error mt-0.5 leading-snug">
-                                      Nhập lý do để lưu (tối thiểu 10 ký tự).
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-1 pt-0.5">
-                                  <Button
-                                    disabled={currentEditForm.lyDo.trim().length < 10}
-                                    title={currentEditForm.lyDo.trim().length < 10 ? "Nhập lý do sửa phân công để lưu" : undefined}
-                                    onClick={() => {
-                                      // Đã gửi đi rồi mới đổi → sinh việc cho HCTP.
-                                      // Chưa gửi thì không sinh gì: bản Thông báo còn
-                                      // nằm trong tòa, soạn lại là xong.
-                                      if (row.daGui) setCanTBThayDoi(p => ({ ...p, [row.id]: true }));
-                                      setEditingRow(null);
-                                    }}
-                                    className={`flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-white transition-colors
-                                ${currentEditForm.lyDo.trim().length < 10 ? "bg-[#b7d3c0] cursor-not-allowed" : "bg-[#27ae60] hover:bg-[#1e8449]"}`}>
-                                    <Check size={10} /> Lưu
-                                  </Button>
-                                  <Button onClick={() => setEditingRow(null)}
-                                    className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
-                                    <X size={10} /> Hủy
-                                  </Button>
-                                </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <div className="space-y-1.5">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className={`font-medium ${assignMap[row.id] ? "text-[#27ae60]" : "text-outline"}`}>
-                              {assignMap[row.id] || "—"}
-                            </span>
-                            <Button onClick={() => startEdit(row.id)}
-                              className="flex items-center gap-1 px-2 py-[3px] rounded text-[10px] font-medium text-primary hover:bg-info-container transition-colors whitespace-nowrap">
-                              <Pencil size={10} /> Sửa
-                            </Button>
-                          </div>
-
-                          {/* Trạng thái Thông báo phân công — Chánh án cần biết
-                              quyết định đã ra khỏi tòa chưa trước khi đổi người. */}
-                          {(() => {
-                            const tt = trangThaiTB(row);
-                            if (tt === "chua-lap") return (
-                              <div className="inline-flex items-center gap-1 px-1.5 py-[2px] rounded-[3px] text-[10px] font-medium bg-[#f2f4f7] text-[#64748b] border border-[#e2e8f0]">
-                                Chưa lập Thông báo
-                              </div>
-                            );
-                            if (tt === "da-lap") return (
-                              <div className="space-y-0.5">
-                                <div className="inline-flex items-center gap-1 px-1.5 py-[2px] rounded-[3px] text-[10px] font-medium bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
-                                  <Clock size={9} /> Đã lập · chưa gửi · {row.thongBao}
-                                </div>
-                                <div className="text-[10px] text-[#94a3b8] leading-snug">
-                                  Đổi thẩm phán lúc này thì Thông báo đã soạn phải bỏ và soạn lại.
-                                </div>
-                              </div>
-                            );
-                            return (
-                              <div className="space-y-0.5">
-                                <div className="inline-flex items-center gap-1 px-1.5 py-[2px] rounded-[3px] text-[10px] font-medium bg-[#eaf6ee] text-[#1e6b3a] border border-[#a9debb]">
-                                  <Check size={9} /> Đã gửi Phòng GĐKT &amp; THA · {row.thongBao}
-                                </div>
-                                <div className="text-[10px] text-[#94a3b8] leading-snug">
-                                  Đổi thẩm phán sẽ sinh việc lập Thông báo thay đổi phân công.
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Việc chuyển tiếp cho HCTP sau khi Chánh án đổi người */}
-                          {canTBThayDoi[row.id] && (
-                            <div className="flex items-start gap-1 text-[10px] text-error bg-[#fdf2f2] border border-[#f0c8c8] rounded-[3px] px-1.5 py-1 leading-snug">
-                              <AlertCircle size={10} className="flex-shrink-0 mt-[1px]" />
-                              <span>HCTP cần lập <b className="font-semibold">Thông báo thay đổi phân công</b> gửi Phòng GĐKT &amp; THA.</span>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    ) : (
-                      /* Tab Chờ phân công: nói rõ "chưa phân công" thay vì một
-                         gạch ngang trống, để không bị đọc nhầm là thiếu dữ liệu. */
-                      <span className="inline-block px-1.5 py-[2px] rounded text-[10px] font-medium bg-[#f2f2f2] text-on-surface-variant border border-surface-container-highest">
-                        Chưa phân công
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Xác nhận phân công. Lý do KHÔNG bắt buộc: phân công Thẩm phán là thẩm
-          quyền của Chánh án, quyết định của người có thẩm quyền không phải giải
-          trình thêm mới có hiệu lực. Ô lý do vẫn để đó cho ai muốn ghi chú.
-          (Lý do vẫn bắt buộc ở luồng SỬA phân công — đổi thẩm phán giữa chừng là
-          chuyện khác, hồ sơ phải nói được vì sao đổi.) */}
-      {showLyDoPopup.show && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50"
-          onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}>
-          <div className="bg-white rounded-[6px] w-[520px] overflow-hidden shadow-2xl"
-            onClick={e => e.stopPropagation()}>
-            <div className="bg-tertiary text-white px-4 py-2.5 flex items-center justify-between">
-              <div className="text-[15px] font-bold">Lý do phân công thẩm phán</div>
-              <Button onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}
-                className="text-white/70 hover:text-white"><X size={16} /></Button>
-            </div>
-
-            <div className="p-4">
-              <div className="text-[12px] leading-relaxed mb-3.5">
-                <span className="text-on-surface-variant">Phân công cho: </span>
-                <b className="text-[#333]">{showLyDoPopup.thamPhan}</b>
-                {/* Cảnh báo dồn việc — người ký cần thấy trước khi xác nhận, chứ
-                    không phải sau khi đơn đã sang tay thẩm phán. */}
-                {hasHighLoad(showLyDoPopup.thamPhan) && (
-                  <span className="ml-1.5 inline-flex items-center gap-1 px-1.5 py-[1px] rounded-[3px] text-[10px] font-medium bg-[#fef3e2] text-[#b45309] border border-[#fcd48a]">
-                    <AlertCircle size={10} /> đang giữ {assignmentCounts[showLyDoPopup.thamPhan]} đơn
-                  </span>
-                )}
-                <br />
-                <span className="text-on-surface-variant">Áp dụng cho: </span>
-                <b className="text-[#333]">
-                  {selectedRows.length > 0 ? `${selectedRows.length} vụ án đã chọn` : "chưa chọn vụ án nào"}
-                </b>
-              </div>
-
-              <label className="block text-[11px] font-medium mb-1.5">
-                Lý do phân công <span className="font-normal text-[#94a3b8]">(không bắt buộc)</span>
-              </label>
-              <textarea value={lyDoChiDinh} onChange={e => setLyDoChiDinh(e.target.value)} rows={3} autoFocus
-                placeholder="Ghi chú thêm nếu cần, ví dụ: Thẩm phán đã thụ lý vụ án liên quan…"
-                className="w-full border border-surface-container-highest rounded-[3px] px-2.5 py-2 text-[12px] leading-relaxed resize-none focus:outline-none focus:border-primary" />
-            </div>
-
-            <div className="border-t border-surface-container-highest px-4 py-3 flex justify-end gap-2">
-              <Button onClick={() => { setShowLyDoPopup({ show: false, thamPhan: "" }); setLyDoChiDinh(""); }}
-                className="h-[28px] px-3 rounded-[3px] border border-surface-container-highest text-[12px] font-medium text-on-surface hover:bg-surface-container-low">
-                Huỷ
-              </Button>
-              <Button
-                disabled={selectedRows.length === 0}
-                title={selectedRows.length === 0 ? "Chọn ít nhất một vụ án trong bảng" : undefined}
-                onClick={() => {
-                  setAssignMap(p => {
-                    const n = { ...p };
-                    selectedRows.forEach(id => { n[id] = showLyDoPopup.thamPhan; });
-                    return n;
-                  });
-                  setShowLyDoPopup({ show: false, thamPhan: "" });
-                  setLyDoChiDinh("");
-                  setSelectedRows([]);
-                }}
-                className={`h-[28px] px-3 rounded-[3px] text-[12px] font-medium text-white transition-colors
-                  ${selectedRows.length === 0
-                    ? "bg-[#d9c4c4] cursor-not-allowed" : "bg-error hover:bg-error-container"}`}>
-                Xác nhận phân công
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 // ─── Popup Bị cáo ─────────────────────────────────────────────────────────────
 const PopupBiCao = ({ onClose }: { onClose: () => void }) => {
   const [phanLoai, setPhanLoai] = useState<"canhan" | "tochuc">("canhan");
@@ -11650,7 +11036,9 @@ export default function AppTinh({
   // loại đúng nhóm này khi mở từ Trang chủ, nên hai bên luôn ra cùng một con số.
   // Tập đơn dùng chung cho Danh sách đơn · Trang chủ · Tiếp nhận đơn. Giữ ở đây
   // để đơn vừa tiếp nhận hiện ngay ở Danh sách đơn và Trang chủ đếm đúng.
-  const [donRows, setDonRows] = useState<DanhSachDonRow[]>(SAMPLE_ROWS);
+  // `apDuyetThuLy` vẽ lại phần đã "Duyệt & cấp số thụ lý" trước kia — số thụ lý
+  // chỉ sinh ra ở bước duyệt, không tính lại được từ dữ liệu mẫu.
+  const [donRows, setDonRows] = useState<DanhSachDonRow[]>(() => apDuyetThuLy(SAMPLE_ROWS));
   const DON_CHO_TRANG_CHU = useMemo(() => donRows.filter(r => !r.laKhangNghi), [donRows]);
 
   /** Đơn vừa tiếp nhận, nếu là đơn GĐT/TT thì đẩy thẳng vào Danh sách đơn. */
@@ -11749,6 +11137,28 @@ export default function AppTinh({
     setVbVuaTao(daTrinh.id);
     addNotification(`Đã trình ${daTrinh.soVanBan ?? "văn bản"} — đang chờ ${luongKy[0]?.nguoi ?? "duyệt"}`);
   };
+  /** Quyết định phân công vừa đổi trạng thái trong popup Tạo quyết định →
+   *  đồng bộ vào kho văn bản chung để nó hiện ở màn Danh sách văn bản và mở
+   *  được bằng luồng "Xem văn bản đã trình" sẵn có. Id bản ghi ổn định theo mã
+   *  đơn nên sửa quyết định sẽ ghi đè, không chồng thêm dòng. */
+  const dongBoQDPhanCong = (don: any, q: any) => {
+    if (!don?.soThuLy || !q) return;
+    const vb = taoQuyetDinhPhanCong({
+      don: {
+        soThuLy: don.soThuLy, nguoiDungDon: don.nguoiDungDon ?? "—",
+        soBA: don.soBA ?? "—", hinhThuc: don.hinhThuc ?? "—",
+        thamPhan: don.thamPhan, ngayThuLy: don.ngayThuLy,
+      },
+      qd: {
+        soVanBan: q.soVanBan, ngayBanHanh: q.ngayBanHanh,
+        donViSoanThao: q.donViSoanThao, ghiChu: q.ghiChu ?? "", trangThai: q.trangThai,
+      },
+      nguoiTao: nguoiTheoVaiTro(currentRole).nguoi,
+    });
+    setVanBanList(ds => [...ds.filter(v => v.id !== vb.id), vb]);
+    setVbVuaTao(vb.id);
+  };
+
   /** Từ Danh sách đơn bấm chip "Đã có trong 545/…" → mở thẳng panel văn bản đó. */
   const [moVanBanId, setMoVanBanId] = useState<string | null>(null);
   const moVanBan = (id: string) => { setMoVanBanId(id); setView("van_ban_trinh_ky"); };
@@ -12509,8 +11919,9 @@ export default function AppTinh({
           {/* Phân công thẩm phán view */}
           {view === "phancong" && (
             <div className="flex-1 flex flex-col overflow-hidden">
-              <PhanCongThamPhan initialTab={phanCongTab} currentRole={currentRole}
-                onOpenThamPhanPopup={() => setShowThamPhanPopup(true)} />
+              <PhanCongThamPhanView currentRole={currentRole}
+   onDoiTrangThaiQuyetDinh={dongBoQDPhanCong}
+   onSangDanhSachVanBan={xemVanBanDaTrinh} />
             </div>
           )}
 
@@ -13637,15 +13048,11 @@ export default function AppTinh({
                             </div>
                           )}
                           {!hasGiamDocThamResult && trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (
-                            <div>
-                              <Lbl req>Số thụ lý</Lbl>
-                              <Inp placeholder="Nhập số thụ lý" />
-                            </div>
-                          )}
-                          {!hasGiamDocThamResult && trangThaiDon === "Đơn đủ điều kiện" && thuLyDon === "Thụ lý mới" && (
-                            <div>
-                              <Lbl req>Ngày thụ lý</Lbl>
-                              <Inp type="date" />
+                            /* Số/ngày thụ lý không nhập ở bước cán bộ tiếp nhận — Chánh/Phó
+                               Chánh văn phòng cấp sau khi duyệt ở tab "Chờ duyệt thụ lý". */
+                            <div className="col-span-2 rounded-[3px] border border-surface-container-highest bg-[#f8f9fa] px-2 py-1.5 text-[12px] leading-[1.5] text-on-surface-variant">
+                              Số thụ lý và ngày thụ lý do <span className="font-semibold text-on-surface">Chánh/Phó Chánh văn phòng</span> cấp khi duyệt.
+                              Đơn sẽ chuyển sang trạng thái <span className="font-semibold" style={{ color: MAU_CHO_DUYET_THU_LY }}>{CHO_DUYET_THU_LY}</span>.
                             </div>
                           )}
                         </>

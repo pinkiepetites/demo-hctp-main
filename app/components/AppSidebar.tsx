@@ -58,7 +58,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
     if (currentRole !== "can-bo-nghiep-vu" && currentRole !== "lanh-dao-phong") {
       const qlDonChildren: MenuProps['items'] = [];
-      if (currentRole !== "can-bo-tiep-cong-dan" && currentRole !== "can-bo-thu-ly") {
+      if (true) {
         qlDonChildren.push({ key: "tiepnhan_don_lienthong", icon: <Inbox size={15} />, label: "Tiếp nhận đơn liên thông" });
       }
       qlDonChildren.push({ key: "list", icon: <List size={15} />, label: "Danh sách đơn" });
@@ -68,10 +68,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         label: <div className="flex justify-between items-center w-full"><span>Danh sách văn bản</span>{renderBadge(soBiTraLai)}</div> 
       });
 
-      if (!["pho-vp", "can-bo-phan-loai", "can-bo-thu-ly", "can-bo-tiep-cong-dan"].includes(currentRole)) {
+      if (!["pho-vp", "can-bo-phan-loai", "can-bo-thu-ly"].includes(currentRole)) {
         qlDonChildren.push({ key: "phancong", icon: <Users size={15} />, label: "Phân công thẩm phán" });
         qlDonChildren.push({ key: "cauhinh_pctp", icon: <Scale size={15} />, label: "Cấu hình phân công TP" });
       }
+
 
       items.push({
         key: "ql_don",
@@ -81,7 +82,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       });
     }
 
-    if (!["pho-vp", "can-bo-phan-loai", "can-bo-thu-ly", "can-bo-tiep-cong-dan"].includes(currentRole)) {
+    if (!["pho-vp", "can-bo-phan-loai", "can-bo-thu-ly"].includes(currentRole)) {
       items.push({
         key: "ql_gdt",
         icon: <Scale size={16} />,

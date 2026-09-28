@@ -152,6 +152,7 @@ const KY_HIEU: Record<string, string> = {
   "Thông báo phân công": "TB", "Tờ trình khác": "TTr", "Tờ trình": "TTr",
   "Thông báo phân công TP": "TB", "Thông báo": "TB",
   "Trả lại đơn": "QĐ", "Quyết định": "QĐ",
+  "Biên bản giao nhận hồ sơ đơn": "BB",
 };
 const kyHieuTheoLoai = (loai: string) => {
   for (const k of Object.keys(KY_HIEU)) if (loai.includes(k)) return KY_HIEU[k];
@@ -329,6 +330,79 @@ export const taoTuModal = (input: {
         : []),
     ],
     donDinhKem: input.donDinhKem,
+  };
+};
+
+/** Nội dung quyết định phân công thẩm phán, dựng từ dữ liệu đơn + quyết định. */
+const noiDungQDPhanCong = (don: { soThuLy: string; thamPhan?: string; ngayThuLy: string }, ghiChu: string) =>
+  [
+    "QUYẾT ĐỊNH",
+    "Về việc phân công thẩm phán giải quyết vụ án",
+    "",
+    `Căn cứ Luật Tổ chức Toà án nhân dân và Luật Trách nhiệm thẩm phán tư pháp;`,
+    `Căn cứ quy định tại Điều 24, 25 Luật Trách nhiệm thẩm phán tư pháp;`,
+    `Theo đề nghị của Phòng Thẩm phán dân sự;`,
+    "",
+    "Điều 1. Phân công thẩm phán giải quyết vụ án",
+    `Phân công thẩm phán ${don.thamPhan ?? "—"} giải quyết vụ án việc dân sự số ${don.soThuLy} thụ lý ngày ${don.ngayThuLy}, thời hạn giải quyết theo quy định chung.`,
+    "",
+    "Điều 2. Thẩm phán được phân công có trách nhiệm tiếp nhận, giải quyết vụ án đúng thời hạn quy định, bảo đảm lập hồ sơ đầy đủ, chính xác.",
+    "",
+    "Điều 3. Quyết định này có hiệu lực kể từ ngày ký. Thẩm phán được phân công căn cứ quyết định này để thi hành.",
+    ghiChu ? `\nGhi chú: ${ghiChu}` : "",
+  ].filter(Boolean).join("\n");
+
+/** Ánh xạ trạng thái quyết định (popup Tạo quyết định) sang vòng đời văn bản.
+ *  `Nhap` = còn ở bản nháp, `ChoKy` = đã trình chờ ký số, `DaBanHanh` = đã ký. */
+const QD_PHAN_CONG_TRANG_THAI: Record<string, { trangThai: TrangThaiVB; buoc: number }> = {
+  mo:       { trangThai: "Nhap",      buoc: 0 },
+  daLuu:    { trangThai: "Nhap",      buoc: 0 },
+  huyKy:    { trangThai: "Nhap",      buoc: 0 },
+  dung:     { trangThai: "DaHuy",     buoc: 0 },
+  choKy:    { trangThai: "ChoKy",     buoc: 1 },
+  daKy:     { trangThai: "DaBanHanh", buoc: 2 },
+};
+
+/**
+ * Đẩy quyết định phân công thẩm phân đã lưu vào kho văn bản chung, để nó hiện
+ * ở màn Danh sách văn bản và mở được bằng luồng "Xem văn bản đã trình" sẵn có.
+ *
+ * Dùng kiểu cấu trúc (không import kiểu từ màn phân công) để kho văn bản không
+ * phụ thuộc ngược lại vào màn gọi nó.
+ */
+export const taoQuyetDinhPhanCong = (input: {
+  don: { soThuLy: string; nguoiDungDon: string; soBA: string; hinhThuc: string; thamPhan?: string; ngayThuLy: string };
+  qd: { soVanBan: string; ngayBanHanh: string; donViSoanThao: string; ghiChu: string; trangThai: string };
+  nguoiTao: string;
+}): VanBanTrinh => {
+  const { don, qd, nguoiTao } = input;
+  const tt = QD_PHAN_CONG_TRANG_THAI[qd.trangThai] ?? QD_PHAN_CONG_TRANG_THAI.daLuu;
+  const chuaKy = tt.trangThai !== "DaBanHanh";
+  const lichSu: MocLichSu[] = [{ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 }];
+  if (chuaKy) lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "LaySoTam" });
+  if (tt.buoc >= 1) lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "Trinh" });
+  if (tt.trangThai === "DaBanHanh") lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Chánh án", hanhDong: "Ky" });
+
+  return {
+    // id ổn định theo mã đơn: mỗi lần sửa quyết định ghi đè đúng bản ghi cũ
+    // thay vì chồng thêm một dòng mới vào Danh sách văn bản.
+    id: `vb-qd-${don.soThuLy}`,
+    trichYeu: `Quyết định phân công thẩm phán – ${don.soThuLy}`,
+    loaiVanBan: "Quyết định phân công thẩm phán",
+    donViSoanThao: qd.donViSoanThao,
+    soVanBan: qd.soVanBan,
+    trangThaiSo: chuaKy ? "tam" : "chinhThuc",
+    ngayCapSo: homNay(),
+    ngayBanHanh: chuaKy ? undefined : qd.ngayBanHanh,
+    trangThai: tt.trangThai,
+    nguoiTao,
+    luongKy: luongToTrinhPhanCong(),
+    buocHienTai: tt.buoc,
+    vongTrinh: 1,
+    phienBanHienTai: 1,
+    phienBan: [{ so: 1, noiDung: noiDungQDPhanCong(don, qd.ghiChu), nguoiSua: nguoiTao, thoiGian: bayGio() }],
+    lichSu,
+    donDinhKem: [{ ma: don.soThuLy, nguoiGui: don.nguoiDungDon, soBA: don.soBA, hinhThuc: don.hinhThuc }],
   };
 };
 

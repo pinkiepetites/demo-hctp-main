@@ -75,7 +75,8 @@ const DOC_TYPES = [
   // luồng Danh sách đơn nữa.
   "Tờ trình khác", 
   "Thông báo phân công TP", 
-  "Yêu cầu bổ sung"
+  "Yêu cầu bổ sung",
+  "Biên bản giao nhận hồ sơ đơn"
 ];
 
 const INITIAL_TREE_DATA: DocNode[] = [
@@ -122,6 +123,7 @@ const VAN_BAN_DI_KEM_TAT_CA = [
   "Tờ trình khác",
   "Thông báo phân công TP",
   "Yêu cầu bổ sung",
+  "Biên bản giao nhận hồ sơ đơn",
 ];
 
 // Giới hạn theo loại văn bản chính. Loại nào không có ở đây thì cho chọn tất cả.
@@ -208,7 +210,17 @@ export const LY_DO_YEU_CAU_BO_SUNG = [
 const HAU_TO_SO_RIENG: Record<string, string> = {
   "Thông báo phân công TP": "TB-TA",
   "Giấy xác nhận": "TB-TA",
+  "Biên bản giao nhận hồ sơ đơn": "BB-TA",
 };
+
+/** Loại văn bản gom TẤT CẢ đơn được chọn vào 1 văn bản chung, thay vì mỗi đơn
+ *  một văn bản riêng (mặc định). Đúng với bản chất văn bản: một tờ trình phân
+ *  công gộp nhiều đơn, một biên bản giao nhận hồ sơ liệt kê nhiều hồ sơ và hai
+ *  bên chỉ ký một lần. */
+const GOP_DON_VAO_MOT_VAN_BAN = new Set([
+  "Thông báo phân công thẩm phán",
+  "Biên bản giao nhận hồ sơ đơn",
+]);
 const hauToSoCua = (loaiVB: string) =>
   HAU_TO_SO_RIENG[loaiVB] ?? (loaiVB.startsWith("Tờ trình") ? "TTr-TAHN-VP" : "TAHN-VP");
 
@@ -436,6 +448,105 @@ const MauGiayXacNhan = ({ so, ngay, row }: { so: string; ngay: string; row?: any
           <div className="mt-14 font-bold"><Sup n="14" />Nguyễn Văn A</div>
         </div>
       </div>
+    </TrangA4>
+  );
+};
+
+// Biểu mẫu: Biên bản giao nhận hồ sơ đơn
+// Bản chất khác các loại còn lại: đây là biên bản có HAI bên ký (bên giao và bên
+// nhận), nên phần ký tách đôi và nội dung là bảng liệt kê các hồ sơ được giao.
+const MauBienBanGiaoNhan = ({ so, ngay, rows }: { so: string; ngay: string; rows: any[] }) => {
+  // Đơn đầu tiên đại diện cho hồ sơ: thẩm phán nhận và cán bộ giao đều lấy từ đây.
+  const dau = rows[0] ?? {};
+  const d = dau.thongTinDon ?? {};
+  return (
+    <TrangA4>
+      <QuocHieu />
+
+      <div className="grid grid-cols-2 text-center text-[13px] mt-5">
+        <div>Số: {so}/BB-TA</div>
+        <div className="italic">{ngay}</div>
+      </div>
+
+      <div className="text-center mt-9">
+        <div className="text-[15px] font-bold">BIÊN BẢN</div>
+        <div className="text-[14px] font-bold mt-1.5">GIAO NHẬN HỒ SƠ ĐƠN</div>
+      </div>
+
+      <div className="mt-6">
+        Hôm nay, ngày <b>{ngay}</b>, tại Văn phòng Tòa án nhân dân thành phố Hà Nội,
+        chúng tôi gồm:
+      </div>
+
+      <div className="mt-3 pl-[42px] space-y-2">
+        <div><b>1. Bên giao:</b> Đại diện Phòng Tiếp công dân và tư pháp — {dau.nguoiNhap || "……"}</div>
+        <div><b>2. Bên nhận:</b> Thẩm phán — {d.thamPhan || "……"}</div>
+      </div>
+
+      <div className="mt-4">
+        Cùng tiến hành giao nhận <b>{rows.length}</b> hồ sơ đơn với các nội dung cụ thể như sau:
+      </div>
+
+      <table className="w-full border-collapse mt-3 text-[12px]">
+        <thead>
+          <tr>
+            <th className="border border-black px-1 py-1 w-[30px]">TT</th>
+            <th className="border border-black px-1 py-1 w-[62px]">Số thụ lý</th>
+            <th className="border border-black px-1 py-1 w-[66px]">Ngày thụ lý</th>
+            <th className="border border-black px-1 py-1">Người đứng đơn</th>
+            <th className="border border-black px-1 py-1 w-[92px]">Loại án</th>
+            <th className="border border-black px-1 py-1 w-[110px]">Số tài liệu kèm theo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 ? (
+            <tr><td colSpan={6} className="border border-black px-2 py-6 text-center italic">Chưa có đơn nào được chọn</td></tr>
+          ) : rows.map((r: any, i) => (
+            <tr key={r.id ?? i} className="align-top">
+              <td className="border border-black px-1 py-1.5 text-center">{i + 1}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.giaiQuyet?.stl || "—"}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.giaiQuyet?.ngayThuLy || r.ngayNhap || "—"}</td>
+              <td className="border border-black px-1 py-1.5">{r.nguoiGui || "—"}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.loaiAn || "—"}</td>
+              <td className="border border-black px-1 py-1.5 text-center">{r.ghiChu || "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="mt-4 space-y-3 text-justify text-[13px]">
+        <p className="indent-[42px]">
+          Bên giao cam kết đã giao đầy đủ, chính xác và nguyên vẹn các tài liệu
+          nêu trên; đồng thời thông báo đầy đủ cho bên nhận về việc thu thập, bổ
+          sung và tố chức hồ sơ theo quy định pháp luật.
+        </p>
+        <p className="indent-[42px]">
+          Bên nhận đã kiểm tra số lượng, chất lượng tài liệu và xác nhận nhận đủ
+          các hồ sơ nêu trên, chịu trách nhiệm bảo quản, lưu giữ và giải quyết
+          đúng thẩm quyền.
+        </p>
+        <p className="indent-[42px]">
+          Biên bản này đã được hai bên đọc, xác nhận và cùng ký dưới đây, làm căn cứ
+          bàn giao hồ sơ.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 mt-9 text-center text-[13px] font-bold">
+        <div>
+          <div className="italic">ĐẠI DIỆN BÊN GIAO</div>
+          <div className="text-[12px] font-normal">Phòng Tiếp công dân và tư pháp</div>
+          <div className="mt-2 text-[12px] font-normal italic">(Ký, ghi rõ họ tên)</div>
+          <div className="mt-12 font-bold">{dau.nguoiNhap || "……"}</div>
+        </div>
+        <div>
+          <div className="italic">ĐẠI DIỆN BÊN NHẬN</div>
+          <div className="text-[12px] font-normal">Thẩm phán</div>
+          <div className="mt-2 text-[12px] font-normal italic">(Ký, ghi rõ họ tên)</div>
+          <div className="mt-12 font-bold">{(d.thamPhan || "……").split(" (")[0]}</div>
+        </div>
+      </div>
+
+      <NoiNhan dong={["- Nơi nhận hồ sơ (để theo dõi);", "- Lưu: VP TAND TP Hà Nội."]} ky={["KT. CHÁNH VĂN PHÒNG", "PHÓ CHÁNH VĂN PHÒNG"]} />
     </TrangA4>
   );
 };
@@ -810,8 +921,27 @@ const MauDanhSachThuLyMoi = ({ so, ngay, donVi, rows }: {
   </div>
 );
 
-const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }: {
+/** Dữ liệu biểu mẫu quyết định phân công thẩm phán cho màn xem có sẵn. */
+export interface QDPhanCongBieuMau {
+  donViSoanThao: string;
+  soVanBan: string;
+  /** dd/MM/yyyy */
+  ngayBanHanh: string;
+  soThuLy: string;
+  /** dd/MM/yyyy */
+  ngayThuLy: string;
+  thamPhan: string;
+  ghiChu: string;
+  /** Đã ký số => hiện chữ ký thay cho dòng chấm điểm. */
+  daKy: boolean;
+}
+
+export const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose, quyetDinh, onSangDanhSach }: {
   rows: any[]; loaiVanBan: string; vanBanDiKem?: string[]; onClose: () => void;
+  /** Có thì hiện biểu mẫu Quyết định phân công thẩm phán thay cho danh sách đơn. */
+  quyetDinh?: QDPhanCongBieuMau;
+  /** Mở màn Danh sách văn bản (luồng "Xem văn bản đã trình" sẵn có). */
+  onSangDanhSach?: () => void;
 }) => {
   const [tab, setTab] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -890,6 +1020,8 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
       return <MauGiayXacNhanCoQuan so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
     if (loai === "Giấy xác nhận")
       return <MauGiayXacNhan so={soTTHienThi} ngay={ngayVanBan} row={rows[0]} />;
+    if (loai === "Biên bản giao nhận hồ sơ đơn")
+      return <MauBienBanGiaoNhan so={soTTHienThi} ngay={ngayVanBan} rows={rows} />;
     return (
       <TrangA4 className="text-center italic text-on-surface-variant">
         Chưa có biểu mẫu cho "{loai}".
@@ -897,6 +1029,155 @@ const ToTrinhPhanCongPreview = ({ rows, loaiVanBan, vanBanDiKem = [], onClose }:
     );
   };
 
+
+  // Biểu mẫu quyết định phân công: một đơn ↔ một quyết định, không có danh sách
+  // và không sửa tại chỗ — số/ngày/thẩm phán đã chốt ở form tạo quyết định.
+  if (quyetDinh) {
+    const q = quyetDinh;
+    const dieu = (n: number, noiDung: React.ReactNode) => (
+      <div className="flex items-start gap-2 py-1">
+        <div className="flex-1 text-justify text-[14px] leading-[1.55]">
+          <b className="italic">Điều {n}.</b> {noiDung}
+        </div>
+        <div className="w-[30px] shrink-0 text-center text-[14px]">{n}</div>
+      </div>
+    );
+
+    return (
+      <div className="fixed inset-0 z-[200] bg-black/50 flex items-center justify-center p-4">
+        {/* Khi in chỉ in trang quyết định, không in cả giao diện bên dưới. */}
+        <style>{`
+          @media print {
+            body * { visibility: hidden !important; }
+            #khu-vuc-in, #khu-vuc-in * { visibility: visible !important; }
+            #khu-vuc-in {
+              position: absolute !important; left: 0 !important; top: 0 !important;
+              width: 100% !important; height: auto !important; max-height: none !important;
+              overflow: visible !important; padding: 0 !important; background: #fff !important;
+            }
+            #khu-vuc-in > div { box-shadow: none !important; max-width: none !important; width: 100% !important; }
+          }
+        `}</style>
+
+        <div className="bg-white rounded-[6px] shadow-2xl max-w-[96vw] max-h-[94vh] w-[900px] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 bg-tertiary text-white flex-shrink-0">
+            <span className="text-[15px] font-bold">Biểu mẫu Quyết định phân công thẩm phán</span>
+            <div className="flex items-center gap-2">
+              {onSangDanhSach && (
+                <Button onClick={onSangDanhSach}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-[4px] bg-white/15 hover:bg-white/25 text-white">
+                  <FileText size={14} /> Xem trong danh sách văn bản
+                </Button>
+              )}
+              <Button onClick={() => window.print()}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-[4px] bg-white/15 hover:bg-white/25 text-white">
+                <Printer size={14} /> In
+              </Button>
+              <Button onClick={onClose}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-[4px] bg-white/15 hover:bg-white/25 text-white">
+                <X size={14} /> Đóng
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-auto bg-[#eef0f3] p-4">
+            <div id="khu-vuc-in">
+              <TrangA4>
+                {/* Quyết định phân công lập ở cấp tỉnh nên dùng đúng tên đơn vị
+                    của quyết định, không dùng quốc hiệu Toà án Tối cao hard-code
+                    trong QuocHieu (dùng cho văn bản TANDTC). */}
+                <div className="grid grid-cols-2">
+                  <div className="text-center">
+                    <div className="text-[13px] font-bold uppercase">{q.donViSoanThao}</div>
+                    <div className="w-[185px] h-[1px] bg-black mx-auto mt-1.5" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[13px] font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div className="text-[13px] font-bold mt-1.5">Độc lập - Tự do - Hạnh phúc</div>
+                    <div className="w-[185px] h-[1px] bg-black mx-auto mt-1" />
+                  </div>
+                </div>
+
+                <div className="text-center mt-8">
+                  <div className="text-[14px]">QUYẾT ĐỊNH</div>
+                  <div className="text-[15px] font-bold leading-[1.5] mt-1">
+                    Về việc phân công thẩm phán giải quyết vụ án
+                  </div>
+                </div>
+
+                <div className="flex mt-5 text-[14px]">
+                  <div className="w-[46px] text-center">Số:</div>
+                  <div className="flex-1 font-semibold border-b border-dotted border-black pb-0.5">
+                    {q.soVanBan}
+                  </div>
+                </div>
+                <div className="flex mt-2 text-[14px]">
+                  <div className="w-[46px] text-center">Về:</div>
+                  <div className="flex-1 text-justify">
+                    Việc phân công thẩm phán giải quyết vụ án dân sự số {q.soThuLy}{" "}
+                    thụ lý ngày {q.ngayThuLy} của {q.donViSoanThao}.
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <div className="text-justify text-[14px] leading-[1.55]">
+                    Căn cứ Luật Tổ chức Toà án nhân dân và Luật Trách nhiệm thẩm phán tư pháp;
+                    <br />
+                    Căn cứ quy định tại Điều 24, 25 Luật Trách nhiệm thẩm phán tư pháp;
+                    <br />
+                    Theo đề nghị của Phòng Thẩm phán dân sự;
+                  </div>
+                  <div className="text-justify text-[14px] leading-[1.55] mt-1">
+                    <b className="italic">Quyết định:</b> Phân công thẩm phán giải quyết vụ án
+                    như sau:
+                  </div>
+                  {dieu(1, (
+                    <>
+                      Phân công thẩm phán <b>{q.thamPhan}</b> giải quyết vụ án việc dân sự
+                      nêu trên, thời hạn giải quyết theo quy định chung.
+                    </>
+                  ))}
+                  {dieu(2, (
+                    <>
+                      Thẩm phán được phân công có trách nhiệm tiếp nhận, giải quyết vụ án
+                      đúng thời hạn quy định, bảo đảm lập hồ sơ đầy đủ, chính xác.
+                    </>
+                  ))}
+                  {dieu(3, (
+                    <>
+                      Quyết định này có hiệu lực kể từ ngày ký. Thẩm phán được phân công
+                      căn cứ quyết định này để thi hành Quyết định này.
+                    </>
+                  ))}
+                </div>
+
+                {q.ghiChu.trim() && (
+                  <div className="mt-3 text-[13px] italic">Ghi chú: {q.ghiChu.trim()}</div>
+                )}
+
+                <div className="grid grid-cols-2 mt-8">
+                  <div className="text-[12px]">
+                    <div className="font-bold italic">Nơi nhận:</div>
+                    <div>- Như Điều 3;</div>
+                    <div>- Thẩm phán {q.thamPhan};</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[13px] font-bold">NGƯỜI KÝ</div>
+                    <div className="mt-6 text-[13px] italic">{q.daKy ? "Đã ký số" : "......"}</div>
+                    <div className="text-[13px] font-bold mt-1">CHÁNH ÁN</div>
+                  </div>
+                </div>
+
+                <div className="text-right mt-6 text-[14px] pr-[40px]">
+                  Hà Nội, ngày {q.ngayBanHanh}
+                </div>
+              </TrangA4>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[200] bg-black/50 flex items-center justify-center p-4">
@@ -1199,6 +1480,11 @@ export const lyDoDonKhongHopLe = (
     // So khớp lỏng vì dữ liệu ghi "Chưa đủ điều kiện" còn danh mục cũ ghi
     // "Đơn chưa đủ điều kiện".
     return !tq.toLowerCase().includes("chưa đủ điều kiện") ? "Chỉ lập cho đơn Chưa đủ điều kiện" : null;
+
+  // Biên bản giao nhận hồ sơ ghi lại việc bàn giao hồ sơ đã thụ lý, nên đơn
+  // chưa có số thụ lý thì chưa có cái gì để giao.
+  if (loai === "biên bản giao nhận hồ sơ đơn")
+    return (data?.giaiQuyet?.stl || "").trim() ? null : "Đơn chưa thụ lý nên chưa có hồ sơ để giao nhận";
 
   return null;   // loại chưa có luật riêng → không ràng buộc
 };
@@ -1667,9 +1953,9 @@ export default function DocumentNumberingModal({ isOpen, onClose, currentRole, s
     let n = 1;
 
     const dungNhom = (loaiVB: string, cham: boolean, tienTo: string) => {
-      if (loaiVB === "Thông báo phân công thẩm phán") {
-        // TẤT CẢ các đơn được chọn sẽ thuộc 1 tờ trình duy nhất, đơn để thẳng
-        // dưới tờ trình — bỏ tầng "Danh sách đơn" theo đơn vị/thẩm phán/hình
+      if (GOP_DON_VAO_MOT_VAN_BAN.has(loaiVB)) {
+        // TẤT CẢ các đơn được chọn sẽ thuộc 1 văn bản duy nhất, đơn để thẳng
+        // dưới văn bản — bỏ tầng "Danh sách đơn" theo đơn vị/thẩm phán/hình
         // thức phân công.
         const tenGoc = `${loaiVB} chung`;
         const hauToSo = hauToSoCua(loaiVB);

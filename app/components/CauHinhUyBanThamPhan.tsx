@@ -30,6 +30,10 @@ dayjs.extend(customParseFormat);
 
 const RED = "#8b1a1a";
 const MUTED = "#667085";
+const F = "Be Vietnam Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+const BG = "#f8f9fa";
+const BORDER = "#e2e8f0";
+const TEXT = "#1e293b";
 const { Text } = Typography;
 
 const FMT = "DD/MM/YYYY";
@@ -227,11 +231,7 @@ const NGACH = ["Thẩm phán bậc 1", "Thẩm phán bậc 2", "Thẩm phán b�
 /** Thành viên đương nhiên nạp theo chức vụ nhưng VẪN SỬA ĐƯỢC: khi Chánh án /
  *  Phó Chánh án thay đổi mà dữ liệu nhân sự chưa kịp đồng bộ, tòa tự cập nhật
  *  tại đây thay vì phải chờ sửa phần mềm. */
-function BangDuongNhien({ ds, toaAn, onSua, onXoa }: {
-  ds: DuongNhien[]; toaAn: string;
-  onSua?: (r: DuongNhien) => void;
-  onXoa?: (id: string) => void;
-}) {
+function BangDuongNhien({ ds, toaAn }: { ds: DuongNhien[]; toaAn: string }) {
   const cot: ColumnsType<DuongNhien> = [
     cotSTT,
     {
@@ -250,22 +250,6 @@ function BangDuongNhien({ ds, toaAn, onSua, onXoa }: {
       </>,
     },
   ];
-  if (onSua && onXoa) cot.push({
-    title: "", width: 96, align: "center",
-    render: (_, r) => (
-      <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-        <Tooltip title="Sửa thành viên">
-          <Button size="small" aria-label="Sửa thành viên" icon={<Pencil size={14} />} onClick={() => onSua(r)} />
-        </Tooltip>
-        <Popconfirm title={`Bỏ ${r.ten} khỏi thành viên đương nhiên?`} okText="Bỏ" cancelText="Không"
-          onConfirm={() => onXoa(r.id)}>
-          <Tooltip title="Bỏ khỏi Ủy ban">
-            <Button danger size="small" aria-label="Bỏ khỏi Ủy ban" icon={<Trash2 size={14} />} />
-          </Tooltip>
-        </Popconfirm>
-      </div>
-    ),
-  });
   return <Table rowKey="id" size="middle" columns={cot} dataSource={ds} pagination={false}
     locale={{ emptyText: "Chưa có thành viên đương nhiên" }} />;
 }
@@ -293,7 +277,7 @@ function ModalDuongNhien({ banGhi, ungVien, onDong, onLuu }: {
       okText={cu ? "Cập nhật" : "Thêm"} cancelText="Hủy" okButtonProps={{ disabled: !luuDuoc }}
       onOk={() => onLuu({
         id: cu?.id ?? `dn-${Date.now()}`,
-        ten: ten.trim(), ngach, chucVu: chucVu!, chuTri,
+        ten: ten.trim(), ngach, chucVu: chucVu!, chuTri, chucDanh: "Thẩm phán TAND",
       })}>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 4 }}>
         <div>
@@ -322,7 +306,7 @@ function ModalDuongNhien({ banGhi, ungVien, onDong, onLuu }: {
   );
 }
 
-function BangChiDinh({ ds, onBo }: { ds: ChiDinh[]; onBo?: (id: string) => void }) {
+function BangChiDinh({ ds }: { ds: ChiDinh[] }) {
   const cot: ColumnsType<ChiDinh> = [
     cotSTT,
     { title: "Họ tên", dataIndex: "ten", width: 240, render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
@@ -333,16 +317,6 @@ function BangChiDinh({ ds, onBo }: { ds: ChiDinh[]; onBo?: (id: string) => void 
     { title: "Loại thành viên", render: () => <Tag color="cyan">Thẩm phán được chỉ định</Tag> },
   ];
   
-  if (onBo) {
-    cot.push({
-      title: "", width: 60, align: "center",
-      render: (_, r) => (
-        <Tooltip title="Bỏ khỏi Ủy ban">
-          <Button danger size="small" aria-label="Bỏ khỏi Ủy ban" icon={<Trash2 size={14} />} onClick={() => onBo(r.id)} />
-        </Tooltip>
-      ),
-    });
-  }
   return (
     <Table rowKey="id" size="middle" columns={cot} dataSource={ds} pagination={false}
       locale={{ emptyText: "Chưa chỉ định thẩm phán nào" }} />
@@ -591,9 +565,7 @@ function TabKyHienHanh({ uyBan, chiXem, capNhat, onXemLichSu }: {
           <Alert type="warning" showIcon banner
             title={soChanhAn === 0 ? "Chưa có Chánh án trong thành viên đương nhiên." : `Đang có ${soChanhAn} người giữ chức vụ Chánh án — kiểm tra lại.`} />
         )}
-        <BangDuongNhien ds={dnHien} toaAn={uyBan.toaAn}
-          onSua={dangNhap ? r => setSuaDN(r) : undefined}
-          onXoa={dangNhap ? id => datDuongNhien(ds => ds.filter(d => d.id !== id)) : undefined} />
+        <BangDuongNhien ds={dnHien} toaAn={uyBan.toaAn} />
       </Card>
 
       {/* Thẩm phán được chỉ định */}
@@ -604,8 +576,7 @@ function TabKyHienHanh({ uyBan, chiXem, capNhat, onXemLichSu }: {
             {dangNhap && <Button icon={<Plus size={14} />} onClick={() => setMoChon(true)}>Thêm thẩm phán</Button>}
           </div>
         }>
-        <BangChiDinh ds={cdHien}
-          onBo={dangNhap ? id => suaNhap({ chiDinh: nhap!.chiDinh.filter(c => c.id !== id) }) : undefined} />
+        <BangChiDinh ds={cdHien} />
       </Card>
 
       {dangNhap && vuot && (
@@ -649,7 +620,7 @@ function TabKyHienHanh({ uyBan, chiXem, capNhat, onXemLichSu }: {
           conNhan={duocDuyet == null ? null : duocDuyet - tong}
           onDong={() => setMoChon(false)}
           onThem={ds => suaNhap({
-            chiDinh: [...nhap!.chiDinh, ...ds.map(u => ({ id: u.id, ten: u.ten, chucDanh: u.chucDanh, donVi: u.donVi, ngayVao: "" }))],
+            chiDinh: [...nhap!.chiDinh, ...ds.map(u => ({ id: u.id, ten: u.ten, chucDanh: u.chucDanh, chucVu: u.chucVu, donVi: u.donVi, ngayVao: "" }))],
           })} />
       )}
     </div>
@@ -883,15 +854,16 @@ export default function CauHinhUyBanThamPhan({ cap, toaAn = TOA_AN_TINH_MAC_DINH
   };
 
   return (
-    <ConfigProvider theme={{ token: { colorPrimary: RED, borderRadius: 3 } }}>
-      <div className="bg-white border border-surface-container rounded-[3px] overflow-hidden flex flex-col h-full">
+    <ConfigProvider theme={{ token: { colorPrimary: RED, borderRadius: 3, fontFamily: F } }}>
+      <div style={{ display: "flex", flexDirection: "column", height: "100%", background: BG }}>
+        <div style={{ padding: "8px 20px", borderBottom: `1px solid ${BORDER}`, fontSize: 12, color: MUTED, fontFamily: F, flexShrink: 0, background: "#fff" }}>
+          Quản trị hệ thống › Cấu hình Ủy ban Thẩm phán
+        </div>
+        
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-surface-container-high bg-surface-bright shrink-0">
-          <div className="flex items-center gap-3">
-            <div>
-              <div className="text-[11px] text-on-surface-variant mb-0.5">Quản trị hệ thống / <span className="font-medium text-on-surface-variant">Cấu hình Ủy ban Thẩm phán</span></div>
-              <div className="text-[15px] font-bold text-tertiary">Cấu hình Ủy ban Thẩm phán</div>
-            </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", borderBottom: `1px solid ${BORDER}`, background: "#fff", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, fontFamily: F }}>Cấu hình Ủy ban Thẩm phán</div>
             {uyBan && (dangNhap ? <Tag color="warning" style={{ margin: 0 }}>Nháp</Tag> : <Tag color="success" style={{ margin: 0 }}>Có hiệu lực</Tag>)}
           </div>
           <div className="flex items-center gap-2">
@@ -912,42 +884,50 @@ export default function CauHinhUyBanThamPhan({ cap, toaAn = TOA_AN_TINH_MAC_DINH
         </div>
 
         {/* Content */}
-        <div className="p-4 flex-1 overflow-y-auto flex flex-col gap-3">
-
+        <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", background: "#fff" }}>
           {laToiCao && (
-            <Alert type="info" showIcon icon={<Info size={16} />}
-              title="Chế độ xem của TANDTC: theo dõi Ủy ban Thẩm phán của các TAND cấp tỉnh. Việc lập kỳ mới do từng tòa thực hiện." />
+            <div style={{ padding: "12px 20px 0" }}>
+              <Alert type="info" showIcon icon={<Info size={16} />}
+                title="Chế độ xem của TANDTC: theo dõi Ủy ban Thẩm phán của các TAND cấp tỉnh. Việc lập kỳ mới do từng tòa thực hiện." />
+            </div>
           )}
 
           {!uyBan ? (
-            <BangTongHop dsUyBan={dsUyBan} onChon={t => { setToaChon(t); setTab("hien_hanh"); }} />
+            <div style={{ padding: 20 }}><BangTongHop dsUyBan={dsUyBan} onChon={t => { setToaChon(t); setTab("hien_hanh"); }} /></div>
           ) : (
-            <div className="flex flex-col h-full gap-3">
+            <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
               {/* Tabs */}
-              <div className="flex items-end border-b border-surface-container px-4 pt-0.5 gap-0 bg-white -mx-4 -mt-4">
+              <div style={{ display: "flex", gap: 0, borderBottom: `1px solid ${BORDER}`, background: "#fff", padding: "0 20px", flexShrink: 0, flexWrap: "wrap" }}>
                 {[
                   { key: "hien_hanh", label: "Kỳ hiện hành" },
                   { key: "lich_su", label: "Lịch sử các kỳ" },
-                ].map(t => (
-                  <button key={t.key} onClick={() => setTab(t.key)}
-                    className={`px-3.5 py-[8px] text-[12px] font-medium border-b-2 transition-colors whitespace-nowrap -mb-px outline-none ${tab === t.key
-                      ? "border-error text-error bg-transparent"
-                      : "border-transparent text-on-surface-variant hover:text-on-surface bg-transparent"
-                      }`}>
-                    {t.label}
-                  </button>
-                ))}
-                <div className="flex-1 flex justify-end pb-1">
+                ].map(t => {
+                  const active = tab === t.key;
+                  return (
+                    <Button key={t.key} onClick={() => setTab(t.key)}
+                      style={{
+                        padding: "12px 16px", fontSize: 13, fontFamily: F, fontWeight: active ? 600 : 400,
+                        background: "none", border: "none", cursor: "pointer",
+                        color: active ? RED : MUTED,
+                        borderBottom: active ? `2px solid ${RED}` : "2px solid transparent",
+                        marginBottom: -1, whiteSpace: "nowrap",
+                        transition: "color 0.15s", borderRadius: 0,
+                      }}>
+                      {t.label}
+                    </Button>
+                  );
+                })}
+                <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   {(!laToiCao && !dangNhap) && (
-                    <button onClick={lapKyMoi} className="h-[28px] px-3 bg-error text-white rounded-[3px] text-[11.5px] hover:bg-[#7a1616] flex items-center gap-1.5 transition-colors">
+                    <Button onClick={lapKyMoi} style={{ background: RED, color: "#fff", border: "none", fontWeight: 600, fontFamily: F, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
                       <Plus size={14} /> Lập kỳ mới
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
 
               {/* Tab Content */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 20 }}>
                 {tab === "hien_hanh" && (
                   <TabKyHienHanh key={toaChon} uyBan={uyBan} chiXem={laToiCao} capNhat={capNhat} onXemLichSu={() => setTab("lich_su")} />
                 )}

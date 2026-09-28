@@ -34,8 +34,7 @@ export const NHOM_VAI_TRO_TOICAO: RoleDef[] = [
 
 export const NHOM_VAI_TRO_TINH: RoleDef[] = [
   { key: "TI-HCTP-CVP", cap: "tinh", innerRole: "pho-vp", label: "Chánh/Phó Chánh văn phòng", donVi: "Hành chính Tư pháp" },
-  { key: "TI-HCTP-CBTL", cap: "tinh", innerRole: "can-bo-thu-ly", label: "Cán bộ thụ lý", donVi: "Hành chính Tư pháp" },
-  { key: "TI-HCTP-TCD", cap: "tinh", innerRole: "can-bo-tiep-cong-dan", label: "Cán bộ tiếp công dân", donVi: "Hành chính Tư pháp" },
+  { key: "TI-HCTP-CBTL", cap: "tinh", innerRole: "can-bo-thu-ly", label: "Cán bộ tiếp nhận & thụ lý", donVi: "Hành chính Tư pháp" },
   { key: "TI-PCA", cap: "tinh", innerRole: "pho-chanh-an", label: "Phó Chánh án", donVi: "Lãnh đạo Tòa" },
   { key: "TI-CA", cap: "tinh", innerRole: "chanh-an", label: "Chánh án", donVi: "Lãnh đạo Tòa" },
   { key: "TI-GDKT-TP", cap: "tinh", innerRole: "lanh-dao-phong", label: "Trưởng phòng", donVi: "Phòng GĐKT" },
@@ -51,7 +50,7 @@ export function findRoleDef(key: string): RoleDef {
   if (found) return found;
 
   // Fallbacks for legacy keys
-  if (key === "can-bo-tiep-cong-dan" || key === "can-bo-thu-ly" || key === "can-bo-nghiep-vu" || key === "lanh-dao-phong" || key === "pho-vp" || key === "chanh-an") {
+  if (key === "can-bo-thu-ly" || key === "can-bo-nghiep-vu" || key === "lanh-dao-phong" || key === "pho-vp" || key === "chanh-an") {
     return ALL_ROLES.find(r => r.innerRole === key && r.cap === "tinh") || NHOM_VAI_TRO_TINH[0];
   }
   if (key === "can-bo" || key === "truong-phong" || key === "lanh-dao" || key === "pho-vp" || key === "chanh-an") {

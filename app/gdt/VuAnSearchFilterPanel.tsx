@@ -89,6 +89,7 @@ export interface VuAnFilterValues {
 
   rutKhangNghi: string;
   ngayRutKhangNghi: string;
+  maVuAn: string;
 }
 
 export const INITIAL_FILTER_VALUES: VuAnFilterValues = {
@@ -120,6 +121,7 @@ export const INITIAL_FILTER_VALUES: VuAnFilterValues = {
   ngayTuyenAn: "",
   rutKhangNghi: "",
   ngayRutKhangNghi: "",
+  maVuAn: "",
 };
 
 export const FILTER_LABELS: Record<keyof VuAnFilterValues, string> = {

@@ -469,11 +469,11 @@ export default function TrangChuTruongPhong({
             onClick={onMoPheDuyet}
           />
           <TheViec
-            nhan="Đơn chờ phân công Thẩm phán"
+            nhan="Đơn chờ cấp số thụ lý"
             giaTri={viec.choPhanCong}
             phuChu={viec.choPhanCong ? "Đơn đã thụ lý mới, chưa có người xử lý" : "Đã phân công hết"}
             icon={<Users size={20} />} mauIcon="text-[#8e44ad]" nenIcon="bg-[#f5f3ff]"
-            onClick={() => onMoDanhSachDon?.({ nhan: "Chờ phân công Thẩm phán", trangThai: "Thụ lý mới" })}
+            onClick={() => onMoDanhSachDon?.({ nhan: "Chờ cấp số thụ lý", trangThai: "Thụ lý mới" })}
           />
           <TheViec
             nhan="Đơn chờ ý kiến Lãnh đạo"

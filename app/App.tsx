@@ -21,7 +21,7 @@ export default function RootApp() {
     return localStorage.getItem("hctp_last_toicao_role") || "toicao-can-bo";
   });
   const [lastTinhRole, setLastTinhRole] = useState<string>(() => {
-    return localStorage.getItem("hctp_last_tinh_role") || "tinh-can-bo-tiep-cong-dan";
+    return localStorage.getItem("hctp_last_tinh_role") || "tinh-can-bo-thu-ly";
   });
 
   const handleDoiVaiTro = (roleKey: string) => {
@@ -44,7 +44,7 @@ export default function RootApp() {
     if (cap === "toicao") {
       handleDoiVaiTro(lastToiCaoRole || "toicao-can-bo");
     } else {
-      handleDoiVaiTro(lastTinhRole || "tinh-can-bo-tiep-cong-dan");
+      handleDoiVaiTro(lastTinhRole || "tinh-can-bo-thu-ly");
     }
   };
 
