@@ -24,7 +24,7 @@ Sau khi đơn đã được phân công thẩm phán, TAND cấp tỉnh phải b
 ### 2. Nút "Tạo Quyết định phân công"
 
 #### 2.1. Vị trí và điều kiện hiển thị
-- Màn **Phân công thẩm phán**, tab **Quản lý kết quả phân công**, thanh thao tác phía trên bảng, bên trái nút **In danh sách**.
+- Màn **Phân công thẩm phán**, tab **Quản lý kết quả phân công**, thanh thao tác phía trên bảng.
 - Chỉ hiện ở **TAND cấp tỉnh**. Màn dùng chung với TANDTC; ở TANDTC không truyền `onTaoQuyetDinh` nên nút không hiện.
 - Nhãn nút:
   - Chưa tick dòng nào: **Tạo Quyết định phân công**
@@ -43,9 +43,9 @@ Sau khi đơn đã được phân công thẩm phán, TAND cấp tỉnh phải b
 ### 3. Popup "Tạo quyết định phân công thẩm phán"
 
 #### 3.1. Bố cục
-- Popup giữa màn hình, rộng 880px, cao tối đa 88% màn hình. Bấm nền tối bên ngoài hoặc nút **X** để đóng.
+- Popup giữa màn hình. Bấm nút **X** để đóng.
 - **Header**: tiêu đề *"Tạo quyết định phân công thẩm phán"*, dòng phụ *"Mỗi quyết định gắn với một đơn · {n} đơn đã phân công"*.
-- **Cột trái — Danh sách đơn ({n})**, rộng 270px. Mỗi dòng: số thụ lý (đậm), người đứng đơn, nhãn trạng thái quyết định (mục 4). Bấm một dòng để chọn đơn đang làm việc; dòng đang chọn có nền xanh nhạt và vạch xanh bên trái. Mặc định chọn đơn đầu tiên.
+- **Cột trái — Danh sách đơn ({n})**. Mỗi dòng: số thụ lý (đậm), người đứng đơn, nhãn trạng thái quyết định (mục 4). Bấm một dòng để chọn đơn đang làm việc; Mặc định chọn đơn đầu tiên.
 - **Cột phải — Form quyết định** của đơn đang chọn (mục 3.2) và các nút thao tác (mục 3.3).
 - Nếu tập đơn rỗng: vùng phải hiện *"Không có đơn nào đã được phân công thẩm phán."*
 

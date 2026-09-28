@@ -9,7 +9,7 @@
 | Phiên bản | Ngày | Nội dung |
 |---|---|---|
 | 1.0 | 28/09/2026 | Bản đầu: tab, nguồn đơn, UC duyệt và cấp số. |
-| 1.1 | 28/09/2026 | Bỏ quy tắc tính số thụ lý (đã định nghĩa ở tài liệu chung). Thêm: trả lại đơn cho cán bộ (UC-CDTL-02), xử lý sau hủy số thụ lý (UC-CDTL-03), khóa chỉnh sửa đơn chờ duyệt, thứ tự cấp số, sắp xếp, thông báo, chỉ số Trang chủ, xử lý lỗi, tiêu chí nghiệm thu. Sửa: ô Loại văn bản không bị ẩn. |
+| 1.1 | 28/09/2026 | Bỏ quy tắc tính số thụ lý (đã định nghĩa ở tài liệu chung). Thêm: trả lại đơn cho cán bộ (UC-CDTL-02), xử lý sau hủy số thụ lý (UC-CDTL-03), khóa chỉnh sửa đơn chờ duyệt, thứ tự cấp số, sắp xếp, thông báo, chỉ số Trang chủ, xử lý lỗi, tiêu chí nghiệm thu. Sửa: ô Loại văn bản không bị ẩn. Chốt: đơn chờ duyệt vẫn đếm hạn; Bị trả lại hiện ở tab Đơn trả lại, màu đỏ. |
 
 ---
 
@@ -68,6 +68,7 @@ Các kết luận khác ở cùng các popup trên **không** đi qua tab này: 
 - Các danh sách giá trị của bộ lọc **Trạng thái** / **Thụ lý đơn** phải có thêm hai giá trị **Chờ duyệt thụ lý** và **Bị trả lại**.
 - Bộ lọc tiến độ (Đã giải quyết / Chưa giải quyết) của tab Đơn của tôi **không hiện** ở tab này.
 - Đơn Chờ duyệt thụ lý **không** rơi vào tab **Khác** (MH-01 mục 2 phải bổ sung trạng thái này vào danh sách loại trừ của tab Khác) và không thuộc tab **Đơn Thụ lý** cho tới khi được duyệt.
+- Đơn **Bị trả lại** hiện ở tab **Đơn trả lại** (cùng với đơn "Trả lại đơn" cho đương sự), và **không** rơi vào tab **Khác**. MH-01 mục 2 phải sửa điều kiện của hai tab này tương ứng.
 
 #### 4.2. Sắp xếp
 - Trong tab Chờ duyệt thụ lý: theo **thời điểm nhận đơn** tăng dần (đơn nhận trước ở trên). Cùng thời điểm thì theo mã đơn tăng dần. Đây cũng là thứ tự cấp số khi duyệt hàng loạt (mục 7.2).
@@ -104,8 +105,8 @@ Cột và cách hiển thị giống MH-01 mục 4, trừ các điểm dưới �
 - Không hiện Số thụ lý, Ngày thụ lý.
 
 Đơn **Bị trả lại** (hiện ở các tab khác, xem mục 8.3):
-- Dòng trạng thái: **Bị trả lại**.
-- Dòng phụ: *"Người trả: {họ tên} — {ngày trả}"* và *"Lý do: {lý do trả lại}"*.
+- Dòng trạng thái: **Bị trả lại**, màu đỏ `#dc2626` (khác đỏ `#c0392b` của Không thụ lý để hai trạng thái không lẫn nhau).
+- Ngay dưới, **luôn** hiện: *"Người trả: {họ tên} — {ngày trả}"*, rồi *"Lý do: {lý do trả lại}"*. Dòng người trả giúp phân biệt với các trạng thái "Bị trả lại" / "Đã trả lại HCTP" ở nơi khác của MH-01, nên không đổi tên trạng thái.
 
 Liên kết **Lịch sử xử lý HCTP** và **Danh sách văn bản** giữ nguyên như MH-01 mục 5.
 
@@ -116,13 +117,15 @@ Với vai trò Chánh/Phó Chánh văn phòng:
 |---|---|---|
 | **Duyệt thụ lý & cấp số** | Đầu menu | Đơn đang Chờ duyệt thụ lý |
 | **Trả lại cho cán bộ** | Ngay sau mục trên | Đơn đang Chờ duyệt thụ lý |
-| **Cấp lại số thụ lý** | Đầu menu | Đơn đang Không thụ lý **và** mốc lịch sử gần nhất là "Hủy số thụ lý" (UC-CDTL-03) |
+| **Cấp lại số thụ lý** | Đầu menu | Đơn đang Không thụ lý **do hủy số thụ lý** (UC-CDTL-03) |
 | **Trả lại cho cán bộ** | Ngay sau mục trên | Như dòng trên |
 
 Hai mục cho đơn Chờ duyệt thụ lý hiện ở **mọi tab** có đơn đó (Chờ duyệt thụ lý, Tổng số), không chỉ ở tab Chờ duyệt thụ lý. Các mục xem (Xem chi tiết, Xem hồ sơ đơn…) giữ theo MH-01.
 
 #### 6.3. Khóa chỉnh sửa đơn đang chờ duyệt
 Khi đơn đang ở trạng thái **Chờ duyệt thụ lý**, **không ai** được thay đổi nội dung hay kết luận của đơn. Các mục làm thay đổi đơn **không hiện** trong Action Menu và phải bị chặn ở server (BR-05): Sửa, Thêm kết quả giải quyết, Bổ sung tài liệu, Chuyển đơn, Ghép đơn, Xóa.
+
+Trưởng phòng cũng **không được phân công / phân công lại cán bộ** cho đơn đang Chờ duyệt thụ lý. Ở tab Tổng số, dòng chờ duyệt không tick được để phân công. Nếu vẫn chọn lẫn đơn chờ duyệt vào danh sách phân công thì hệ thống bỏ qua các đơn đó. Nhờ vậy, khi trả lại, đơn luôn về đúng cán bộ đã kết luận.
 
 Chỉ có hai thao tác thay đổi được trạng thái đơn: **Duyệt** (UC-CDTL-01) và **Trả lại** (UC-CDTL-02). Muốn đổi kết luận thì Chánh/Phó Chánh văn phòng trả lại, sau đó cán bộ sửa.
 
@@ -179,9 +182,9 @@ Cả hai cách dùng **chung một xử lý**, nên kết quả không thể l�
 #### 8.3. Xử lý
 1. Chỉ giữ các đơn đang Chờ duyệt thụ lý, hoặc đang Không thụ lý sau hủy số thụ lý. Đơn khác bị bỏ qua, không báo lỗi. Không còn đơn nào thì báo *"Không có đơn nào để trả lại."* và dừng.
 2. Với mỗi đơn:
-   - Trạng thái → **Bị trả lại**.
+   - Trạng thái → **Bị trả lại**, màu `#dc2626`.
    - Ghi **người trả** (họ tên, chức danh), **ngày trả**, **lý do trả lại**.
-   - Đơn về **cán bộ đã kết luận Thụ lý mới** (người ở mốc Kết luận Thụ lý mới gần nhất) và hiện trong tab **Đơn của tôi** của cán bộ đó.
+   - Đơn về **cán bộ đã kết luận Thụ lý mới** (người ở mốc Kết luận Thụ lý mới gần nhất) và hiện trong tab **Đơn của tôi** của cán bộ đó, đồng thời ở tab **Đơn trả lại** (mục 4.1).
    - Thêm mốc lịch sử: hành động **Trả lại cho cán bộ**; cán bộ = người trả; thời điểm = lúc trả; ghi chú = *"Lý do: {lý do}"*.
    - Không có số thụ lý, không có ngày thụ lý.
 3. Đóng popup, bỏ chọn toàn bộ dòng, hiện thông báo *"Đã trả lại {n} đơn cho cán bộ."*
@@ -207,7 +210,7 @@ Hủy số thụ lý vẫn theo MH-01: đơn chuyển sang **Không thụ lý**,
 | **Cấp lại số thụ lý** | Chạy các bước 3–7 của mục 7.2 cho đơn đó: trạng thái → **Thụ lý mới**, số thụ lý mới theo quy tắc cấp số chung, ngày thụ lý = ngày cấp lại. Mốc lịch sử: **Cấp lại số thụ lý**, ghi chú *"Cấp số thụ lý {số mới} (thay số đã hủy {số cũ})"* |
 | **Trả lại cho cán bộ** | Như UC-CDTL-02: đơn → **Bị trả lại**, bắt buộc nhập lý do |
 
-Chỉ áp dụng cho đơn có mốc lịch sử gần nhất là "Hủy số thụ lý" (xem mục 6.2). Cả hai thao tác trên chỉ dành cho Chánh/Phó Chánh văn phòng.
+Chỉ áp dụng cho đơn đang Không thụ lý **do hủy số thụ lý**. Hệ thống cần lưu lý do vào trạng thái này (ví dụ cờ `doHuySoThuLy`), không suy ra từ "mốc lịch sử gần nhất", vì sau khi hủy số vẫn có thể phát sinh mốc khác (lập văn bản…). Cả hai thao tác chỉ dành cho Chánh/Phó Chánh văn phòng và chỉ thực hiện từng đơn qua Action Menu. Nút Trả lại (N) trên thanh công cụ chỉ có ở tab Chờ duyệt thụ lý.
 
 ---
 
@@ -228,6 +231,11 @@ Khi duyệt hoặc trả lại hàng loạt, mỗi cán bộ nhận **một** th
 - Trang chủ của vai trò Chánh/Phó Chánh văn phòng có chỉ số **"Chờ duyệt thụ lý: {n}"**. Bấm vào thì mở tab Chờ duyệt thụ lý.
 - Đơn **Bị trả lại**: tính lại là việc chưa xong của cán bộ được trả về.
 
+#### 10.3. Thời hạn giải quyết
+- Đơn Chờ duyệt thụ lý **vẫn tiếp tục đếm hạn** giải quyết theo quy tắc chung của MH-01 / Trang chủ. Thời gian chờ duyệt **không** được trừ khỏi hạn. Đơn chờ duyệt vẫn có thể bị tính là sắp đến hạn hoặc quá hạn.
+- Đơn Bị trả lại cũng tiếp tục đếm hạn như vậy.
+- Hai trạng thái Chờ duyệt thụ lý và Bị trả lại **không** thuộc nhóm tạm dừng đếm hạn (`TRANG_THAI_TAM_DUNG_HAN`).
+
 ---
 
 ### 11. Quy tắc nghiệp vụ
@@ -238,7 +246,7 @@ Khi duyệt hoặc trả lại hàng loạt, mỗi cán bộ nhận **một** th
 | BR-02 | Kết quả duyệt và trả lại phải **lưu bền**. Tải lại trang không được làm đơn lùi về Chờ duyệt thụ lý. (Demo lưu tạm vào `localStorage` qua `duyetThuLyStore.ts`; bản thật lưu vào CSDL.) |
 | BR-03 | Duyệt hàng loạt và trả lại hàng loạt là **thao tác nguyên khối**: lỗi giữa chừng thì không đơn nào bị thay đổi. |
 | BR-04 | Duyệt hàng loạt cấp số theo **thời điểm nhận đơn** tăng dần; cùng thời điểm thì theo mã đơn tăng dần. |
-| BR-05 | Kiểm tra quyền và trạng thái ở **server**: chỉ vai trò Chánh/Phó Chánh văn phòng được duyệt, trả lại, cấp lại số; chỉ đơn đúng trạng thái; mọi thao tác sửa đơn Chờ duyệt thụ lý bị từ chối (mục 6.3). Ẩn nút ở giao diện không thay cho kiểm tra này. |
+| BR-05 | Kiểm tra quyền và trạng thái ở **server**: chỉ vai trò Chánh/Phó Chánh văn phòng được duyệt, trả lại, cấp lại số; chỉ đơn đúng trạng thái; mọi thao tác sửa hoặc phân công đơn Chờ duyệt thụ lý bị từ chối (mục 6.3). Ẩn nút ở giao diện không thay cho kiểm tra này. |
 | BR-06 | Trả lại **bắt buộc có lý do** (không rỗng sau khi bỏ khoảng trắng). Lý do lưu cùng người trả và ngày trả. |
 | BR-07 | **Xung đột**: nếu cùng một đơn đồng thời nhận thao tác Duyệt và Trả lại, kết quả cuối cùng là **Bị trả lại**. Đơn không được cấp số, và thao tác Duyệt bỏ qua đơn đó mà không báo lỗi. |
 | BR-08 | Duyệt không tự sinh văn bản. |
@@ -247,7 +255,7 @@ Khi duyệt hoặc trả lại hàng loạt, mỗi cán bộ nhận **một** th
 
 ### 12. Phân quyền
 
-| Vai trò | Thấy tab | Thấy đơn chờ duyệt | Duyệt & cấp số | Trả lại | Cấp lại số sau hủy | Sửa đơn chờ duyệt |
+| Vai trò | Thấy tab | Thấy đơn chờ duyệt | Duyệt & cấp số | Trả lại | Cấp lại số sau hủy | Sửa / phân công đơn chờ duyệt |
 |---|---|---|---|---|---|---|
 | Chánh/Phó Chánh văn phòng (`pho-vp`) | Có | Có | Có | Có | Có | Không |
 | Trưởng phòng | Không | Có — ở tab Tổng số | Không | Không | Không | Không |
@@ -272,6 +280,7 @@ stateDiagram-v2
     ThuLyMoi --> KhongThuLy: Hủy số thụ lý
     KhongThuLy --> ThuLyMoi: Cấp lại số thụ lý
     KhongThuLy --> BiTraLai: Trả lại cho cán bộ
+    KhongThuLy --> [*]: Để nguyên
     ThuLyMoi --> [*]: Luồng tiếp theo của MH-01
 ```
 
@@ -289,7 +298,7 @@ Phiên bản này **không có** popup duyệt và **không** cho sửa tay số
 | AC-04 | Đăng nhập vai trò khác | Mở Danh sách đơn | Tab thứ hai là Đơn của tôi; đơn chờ duyệt thấy ở Tổng số, xếp đầu danh sách, không có mục Duyệt / Trả lại / Sửa |
 | AC-05 | Tab Chờ duyệt thụ lý có ≥ 2 đơn | Mở tab | Đơn sắp theo thời điểm nhận đơn tăng dần; ô Loại văn bản hiện; không có bộ lọc tiến độ, Thêm mới, Lưu số văn bản |
 | AC-06 | Tick 3 đơn chờ duyệt, theo thứ tự tick bất kỳ | Bấm Duyệt & cấp số thụ lý (3) | Cả 3 đơn sang Thụ lý mới; số cấp theo thời điểm nhận đơn tăng dần; ngày thụ lý = hôm nay; mỗi đơn có mốc Duyệt thụ lý & cấp số ghi đúng họ tên, chức danh người duyệt; hiện thông báo "Đã duyệt 3 đơn — …"; không sinh văn bản |
-| AC-07 | Tick 2 đơn chờ duyệt và 1 đơn Thụ lý mới (ở tab Tổng số) | Bấm Duyệt | Chỉ 2 đơn chờ duyệt được duyệt; đơn còn lại không đổi; không báo lỗi |
+| AC-07 | Tick 3 đơn ở tab Chờ duyệt thụ lý; trước khi bấm, 1 đơn đã được người khác duyệt | Bấm Duyệt & cấp số thụ lý (3) | Chỉ 2 đơn còn chờ được duyệt; đơn kia giữ nguyên số đã cấp, không bị cấp số lần hai; không báo lỗi |
 | AC-08 | Server lỗi khi duyệt 3 đơn | Bấm Duyệt | Không đơn nào đổi trạng thái; hiện thông báo lỗi của mục 7.3; các dòng vẫn được tick |
 | AC-09 | Đơn đã duyệt | Tải lại trang | Đơn vẫn là Thụ lý mới với đúng số và ngày thụ lý |
 | AC-10 | Đơn chờ duyệt | Mở popup Trả lại, để trống lý do | Nút Trả lại bị tắt; không có thay đổi |
@@ -297,26 +306,19 @@ Phiên bản này **không có** popup duyệt và **không** cho sửa tay số
 | AC-12 | Đơn Bị trả lại | Cán bộ sửa và kết luận lại Thụ lý mới | Đơn quay về Chờ duyệt thụ lý; lịch sử giữ lần trả lại trước |
 | AC-13 | Đơn chờ duyệt | Cán bộ (hoặc bất kỳ ai) mở Action Menu, hoặc gọi thẳng API sửa đơn | Không có mục Sửa / Thêm kết quả / Bổ sung tài liệu / Chuyển đơn / Ghép / Xóa; server từ chối lời gọi sửa |
 | AC-14 | Người dùng không phải `pho-vp` | Gọi thẳng API duyệt, trả lại hoặc cấp lại số | Server từ chối, dữ liệu không đổi |
-| AC-15 | Hai người thao tác cùng lúc trên một đơn: A duyệt, B trả lại | Cả hai gửi lên | Đơn là Bị trả lại, không có số thụ lý; A không bị báo lỗi |
+| AC-15 | Hai người thao tác cùng lúc trên một đơn: A duyệt, B trả lại | Cả hai gửi lên | Đơn là Bị trả lại, không có số thụ lý; A không nhận thông báo lỗi (nếu đó là đơn duy nhất A chọn thì A thấy thông báo "Không có đơn nào đang chờ duyệt thụ lý.") |
 | AC-16 | Đơn Thụ lý mới đã hủy số (đang Không thụ lý) | `pho-vp` chọn Cấp lại số thụ lý | Đơn → Thụ lý mới với số mới, ngày thụ lý = hôm nay; lịch sử ghi số mới và số đã hủy |
 | AC-17 | Như AC-16 | `pho-vp` chọn Trả lại cho cán bộ kèm lý do | Đơn → Bị trả lại như AC-11 |
 | AC-18 | Có đơn mới vào Chờ duyệt thụ lý | — | Chánh và Phó Chánh VP nhận thông báo; chỉ số "Chờ duyệt thụ lý" trên Trang chủ tăng; chỉ số việc chưa xong của cán bộ tiếp nhận giảm |
 | AC-19 | Ngày duyệt là Chủ nhật | Duyệt đơn | Duyệt thành công, ngày thụ lý = ngày Chủ nhật đó |
+| AC-20 | Đơn chờ duyệt đã quá hạn giải quyết | Mở Trang chủ / Danh sách đơn | Đơn vẫn được tính là quá hạn |
+| AC-21 | Đơn vừa bị trả lại | Mở tab Đơn trả lại và tab Khác | Đơn có ở tab Đơn trả lại, trạng thái màu đỏ `#dc2626`; không có ở tab Khác |
+| AC-22 | Trưởng phòng ở tab Tổng số, có đơn chờ duyệt | Chọn đơn để Phân công cán bộ | Không tick được dòng chờ duyệt; nếu gọi thẳng API phân công thì server từ chối |
 
 ---
 
-### 15. Vấn đề mở
-
-| # | Vấn đề | Cần ai chốt |
-|---|---|---|
-| 1 | **Thời hạn giải quyết** khi đơn nằm ở Chờ duyệt thụ lý: có tiếp tục đếm hạn không (demo hiện vẫn đếm)? Hạn tính từ ngày nhận, ngày kết luận hay ngày thụ lý? Có SLA hoặc cảnh báo cho bước duyệt không? | Nghiệp vụ |
-| 2 | Đơn **Bị trả lại** có hiện ở tab **Đơn trả lại** không? Tab đó hiện dành cho đơn trả lại đương sự ("Trả lại đơn"). Nếu không, cần loại Bị trả lại khỏi tab **Khác**. | Nghiệp vụ |
-| 3 | **Màu** của trạng thái Bị trả lại, và việc bổ sung trạng thái này vào `TRANG_THAI_THU_LY` / `docs/man-hinh-danh-sach-don.md` mục 5.2. | Thiết kế |
-
----
-
-### 16. Liên kết chéo
+### 15. Liên kết chéo
 
 - Màn Danh sách đơn: [SRS_DanhSachDon_ChiTiet.md](./SRS_DanhSachDon_ChiTiet.md) — MH-01 mục 2 (tab), mục 3 (bộ lọc), mục 4 (bảng), mục 6.2 (in danh sách), thao tác Hủy số thụ lý.
-- Bảng màu và danh sách trạng thái thụ lý: `app/tinh/ChiSoTrangChu.tsx` (`TRANG_THAI_THU_LY`), khớp `docs/man-hinh-danh-sach-don.md` mục 5.2.
+- Bảng màu và danh sách trạng thái thụ lý: `app/tinh/ChiSoTrangChu.tsx` (`TRANG_THAI_THU_LY`), khớp `docs/man-hinh-danh-sach-don.md` mục 5.2. Cả hai nơi cần bổ sung trạng thái **Bị trả lại** (`#dc2626`).
 - Lưu tạm kết quả duyệt ở bản demo: `app/tinh/duyetThuLyStore.ts`.
