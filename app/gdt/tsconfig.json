@@ -1,0 +1,21 @@
+{
+  "//": "Module port nguyên trạng từ bản demo ui-gdt-tt. Bản demo viết ở chế độ strict:false; bật strict của project chính lên sẽ ra hàng trăm lỗi kiểu mà sửa hết đồng nghĩa với viết lại logic — trái với yêu cầu 'giữ nguyên logic'. Giữ đúng cấu hình gốc để vẫn bắt được lỗi THẬT (thiếu import, sai tên biến).",
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": [".", "../../types"]
+}

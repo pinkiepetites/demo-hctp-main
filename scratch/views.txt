@@ -1,0 +1,47 @@
+3 import type { View as GdtView } from "../gdt/views";
+110 // Không thụ lý. Hai màn nằm ở hai view khác nhau nên trạng thái để ở ngoài
+1942           <svg viewBox="0 0 100 100" className="w-full h-full">
+2212     { icon: <Eye size={13} />, label: "Xem chi tiết", action: "view" },
+2236           if (item.action === "view") { onViewDetail?.(); }
+12667             {/* RIGHT: Document Preview Panel */}
+13009   const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong" | "gdt" | "to_tham_phan">(donChiTietTabMoi ? "form" : "list");
+13335     if (view === "form" && editingRowId !== null) setOcrFields(new Set(Object.keys(OCR_MOCK)));
+13346   }, [view, editingRowId]);
+13597   // lại mảng này từ đầu mỗi lần chuyển view nên lần mở Sửa kế tiếp thấy ngay.
+13624         view={view}
+13645         <Sidebar activePage={view === "gdt" ? `gdt:${gdtView}` : view} currentRole={currentRole} onNav={(page) => {
+13673               : view === "home"
+13675                 : view === "list"
+13677                   : view === "prototype"
+13683                     : view === "bieumau"
+13689                       : view === "wordeditor"
+13695                         : view === "to_tham_phan"
+13697                         : view === "phancong"
+13699                           : view === "phe_duyet"
+13705                             : view === "van_ban_trinh_ky"
+13711                               : view === "hieu_suat_chi_tiet"
+13717                                 : view === "so_sanh_loai_an"
+13731           {/* Home view */}
+13732           {view === "home" && (
+13745           {view === "hieu_suat_chi_tiet" && (
+13753           {view === "so_sanh_loai_an" && (
+13759           {/* Phê duyệt đề xuất view */}
+13760           {view === "phe_duyet" && (
+13767           {view === "van_ban_trinh_ky" && (
+13775           {view === "tiepnhan_don_lienthong" && (
+13788           {/* List view */}
+13789           {view === "list" && (
+13820           {/* Hồ sơ kháng nghị view — dùng lại màn Danh sách đơn, khác cột Thông tin giải quyết */}
+13822           {view === "nhandon_tl" && (
+13829           {view === "cauhinh_pctp" && (
+13835           {/* Biểu mẫu view */}
+13836           {view === "bieumau" && bieuMauRow && (
+13844           {/* Word editor view */}
+13845           {view === "wordeditor" && (
+13851           {/* Phân công thẩm phán view */}
+13852           {view === "gdt" && (
+13854               <QuanLyAnGDTTT view={gdtView} navSeq={gdtNavSeq} onNavigate={setGdtView} />
+13858           {view === "to_tham_phan" && <CauHinhUyBanThamPhan cap="toicao" />}
+13860           {view === "phancong" && (
+13875           {/* Form view: 2-panel */}
+13876           <div className={`flex flex-1 overflow-hidden ${view === "form" ? "" : "hidden"}`}>

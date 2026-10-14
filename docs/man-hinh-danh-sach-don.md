@@ -51,11 +51,11 @@ Nghĩa là: lọc trước → số trên tab đổi theo → chọn tab để t
 | # | Tab | Điều kiện lọc |
 |---|---|---|
 | 0 | **Tổng số** | Không lọc thêm |
-| 1 | **Đơn của tôi** | `cuaToi = true` — đơn thuộc tài khoản đang đăng nhập |
+| 1 | **Đơn của tôi** | `cuaToi = true` — đơn thuộc tài khoản đang đăng nhập.<br>Với vai trò **Chánh/Phó Chánh văn phòng** (`innerRole: "pho-vp"`), tab này đổi thành **Chờ duyệt thụ lý**: Trạng thái giải quyết = `Chờ duyệt thụ lý` |
 | 2 | **Đơn Thụ lý** | Trạng thái giải quyết = `Đã thụ lý` |
 | 3 | **Chưa đủ điều kiện** | Trạng thái giải quyết = `Chưa đủ điều kiện` |
 | 4 | **Hết thời hạn kháng nghị** | Thời hiệu = `Quá 3 năm` hoặc `Quá 5 năm` |
-| 5 | **Khác** | Trạng thái **không** thuộc {Thụ lý mới, Đã thụ lý, Chưa đủ điều kiện} |
+| 5 | **Khác** | Trạng thái **không** thuộc {Chờ duyệt thụ lý, Thụ lý mới, Đã thụ lý, Chưa đủ điều kiện} |
 
 > **Lưu ý đặt tên:** nhãn tab là *"Đơn Thụ lý"* nhưng giá trị dữ liệu bên dưới là *"Đã thụ lý"*. Đây là chủ đích — chỉ đổi nhãn hiển thị, không đổi dữ liệu.
 
@@ -240,6 +240,7 @@ Nội dung hiển thị theo **thứ tự ưu tiên**, gặp điều kiện nào
 
 | Trạng thái | Màu |
 |---|---|
+| **Chờ duyệt thụ lý** | Hổ phách `#b45309` |
 | Thụ lý mới | Xanh lá `#27ae60` |
 | Đã thụ lý | Xanh dương `#1a5a96` |
 | Chưa đủ điều kiện | Cam `#e67e22` |

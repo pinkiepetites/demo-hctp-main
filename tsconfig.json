@@ -13,5 +13,9 @@
     "jsx": "react-jsx",
     "strict": true
   },
-  "include": ["main.tsx", "app", "styles"]
+  "include": ["main.tsx", "app", "styles"],
+  // app/gdt: module port nguyên trạng từ bản demo ui-gdt-tt, viết ở chế độ
+  //   strict:false. Kiểm bằng cấu hình riêng của nó: npx tsc -p app/gdt
+  // app/components/ui: bộ shadcn chưa dùng, thiếu dependency @radix-ui
+  "exclude": ["app/gdt", "app/components/ui"]
 }

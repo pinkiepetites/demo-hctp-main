@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X, Pencil, Ban, Check, MessageSquare, Save, UserRound, AlertCircle } from "lucide-react";
+import { X, Pencil, Ban, Check, MessageSquare, Save, AlertCircle } from "lucide-react";import { Button, Input } from "antd";
+
 
 // GHI CHÚ CHO DEV:
 // Modal này bật lên khi Trưởng phòng/Chánh án ấn "Kiểm tra danh sách đơn" trong màn hình chi tiết Tờ trình.
@@ -26,7 +27,13 @@ interface DonThu {
   thamPhan?: string;
   ghiChuPhanCong?: string;
   trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
+  soThuLy?: string;
+  ngayThuLy?: string;
+  soDon?: number;
 }
+
+// Dữ liệu cũ chưa lưu số thụ lý → lấy phần số trong mã đơn ("Mã 7031" → "7031").
+const layThuLy = (don: DonThu) => don.soThuLy || don.id.replace(/^\D+/, "") || don.id;
 
 interface PheDuyetToTrinhModalProps {
   onClose: () => void;
@@ -63,6 +70,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "21/07/2026",
     thuTuc: "Giám đốc thẩm",
     diaChi: "Phường Phương Sơn, Tỉnh Bắc Ninh",
+    soThuLy: "7031",
+    ngayThuLy: "27/07/2026",
+    soDon: 1,
   },
   {
     id: "Mã 7022",
@@ -73,6 +83,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "20/06/2022",
     thuTuc: "Giám đốc thẩm",
     diaChi: "Phường Hòa Bình, Tỉnh Vĩnh Phúc",
+    soThuLy: "7022",
+    ngayThuLy: "22/07/2026",
+    soDon: 1,
   },
   {
     id: "Mã 7032",
@@ -83,6 +96,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "15/11/2024",
     thuTuc: "Tái thẩm",
     diaChi: "Xã Minh Tân, Tỉnh Hà Nam",
+    soThuLy: "7032",
+    ngayThuLy: "28/07/2026",
+    soDon: 2,
   },
 ];
 
@@ -218,16 +234,16 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
   return (
     <div className="fixed inset-0 z-[120] bg-black/60 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[4px] shadow-2xl flex flex-col w-[1000px] max-h-[90vh]">
+      <div className="bg-white rounded-[4px] shadow-2xl flex flex-col w-[1280px] max-w-[96vw] max-h-[90vh]">
         
         {/* Header */}
         <div className="bg-[#1d2e4f] text-white px-4 py-3 rounded-t-[4px] flex justify-between items-center shrink-0">
           <h2 className="text-[15px] font-bold">
             Kiểm tra & Phê duyệt Danh sách Đơn (Tờ trình phân công)
           </h2>
-          <button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
+          <Button onClick={onClose} className="text-white/70 hover:text-white transition-colors">
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -239,76 +255,61 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
             </span>
           </div>
 
-          <table className="w-full text-[13px] border-collapse border border-[#ddd]">
+          <table className="w-full text-[12px] border-collapse border border-[#ddd] text-[#222]">
             <thead>
               <tr className="bg-[#f5f5f5]">
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[180px]">Mã đơn</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left">Thông tin đơn</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[180px]">BA/QĐ</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[190px]">Thẩm phán</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[250px]">Ghi chú / Ý kiến</th>
-                <th className="border border-[#ddd] px-3 py-2 text-center w-[180px]">Thao tác</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[36px]">TT</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[60px]">Số<br />Thụ lý</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Ngày thụ lý</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[160px]">Người đề nghị, kiến nghị, thông báo</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[160px]">Địa chỉ</th>
+                <th colSpan={3} className="border border-[#ddd] px-2 py-2 text-center">QĐ/BA đề nghị xem xét theo thủ tục GĐT/TT</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[50px]">Số đơn</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[120px]">Thẩm phán giải quyết</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[180px]">Ghi chú</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[130px]">Thao tác</th>
+              </tr>
+              <tr className="bg-[#f5f5f5]">
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Số BA/QĐ</th>
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Ngày BA/QĐ</th>
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[130px]">Tòa án Xét xử</th>
               </tr>
             </thead>
             <tbody>
               {danhSachDon.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-[#888] italic">Tờ trình hiện không còn đơn nào.</td>
+                  <td colSpan={12} className="p-8 text-center text-[#888] italic">Tờ trình hiện không còn đơn nào.</td>
                 </tr>
               )}
-              {danhSachDon.map(don => {
+              {danhSachDon.map((don, idx) => {
                 const biTraLai = don.trangThaiXuly === "tra_lai";
                 return (
                   <tr key={don.id} className={biTraLai ? "bg-[#fde8e8] opacity-70" : "hover:bg-[#f9f9f9]"}>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
-                      <div className="space-y-1.5">
-                        <button 
-                          onClick={() => {
-                            window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
-                            onClose();
-                          }}
-                          className="text-[#1a73e8] hover:text-[#1152a3] hover:underline font-medium text-[13px] transition-colors"
-                        >
-                          {don.id}
-                        </button>
-                        <div className="text-[12px] text-[#333] leading-5">
-                          <div><span className="text-[#666]">Tòa án: </span><span className="font-medium text-[#222]">{don.toaAn || don.nguoiGui}</span></div>
-                          <div><span className="text-[#666]">Số BA/QĐ: </span><span>{don.soBA}</span></div>
-                          <div><span className="text-[#666]">Ngày BA/QĐ: </span><span>{don.ngayBA || "—"}</span></div>
-                        </div>
-                      </div>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{idx + 1}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">
+                      <button type="button" title={`Mở chi tiết ${don.id}`}
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
+                          onClose();
+                        }}
+                        className="text-[#1a73e8] hover:text-[#1152a3] hover:underline font-medium">
+                        {layThuLy(don)}
+                      </button>
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top font-medium text-[#1a5a96]">
-                      <div className="space-y-1.5 text-[12px] text-[#333] leading-5">
-                        <div>{don.nguoiGui}</div>
-                        {don.diaChi && (
-                          <div className="text-[#666]">{don.diaChi}</div>
-                        )}
-                        <div><span className="text-[#666]">Hình thức: </span>{don.hinhThuc}</div>
-                        {don.thuTuc && (
-                          <div><span className="text-[#666]">Thủ tục: </span>{don.thuTuc}</div>
-                        )}
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.ngayThuLy || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.nguoiGui}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.diaChi || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.soBA}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.ngayBA || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.toaAn || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.soDon ?? 1}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">
+                      <div className={`font-medium ${don.thamPhan ? "text-[#1a5a96]" : "text-[#999]"}`}>
+                        {don.thamPhan || "Chưa phân công"}
                       </div>
+                      {don.ghiChuPhanCong && <div className="text-[11px] text-[#8b1a1a] mt-1">{don.ghiChuPhanCong}</div>}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top text-[12px] text-[#333]">
-                      <div className="space-y-1.5 leading-5">
-                        <div><span className="text-[#666]">Số BA/QĐ:</span> {don.soBA}</div>
-                        <div><span className="text-[#666]">Ngày BA/QĐ:</span> {don.ngayBA || "—"}</div>
-                        <div><span className="text-[#666]">Tòa xét xử:</span> {don.toaAn || "—"}</div>
-                      </div>
-                    </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
-                      <div className="flex items-start gap-1.5 text-[12px]">
-                        <UserRound size={13} className="text-[#666] mt-0.5 shrink-0" />
-                        <div>
-                          <div className={`font-medium ${don.thamPhan ? "text-[#1a5a96]" : "text-[#999]"}`}>
-                            {don.thamPhan || "Chưa phân công"}
-                          </div>
-                          {don.ghiChuPhanCong && <div className="text-[11px] text-[#8b1a1a] mt-1">{don.ghiChuPhanCong}</div>}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
+                    <td className="border border-[#ddd] px-2 py-2 align-top">
                       {don.ghiChu && (
                         <div className="text-[#8b1a1a] font-medium text-[12px] bg-[#fde8e8] px-2 py-1 rounded border border-[#f5b7b7] inline-block w-full whitespace-pre-wrap">
                           {don.ghiChu}
@@ -321,17 +322,17 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                     </td>
                     <td className="border border-[#ddd] px-3 py-2 text-center align-top">
                       {!biTraLai && role === "chanh_an" && don.thamPhan?.trim() && (
-                        <button onClick={() => openAssignmentEditor(don)}
+                        <Button onClick={() => openAssignmentEditor(don)}
                           className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#e8f4ff]">
                           <Pencil size={13} /> Đổi thẩm phán
-                        </button>
+                        </Button>
                       )}
                       {!biTraLai && role === "chanh_an" && !don.thamPhan?.trim() && (
                         <div className="text-[11px] text-[#b45309]">Chưa có thẩm phán ban đầu</div>
                       )}
                       {!biTraLai && role === "truong_phong" && (
                         <div className="flex justify-center gap-2">
-                          <button 
+                          <Button 
                             onClick={() => {
                               window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
                               onClose();
@@ -340,23 +341,23 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                             className="text-[#1a5a96] hover:text-[#0d3d6b] flex items-center gap-1 text-[12px] border border-[#a9c9f4] px-2 py-1.5 rounded-[3px] bg-white transition-colors hover:bg-[#e8f4ff]"
                           >
                             Sửa
-                          </button>
-                          <button 
+                          </Button>
+                          <Button 
                             onClick={() => setModalLyDo({ idDon: don.id, type: "tra_lai" })}
                             title="Trả lại riêng đơn này"
                             className="text-[#8b1a1a] hover:text-[#6e1414] flex items-center gap-1 text-[12px] border border-[#f5b7b7] px-2 py-1.5 rounded-[3px] bg-white transition-colors hover:bg-[#fde8e8]"
                           >
                             <Ban size={13} /> Trả lại
-                          </button>
+                          </Button>
                         </div>
                       )}
                       {role === "chanh_an" && (
-                        <button 
+                        <Button 
                           onClick={() => setModalLyDo({ idDon: don.id, type: "cho_y_kien" })}
                           className="text-[#6d28d9] hover:text-[#4c1d95] flex items-center gap-1.5 text-[12px] border border-[#d8b4fe] px-3 py-1.5 rounded-[3px] bg-white mx-auto transition-colors hover:bg-[#f3e8ff]"
                         >
                           <MessageSquare size={13} /> Cho ý kiến
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>
@@ -368,16 +369,16 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
         {/* Footer */}
         <div className="mt-auto border-t border-[#ddd] px-4 py-3 bg-[#f9f9f9] flex justify-end gap-3 rounded-b-[4px] shrink-0">
-          <button onClick={onClose} className="px-4 py-[6px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] transition-colors font-medium text-[#333]">
+          <Button onClick={onClose} className="px-4 py-[6px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] transition-colors font-medium text-[#333]">
             Đóng
-          </button>
-          <button 
+          </Button>
+          <Button 
             onClick={handleLuuToTrinh}
             className="px-4 py-[6px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] hover:bg-[#6e1414] transition-colors flex items-center gap-1.5 font-medium border border-[#6e1414]"
           >
             <Save size={14} /> 
             {role === "truong_phong" ? "Lưu & Cập nhật Tờ trình" : "Lưu ý kiến"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -392,7 +393,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
           <div className="bg-white rounded-[4px] w-[500px] shadow-2xl border border-[#bbb]">
             <div className="bg-[#1d2e4f] text-white px-4 py-2.5 flex justify-between items-center rounded-t-[4px]">
               <span className="text-[14px] font-semibold">Điều chỉnh thẩm phán — {editingAssignment}</span>
-              <button onClick={cancelAssignmentEditor} className="text-white/70 hover:text-white"><X size={16} /></button>
+              <Button onClick={cancelAssignmentEditor} className="text-white/70 hover:text-white"><X size={16} /></Button>
             </div>
             <div className="p-4">
               <div className="mb-3 rounded-[4px] border border-[#e5e5e5] bg-[#f8fafc] p-3">
@@ -408,7 +409,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                   ["bac3", "Thẩm phán bậc 3"],
                 ] as const).map(([value, label]) => (
                   <label key={value} className="flex items-center gap-1.5 text-[12px] text-[#444] cursor-pointer">
-                    <input type="radio" name="cap-tham-phan" checked={assignmentFilter === value}
+                    <Input type="radio" name="cap-tham-phan" checked={assignmentFilter === value}
                       onChange={() => setAssignmentFilter(value)} className="accent-[#8b1a1a]" />
                     <span className={assignmentFilter === value ? "font-semibold text-[#8b1a1a]" : ""}>{label}</span>
                   </label>
@@ -418,16 +419,16 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                 {filteredThamPhan.length === 0 ? (
                   <div className="p-4 text-center text-[12px] text-[#888]">Không có thẩm phán phù hợp.</div>
                 ) : filteredThamPhan.map(tp => (
-                  <button key={tp.hoTen} type="button" onClick={() => { setAssignmentDraft(tp.hoTen); setValidationError(""); }}
+                  <Button key={tp.hoTen} htmlType="button" onClick={() => { setAssignmentDraft(tp.hoTen); setValidationError(""); }}
                     className={`w-full flex items-center justify-between px-3 py-2 text-left border-b last:border-b-0 border-[#eee] hover:bg-[#eaf4ff] ${assignmentDraft === tp.hoTen ? "bg-[#eaf4ff] ring-1 ring-inset ring-[#1a73e8]" : "bg-white"}`}>
                     <span className="text-[13px] font-medium text-[#222]">{tp.hoTen}</span>
                     <span className="text-[11px] text-[#666]">{tp.chucDanh}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
-                <button onClick={cancelAssignmentEditor} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
-                <button onClick={saveAssignmentEditor} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">Lưu thay đổi</button>
+                <Button onClick={cancelAssignmentEditor} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</Button>
+                <Button onClick={saveAssignmentEditor} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">Lưu thay đổi</Button>
               </div>
             </div>
           </div>
@@ -442,7 +443,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
               <span className="text-[14px] font-semibold">
                 {modalLyDo.type === "tra_lai" ? `Trả lại đơn ${modalLyDo.idDon}` : `Cho ý kiến đối với đơn ${modalLyDo.idDon}`}
               </span>
-              <button onClick={() => setModalLyDo(null)} className="text-white/70 hover:text-white"><X size={16} /></button>
+              <Button onClick={() => setModalLyDo(null)} className="text-white/70 hover:text-white"><X size={16} /></Button>
             </div>
             <div className="p-4">
               <label className="block text-[13px] font-medium text-[#333] mb-2">
@@ -457,15 +458,15 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
                 autoFocus
               />
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-[#eee]">
-                <button onClick={() => setModalLyDo(null)} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</button>
+                <Button onClick={() => setModalLyDo(null)} className="px-4 py-[5px] border border-[#ccc] rounded-[3px] text-[13px] bg-white hover:bg-[#f5f5f5] font-medium">Hủy</Button>
                 {modalLyDo.type === "cho_y_kien" && (
-                  <button onClick={handleGiaiQuyetSau} className="px-4 py-[5px] border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[13px] font-medium hover:bg-[#eaf4ff]">
+                  <Button onClick={handleGiaiQuyetSau} className="px-4 py-[5px] border border-[#1a5a96] text-[#1a5a96] bg-white rounded-[3px] text-[13px] font-medium hover:bg-[#eaf4ff]">
                     Giải quyết sau
-                  </button>
+                  </Button>
                 )}
-                <button onClick={handleXacNhanLyDo} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">
+                <Button onClick={handleXacNhanLyDo} className="px-4 py-[5px] bg-[#8b1a1a] text-white rounded-[3px] text-[13px] font-medium hover:bg-[#6e1414]">
                   Xác nhận
-                </button>
+                </Button>
               </div>
             </div>
           </div>
