@@ -23,21 +23,25 @@
 //   · Không có thảo luận 2 chiều ⇒ diff phiên bản là kênh giao tiếp DUY NHẤT.
 //   · Một số duy nhất: cấp tạm thủ công hoặc tự cấp khi ký; không thu hồi số.
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState, useMemo, useEffect } from "react";import { Button, Input } from "antd";
+import { useState, useMemo, useEffect } from "react";
+import { Button, Input } from "antd";
 
 import {
   X, Plus, Search, Eye, Pencil, History, FileText, Printer, Download,
   Check, Send, Lock, AlertCircle, ArrowLeftRight, Ban, Trash2, ChevronDown,
   ChevronRight, Clock, PenLine, Save, ZoomIn, ZoomOut, RotateCcw, MessageSquare,
-  Inbox, Home,
+  Inbox, Home, List,
 } from "lucide-react";
+import PheDuyetToTrinhModal from "../../components/PheDuyetToTrinhPhanCong";
 
 // ─── Kiểu dữ liệu ────────────────────────────────────────────────────────────
 export type TrangThaiVB =
   | "Nhap" | "ChoDuyet" | "ChoKy" | "ChoButPhe" | "BiTraLai" | "DaBanHanh" | "DaHuy";
 
 export type HanhDong =
-  | "Tao" | "LaySoTam" | "Trinh" | "Duyet" | "SuaVaDuyet" | "TraLai" | "Ky" | "ButPhe" | "BanHanh";
+  | "Tao" | "LaySoTam" | "Trinh" | "Duyet" | "SuaVaDuyet" | "TraLai" | "Ky" | "ButPhe" | "BanHanh"
+  // Hành động riêng của phân hệ gửi sang kho — nhãn đi kèm ở `nhanHanhDong`.
+  | "Khac";
 
 export interface BuocKy {
   thuTu: number;
@@ -78,6 +82,8 @@ export interface MocLichSu {
   nguoi: string;
   chucVu: string;
   hanhDong: HanhDong;
+  /** Bắt buộc khi `hanhDong = "Khac"`, ví dụ "Dừng quyết định". */
+  nhanHanhDong?: string;
   yKien?: string;
   phienBanTruoc?: number;
   phienBanSau?: number;
@@ -100,7 +106,18 @@ export interface VanBanTrinh {
   phienBanHienTai: number;
   phienBan: PhienBan[];
   lichSu: MocLichSu[];
-  donDinhKem: { ma: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+  /** `ma` là mã đơn — khóa để lọc văn bản theo đơn. */
+  donDinhKem: {
+    ma: string; soThuLy?: string; nguoiGui: string; soBA: string; hinhThuc: string;
+    ngayThuLy?: string; soDon?: number; ghiChu?: string; thamPhan?: string; ghiChuPhanCong?: string;
+    toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+  }[];
+  /** Phân hệ đã gửi văn bản sang kho (xem docs/TichHop_KhoVanBan.md). */
+  maPhanHe?: string;
+  /** Bản PDF của văn bản đã ban hành. */
+  tepDinhKem?: { ten: string; url: string };
+  /** Nhãn trạng thái riêng của phân hệ, thay nhãn mặc định — ví dụ "Bị thay thế bởi 002/2026/QĐ-TA". */
+  nhanTrangThai?: string;
 }
 
 // ─── Trường dẫn xuất & tiện ích ──────────────────────────────────────────────
@@ -352,57 +369,161 @@ const noiDungQDPhanCong = (don: { soThuLy: string; thamPhan?: string; ngayThuLy:
     ghiChu ? `\nGhi chú: ${ghiChu}` : "",
   ].filter(Boolean).join("\n");
 
-/** Ánh xạ trạng thái quyết định (popup Tạo quyết định) sang vòng đời văn bản.
- *  `Nhap` = còn ở bản nháp, `ChoKy` = đã trình chờ ký số, `DaBanHanh` = đã ký. */
-const QD_PHAN_CONG_TRANG_THAI: Record<string, { trangThai: TrangThaiVB; buoc: number }> = {
-  mo:       { trangThai: "Nhap",      buoc: 0 },
-  daLuu:    { trangThai: "Nhap",      buoc: 0 },
-  huyKy:    { trangThai: "Nhap",      buoc: 0 },
-  dung:     { trangThai: "DaHuy",     buoc: 0 },
-  choKy:    { trangThai: "ChoKy",     buoc: 1 },
-  daKy:     { trangThai: "DaBanHanh", buoc: 2 },
+// ─── Hợp đồng tích hợp kho văn bản ───────────────────────────────────────────
+// Đặc tả: docs/TichHop_KhoVanBan.md. Kho CHỈ lưu và hiển thị: phân hệ tự cấp
+// số, tự chạy luồng ký, rồi gửi sang bản ghi dưới đây. Khi có API, `ghiVanBan`
+// chính là phần xử lý của `PUT /api/v1/kho-van-ban/van-ban/{id}`.
+
+export const TRANG_THAI_KHO: TrangThaiVB[] =
+  ["Nhap", "ChoDuyet", "ChoKy", "ChoButPhe", "BiTraLai", "DaBanHanh", "DaHuy"];
+
+export interface MocLichSuKho {
+  thoiGian: string;          // dd/mm/yyyy HH:mm
+  nguoi: string;
+  chucVu: string;
+  hanhDong: HanhDong;
+  nhanHanhDong?: string;     // bắt buộc khi hanhDong = "Khac"
+  yKien?: string;
+}
+
+export interface BanGhiKhoVanBan {
+  id: string;                // do phân hệ đặt, không đổi: {mã phân hệ}-{loại}-{khóa}
+  maPhanHe: string;
+  loaiVanBan: string;
+  trichYeu: string;
+  donViSoanThao: string;
+  nguoiTao: { hoTen: string; chucVu: string };
+  trangThai: TrangThaiVB;
+  nhanTrangThai?: string;    // thay nhãn mặc định của trangThai
+  soVanBan?: string;
+  trangThaiSo?: "tam" | "chinhThuc";
+  ngayCapSo?: string;
+  ngayBanHanh?: string;
+  noiDung: string;           // text, mỗi dòng cách nhau bằng \n
+  tepDinhKem?: { ten: string; url: string };
+  lichSu?: MocLichSuKho[];   // TOÀN BỘ lịch sử tính đến lúc gửi
+  donDinhKem?: { maDon: string; soThuLy?: string; nguoiGui: string; soBA: string; hinhThuc: string }[];
+}
+
+/** Kiểm tra bản ghi trước khi ghi — tương ứng mã lỗi 400. Rỗng = hợp lệ. */
+export const loiBanGhiKho = (b: BanGhiKhoVanBan): string[] => {
+  const loi: string[] = [];
+  const batBuoc: (keyof BanGhiKhoVanBan)[] =
+    ["id", "maPhanHe", "loaiVanBan", "trichYeu", "donViSoanThao", "noiDung"];
+  batBuoc.forEach(k => { if (!String(b[k] ?? "").trim()) loi.push(`Thiếu ${k}`); });
+  if (!b.nguoiTao?.hoTen?.trim()) loi.push("Thiếu nguoiTao.hoTen");
+  if (!TRANG_THAI_KHO.includes(b.trangThai)) loi.push(`trangThai không hợp lệ: ${b.trangThai}`);
+  if (b.soVanBan && !b.trangThaiSo) loi.push("Có soVanBan thì phải có trangThaiSo");
+  (b.lichSu ?? []).forEach((m, i) => {
+    if (m.hanhDong === "Khac" && !m.nhanHanhDong?.trim()) loi.push(`lichSu[${i}]: hành động Khac thiếu nhanHanhDong`);
+  });
+  (b.donDinhKem ?? []).forEach((d, i) => { if (!d.maDon?.trim()) loi.push(`donDinhKem[${i}]: thiếu maDon`); });
+  return loi;
 };
 
 /**
- * Đẩy quyết định phân công thẩm phân đã lưu vào kho văn bản chung, để nó hiện
- * ở màn Danh sách văn bản và mở được bằng luồng "Xem văn bản đã trình" sẵn có.
- *
+ * Ghi một văn bản theo `id`: chưa có thì tạo, có rồi thì thay bằng bản mới.
+ * Gọi lại với cùng dữ liệu cho cùng kết quả. Riêng nội dung thì kho giữ các
+ * phiên bản cũ: `noiDung` khác phiên bản hiện tại ⇒ thêm phiên bản mới.
+ * Luồng ký (`luongKy`) không thuộc hợp đồng — giữ nguyên của bản ghi cũ nếu có.
+ */
+export const ghiVanBan = (ds: VanBanTrinh[], b: BanGhiKhoVanBan): VanBanTrinh[] => {
+  const cu = ds.find(v => v.id === b.id);
+  const vong = cu?.vongTrinh ?? 1;
+  const lichSu: MocLichSu[] = (b.lichSu ?? []).map(m => ({ vongTrinh: vong, ...m }));
+  const mocCuoi = lichSu[lichSu.length - 1];
+
+  let phienBan: PhienBan[];
+  let phienBanHienTai: number;
+  const ndCu = cu?.phienBan.find(p => p.so === cu.phienBanHienTai)?.noiDung;
+  if (cu && ndCu === b.noiDung) {
+    phienBan = cu.phienBan; phienBanHienTai = cu.phienBanHienTai;
+  } else {
+    const r = cu
+      ? themPhienBan(cu, b.noiDung, mocCuoi?.nguoi ?? b.nguoiTao.hoTen)
+      : { pb: [{ so: 1, noiDung: b.noiDung, nguoiSua: b.nguoiTao.hoTen, thoiGian: mocCuoi?.thoiGian ?? bayGio() }], so: 1 };
+    phienBan = r.pb; phienBanHienTai = r.so;
+  }
+
+  const vb: VanBanTrinh = {
+    id: b.id,
+    maPhanHe: b.maPhanHe,
+    trichYeu: b.trichYeu,
+    loaiVanBan: b.loaiVanBan,
+    donViSoanThao: b.donViSoanThao,
+    soVanBan: b.soVanBan,
+    trangThaiSo: b.trangThaiSo,
+    ngayCapSo: b.ngayCapSo,
+    ngayBanHanh: b.ngayBanHanh,
+    trangThai: b.trangThai,
+    nhanTrangThai: b.nhanTrangThai?.trim() || undefined,
+    nguoiTao: b.nguoiTao.hoTen,
+    luongKy: cu?.luongKy ?? [],
+    buocHienTai: cu?.buocHienTai ?? 0,
+    vongTrinh: vong,
+    phienBanHienTai,
+    phienBan,
+    lichSu,
+    donDinhKem: (b.donDinhKem ?? []).map(d => ({
+      ma: d.maDon, soThuLy: d.soThuLy, nguoiGui: d.nguoiGui, soBA: d.soBA, hinhThuc: d.hinhThuc,
+    })),
+    tepDinhKem: b.tepDinhKem,
+  };
+  return cu ? ds.map(v => (v.id === b.id ? vb : v)) : [...ds, vb];
+};
+
+// ─── Phân hệ Phân công thẩm phán: quyết định phân công ──────────────────────
+// Ví dụ đã điền của checklist mục 6.1 trong docs/TichHop_KhoVanBan.md.
+
+/** Trạng thái quyết định (popup Tạo quyết định) → trạng thái của kho. */
+const QD_PHAN_CONG_TRANG_THAI: Record<string, TrangThaiVB> = {
+  mo: "Nhap", daLuu: "Nhap", huyKy: "Nhap",
+  choKy: "ChoKy", daKy: "DaBanHanh", dung: "DaHuy",
+};
+
+/**
+ * Dựng bản ghi gửi sang kho cho quyết định phân công thẩm phán.
  * Dùng kiểu cấu trúc (không import kiểu từ màn phân công) để kho văn bản không
  * phụ thuộc ngược lại vào màn gọi nó.
  */
 export const taoQuyetDinhPhanCong = (input: {
-  don: { soThuLy: string; nguoiDungDon: string; soBA: string; hinhThuc: string; thamPhan?: string; ngayThuLy: string };
+  don: { maDon?: string; soThuLy: string; nguoiDungDon: string; soBA: string; hinhThuc: string; thamPhan?: string; ngayThuLy: string };
   qd: { soVanBan: string; ngayBanHanh: string; donViSoanThao: string; ghiChu: string; trangThai: string };
-  nguoiTao: string;
-}): VanBanTrinh => {
+  nguoiTao: { hoTen: string; chucVu: string };
+}): BanGhiKhoVanBan => {
   const { don, qd, nguoiTao } = input;
-  const tt = QD_PHAN_CONG_TRANG_THAI[qd.trangThai] ?? QD_PHAN_CONG_TRANG_THAI.daLuu;
-  const chuaKy = tt.trangThai !== "DaBanHanh";
-  const lichSu: MocLichSu[] = [{ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "Tao", phienBanSau: 1 }];
-  if (chuaKy) lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "LaySoTam" });
-  if (tt.buoc >= 1) lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Cán bộ", hanhDong: "Trinh" });
-  if (tt.trangThai === "DaBanHanh") lichSu.push({ vongTrinh: 1, thoiGian: bayGio(), nguoi: nguoiTao, chucVu: "Chánh án", hanhDong: "Ky" });
+  const trangThai = QD_PHAN_CONG_TRANG_THAI[qd.trangThai] ?? "Nhap";
+  const daKy = trangThai === "DaBanHanh";
+  const t = bayGio();
+  const moc = (hanhDong: HanhDong, nhanHanhDong?: string, chucVu = nguoiTao.chucVu): MocLichSuKho =>
+    ({ thoiGian: t, nguoi: nguoiTao.hoTen, chucVu, hanhDong, nhanHanhDong });
+
+  const lichSu: MocLichSuKho[] = [moc("Tao"), moc("LaySoTam")];
+  if (["choKy", "daKy", "huyKy"].includes(qd.trangThai)) lichSu.push(moc("Trinh"));
+  if (daKy) lichSu.push(moc("Ky", undefined, "Chánh án"));
+  if (qd.trangThai === "huyKy") lichSu.push(moc("Khac", "Huỷ ký số"));
+  if (qd.trangThai === "dung") lichSu.push(moc("Khac", "Dừng quyết định"));
 
   return {
-    // id ổn định theo mã đơn: mỗi lần sửa quyết định ghi đè đúng bản ghi cũ
-    // thay vì chồng thêm một dòng mới vào Danh sách văn bản.
-    id: `vb-qd-${don.soThuLy}`,
-    trichYeu: `Quyết định phân công thẩm phán – ${don.soThuLy}`,
+    // Mỗi đơn một quyết định: id theo số thụ lý, lưu lại thì ghi đè.
+    id: `pctp-qd-${don.soThuLy}`,
+    maPhanHe: "PCTP",
     loaiVanBan: "Quyết định phân công thẩm phán",
+    trichYeu: `Quyết định phân công thẩm phán – ${don.soThuLy}`,
     donViSoanThao: qd.donViSoanThao,
-    soVanBan: qd.soVanBan,
-    trangThaiSo: chuaKy ? "tam" : "chinhThuc",
-    ngayCapSo: homNay(),
-    ngayBanHanh: chuaKy ? undefined : qd.ngayBanHanh,
-    trangThai: tt.trangThai,
     nguoiTao,
-    luongKy: luongToTrinhPhanCong(),
-    buocHienTai: tt.buoc,
-    vongTrinh: 1,
-    phienBanHienTai: 1,
-    phienBan: [{ so: 1, noiDung: noiDungQDPhanCong(don, qd.ghiChu), nguoiSua: nguoiTao, thoiGian: bayGio() }],
+    trangThai,
+    soVanBan: qd.soVanBan,
+    trangThaiSo: daKy ? "chinhThuc" : "tam",
+    ngayCapSo: homNay(),
+    ngayBanHanh: daKy ? qd.ngayBanHanh : undefined,
+    noiDung: noiDungQDPhanCong(don, qd.ghiChu),
     lichSu,
-    donDinhKem: [{ ma: don.soThuLy, nguoiGui: don.nguoiDungDon, soBA: don.soBA, hinhThuc: don.hinhThuc }],
+    // Màn phân công chưa có mã đơn riêng — tạm dùng số thụ lý làm khóa đơn.
+    donDinhKem: [{
+      maDon: don.maDon ?? don.soThuLy, soThuLy: don.soThuLy,
+      nguoiGui: don.nguoiDungDon, soBA: don.soBA, hinhThuc: don.hinhThuc,
+    }],
   };
 };
 
@@ -420,8 +541,12 @@ const TRANG_THAI_META: Record<TrangThaiVB, { nhan: string; cls: string; icon: st
 const HANH_DONG_NHAN: Record<HanhDong, string> = {
   Tao: "Tạo văn bản", LaySoTam: "Lấy số tạm", Trinh: "Trình duyệt",
   Duyet: "Duyệt", SuaVaDuyet: "Sửa & duyệt", TraLai: "Trả lại",
-  Ky: "Ký số", ButPhe: "Bút phê", BanHanh: "Ban hành",
+  Ky: "Ký số", ButPhe: "Bút phê", BanHanh: "Ban hành", Khac: "Khác",
 };
+
+/** Nhãn một mốc lịch sử — hành động riêng của phân hệ dùng nhãn nó gửi sang. */
+const nhanMoc = (m: MocLichSu) =>
+  m.hanhDong === "Khac" ? m.nhanHanhDong || HANH_DONG_NHAN.Khac : HANH_DONG_NHAN[m.hanhDong];
 
 const Pill = ({ tt, nhan }: { tt: TrangThaiVB; nhan?: string }) => {
   const m = TRANG_THAI_META[tt];
@@ -915,7 +1040,7 @@ const SoSanhPhienBan = ({ vb, moc, onClose }: { vb: VanBanTrinh; moc: MocLichSu;
             <span className="text-on-surface-variant">→</span>
             <span className="h-[28px] px-2.5 inline-flex items-center border border-surface-container-highest rounded-[3px] bg-white font-medium">v{pbSau.so}</span>
             <span className="ml-auto text-[11px] text-on-surface-variant">
-              {moc.nguoi} · {moc.chucVu} · {moc.thoiGian} · {HANH_DONG_NHAN[moc.hanhDong]}
+              {moc.nguoi} · {moc.chucVu} · {moc.thoiGian} · {nhanMoc(moc)}
             </span>
           </div>
           {moc.yKien && (
@@ -1000,6 +1125,7 @@ const Stepper = ({ vb }: { vb: VanBanTrinh }) => {
         {voHieu ? `Vòng ${vb.vongTrinh} · phê duyệt đã vô hiệu`
           : xong ? `Hoàn tất · Vòng ${vb.vongTrinh}`
           : vb.trangThai === "Nhap" ? "Chưa trình — luồng ký chưa bắt đầu"
+          : !vb.luongKy.length ? "Luồng ký do phân hệ gửi văn bản xử lý"
           : `Vòng ${vb.vongTrinh} · bước ${vb.buocHienTai + 1}/${vb.luongKy.length}`}
       </div>
     </div>
@@ -1043,8 +1169,8 @@ const TabLichSu = ({ vb, onXemThayDoi }: { vb: VanBanTrinh; onXemThayDoi: (m: Mo
                   {!mo && <span className="font-normal text-[11px] ml-1">— {mocs.length} mốc, bấm để mở</span>}
                 </span>
                 {laVongCuoi
-                  ? <Pill tt={vb.trangThai} nhan={vb.trangThai === "ChoDuyet"
-                      ? `Chờ duyệt · bước ${vb.buocHienTai + 1}/${vb.luongKy.length}` : undefined} />
+                  ? <Pill tt={vb.trangThai} nhan={vb.trangThai === "ChoDuyet" && vb.luongKy.length
+                      ? `Chờ duyệt · bước ${vb.buocHienTai + 1}/${vb.luongKy.length}` : vb.nhanTrangThai} />
                   : coTraLai ? <Pill tt="BiTraLai" /> : null}
               </div>
 
@@ -1062,7 +1188,7 @@ const TabLichSu = ({ vb, onXemThayDoi }: { vb: VanBanTrinh; onXemThayDoi: (m: Mo
                       <div className={`text-[12px] mt-0.5 flex items-center gap-2 ${voHieu ? "text-outline" : "text-on-surface"}`}>
                         {m.hanhDong === "TraLai" && <span>⛔</span>}
                         {m.hanhDong === "SuaVaDuyet" && <span>✏️</span>}
-                        {HANH_DONG_NHAN[m.hanhDong]}
+                        {nhanMoc(m)}
                         {m.hanhDong === "LaySoTam" && vb.soVanBan && (
                           <span className="font-mono">{vb.soVanBan.split("/")[0]}</span>)}
                         {m.phienBanSau !== undefined && (
@@ -1307,6 +1433,7 @@ export const TienTrinhGon = ({ vb }: { vb: VanBanTrinh }) => {
           {voHieu ? `Vòng ${vb.vongTrinh}`
             : xong ? "Hoàn tất"
             : vb.trangThai === "Nhap" ? "Chưa trình"
+            : !vb.luongKy.length ? ""
             : `${vb.buocHienTai + 1}/${vb.luongKy.length}`}
         </span>
       </div>
@@ -1841,9 +1968,9 @@ export const VanBanTrinhKyCuaToi = ({ danhSach, setDanhSach, currentRole, highli
                       </>) : <span className="text-on-surface-variant">—</span>}
                     </td>
                     <td className="px-3 py-2 align-top">
-                      <Pill tt={v.trangThai} />
+                      <Pill tt={v.trangThai} nhan={v.nhanTrangThai} />
                       <div className="text-[11px] text-on-surface-variant mt-[3px]">
-                        {dangChoXuLy(v.trangThai) && `bước ${v.buocHienTai + 1}/${v.luongKy.length}`}
+                        {dangChoXuLy(v.trangThai) && v.luongKy.length > 0 && `bước ${v.buocHienTai + 1}/${v.luongKy.length}`}
                         {v.trangThai === "DaBanHanh" && v.ngayBanHanh}
                         {v.trangThai === "Nhap" && `Sửa lần cuối ${v.phienBan[v.phienBan.length - 1].thoiGian}`}
                         {traLai && v.lichSu[v.lichSu.length - 1].thoiGian}
@@ -2204,6 +2331,75 @@ export const PheDuyetDeXuat = ({ danhSach, setDanhSach, currentRole }: {
 // hoặc bút phê, dùng chung một màn thay vì ba màn na ná nhau.
 interface GhiChuVB { id: number; noiDung: string; nguoi: string; thoiGian: string }
 
+// Mock chi tiết đơn cho popup "Kiểm tra danh sách đơn" — tra theo mã đơn, ghép
+// vào donDinhKem (dữ liệu mẫu chỉ lưu mã/người gửi/số BA/hình thức).
+type ChiTietDon = Partial<VanBanTrinh["donDinhKem"][number]>;
+const CHI_TIET_DON_MAU: Record<string, ChiTietDon> = {
+  "Mã 7050": { soThuLy: "1244", ngayThuLy: "27/07/2026", diaChi: "0912373754 - Số 1A, ngõ 57 đường Xuân Hoà, phường Phan Đình Phùng, tỉnh Thái Nguyên",
+    ngayBA: "21/05/2026", toaAn: "Tòa án quân sự Trung ương", soDon: 1, thamPhan: "Lê Thanh Phong",
+    ghiChu: "Trùng vụ đã thụ lý đơn của Đỗ Văn Thành, Thẩm phán: Lê Thanh Phong (TPTC)" },
+  "Mã 7022": { soThuLy: "1243", ngayThuLy: "26/07/2026", diaChi: "Phường Hòa Bình, tỉnh Phú Thọ",
+    ngayBA: "20/06/2022", toaAn: "TAND tỉnh Vĩnh Phúc (cũ)", soDon: 1, thamPhan: "Lê Thanh Phong" },
+  "Mã 7021": { soThuLy: "1245", ngayThuLy: "27/07/2026", diaChi: "Số 12 phố Hàng Bông, phường Hoàn Kiếm, TP Hà Nội",
+    ngayBA: "14/03/2025", toaAn: "TAND thành phố Hà Nội", soDon: 2, thamPhan: "Nguyễn Thị Lan" },
+  "Mã 7032": { soThuLy: "1246", ngayThuLy: "28/07/2026", diaChi: "Thôn Đông, xã Minh Tân, tỉnh Ninh Bình",
+    ngayBA: "15/11/2024", toaAn: "TAND tỉnh Ninh Bình", soDon: 1, thamPhan: "Trần Văn Hùng" },
+  "Mã 7034": { soThuLy: "1238", ngayThuLy: "24/07/2026", diaChi: "Lô B3 KCN Quang Minh, xã Quang Minh, TP Hà Nội",
+    ngayBA: "02/12/2025", toaAn: "TAND thành phố Hà Nội", soDon: 1, thamPhan: "Lê Thị Mai" },
+  "Mã 7038": { soThuLy: "1251", ngayThuLy: "30/07/2026", diaChi: "Số 45 đường Láng, phường Láng, TP Hà Nội",
+    ngayBA: "08/01/2026", toaAn: "TAND khu vực 2 - Hà Nội", soDon: 1, thamPhan: "Phạm Văn Đức" },
+  "Mã 7031": { soThuLy: "1240", ngayThuLy: "25/07/2026", diaChi: "Số 3 Lê Văn Lương, phường Thanh Xuân, TP Hà Nội",
+    ngayBA: "21/07/2025", toaAn: "TAND khu vực 4 - Hà Nội", soDon: 1, thamPhan: "Hoàng Thị Thu",
+    ghiChu: "Công văn kiến nghị kèm hồ sơ vụ án (02 tập)" },
+  "Mã 7029": { soThuLy: "1236", ngayThuLy: "23/07/2026", diaChi: "Số 1 Lý Thường Kiệt, phường Cửa Nam, TP Hà Nội",
+    ngayBA: "19/09/2025", toaAn: "TAND thành phố Hà Nội", soDon: 1, thamPhan: "Nguyễn Thị Lan" },
+  "Mã 7040": { soThuLy: "1253", ngayThuLy: "31/07/2026", diaChi: "Số 26 Lý Thái Tổ, phường Hoàn Kiếm, TP Hà Nội",
+    ngayBA: "10/10/2024", toaAn: "TAND thành phố Hà Nội", soDon: 3, thamPhan: "Trần Văn Hùng",
+    ghiChu: "Đương sự gửi 03 đơn cùng nội dung" },
+  "Mã 7037": { soThuLy: "1249", ngayThuLy: "29/07/2026", diaChi: "Xóm 5, xã Yên Sở, TP Hà Nội",
+    ngayBA: "05/06/2021", toaAn: "TAND tỉnh Hà Tây (cũ)", soDon: 1, thamPhan: "Lê Thị Mai",
+    ghiChu: "Đơn quá thời hạn kháng nghị, đề nghị xem xét lý do chính đáng" },
+  "Mã 7042": { soThuLy: "1256", ngayThuLy: "01/08/2026", diaChi: "Phường Đông Ngàn, TP Từ Sơn, tỉnh Bắc Ninh",
+    ngayBA: "27/08/2024", toaAn: "TAND tỉnh Bắc Ninh", soDon: 1, thamPhan: "Phạm Văn Đức" },
+};
+
+// Tờ trình chưa gắn đơn → mượn 3 đơn mock để demo popup.
+const DON_MAU_KHI_TRONG: VanBanTrinh["donDinhKem"] = [
+  { ma: "Mã 7050", nguoiGui: "Công ty Luật TNHH Đại Phúc Việt - bào chữa cho bị cáo Đỗ Văn Thành", soBA: "03/2026/HSPT1", hinhThuc: "Đơn đề nghị GĐT/TT" },
+  { ma: "Mã 7021", nguoiGui: "Phạm Thị Ngọc", soBA: "89/2025/HS-GDT", hinhThuc: "CV Kiến nghị GĐT, TT" },
+  { ma: "Mã 7040", nguoiGui: "TAND Quận Hoàn Kiếm", soBA: "22/2024/HC-PT", hinhThuc: "Đơn đề nghị GĐT/TT" },
+];
+
+// Nút "Kiểm tra danh sách đơn" + popup bảng đơn — dùng ở cả hai màn mở từ
+// Phê duyệt đề xuất (Ý kiến lãnh đạo / Ký số). Văn bản chưa gắn đơn thì popup
+// hiện DON_MAU_KHI_TRONG để demo.
+const KiemTraDanhSachDon = ({ vb, chucVu, className }: { vb: VanBanTrinh; chucVu: string; className: string }) => {
+  const [mo, setMo] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setMo(true)} className={className}>
+        <List size={14} /> Kiểm tra danh sách đơn
+      </Button>
+      {mo && (
+        <PheDuyetToTrinhModal
+          onClose={() => setMo(false)}
+          role={["Chánh án", "Phó Chánh án", "Phó chánh án"].some(r => chucVu.includes(r)) ? "chanh_an" : "truong_phong"}
+          vanBanId={vb.id}
+          chucVuNguoiLuu={chucVu}
+          danhSachDonBanDau={(vb.donDinhKem.length === 0 ? DON_MAU_KHI_TRONG : vb.donDinhKem).map(goc => {
+            const d = { ...CHI_TIET_DON_MAU[goc.ma], ...goc };
+            return {
+              id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
+              thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
+              thuTuc: d.thuTuc, diaChi: d.diaChi, soThuLy: d.soThuLy, ngayThuLy: d.ngayThuLy, soDon: d.soDon,
+            };
+          })}
+        />
+      )}
+    </>
+  );
+};
+
 const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: {
   vb: VanBanTrinh; nguoiDung: string; chucVu: string; danhSach: VanBanTrinh[];
   onCapNhat: (v: VanBanTrinh) => void; onClose: () => void;
@@ -2262,9 +2458,13 @@ const ManKySoVanBan = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose }: 
               Công tác lãnh đạo / Phê duyệt đề xuất / Ý kiến lãnh đạo
             </div>
           </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+          <KiemTraDanhSachDon vb={vb} chucVu={chucVu}
+            className="flex items-center gap-1.5 h-[30px] px-3 rounded-[4px] border border-white/60 bg-white/10 text-white text-[12px] font-medium hover:bg-white/20 transition-colors" />
           <Button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors flex-shrink-0">
             <X size={18} />
           </Button>
+          </div>
         </div>
 
         <div className="flex-1 flex min-h-0">
@@ -2570,10 +2770,14 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
             {vb.soVanBan ?? "— chưa số —"} · {vb.trichYeu}
           </div>
         </div>
-        <Button onClick={onClose}
-          className="flex items-center gap-1.5 h-[34px] px-3.5 border border-surface-container-highest rounded-[4px] bg-white text-[13px] text-on-surface hover:bg-surface-container-low transition-colors flex-shrink-0">
-          <ChevronRight size={14} className="rotate-180" /> Quay lại
-        </Button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <KiemTraDanhSachDon vb={vb} chucVu={chucVu}
+            className="flex items-center gap-1.5 h-[34px] px-3.5 border border-[#1a5a96] rounded-[4px] bg-white text-[13px] font-medium text-[#1a5a96] hover:bg-[#eaf4ff] transition-colors" />
+          <Button onClick={onClose}
+            className="flex items-center gap-1.5 h-[34px] px-3.5 border border-surface-container-highest rounded-[4px] bg-white text-[13px] text-on-surface hover:bg-surface-container-low transition-colors">
+            <ChevronRight size={14} className="rotate-180" /> Quay lại
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -2624,7 +2828,7 @@ const ManPheDuyetYKien = ({ vb, nguoiDung, chucVu, danhSach, onCapNhat, onClose 
                           <div className="mt-2.5 pt-2.5 border-t border-surface-variant space-y-1.5">
                             {vb.lichSu.map((m, i) => (
                               <div key={i} className="text-[12px] text-on-surface-variant leading-snug">
-                                <span className="text-on-surface-variant">{m.thoiGian}</span> · <b>{m.nguoi}</b> ({m.chucVu}) — {HANH_DONG_NHAN[m.hanhDong]}
+                                <span className="text-on-surface-variant">{m.thoiGian}</span> · <b>{m.nguoi}</b> ({m.chucVu}) — {nhanMoc(m)}
                                 {m.yKien && <span className="italic"> : {m.yKien}</span>}
                               </div>
                             ))}
@@ -2935,7 +3139,7 @@ export const SoVanBanDi = ({ danhSach }: { danhSach: VanBanTrinh[] }) => {
                     <td className="px-3 py-2 align-top">
                       {qh
                         ? <span className="inline-block px-2 py-[2px] rounded-full text-[10px] font-medium border bg-[#fef3e2] text-[#b45309] border-[#fcd48a]">⚠️ Số tạm quá hạn</span>
-                        : <Pill tt={v.trangThai} />}
+                        : <Pill tt={v.trangThai} nhan={v.nhanTrangThai} />}
                       <div className="text-[11px] text-on-surface-variant mt-[3px]">
                         {qh && TRANG_THAI_META[v.trangThai].nhan}
                         {v.trangThai === "DaHuy" && "30/07/2026"}

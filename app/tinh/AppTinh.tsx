@@ -16,6 +16,7 @@ import { AppHeader } from "../components/AppHeader";
 import { AppSidebar } from "../components/AppSidebar";
 import QuanLyAnGDTTT from "../gdt/App";
 import type { View as GdtView } from "../gdt/views";
+import SoThuLy from "../components/SoThuLyPage";
 import { daGiaiQuyetXong, laQuaHan, laSapDenHan, soNgayQuaHan, CHO_DUYET_THU_LY, type BoLocTuTrangChu } from "./ChiSoTrangChu";
 import { apDuyetThuLy, ghiDuyetThuLy } from "./duyetThuLyStore";
 import HieuSuatCanBoChiTiet from "./HieuSuatCanBoChiTiet";
@@ -27,7 +28,7 @@ import { PhanCongThamPhanView } from "./PhanCongThamPhanView";
 import {
   VanBanTrinhKyCuaToi, PheDuyetDeXuat,
   DU_LIEU_MAU, taoTuModal, apTrinhDuyet, nguoiTheoVaiTro, timVanBanTheoDon,
-  laToTrinhPhanCong, luongToTrinhPhanCong, taoQuyetDinhPhanCong,
+  laToTrinhPhanCong, luongToTrinhPhanCong, taoQuyetDinhPhanCong, ghiVanBan, loiBanGhiKho,
   PanelChiTiet, TienTrinhGon, dangChoXuLy,
   type VanBanTrinh, type BuocKy, type TrangThaiVB, type LocVanBanTuTrangChu,
 } from "./components/QuanLyVanBan";
@@ -11021,7 +11022,7 @@ export default function AppTinh({
   // Nếu URL có #don=... thì tab này mở thẳng màn đơn (giống Thêm mới) với dữ
   // liệu của đơn đó đã được điền sẵn.
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "gdt" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "tiepnhan_don_lienthong" | "to_tham_phan">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "gdt" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "tiepnhan_don_lienthong" | "to_tham_phan" | "so_thu_ly">(donChiTietTabMoi ? "form" : "list");
 
   // ─── Module Quản lý án GĐT/TT (app/gdt/) ───────────────────────────────────
   // Module giữ state điều hướng nội bộ của riêng nó; ở đây chỉ cần nhớ mục menu
@@ -11138,12 +11139,13 @@ export default function AppTinh({
     addNotification(`Đã trình ${daTrinh.soVanBan ?? "văn bản"} — đang chờ ${luongKy[0]?.nguoi ?? "duyệt"}`);
   };
   /** Quyết định phân công vừa đổi trạng thái trong popup Tạo quyết định →
-   *  đồng bộ vào kho văn bản chung để nó hiện ở màn Danh sách văn bản và mở
-   *  được bằng luồng "Xem văn bản đã trình" sẵn có. Id bản ghi ổn định theo mã
-   *  đơn nên sửa quyết định sẽ ghi đè, không chồng thêm dòng. */
+   *  gửi sang kho văn bản theo hợp đồng tích hợp (docs/TichHop_KhoVanBan.md).
+   *  Id bản ghi ổn định theo số thụ lý nên sửa quyết định sẽ ghi đè, không
+   *  chồng thêm dòng. */
   const dongBoQDPhanCong = (don: any, q: any) => {
     if (!don?.soThuLy || !q) return;
-    const vb = taoQuyetDinhPhanCong({
+    const nguoi = nguoiTheoVaiTro(currentRole);
+    const banGhi = taoQuyetDinhPhanCong({
       don: {
         soThuLy: don.soThuLy, nguoiDungDon: don.nguoiDungDon ?? "—",
         soBA: don.soBA ?? "—", hinhThuc: don.hinhThuc ?? "—",
@@ -11153,10 +11155,15 @@ export default function AppTinh({
         soVanBan: q.soVanBan, ngayBanHanh: q.ngayBanHanh,
         donViSoanThao: q.donViSoanThao, ghiChu: q.ghiChu ?? "", trangThai: q.trangThai,
       },
-      nguoiTao: nguoiTheoVaiTro(currentRole).nguoi,
+      nguoiTao: { hoTen: nguoi.nguoi, chucVu: nguoi.chucVu },
     });
-    setVanBanList(ds => [...ds.filter(v => v.id !== vb.id), vb]);
-    setVbVuaTao(vb.id);
+    const loi = loiBanGhiKho(banGhi);
+    if (loi.length) {
+      console.warn("Kho văn bản từ chối bản ghi", banGhi.id, loi);
+      return;
+    }
+    setVanBanList(ds => ghiVanBan(ds, banGhi));
+    setVbVuaTao(banGhi.id);
   };
 
   /** Từ Danh sách đơn bấm chip "Đã có trong 545/…" → mở thẳng panel văn bản đó. */
@@ -11798,6 +11805,9 @@ export default function AppTinh({
               </div>
             </div>
           </div>
+
+          {/* Sổ thụ lý view */}
+          {view === "so_thu_ly" && <SoThuLy />}
 
           {/* Home view */}
           {view === "home" && (

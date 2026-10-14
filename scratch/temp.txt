@@ -1,0 +1,89 @@
+export default function AppToiCao({
+  activeRole = "can-bo",
+  globalRoleKey,
+  onDoiVaiTro,
+  onChuyenCap
+}: AppToiCaoProps = {}) {
+  // Nếu URL có #don=... thì tab này mở thẳng màn đơn (giống Thêm mới) với dữ
+  // liệu của đơn đó đã được điền sẵn.
+  const [isLienThongMode, setIsLienThongMode] = useState(false);
+  const [activeDonLienThong, setActiveDonLienThong] = useState<DonTiepNhan | null>(null);
+  const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
+  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong" | "gdt" | "to_tham_phan">(donChiTietTabMoi ? "form" : "list");
+  const [gdtView, setGdtView] = useState<GdtView>("don-cho-phe-duyet");
+  const [gdtNavSeq, setGdtNavSeq] = useState(0);
+  const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
+
+  // ─── KHO VĂN BẢN DÙNG CHUNG ────────────────────────────────────────────────
+  // Một nguồn sự thật duy nhất cho cả ba màn của module Quản lý văn bản:
+  //   · Danh sách văn bản (cán bộ)
+  //   · Phê duyệt đề xuất        (lãnh đạo)
+  //   · Sổ văn bản đi            (văn thư)
+  // Popup "Tạo văn bản & trình ký" đẩy bản ghi mới vào đây. Trước kia mỗi màn
+  // có kho riêng nên tạo văn bản xong không màn nào thấy — đó là lý do gộp.
+  const [vanBanList, setVanBanList] = useState<VanBanTrinh[]>(DU_LIEU_MAU);
+  // Dòng vừa tạo, để highlight khi nhảy sang màn Danh sách văn bản.
+  const [vbVuaTao, setVbVuaTao] = useState<string | null>(null);
+
+  /** Đóng vòng phản hồi: popup "Tạo văn bản & trình ký" → kho chung → màn cán bộ.
+   *  Dropdown người duyệt/ký trả về chuỗi "Tên - Chức vụ - Ngày sinh". */
+  const tachNguoi = (s: string) => {
+    const [nguoi, chucVu] = s.split(" - ");
+    return { nguoi: (nguoi ?? s).trim(), chucVu: (chucVu ?? "Lãnh đạo").trim() };
+  };
+  const taoVanBanTuModal = (kq: KetQuaTrinhDuyet) => {
+    const luongKy: BuocKy[] = [];
+    if (kq.nguoiDuyet) {
+      const n = tachNguoi(kq.nguoiDuyet);
+      luongKy.push({ thuTu: 1, nguoi: n.nguoi, chucVu: n.chucVu, vaiTro: "duyet" });
+    }
+    if (kq.nguoiKy) {
+      const n = tachNguoi(kq.nguoiKy);
+      luongKy.push({ thuTu: luongKy.length + 1, nguoi: n.nguoi, chucVu: n.chucVu, vaiTro: "ky" });
+    }
+    // Tờ trình phân công còn một bước nữa sau ký số: Chánh án/Phó Chánh án bút phê
+    if (laToTrinhPhanCong(kq.loaiVanBan)) {
+      const b = luongToTrinhPhanCong().find(x => x.vaiTro === "but_phe")!;
+      luongKy.push({ ...b, thuTu: luongKy.length + 1 });
+    }
+    const nguoiTao = kq.nguoiTao || nguoiTheoVaiTro(currentRole).nguoi;
+    const vb = taoTuModal({ ...kq, nguoiTao, luongKy });
+    // Bấm "Trình duyệt" nghĩa là tạo XONG và trình luôn — không dừng ở Nháp.
+    const daTrinh = luongKy.length ? apTrinhDuyet(vb, nguoiTao, "Cán bộ", kq.yKienTrinh) : vb;
+    setVanBanList(ds => [daTrinh, ...ds]);
+    setVbVuaTao(daTrinh.id);
+    addNotification(`Đã trình ${daTrinh.soVanBan ?? "văn bản"} — đang chờ ${luongKy[0]?.nguoi ?? "duyệt"}`);
+  };
+  /** Từ Danh sách đơn bấm chip "Đã có trong 545/…" → mở thẳng panel văn bản đó. */
+  const [moVanBanId, setMoVanBanId] = useState<string | null>(null);
+  const moVanBan = (id: string) => { setMoVanBanId(id); setView("van_ban_trinh_ky"); };
+
+  /** Bấm "Xem văn bản đã trình" ở popup Trình duyệt thành công — nút "Đóng" của
+   *  popup không điều hướng, cán bộ ở lại Danh sách đơn. */
+  const [locMaDonVanBan, setLocMaDonVanBan] = useState<string | null>(null);
+  const xemVanBanDaTrinh = (maDon: string) => {
+    setLocMaDonVanBan(maDon || null);
+    setView("van_ban_trinh_ky");
+  };
+
+  const [currentRole, setCurrentRole] = useState<"can-bo" | "truong-phong" | "pho-vp" | "lanh-dao" | "chanh-an">(activeRole || "can-bo");
+  useEffect(() => {
+    if (activeRole) setCurrentRole(activeRole);
+  }, [activeRole]);
+  const [notifications, setNotifications] = useState<{ id: number, text: string, time: string, read: boolean }[]>([
+    { id: 1, text: "Đơn 7031 đã được phân công cho cán bộ Nguyễn Văn An", time: "08:30", read: false }
+  ]);
+  const [showNoti, setShowNoti] = useState(false);
+  const addNotification = (text: string) => {
+    setNotifications(prev => [{
+      id: Date.now(),
+      text,
+      time: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      read: false
+    }, ...prev]);
+  };
+
+  useEffect(() => {
+    const handler = (e: any) => addNotification(e.detail);
+    notiEmitter.addEventListener('notify', handler);
+    

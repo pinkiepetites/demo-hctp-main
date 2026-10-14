@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Search, RotateCcw, ChevronDown, ChevronUp, ChevronRight, MoreVertical, X, Eye, Pencil, Printer, FileText, Trash2, Calendar, Save, Send, Upload } from "lucide-react";
+import { Search, RotateCcw, ChevronDown, ChevronUp, ChevronRight, MoreVertical, X, Eye, Pencil, Printer, FileText, Trash2, Calendar, Save, Send, Upload, Gavel } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge, StatusBadge, VuAnBtn, Tag, type UserRoleType } from "./shared";
 import { formatSoBA, CapNhatVongTrinhModal } from "./AppHelpers";
 import { TaoDuThaoModal } from "./TaoDuThaoModal";
@@ -644,35 +644,9 @@ function TabThongTin({ row, userRole }: { row: VuXetXuRow; userRole?: UserRoleTy
             ] : [
               { title: "* Người khiếu nại", req: true, cols: ["STT", "Họ và tên/Tổ chức", "Năm sinh", "Địa chỉ", "Thao tác"], rows: [["1", "Phan Mai Hoa", "", "Tổ 3, phường Yên Nghĩa, TP Hà Nội", actBtns]] },
               {
-                title: "* Bị cáo", req: true, cols: [],
-                biCaoRows: [{
-                  stt: "1",
-                  hoTen: row.biCao || "Nguyễn Văn A",
-                  vaiTro: "Bị cáo đầu vụ",
-                  ngaySinh: "2000",
-                  diaChi: "Tổ 7, Xã Yên Định, Tỉnh Bắc Ninh",
-                  banAnList: [
-                    {
-                      toiDanhChinh: "Tội che giấu tội phạm",
-                      hinhPhatTongHop: "Tù có thời hạn – 15 năm, 6 tháng",
-                      capXetXu: "Sơ thẩm",
-                      soBA: "124/2026/HS-ST",
-                      ngayBA: "20/07/2026",
-                      toaRaBA: "TAND khu vực 5 - Bắc Ninh",
-                      isSystem: true
-                    },
-                    {
-                      toiDanhChinh: "Trách nhiệm dân sự (bồi thường)",
-                      hinhPhatTongHop: "Phạt tiền 50 triệu VNĐ",
-                      capXetXu: "Phúc thẩm",
-                      soBA: "45/2026/HS-PT",
-                      ngayBA: "10/09/2026",
-                      toaRaBA: "TAND Tỉnh Bắc Ninh",
-                      isSystem: true
-                    }
-                  ]
-                }] as any[],
-                rows: [] as React.ReactNode[][]
+                title: "* Bị cáo", req: true,
+                cols: ["STT", "Họ và tên/Tổ chức", "Năm sinh", "Địa chỉ", "Thao tác"],
+                rows: [["1", row.biCao || "Nguyễn Văn A", "2000", "Tổ 7, Xã Yên Định, Tỉnh Bắc Ninh", actBtns]]
               },
               { title: "Bị hại", req: false, cols: ["STT", "Họ và tên/Tổ chức", "Năm sinh", "Địa chỉ", "Thao tác"], rows: [] as React.ReactNode[][] },
               { title: "Người có quyền lợi và nghĩa vụ liên quan", req: false, cols: ["STT", "Họ và tên/Tổ chức", "Năm sinh", "Địa chỉ", "Thao tác"], rows: [] as React.ReactNode[][] },
@@ -685,11 +659,7 @@ function TabThongTin({ row, userRole }: { row: VuXetXuRow; userRole?: UserRoleTy
                   </label>
                   <Button style={{ padding: "4px 12px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT }}>+ Thêm mới</Button>
                 </div>
-                {(sec as any).biCaoRows ? (
-                  {/* BiCaoTable removed */}
-                ) : (
-                  <PTab cols={sec.cols} rows={sec.rows as React.ReactNode[][]} noData={sec.rows.length === 0} />
-                )}
+                <PTab cols={sec.cols} rows={sec.rows as React.ReactNode[][]} noData={sec.rows.length === 0} />
               </div>
             ))}
           </>
@@ -2446,9 +2416,52 @@ export function TaoQuyetDinhHoanHDXXModal({
   );
 }
 
-// ── Component Modal Quyết định đình chỉ xét xử do rút kháng nghị (Chính xác theo mockup) ──
+// ── Danh mục Chánh án / Phó Chánh án của Tòa án hiện tại ──────────────────────
+export function getDanhSachChanhAnPhoChanhAn(toaAn?: string) {
+  const toa = (toaAn || "").toLowerCase();
+  if (toa.includes("cấp cao") || toa.includes("hồ chí minh") || toa.includes("đà nẵng") || toa.includes("hà nội")) {
+    return [
+      { ten: "Chu Lệ Hường", chucVu: "Chánh án TAND Cấp cao" },
+      { ten: "Trần Văn Hùng", chucVu: "Phó Chánh án TAND Cấp cao" },
+      { ten: "Nguyễn Thị Mai", chucVu: "Phó Chánh án TAND Cấp cao" },
+      { ten: "Lê Hoàng Nam", chucVu: "Phó Chánh án TAND Cấp cao" },
+    ];
+  }
+  if (toa.includes("tỉnh") || toa.includes("thành phố") || toa.includes("hải phòng") || toa.includes("long an") || toa.includes("bắc ninh")) {
+    return [
+      { ten: "Chu Lệ Hường", chucVu: "Chánh án TAND thành phố Bắc Ninh" },
+      { ten: "Đặng Quốc Trung", chucVu: "Chánh án TAND tỉnh" },
+      { ten: "Lê Minh Tuấn", chucVu: "Phó Chánh án TAND tỉnh" },
+      { ten: "Nguyễn Hải Trâm", chucVu: "Phó Chánh án TAND tỉnh" },
+    ];
+  }
+  return [
+    { ten: "Chu Lệ Hường", chucVu: "Chánh án Tòa án nhân dân" },
+    { ten: "Lê Thị Thu Hiển", chucVu: "Chánh án TAND tối cao" },
+    { ten: "Nguyễn Văn Tiến", chucVu: "Phó Chánh án TAND tối cao" },
+    { ten: "Nguyễn Trí Tuệ", chucVu: "Phó Chánh án TAND tối cao" },
+    { ten: "Nguyễn Biên Thùy", chucVu: "Phó Chánh án TAND tối cao" },
+    { ten: "Phạm Quốc Hưng", chucVu: "Phó Chánh án TAND tối cao" },
+  ];
+}
 
-export function TaoQuyetDinhDinhChiDoRutKNModal({
+export function getDonViKhangNghiMacDinh(nguoiRut: "chanh-an" | "vien-truong", row: any) {
+  const toa = row?.toaAnGiaiQuyet || row?.toa || "Tòa án nhân dân thành phố Bắc Ninh";
+  if (nguoiRut === "vien-truong") {
+    if (toa.toLowerCase().includes("tối cao")) {
+      return "Viện kiểm sát nhân dân tối cao";
+    }
+    if (toa.toLowerCase().includes("cấp cao")) {
+      return toa.replace(/tòa án nhân dân/gi, "Viện kiểm sát nhân dân").replace(/tand/gi, "VKSND");
+    }
+    return toa.replace(/tòa án nhân dân/gi, "Viện kiểm sát nhân dân").replace(/tand/gi, "VKSND");
+  }
+  return toa;
+}
+
+// ── Component Modal Quyết định rút kháng nghị (Khớp 100% theo ảnh thiết kế) ──
+
+export function TaoQuyetDinhRutKhangNghiModal({
   row,
   initialData,
   onClose,
@@ -2459,294 +2472,481 @@ export function TaoQuyetDinhDinhChiDoRutKNModal({
   onClose: () => void;
   onSave: (record: any) => void;
 }) {
-  const [ngayQD, setNgayQD] = useState(initialData?.ngayQD || "2023-10-15");
-  const [soQD, setSoQD] = useState(initialData?.soQD || "");
-  const [daLaySo, setDaLaySo] = useState(Boolean(initialData?.soQD));
-  const [nguoiKy, setNguoiKy] = useState(initialData?.nguoiKy || "");
+  const danhMucLanhDao = useMemo(() => getDanhSachChanhAnPhoChanhAn(row?.toaAnGiaiQuyet || row?.toa), [row]);
 
-  // Xét thấy & Quyết định
-  const [noiDungXetThay, setNoiDungXetThay] = useState(
+  // Thông tin ngày quyết định & số quyết định
+  const [ngayQD, setNgayQD] = useState(initialData?.ngayQD || "");
+  const [soQD, setSoQD] = useState(initialData?.soQD || "");
+
+  // 1. Người rút kháng nghị (Radio: Viện trưởng / Chánh án)
+  const [nguoiRutKhangNghi, setNguoiRutKhangNghi] = useState<"chanh-an" | "vien-truong">(
+    initialData?.nguoiRutKhangNghi || "chanh-an"
+  );
+
+  // 2. Người ký / người phân công
+  const [nguoiKy, setNguoiKy] = useState(
+    initialData?.nguoiKy || "Chu Lệ Hường"
+  );
+
+  // 3. Cách giải quyết (Radio: Bổ sung / Rút)
+  const [cachGiaiQuyet, setCachGiaiQuyet] = useState<"bo-sung" | "rut">(
+    initialData?.cachGiaiQuyet || "bo-sung"
+  );
+
+  // Phạm vi rút kháng nghị (Toàn bộ / Một phần theo Điều 381 BLTTHS)
+  const [phamViRut, setPhamViRut] = useState<"toan-bo" | "mot-phan">(
+    initialData?.phamViRut || "toan-bo"
+  );
+
+  // Thời điểm rút kháng nghị (Trước phiên tòa / Tại phiên tòa theo Điều 381 BLTTHS)
+  const [thoiDiemRut, setThoiDiemRut] = useState<"truoc-phien-toa" | "tai-phien-toa">(
+    initialData?.thoiDiemRut || "truoc-phien-toa"
+  );
+
+  // 4. Căn cứ quyết định kháng nghị GĐT (Số KN, Ngày KN, Đơn vị ra QĐKN)
+  const [soKN, setSoKN] = useState(initialData?.soKN || row?.soKN || "012");
+  const [ngayKN, setNgayKN] = useState(initialData?.ngayKN || row?.ngayKN || "12/10/2026");
+  const [donViRaQDKN, setDonViRaQDKN] = useState(
+    initialData?.donViRaQDKN ||
+    getDonViKhangNghiMacDinh(initialData?.nguoiRutKhangNghi || "chanh-an", row)
+  );
+
+  // 5. Tệp đính kèm văn bản rút kháng nghị
+  const [tepDinhKem, setTepDinhKem] = useState<string | null>(
+    initialData?.tepDinhKem || null
+  );
+  const [fileError, setFileError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 6. Nhận thấy (Bắt buộc *, có bộ đếm 0/4000)
+  const [nhanThay, setNhanThay] = useState(
     initialData?.nhanThay || initialData?.noiDungXetThay || ""
   );
-  const [noiDungQuyetDinh, setNoiDungQuyetDinh] = useState(
-    initialData?.noiDungQD || initialData?.noiDungQuyetDinh || ""
-  );
 
-  // Nơi nhận List
-  const [noiNhanList, setNoiNhanList] = useState<Array<{ id: number; noiNhan: string; noiNhanChiTiet: string; ghiChu: string }>>([
-    { id: 1, noiNhan: "Viện kiểm sát", noiNhanChiTiet: "VKSNDTC", ghiChu: "Kèm hồ sơ vụ án" },
-  ]);
-
-  const [showTrinhKy, setShowTrinhKy] = useState(false);
-  const [showBieuMau, setShowBieuMau] = useState(false);
-
-  const handleLaySoToggle = () => {
-    if (daLaySo) {
-      setSoQD("");
-      setDaLaySo(false);
+  const handleChonNguoiRut = (val: "chanh-an" | "vien-truong") => {
+    setNguoiRutKhangNghi(val);
+    setFileError("");
+    if (val === "chanh-an") {
+      setNguoiKy(danhMucLanhDao[0]?.ten || "Chu Lệ Hường");
+      setDonViRaQDKN(getDonViKhangNghiMacDinh("chanh-an", row));
     } else {
-      const generated = `${35 + Math.floor(Math.random() * 80)}/2026/QĐ-ĐC`;
-      setSoQD(generated);
-      setDaLaySo(true);
+      setNguoiKy("");
+      setDonViRaQDKN(getDonViKhangNghiMacDinh("vien-truong", row));
     }
   };
 
+  const validateForm = () => {
+    if (nguoiRutKhangNghi === "chanh-an" && !nguoiKy) {
+      alert("Vui lòng chọn Người ký/người phân công!");
+      return false;
+    }
+    if (nguoiRutKhangNghi === "vien-truong" && !tepDinhKem) {
+      setFileError("Bắt buộc phải tải lên tệp đính kèm văn bản rút kháng nghị!");
+      alert("Bắt buộc phải tải lên tệp đính kèm khi người rút kháng nghị là Viện trưởng Viện kiểm sát nhân dân!");
+      return false;
+    }
+    if (!nhanThay.trim()) {
+      alert("Vui lòng nhập nội dung Nhận thấy!");
+      return false;
+    }
+    return true;
+  };
+
   const handleSave = () => {
-    const finalSo = soQD || `${35 + Math.floor(Math.random() * 80)}/2026/QĐ-ĐC`;
+    if (!validateForm()) return;
     onSave({
       id: initialData?.id || Date.now(),
-      tenQD: "Quyết định đình chỉ do rút kháng nghị",
-      soQD: finalSo,
-      ngayQD: ngayQD || "15/10/2023",
-      nguoiKy: nguoiKy || "Lê Thị Thu Hiển",
+      tenQD: "Quyết định rút kháng nghị",
+      soQD: soQD || "Chưa được cấp số",
+      ngayQD: ngayQD || "12/10/2026",
+      nguoiRutKhangNghi,
+      nguoiKy: nguoiKy || (nguoiRutKhangNghi === "vien-truong" ? "Viện trưởng VKSND" : "Chu Lệ Hường"),
+      cachGiaiQuyet,
+      phamViRut: cachGiaiQuyet === "rut" ? phamViRut : undefined,
+      thoiDiemRut: cachGiaiQuyet === "rut" ? thoiDiemRut : undefined,
+      soKN,
+      ngayKN,
+      donViRaQDKN,
+      tepDinhKem,
+      nhanThay,
       nguoiTao: "Nguyễn Văn Tiến",
       ngayTao: new Date().toLocaleDateString("vi-VN") + " " + new Date().toLocaleTimeString("vi-VN"),
-      nhanThay: noiDungXetThay || "Người kháng nghị có văn bản rút toàn bộ kháng nghị giám đốc thẩm.",
-      noiDungQD: noiDungQuyetDinh || "Đình chỉ việc xét xử giám đốc thẩm đối với vụ án.",
-      noiNhanList,
     });
     onClose();
   };
 
+  // Trích xuất thông tin vụ án hiển thị card màu xanh
+  const soBAVal = row?.soBA ? formatSoBA(row.soBA) : "12";
+  const ngayBAVal = row?.ngayBA || "12/10/2026";
+  const toaXetXuVal = row?.toaXetXu || row?.toa || "Tòa án nhân dân khu vực 5 - Bắc Ninh";
+  const toaAnGiaiQuyetVal = row?.toaAnGiaiQuyet || "Tòa án nhân dân thành phố Bắc Ninh";
+  const loaiAnVal = row?.loaiAn || "Hình sự";
+  const trangThaiVal = row?.trangThaiText || (row?.trangThai === "da-xx" ? "Đã xét xử" : "Chưa xét xử");
+
   return (
-    <>
-      {showTrinhKy && (
-        <TrinhKyModal
-          title="Trình ký Quyết định đình chỉ xét xử do rút kháng nghị"
-          onClose={() => setShowTrinhKy(false)}
-          onSuccess={() => {
-            setShowTrinhKy(false);
-            handleSave();
-          }}
-        />
-      )}
-      {showBieuMau && (
-        <XemBieuMauQuyetDinhWordModal
-          tenQD="Quyết định đình chỉ do rút kháng nghị"
-          row={row}
-          data={{ soQD: soQD || "35/2026/QĐ-ĐC", ngayQD, nguoiKy, nhanThay: noiDungXetThay, noiDungQD: noiDungQuyetDinh }}
-          onClose={() => setShowBieuMau(false)}
-        />
-      )}
-
-      <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ background: "#fff", borderRadius: 8, width: 880, maxWidth: "96vw", maxHeight: "92vh", overflowY: "auto", boxShadow: "0 12px 48px rgba(0,0,0,0.25)", display: "flex", flexDirection: "column" as const, fontFamily: F }}>
-          {/* Header */}
-          <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", position: "sticky", top: 0, zIndex: 10 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#800000" }}>Quyết định đình chỉ xét xử do rút kháng nghị</span>
-            <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={18} /></Button>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div style={{ background: "#fff", borderRadius: 8, width: 880, maxWidth: "96vw", maxHeight: "94vh", overflowY: "auto", boxShadow: "0 12px 48px rgba(0,0,0,0.25)", display: "flex", flexDirection: "column" as const, fontFamily: F }}>
+        {/* Header */}
+        <div style={{ padding: "14px 24px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", position: "sticky", top: 0, zIndex: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Gavel size={20} color="#1e293b" />
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#0f172a" }}>Quyết định rút kháng nghị</span>
           </div>
+          <Button htmlType="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={18} /></Button>
+        </div>
 
-          {/* Info Card */}
-          <div style={{ margin: "16px 20px 0", padding: "14px 18px", background: "#f8fafc", borderRadius: 6, border: `1px solid ${BORDER}`, fontSize: 14 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1.1fr 1fr", gap: "6px 24px" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div><span style={{ color: MUTED }}>Tên vụ án: </span><b>{row?.tenVuAn || "Chu Văn An - Nguyễn Anh Minh tranh chấp đất đai"}</b></div>
-                <div><span style={{ color: MUTED }}>Nguyên đơn </span><b>{row?.nguyenDon || row?.ndkn || row?.ndd || "Chu Văn An"}</b></div>
-                <div><span style={{ color: MUTED }}>Bị đơn </span><b>{row?.biDon || row?.biCao || "Nguyễn Anh Minh"}</b></div>
-                <div><span style={{ color: MUTED }}>Quan hệ pháp luật: </span><span>{row?.qhpl || "Tranh chấp đất đai"}</span></div>
+        <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column" as const, gap: 16 }}>
+          {/* Blue Info Card */}
+          <div style={{ background: "#f0f7ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "14px 20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.2fr", gap: "8px 24px", fontSize: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Số BA/QĐ: </span><span style={{ color: "#1e293b" }}>{soBAVal}</span></div>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Ngày ra BA/QĐ: </span><span style={{ color: "#1e293b" }}>{ngayBAVal}</span></div>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Tòa xét xử: </span><span style={{ color: "#1e293b" }}>{toaXetXuVal}</span></div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div><span style={{ color: MUTED }}>Số BA/QĐ: </span><b>{row?.soBA ? formatSoBA(row.soBA) : "125/2023/HS-ST"} - {row?.ngayBA || "15/10/2023"} - {row?.toa || "Tòa án nhân dân tỉnh Long An"}</b></div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div><span style={{ color: MUTED }}>Giai đoạn: </span><span style={{ color: "#059669", fontWeight: 600 }}>Giám đốc thẩm, tái thẩm</span></div>
-                <div><span style={{ color: MUTED }}>Tòa án giải quyết: </span><span style={{ color: "#059669", fontWeight: 600 }}>Tòa án nhân dân tối cao</span></div>
-                <div><span style={{ color: MUTED }}>Trạng thái: </span><span style={{ color: "#ea580c", fontWeight: 600 }}>Chưa có kết quả xét xử</span></div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Tòa án giải quyết: </span><span style={{ color: "#1e293b" }}>{toaAnGiaiQuyetVal}</span></div>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Loại án: </span><span style={{ color: "#1e293b" }}>{loaiAnVal}</span></div>
+                <div><span style={{ color: "#0284c7", fontWeight: 600 }}>Trạng thái: </span><span style={{ color: "#1e293b" }}>{trangThaiVal}</span></div>
               </div>
             </div>
           </div>
 
-          <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column" as const, gap: 16 }}>
-            {/* 1. Thông tin quyết định */}
+          {/* Row: Người rút kháng nghị (Radio) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT }}>
+              <span style={{ color: RED }}>* </span>Người rút kháng nghị:
+            </label>
+            <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: nguoiRutKhangNghi === "chanh-an" ? 600 : 400, color: nguoiRutKhangNghi === "chanh-an" ? "#800000" : TEXT }}>
+                <input
+                  type="radio"
+                  name="modalNguoiRutKN"
+                  checked={nguoiRutKhangNghi === "chanh-an"}
+                  onChange={() => handleChonNguoiRut("chanh-an")}
+                  style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                />
+                Chánh án Tòa án nhân dân
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: nguoiRutKhangNghi === "vien-truong" ? 600 : 400, color: nguoiRutKhangNghi === "vien-truong" ? "#800000" : TEXT }}>
+                <input
+                  type="radio"
+                  name="modalNguoiRutKN"
+                  checked={nguoiRutKhangNghi === "vien-truong"}
+                  onChange={() => handleChonNguoiRut("vien-truong")}
+                  style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                />
+                Viện trưởng Viện kiểm sát nhân dân
+              </label>
+            </div>
+          </div>
+
+          {/* Row 1: Ngày quyết định, Số quyết định, Người ký/người phân công */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#800000", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ display: "inline-block", width: 3, height: 14, background: "#800000" }}></span>
-                Thông tin quyết định
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 4 }}>
-                    <span style={{ color: RED }}>* </span>Ngày quyết định
-                  </label>
-                  <Input type="date" value={ngayQD} onChange={e => setNgayQD(e.target.value)} style={{ width: "100%", padding: "7px 10px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, background: "#fff", boxSizing: "border-box" }} />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 4 }}>Số quyết định</label>
-                  <Input placeholder="Nhập số quyết định" value={soQD} onChange={e => setSoQD(e.target.value)} style={{ width: "100%", padding: "7px 10px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, boxSizing: "border-box", background: "#fff" }} />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 4 }}>
-                    <span style={{ color: RED }}>* </span>Người ký ban hành
-                  </label>
-                  <select value={nguoiKy} onChange={e => setNguoiKy(e.target.value)} style={{ width: "100%", padding: "7px 10px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, cursor: "pointer", boxSizing: "border-box", background: "#fff" }}>
-                    <option value="">Chọn người ký</option>
-                    <option value="Lê Thị Thu Hiển">Lê Thị Thu Hiển</option>
-                    <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                    <option value="Nguyễn Biên Thùy">Nguyễn Biên Thùy</option>
-                    <option value="Trần Thị B">Trần Thị B</option>
-                  </select>
-                </div>
+              <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Ngày quyết định</label>
+              <div style={{ position: "relative" }}>
+                <Input
+                  value={ngayQD}
+                  onChange={e => setNgayQD(e.target.value)}
+                  placeholder="Chọn ngày"
+                  style={{ width: "100%", padding: "7px 34px 7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
+                />
+                <Calendar size={16} color={MUTED} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
               </div>
             </div>
-
-            {/* 2. Xét thấy */}
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#800000", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ display: "inline-block", width: 3, height: 14, background: "#800000" }}></span>
-                Xét thấy
-              </div>
-              <textarea
-                placeholder="Nhập nội dung xét thấy..."
-                value={noiDungXetThay}
-                onChange={e => setNoiDungXetThay(e.target.value)}
-                style={{ width: "100%", minHeight: 90, padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none", fontFamily: F, resize: "vertical", boxSizing: "border-box" }}
+              <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Số quyết định</label>
+              <Input
+                value={soQD}
+                onChange={e => setSoQD(e.target.value)}
+                placeholder="Chưa được cấp số"
+                style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
               />
             </div>
-
-            {/* 3. Quyết định */}
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#800000", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ display: "inline-block", width: 3, height: 14, background: "#800000" }}></span>
-                Quyết định
+              <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>
+                {nguoiRutKhangNghi === "chanh-an" ? (
+                  <span><span style={{ color: RED }}>* </span>Người ký/người phân công</span>
+                ) : (
+                  <span>Người ký (nhập tay)</span>
+                )}
+              </label>
+              {nguoiRutKhangNghi === "chanh-an" ? (
+                <select
+                  value={nguoiKy}
+                  onChange={e => setNguoiKy(e.target.value)}
+                  style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, background: "#fff", cursor: "pointer", boxSizing: "border-box", fontFamily: F }}
+                >
+                  <option value="Chu Lệ Hường">Chu Lệ Hường</option>
+                  {danhMucLanhDao.filter(ld => ld.ten !== "Chu Lệ Hường").map(ld => (
+                    <option key={ld.ten} value={ld.ten}>{ld.ten} – {ld.chucVu}</option>
+                  ))}
+                </select>
+              ) : (
+                <Input
+                  value={nguoiKy}
+                  onChange={e => setNguoiKy(e.target.value)}
+                  placeholder="Nhập người ký..."
+                  style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Cách giải quyết (Radio) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Cách giải quyết</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: cachGiaiQuyet === "bo-sung" ? 600 : 400, color: cachGiaiQuyet === "bo-sung" ? "#800000" : TEXT }}>
+                  <input
+                    type="radio"
+                    name="modalCachGiaiQuyet"
+                    checked={cachGiaiQuyet === "bo-sung"}
+                    onChange={() => setCachGiaiQuyet("bo-sung")}
+                    style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                  />
+                  Bổ sung
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: cachGiaiQuyet === "rut" ? 600 : 400, color: cachGiaiQuyet === "rut" ? "#800000" : TEXT }}>
+                  <input
+                    type="radio"
+                    name="modalCachGiaiQuyet"
+                    checked={cachGiaiQuyet === "rut"}
+                    onChange={() => setCachGiaiQuyet("rut")}
+                    style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                  />
+                  Rút
+                </label>
               </div>
-              <textarea
-                placeholder="Nhập nội dung quyết định"
-                value={noiDungQuyetDinh}
-                onChange={e => setNoiDungQuyetDinh(e.target.value)}
-                style={{ width: "100%", minHeight: 90, padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 6, outline: "none", fontFamily: F, resize: "vertical", boxSizing: "border-box" }}
-              />
             </div>
 
-            {/* 4. Nơi nhận */}
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>Nơi nhận</div>
+            {/* Chi tiết theo Điều 381 BLTTHS khi chọn Rút */}
+            {cachGiaiQuyet === "rut" && (
+              <div style={{ background: "#f8fafc", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "12px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 6 }}>
+                      Phạm vi rút kháng nghị:
+                    </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: phamViRut === "toan-bo" ? 600 : 400, color: phamViRut === "toan-bo" ? "#800000" : TEXT }}>
+                        <input
+                          type="radio"
+                          name="modalPhamViRut"
+                          checked={phamViRut === "toan-bo"}
+                          onChange={() => setPhamViRut("toan-bo")}
+                          style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                        />
+                        Rút toàn bộ
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: phamViRut === "mot-phan" ? 600 : 400, color: phamViRut === "mot-phan" ? "#800000" : TEXT }}>
+                        <input
+                          type="radio"
+                          name="modalPhamViRut"
+                          checked={phamViRut === "mot-phan"}
+                          onChange={() => setPhamViRut("mot-phan")}
+                          style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                        />
+                        Rút một phần
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 6 }}>
+                      Thời điểm rút kháng nghị:
+                    </label>
+                    <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: thoiDiemRut === "truoc-phien-toa" ? 600 : 400, color: thoiDiemRut === "truoc-phien-toa" ? "#800000" : TEXT }}>
+                        <input
+                          type="radio"
+                          name="modalThoiDiemRut"
+                          checked={thoiDiemRut === "truoc-phien-toa"}
+                          onChange={() => setThoiDiemRut("truoc-phien-toa")}
+                          style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                        />
+                        Trước khi mở phiên tòa
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: thoiDiemRut === "tai-phien-toa" ? 600 : 400, color: thoiDiemRut === "tai-phien-toa" ? "#800000" : TEXT }}>
+                        <input
+                          type="radio"
+                          name="modalThoiDiemRut"
+                          checked={thoiDiemRut === "tai-phien-toa"}
+                          onChange={() => setThoiDiemRut("tai-phien-toa")}
+                          style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                        />
+                        Tại phiên tòa
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hướng dẫn nghiệp vụ theo Điều 381 BLTTHS */}
+                <div style={{ fontSize: 14, color: "#1e40af", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 4, padding: "8px 12px", lineHeight: 1.5 }}>
+                  <strong>Căn cứ Điều 381 BLTTHS: </strong>
+                  {phamViRut === "toan-bo" && thoiDiemRut === "truoc-phien-toa" && (
+                    <span>Rút trước phiên tòa bằng quyết định; nếu rút toàn bộ thì Chánh án ra quyết định đình chỉ xét xử giám đốc thẩm.</span>
+                  )}
+                  {phamViRut === "toan-bo" && thoiDiemRut === "tai-phien-toa" && (
+                    <span>Rút tại phiên tòa thì ghi vào biên bản phiên tòa; nếu rút toàn bộ thì Hội đồng xét xử ra quyết định đình chỉ xét xử.</span>
+                  )}
+                  {phamViRut === "mot-phan" && (
+                    <span>Rút một phần thì Tòa án / Hội đồng xét xử tiếp tục xét xử phần còn lại.</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Section: Căn cứ quyết định kháng nghị GĐT */}
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 10 }}>Căn cứ quyết định kháng nghị GĐT</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Số KN</label>
+                <Input
+                  value={soKN}
+                  onChange={e => setSoKN(e.target.value)}
+                  placeholder="012"
+                  style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Ngày KN</label>
+                <Input
+                  value={ngayKN}
+                  onChange={e => setNgayKN(e.target.value)}
+                  placeholder="12/10/2026"
+                  style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>Đơn vị ra QĐKN</label>
+                <Input
+                  value={donViRaQDKN}
+                  onChange={e => setDonViRaQDKN(e.target.value)}
+                  placeholder={nguoiRutKhangNghi === "vien-truong" ? "Viện kiểm sát nhân dân..." : "Tòa án nhân dân..."}
+                  style={{ width: "100%", padding: "7px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, boxSizing: "border-box", fontFamily: F, background: "#fff" }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Tệp đính kèm văn bản rút kháng nghị */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <label style={{ fontSize: 14, color: TEXT }}>
+                {nguoiRutKhangNghi === "vien-truong" ? (
+                  <span><span style={{ color: RED }}>* </span>Tệp đính kèm văn bản rút kháng nghị (Bắt buộc phải tải file)</span>
+                ) : (
+                  <span>Tệp đính kèm văn bản rút kháng nghị (Không bắt buộc)</span>
+                )}
+              </label>
+              {fileError && <span style={{ fontSize: 14, color: RED, fontWeight: 600 }}>{fileError}</span>}
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "10px 14px",
+              border: `1px ${tepDinhKem ? "solid #86efac" : fileError ? "solid " + RED : "dashed " + BORDER}`,
+              borderRadius: 4,
+              background: tepDinhKem ? "#f0fdf4" : fileError ? "#fef2f2" : "#fafafa",
+            }}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                accept=".pdf,.doc,.docx"
+                onChange={e => {
+                  if (e.target.files && e.target.files[0]) {
+                    setTepDinhKem(e.target.files[0].name);
+                    setFileError("");
+                  }
+                }}
+              />
+              {tepDinhKem ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#166534" }}>Đã đính kèm:</span>
+                  <span style={{ fontSize: 14, color: "#15803d", fontWeight: 500, textDecoration: "underline" }}>{tepDinhKem}</span>
+                </div>
+              ) : (
+                <div style={{ fontSize: 14, color: nguoiRutKhangNghi === "vien-truong" ? "#dc2626" : MUTED }}>
+                  {nguoiRutKhangNghi === "vien-truong"
+                    ? "Chưa có file đính kèm. Vui lòng tải lên văn bản rút kháng nghị của Viện kiểm sát."
+                    : "Chưa chọn file đính kèm."}
+                </div>
+              )}
+              <div style={{ display: "flex", gap: 8 }}>
                 <Button
                   htmlType="button"
-                  onClick={() => setNoiNhanList(prev => [...prev, { id: Date.now(), noiNhan: "Tòa án", noiNhanChiTiet: "", ghiChu: "" }])}
-                  style={{ padding: "5px 14px", background: "#800000", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: F }}
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ padding: "6px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: 600, color: TEXT }}
                 >
-                  Thêm nơi nhận
+                  {tepDinhKem ? "Thay đổi file" : "Chọn file đính kèm"}
                 </Button>
-              </div>
-              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 6, overflow: "hidden" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-                  <colgroup>
-                    <col style={{ width: 45 }} />
-                    <col style={{ width: "22%" }} />
-                    <col style={{ width: "35%" }} />
-                    <col style={{ width: "25%" }} />
-                    <col style={{ width: 70 }} />
-                  </colgroup>
-                  <thead>
-                    <tr style={{ background: "#f8fafc", borderBottom: `1px solid ${BORDER}` }}>
-                      <th style={{ ...TH_STYLE, fontSize: 14, textAlign: "center" }}>STT</th>
-                      <th style={{ ...TH_STYLE, fontSize: 14 }}>NƠI NHẬN</th>
-                      <th style={{ ...TH_STYLE, fontSize: 14 }}>NƠI NHẬN CHI TIẾT</th>
-                      <th style={{ ...TH_STYLE, fontSize: 14 }}>GHI CHÚ</th>
-                      <th style={{ ...TH_STYLE, fontSize: 14, textAlign: "center" }}>THAO TÁC</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {noiNhanList.map((rowItem, idx) => (
-                      <tr key={rowItem.id} style={{ background: idx % 2 === 0 ? "#fff" : "#fafafa", borderBottom: `1px solid ${BORDER}` }}>
-                        <td style={{ ...TD_STYLE, textAlign: "center", color: MUTED }}>{idx + 1}</td>
-                        <td style={{ ...TD_STYLE, padding: "5px 8px" }}>
-                          <select
-                            value={rowItem.noiNhan}
-                            onChange={e => setNoiNhanList(prev => prev.map(x => x.id === rowItem.id ? { ...x, noiNhan: e.target.value } : x))}
-                            style={{ width: "100%", padding: "4px 6px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, background: "#fff" }}
-                          >
-                            <option value="Viện kiểm sát">Viện kiểm sát</option>
-                            <option value="Tòa án">Tòa án</option>
-                            <option value="Khác">Khác</option>
-                          </select>
-                        </td>
-                        <td style={{ ...TD_STYLE, padding: "5px 8px" }}>
-                          <Input
-                            placeholder="Tên đơn vị nhận"
-                            value={rowItem.noiNhanChiTiet}
-                            onChange={e => setNoiNhanList(prev => prev.map(x => x.id === rowItem.id ? { ...x, noiNhanChiTiet: e.target.value } : x))}
-                            style={{ width: "100%", padding: "4px 6px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, background: "#fff" }}
-                          />
-                        </td>
-                        <td style={{ ...TD_STYLE, padding: "5px 8px" }}>
-                          <Input
-                            placeholder="Nhập ghi chú"
-                            value={rowItem.ghiChu}
-                            onChange={e => setNoiNhanList(prev => prev.map(x => x.id === rowItem.id ? { ...x, ghiChu: e.target.value } : x))}
-                            style={{ width: "100%", padding: "4px 6px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", fontFamily: F, background: "#fff" }}
-                          />
-                        </td>
-                        <td style={{ ...TD_STYLE, textAlign: "center" }}>
-                          <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                            <Button
-                              htmlType="button"
-                              onClick={() => {}}
-                              style={{ background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontSize: 14, fontFamily: F }}
-                            >
-                              Sửa
-                            </Button>
-                            <Button
-                              htmlType="button"
-                              onClick={() => setNoiNhanList(prev => prev.filter(x => x.id !== rowItem.id))}
-                              style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", fontSize: 14, fontFamily: F }}
-                            >
-                              Xóa
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {tepDinhKem && (
+                  <Button
+                    htmlType="button"
+                    onClick={() => {
+                      setTepDinhKem(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    style={{ padding: "6px 12px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: "#b91c1c" }}
+                  >
+                    Xóa file
+                  </Button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Footer Action Bar */}
-          <div style={{ padding: "14px 20px", borderTop: `1px solid ${BORDER}`, display: "flex", justifyContent: "center", alignItems: "center", gap: 12, background: "#fff" }}>
-            <Button onClick={onClose} style={{ padding: "7px 22px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT }}>
-              Đóng
-            </Button>
-            <Button onClick={handleSave} style={{ padding: "7px 22px", background: "#800000", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}>
+          {/* Section: * Nhận thấy */}
+          <div>
+            <label style={{ display: "block", fontSize: 14, color: TEXT, marginBottom: 6 }}>
+              <span style={{ color: RED }}>* </span>Nhận thấy
+            </label>
+            <div style={{ position: "relative" }}>
+              <textarea
+                rows={4}
+                value={nhanThay}
+                onChange={e => setNhanThay(e.target.value)}
+                placeholder="Nhận thấy..."
+                maxLength={4000}
+                style={{ width: "100%", minHeight: 110, padding: "10px 14px 26px 14px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, outline: "none", resize: "vertical", boxSizing: "border-box", fontFamily: F }}
+              />
+              <div style={{ position: "absolute", right: 12, bottom: 8, fontSize: 13, color: MUTED }}>
+                {nhanThay.length}/4000
+              </div>
+            </div>
+          </div>
+
+          {/* Centered Action Buttons (Khớp ảnh mẫu) */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 14, padding: "8px 0 12px" }}>
+            <Button
+              htmlType="button"
+              onClick={handleSave}
+              style={{ minWidth: 90, padding: "8px 26px", background: "#800000", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}
+            >
               Lưu
             </Button>
             <Button
-              onClick={handleLaySoToggle}
-              style={{
-                padding: "7px 22px",
-                background: "#fff",
-                color: daLaySo ? "#dc2626" : TEXT,
-                border: `1px dashed ${daLaySo ? "#dc2626" : BORDER}`,
-                borderRadius: 4,
-                cursor: "pointer",
-                fontSize: 14,
-                fontFamily: F,
-                fontWeight: 600,
-              }}
+              htmlType="button"
+              onClick={onClose}
+              style={{ minWidth: 90, padding: "8px 24px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT, fontWeight: 500 }}
             >
-              {daLaySo ? "Hủy lấy số" : "Lấy số"}
-            </Button>
-            <Button
-              onClick={() => setShowTrinhKy(true)}
-              style={{ padding: "7px 22px", background: "#800000", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}
-            >
-              Trình ký
-            </Button>
-            <Button
-              onClick={() => setShowBieuMau(true)}
-              style={{ padding: "7px 22px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT }}
-            >
-              Xem biểu mẫu
+              Đóng
             </Button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
+
+export const TaoQuyetDinhDinhChiDoRutKNModal = TaoQuyetDinhRutKhangNghiModal;
 
 // ── Component Modal Quyết định Rút kháng nghị (MS57) - MỚI ──
 export function TaoQuyetDinhRutKhangNghiMS57Modal({
@@ -2766,6 +2966,30 @@ export function TaoQuyetDinhRutKhangNghiMS57Modal({
   const [nhanThay, setNhanThay] = useState("");
   const [soQD, setSoQD] = useState(initialData?.soQD || "");
   const [daLaySo, setDaLaySo] = useState(Boolean(initialData?.soQD));
+
+  const [nguoiRutKhangNghi, setNguoiRutKhangNghi] = useState<"chanh-an" | "vien-truong">(
+    initialData?.nguoiRutKhangNghi || "chanh-an"
+  );
+  const danhMucLanhDao = useMemo(() => {
+    return getDanhSachChanhAnPhoChanhAn(row?.toaAn || row?.tenToaAn || row?.toaXetXu);
+  }, [row]);
+  const [nguoiKy, setNguoiKy] = useState(
+    initialData?.nguoiKy || (initialData?.nguoiRutKhangNghi === "vien-truong" ? "" : danhMucLanhDao[0]?.ten || "")
+  );
+  const [ngayQD, setNgayQD] = useState(initialData?.ngayQD || "2026-09-14");
+  const [tepDinhKem, setTepDinhKem] = useState<string | null>(initialData?.tepDinhKem || null);
+  const [fileError, setFileError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleChonNguoiRut = (val: "chanh-an" | "vien-truong") => {
+    setNguoiRutKhangNghi(val);
+    setFileError("");
+    if (val === "chanh-an") {
+      setNguoiKy(danhMucLanhDao[0]?.ten || "");
+    } else {
+      setNguoiKy("");
+    }
+  };
   
   // Danh sách bị cáo mock theo kịch bản
   const [danhSachBiCao, setDanhSachBiCao] = useState<any[]>([
@@ -2786,18 +3010,28 @@ export function TaoQuyetDinhRutKhangNghiMS57Modal({
       setSoQD("");
       setDaLaySo(false);
     } else {
-      setSoQD(`57/2026/QĐ-TĐKN`);
+      setSoQD(`57/2026/QĐ-RKN`);
       setDaLaySo(true);
     }
   };
 
   const handleSave = () => {
+    if (nguoiRutKhangNghi === "chanh-an" && !nguoiKy) {
+      alert("Vui lòng chọn Người ký ban hành (Chánh án hoặc Phó Chánh án)!");
+      return;
+    }
+    if (nguoiRutKhangNghi === "vien-truong" && !tepDinhKem) {
+      setFileError("Viện trưởng VKSND rút kháng nghị: Bắt buộc phải tải lên tệp đính kèm văn bản rút kháng nghị!");
+      return;
+    }
     onSave({
       id: initialData?.id || Date.now(),
-      tenQD: "Quyết định thay đổi/bổ sung/rút kháng nghị GĐT",
-      soQD: soQD || "57/2026/QĐ-TĐKN",
-      ngayQD: "14/09/2026",
-      nguoiKy: "Lê Thị Thu Hiển",
+      tenQD: "Quyết định rút kháng nghị",
+      soQD: soQD || "57/2026/QĐ-RKN",
+      ngayQD: ngayQD,
+      nguoiKy: nguoiKy || (nguoiRutKhangNghi === "vien-truong" ? "Viện trưởng VKSND" : "Chánh án TAND"),
+      nguoiRutKhangNghi: nguoiRutKhangNghi,
+      tepDinhKem: tepDinhKem,
       loaiThayDoi: loaiQuyetDinh,
       nhanThay: nhanThay,
     });
@@ -2813,38 +3047,160 @@ export function TaoQuyetDinhRutKhangNghiMS57Modal({
         {/* Header */}
         <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", position: "sticky", top: 0, zIndex: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16 }}>📝</span>
             <span style={{ fontSize: 16, fontWeight: 700, color: "#800000" }}>
-              Thêm quyết định Thay đổi (bổ sung/rút) kháng nghị (MS57-HS)
+              Thêm quyết định Rút kháng nghị (MS57-HS)
             </span>
           </div>
-          <Button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={18} /></Button>
+          <Button htmlType="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={18} /></Button>
         </div>
 
         <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 20 }}>
           {/* PHẦN 1: Thông tin quyết định */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 2fr", gap: 16 }}>
+            {/* Trường 1: Người rút kháng nghị (Radio button) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, background: "#f8fafc", padding: "12px 16px", borderRadius: 6, border: `1px solid ${BORDER}` }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: TEXT, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ color: RED }}>*</span> Người rút kháng nghị:
+              </label>
+              <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: nguoiRutKhangNghi === "chanh-an" ? 600 : 400, color: nguoiRutKhangNghi === "chanh-an" ? "#800000" : TEXT }}>
+                  <input
+                    type="radio"
+                    name="ms57-nguoi-rut"
+                    checked={nguoiRutKhangNghi === "chanh-an"}
+                    onChange={() => handleChonNguoiRut("chanh-an")}
+                    style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                  />
+                  Chánh án Tòa án nhân dân
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: nguoiRutKhangNghi === "vien-truong" ? 600 : 400, color: nguoiRutKhangNghi === "vien-truong" ? "#800000" : TEXT }}>
+                  <input
+                    type="radio"
+                    name="ms57-nguoi-rut"
+                    checked={nguoiRutKhangNghi === "vien-truong"}
+                    onChange={() => handleChonNguoiRut("vien-truong")}
+                    style={{ accentColor: "#800000", width: 16, height: 16, cursor: "pointer" }}
+                  />
+                  Viện trưởng Viện kiểm sát nhân dân
+                </label>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.3fr 1.5fr", gap: 16 }}>
               <div>
                 <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>Số quyết định *</label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <Input value={soQD} onChange={e => setSoQD(e.target.value)} style={{ flex: 1, padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F }} placeholder="VD: 01/2026/QĐ-KN" />
-                  <Button onClick={handleLaySoToggle} style={{ padding: "8px 12px", background: daLaySo ? "#fff" : "#f1f5f9", color: daLaySo ? "#dc2626" : TEXT, border: `1px ${daLaySo ? "dashed #dc2626" : "solid " + BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: 600 }}>
+                  <Button htmlType="button" onClick={handleLaySoToggle} style={{ padding: "8px 12px", background: daLaySo ? "#fff" : "#f1f5f9", color: daLaySo ? "#dc2626" : TEXT, border: `1px ${daLaySo ? "dashed #dc2626" : "solid " + BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: 600 }}>
                     {daLaySo ? "Hủy lấy số" : "Lấy số"}
                   </Button>
                 </div>
               </div>
               <div>
                 <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>Ngày quyết định *</label>
-                <Input type="date" defaultValue="2026-09-14" style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, boxSizing: "border-box" }} />
+                <Input type="date" value={ngayQD} onChange={e => setNgayQD(e.target.value)} style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, boxSizing: "border-box" }} />
               </div>
               <div>
-                <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>Người ra quyết định *</label>
-                <Input defaultValue="Chánh án TAND Tối cao" style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, boxSizing: "border-box" }} />
+                <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>
+                  {nguoiRutKhangNghi === "chanh-an" ? (
+                    <span><span style={{ color: RED }}>* </span>Người ký ban hành</span>
+                  ) : (
+                    <span>Người ký ban hành (Không bắt buộc)</span>
+                  )}
+                </label>
+                {nguoiRutKhangNghi === "chanh-an" ? (
+                  <select
+                    value={nguoiKy}
+                    onChange={e => setNguoiKy(e.target.value)}
+                    style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, cursor: "pointer", boxSizing: "border-box", background: "#fff" }}
+                  >
+                    <option value="">-- Chọn Chánh án / Phó Chánh án --</option>
+                    {danhMucLanhDao.map(ld => (
+                      <option key={ld.ten} value={ld.ten}>{ld.ten} – {ld.chucVu}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    placeholder="Nhập họ tên người ký (nhập tay)..."
+                    value={nguoiKy}
+                    onChange={e => setNguoiKy(e.target.value)}
+                    style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F, boxSizing: "border-box", background: "#fff" }}
+                  />
+                )}
               </div>
               <div>
                 <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, display: "block", marginBottom: 6 }}>Kháng nghị</label>
                 <Input readOnly value="Số 05/2025/KN-HS ngày 12/03/2025 - Chánh án TANDTC" style={{ width: "100%", padding: "8px 12px", fontSize: 14, border: `1px solid transparent`, background: "#f8fafc", color: MUTED, borderRadius: 4, fontFamily: F, boxSizing: "border-box" }} />
+              </div>
+            </div>
+
+            {/* Trường 3: Tải lên file văn bản rút kháng nghị */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>
+                  {nguoiRutKhangNghi === "vien-truong" ? (
+                    <span><span style={{ color: RED }}>* </span>Tệp đính kèm văn bản rút kháng nghị (Bắt buộc phải tải file)</span>
+                  ) : (
+                    <span>Tệp đính kèm văn bản rút kháng nghị (Không bắt buộc)</span>
+                  )}
+                </label>
+                {fileError && <span style={{ fontSize: 14, color: RED, fontWeight: 600 }}>{fileError}</span>}
+              </div>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "10px 14px",
+                border: `1px ${tepDinhKem ? "solid #86efac" : fileError ? "solid " + RED : "dashed " + BORDER}`,
+                borderRadius: 6,
+                background: tepDinhKem ? "#f0fdf4" : fileError ? "#fef2f2" : "#fafafa",
+              }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  accept=".pdf,.doc,.docx"
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      setTepDinhKem(e.target.files[0].name);
+                      setFileError("");
+                    }
+                  }}
+                />
+                {tepDinhKem ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#166534" }}>Đã đính kèm:</span>
+                    <span style={{ fontSize: 14, color: "#15803d", fontWeight: 500, textDecoration: "underline" }}>{tepDinhKem}</span>
+                    <span style={{ fontSize: 14, color: MUTED }}>(Sẵn sàng lưu)</span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 14, color: nguoiRutKhangNghi === "vien-truong" ? "#dc2626" : MUTED }}>
+                    {nguoiRutKhangNghi === "vien-truong"
+                      ? "Chưa có file đính kèm. Vui lòng tải lên văn bản rút kháng nghị của Viện kiểm sát."
+                      : "Chưa chọn file đính kèm. Bạn có thể tải lên nếu có văn bản."}
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Button
+                    htmlType="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ padding: "6px 14px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, fontWeight: 600, color: TEXT }}
+                  >
+                    {tepDinhKem ? "Thay đổi file" : "Chọn file đính kèm"}
+                  </Button>
+                  {tepDinhKem && (
+                    <Button
+                      htmlType="button"
+                      onClick={() => {
+                        setTepDinhKem(null);
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                      style={{ padding: "6px 12px", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: "#b91c1c" }}
+                    >
+                      Xóa file
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -2999,8 +3355,8 @@ export function TaoQuyetDinhRutKhangNghiMS57Modal({
             {phamViRut === "mot-phan" && selectedCount === 0 ? "Vui lòng chọn ít nhất một nội dung thực hiện" : ""}
           </div>
           <div style={{ display: "flex", gap: 12 }}>
-            <Button onClick={onClose} style={{ padding: "8px 20px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT, fontWeight: 600 }}>Hủy</Button>
-            <Button onClick={handleSave} style={{ padding: "8px 24px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}>Lưu</Button>
+            <Button htmlType="button" onClick={onClose} style={{ padding: "8px 20px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F, color: TEXT, fontWeight: 600 }}>Hủy</Button>
+            <Button htmlType="button" onClick={handleSave} style={{ padding: "8px 24px", background: "#16a34a", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}>Lưu</Button>
           </div>
         </div>
       </div>
@@ -3009,7 +3365,7 @@ export function TaoQuyetDinhRutKhangNghiMS57Modal({
           <div style={{ background: "#fff", width: 500, borderRadius: 8, boxShadow: "0 12px 48px rgba(0,0,0,0.25)", fontFamily: F }}>
             <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>Chọn nội dung thực hiện chi tiết</div>
-              <Button onClick={() => setExpandedRowId(null)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={16} /></Button>
+              <Button htmlType="button" onClick={() => setExpandedRowId(null)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}><X size={16} /></Button>
             </div>
             <div style={{ padding: 20 }}>
                {(() => {
@@ -3440,6 +3796,17 @@ function ModalQuyetDinhVuAn({
     );
   }
 
+  if (tenQuyetDinh === "Quyết định rút kháng nghị") {
+    return (
+      <TaoQuyetDinhRutKhangNghiModal
+        row={row}
+        initialData={initialData}
+        onClose={onClose}
+        onSave={onSave}
+      />
+    );
+  }
+
   if (tenQuyetDinh === "Quyết định đình chỉ do rút kháng nghị" || tenQuyetDinh.includes("đình chỉ do rút")) {
     return (
       <TaoQuyetDinhDinhChiDoRutKNModal
@@ -3784,6 +4151,7 @@ function TabQuyetDinhVuAn({ row, userRole }: { row: VuXetXuRow; userRole?: UserR
   const isHinhSu = !isVu234;
 
   const HINH_SU_QD_OPTIONS = [
+    "Quyết định rút kháng nghị",
     "Quyết định đình chỉ trước phiên tòa của Chánh án",
     "Quyết định đình chỉ tại phiên tòa của HĐXX",
     "Quyết định hoãn phiên tòa của HĐXX",
@@ -3793,6 +4161,7 @@ function TabQuyetDinhVuAn({ row, userRole }: { row: VuXetXuRow; userRole?: UserR
   ];
 
   const OTHER_QD_OPTIONS = [
+    "Quyết định rút kháng nghị",
     "Quyết định đình chỉ do rút kháng nghị",
     "Biên bản nghị án",
     "Quyết định hoãn phiên tòa của HĐXX",
@@ -3806,14 +4175,16 @@ function TabQuyetDinhVuAn({ row, userRole }: { row: VuXetXuRow; userRole?: UserR
       return [
         {
           id: 1,
-          tenQD: "Quyết định đình chỉ trước phiên tòa của Chánh án",
-          soQD: "54682704/2026/QĐ-CA",
-          ngayQD: "27/07/2026",
+          tenQD: "Quyết định rút kháng nghị",
+          soQD: "57/2026/QĐ-RKN",
+          ngayQD: "14/09/2026",
           nguoiKy: "Lê Thị Thu Hiển",
+          nguoiRutKhangNghi: "chanh-an",
+          tepDinhKem: "Van_ban_rut_khang_nghi_so_57.pdf",
           nguoiTao: "Nguyễn Văn Tiến",
-          ngayTao: "27/07/2026 18:15:46",
-          nhanThay: "Viện kiểm sát nhân dân tối cao có văn bản rút toàn bộ kháng nghị.",
-          noiDungQD: "Đình chỉ việc xét xử theo thủ tục giám đốc thẩm đối với bản án.",
+          ngayTao: "14/09/2026 14:20:15",
+          nhanThay: "Chánh án TAND tối cao rút toàn bộ kháng nghị giám đốc thẩm đối với bản án.",
+          noiDungQD: "Rút toàn bộ kháng nghị giám đốc thẩm.",
         },
         {
           id: 2,
@@ -3842,14 +4213,16 @@ function TabQuyetDinhVuAn({ row, userRole }: { row: VuXetXuRow; userRole?: UserR
       return [
         {
           id: 1,
-          tenQD: "Quyết định đình chỉ do rút kháng nghị",
-          soQD: "35/2026/QĐ-ĐC",
+          tenQD: "Quyết định rút kháng nghị",
+          soQD: "35/2026/QĐ-RKN",
           ngayQD: "18/07/2026",
           nguoiKy: "Lê Thị Thu Hiển",
+          nguoiRutKhangNghi: "chanh-an",
+          tepDinhKem: "Quyet_dinh_rut_khang_nghi_35.pdf",
           nguoiTao: "Nguyễn Văn Tiến",
           ngayTao: "18/07/2026 10:15:20",
-          nhanThay: "Người kháng nghị có văn bản rút toàn bộ kháng nghị giám đốc thẩm.",
-          noiDungQD: "Đình chỉ việc xét xử giám đốc thẩm đối với vụ án.",
+          nhanThay: "Chánh án TAND tối cao có quyết định rút toàn bộ kháng nghị giám đốc thẩm.",
+          noiDungQD: "Đình chỉ việc xét xử giám đốc thẩm đối với vụ án do rút kháng nghị.",
         },
         {
           id: 2,
@@ -4025,10 +4398,22 @@ function TabQuyetDinhVuAn({ row, userRole }: { row: VuXetXuRow; userRole?: UserR
             {filtered.map((r, i) => (
               <tr key={r.id} style={{ background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                 <td style={{ ...TD, textAlign: "center" as const, color: MUTED }}>{i + 1}</td>
-                <td style={{ ...TD, fontWeight: 600 }}>{r.tenQD}</td>
+                <td style={{ ...TD, fontWeight: 600 }}>
+                  <div>{r.tenQD}</div>
+                  {r.nguoiRutKhangNghi && (
+                    <div style={{ fontSize: 14, color: "#1e40af", fontWeight: 500, marginTop: 4 }}>
+                      Người rút: {r.nguoiRutKhangNghi === "vien-truong" ? "Viện trưởng VKSND" : "Chánh án TAND"}
+                    </div>
+                  )}
+                  {r.tepDinhKem && (
+                    <div style={{ fontSize: 14, color: "#15803d", fontWeight: 500, marginTop: 2 }}>
+                      Tệp đính kèm: <span style={{ textDecoration: "underline" }}>{r.tepDinhKem}</span>
+                    </div>
+                  )}
+                </td>
                 <td style={{ ...TD, color: "#2563eb", fontWeight: 600 }}>{r.soQD}</td>
                 <td style={{ ...TD, whiteSpace: "nowrap" as const }}>{r.ngayQD}</td>
-                <td style={TD}>{r.nguoiKy}</td>
+                <td style={TD}>{r.nguoiKy || <span style={{ color: MUTED }}>(Không nhập)</span>}</td>
                 <td style={TD}>
                   <div style={{ fontWeight: 600, fontFamily: F }}>{r.nguoiTao}</div>
                   <div style={{ fontSize: 14, color: MUTED, marginTop: 2 }}>{r.ngayTao}</div>

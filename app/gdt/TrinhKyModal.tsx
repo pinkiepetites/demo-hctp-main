@@ -1185,7 +1185,15 @@ export function TrinhKyHoSoTab() {
 }
 
 // ── Trình ký modal ─────────────────────────────────────────────────────────────
-export function TrinhKyModal({ onClose }: { onClose: () => void }) {
+export function TrinhKyModal({
+  onClose,
+  title,
+  onSuccess,
+}: {
+  onClose: () => void;
+  title?: string;
+  onSuccess?: () => void;
+}) {
   const [leftTab, setLeftTab] = useState<"noi-dung" | "thong-tin" | "ho-so">("noi-dung");
   const [capTrinh, setCapTrinh] = useState("Trình Phó trưởng phòng");
   const [uuTien, setUuTien] = useState("Binh-thuong");
@@ -1293,7 +1301,7 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
     <div style={{ position: "fixed", inset: 0, zIndex: 1600, display: "flex", flexDirection: "column" }}>
       {/* Dark red header */}
       <div style={{ background: "#6e1414", padding: "12px 20px", flexShrink: 0 }}>
-        <span style={{ fontSize: 15, fontWeight: 700, color: "#fff", fontFamily: F }}>Trình ký</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: "#fff", fontFamily: F }}>{title || "Trình ký"}</span>
       </div>
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* Left panel */}
@@ -1394,7 +1402,18 @@ export function TrinhKyModal({ onClose }: { onClose: () => void }) {
           </div>
           <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderTop: `1px solid ${BORDER}`, flexShrink: 0 }}>
             <Button onClick={onClose} style={{ padding: "7px 20px", background: "#fff", color: "#333333", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 12, fontFamily: F }}>Đóng</Button>
-            <Button style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}>Trình ký</Button>
+            <Button
+              onClick={() => {
+                if (onSuccess) {
+                  onSuccess();
+                } else {
+                  onClose();
+                }
+              }}
+              style={{ padding: "7px 24px", background: RED, color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, fontFamily: F }}
+            >
+              Trình ký
+            </Button>
           </div>
         </div>
 

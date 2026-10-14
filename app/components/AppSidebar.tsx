@@ -113,6 +113,15 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       });
     }
 
+    items.push({
+      key: "baocao",
+      icon: <FileText size={16} />,
+      label: "Báo cáo",
+      children: [
+        { key: "so_thu_ly", icon: <List size={15} />, label: "Sổ thụ lý" }
+      ]
+    });
+
     if (coQuyenPheDuyet) {
       items.push({
         key: "ct_lanhdao",
@@ -146,6 +155,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     const keys = [];
     if (activePage === "tiepnhan_don_lienthong" || activePage === "list" || activePage === "form" || activePage === "prototype" || activePage === "van_ban_trinh_ky" || activePage === "phancong" || activePage === "cauhinh_pctp") {
       keys.push("ql_don");
+    }
+    if (activePage === "so_thu_ly") {
+      keys.push("baocao");
     }
     if (activePage.startsWith("gdt:")) {
       keys.push("ql_gdt");

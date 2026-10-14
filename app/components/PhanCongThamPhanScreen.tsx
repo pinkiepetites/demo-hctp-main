@@ -57,7 +57,32 @@ export interface DonPhanCong {
   lyDoPhanCong?: string;
   /** Phân công có kèm lý do đặc biệt hay không. */
   lyDoDacBiet?: boolean;
+  /** Cách đã phân công — hiện thành tag ở cột Thẩm phán tab Quản lý kết quả. */
+  cachPhanCong?: "chi_dinh" | "ngau_nhien";
 }
+
+const TAG_CACH_PHAN_CONG = {
+  chi_dinh:   { nhan: "Phân công chỉ định",  cls: "bg-[#f3e8ff] text-[#6d28d9] border-[#d8b4fe]" },
+  ngau_nhien: { nhan: "Phân công ngẫu nhiên", cls: "bg-[#e8f4ff] text-[#1a5a96] border-[#a9c9f4]" },
+} as const;
+
+const TagCachPhanCong = ({ cach, lyDo }: { cach?: "chi_dinh" | "ngau_nhien"; lyDo?: string }) => {
+  if (!cach) return null;
+  const t = TAG_CACH_PHAN_CONG[cach];
+  return (
+    <div className="space-y-0.5">
+      <span className={`inline-block px-1.5 py-[1px] rounded-[3px] border text-[10px] font-medium whitespace-nowrap ${t.cls}`}>
+        {t.nhan}
+      </span>
+      {cach === "chi_dinh" && (
+        <div className="text-[10px] text-[#555] leading-snug">
+          <span className="text-[#888]">Lý do: </span>
+          {lyDo?.trim() || <span className="italic text-[#999]">Chưa ghi lý do</span>}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export interface ThamPhanItem {
   hoTen: string;
@@ -155,8 +180,10 @@ export function PhanCongThamPhanScreen({
       ...r,
       thamPhan: r.thamPhan ?? "",
       ngayPhanCong: r.ngayPhanCong ?? "",
-      lyDoPhanCong: "",
-      lyDoDacBiet: false,
+      // Dữ liệu cũ chưa ghi cách phân công → coi là ngẫu nhiên (luồng mặc định).
+      cachPhanCong: r.cachPhanCong ?? (r.thamPhan ? "ngau_nhien" : undefined),
+      lyDoPhanCong: r.lyDoPhanCong ?? "",
+      lyDoDacBiet: r.lyDoDacBiet ?? false,
       khoa: !!r.toTrinh || !!r.thongBao,
     })),
   );
@@ -319,7 +346,7 @@ export function PhanCongThamPhanScreen({
       if (!choPhanCongChua(r) || !filtered.some(f => f.id === r.id)) return r;
       const ds = thamPhanHopLe(r);
       if (ds.length === 0) return { ...r, loi: "Không đủ cán bộ" };
-      return { ...r, thamPhan: ds[Math.floor(Math.random() * ds.length)].hoTen, ngayPhanCong: ngay, loi: undefined };
+      return { ...r, thamPhan: ds[Math.floor(Math.random() * ds.length)].hoTen, ngayPhanCong: ngay, cachPhanCong: "ngau_nhien", loi: undefined };
     }));
   };
 
@@ -364,7 +391,7 @@ export function PhanCongThamPhanScreen({
     setItems(p => p.map(r => {
       const tp = nhom.get(r.id);
       if (!tp) return r;
-      return { ...r, thamPhan: tp, ngayPhanCong: r.ngayPhanCong || ngay, lyDoPhanCong: lyDoDayDu, lyDoDacBiet: lyDoDacBiet, khoa: true, loi: undefined };
+      return { ...r, thamPhan: tp, ngayPhanCong: r.ngayPhanCong || ngay, lyDoPhanCong: lyDoDayDu, lyDoDacBiet: lyDoDacBiet, cachPhanCong: "chi_dinh", khoa: true, loi: undefined };
     }));
     onPhanCong?.([...nhom.keys()], Object.fromEntries(nhom), lyDoDayDu, lyDoDacBiet);
     setShowLyDo(false);
@@ -397,7 +424,8 @@ export function PhanCongThamPhanScreen({
     // hiện thông tin cũ trong khi hồ sơ đã đổi.
     setItems(p => p.map(r => (
       r.id === id
-        ? { ...r, thamPhan: f.thamPhan, ngayPhanCong: ngay, lyDoPhanCong: lyDoDayDu, lyDoDacBiet: f.dacBiet }
+        ? { ...r, thamPhan: f.thamPhan, ngayPhanCong: ngay, lyDoPhanCong: lyDoDayDu, lyDoDacBiet: f.dacBiet,
+            cachPhanCong: f.thamPhan !== r.thamPhan ? "chi_dinh" : r.cachPhanCong }
         : r
     )));
     onSuaPhanCong?.(id, f.thamPhan, ngay, f.lyDo.trim(), f.dacBiet);
@@ -813,6 +841,7 @@ export function PhanCongThamPhanScreen({
                             <span className="font-medium text-[#27ae60]">{row.thamPhan}</span>
                             <Ban size={11} className="text-[#b45309] flex-shrink-0" />
                           </div>
+                          <TagCachPhanCong cach={row.cachPhanCong} lyDo={row.lyDoPhanCong} />
                           {row.toTrinh && (
                             <div className="text-[10px] text-[#b45309] leading-snug"
                               title="Đã lập tờ trình — phân công đã chốt, không sửa được ở đây.">
@@ -890,6 +919,7 @@ export function PhanCongThamPhanScreen({
                               <Pencil size={10} /> Sửa
                             </button>
                           </div>
+                          <TagCachPhanCong cach={row.cachPhanCong} lyDo={row.lyDoPhanCong} />
                         </div>
                       )}
                     </td>

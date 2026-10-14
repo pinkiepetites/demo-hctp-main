@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Pencil, Ban, Check, MessageSquare, Save, UserRound, AlertCircle } from "lucide-react";import { Button, Input } from "antd";
+import { X, Pencil, Ban, Check, MessageSquare, Save, AlertCircle } from "lucide-react";import { Button, Input } from "antd";
 
 
 // GHI CHÚ CHO DEV:
@@ -27,7 +27,13 @@ interface DonThu {
   thamPhan?: string;
   ghiChuPhanCong?: string;
   trangThaiXuly?: "tra_lai" | "binh_thuong" | "giai_quyet_sau";
+  soThuLy?: string;
+  ngayThuLy?: string;
+  soDon?: number;
 }
+
+// Dữ liệu cũ chưa lưu số thụ lý → lấy phần số trong mã đơn ("Mã 7031" → "7031").
+const layThuLy = (don: DonThu) => don.soThuLy || don.id.replace(/^\D+/, "") || don.id;
 
 interface PheDuyetToTrinhModalProps {
   onClose: () => void;
@@ -64,6 +70,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "21/07/2026",
     thuTuc: "Giám đốc thẩm",
     diaChi: "Phường Phương Sơn, Tỉnh Bắc Ninh",
+    soThuLy: "7031",
+    ngayThuLy: "27/07/2026",
+    soDon: 1,
   },
   {
     id: "Mã 7022",
@@ -74,6 +83,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "20/06/2022",
     thuTuc: "Giám đốc thẩm",
     diaChi: "Phường Hòa Bình, Tỉnh Vĩnh Phúc",
+    soThuLy: "7022",
+    ngayThuLy: "22/07/2026",
+    soDon: 1,
   },
   {
     id: "Mã 7032",
@@ -84,6 +96,9 @@ const DULIEU_MAU: DonThu[] = [
     ngayBA: "15/11/2024",
     thuTuc: "Tái thẩm",
     diaChi: "Xã Minh Tân, Tỉnh Hà Nam",
+    soThuLy: "7032",
+    ngayThuLy: "28/07/2026",
+    soDon: 2,
   },
 ];
 
@@ -219,7 +234,7 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
 
   return (
     <div className="fixed inset-0 z-[120] bg-black/60 flex items-center justify-center p-4">
-      <div className="bg-white rounded-[4px] shadow-2xl flex flex-col w-[1000px] max-h-[90vh]">
+      <div className="bg-white rounded-[4px] shadow-2xl flex flex-col w-[1280px] max-w-[96vw] max-h-[90vh]">
         
         {/* Header */}
         <div className="bg-[#1d2e4f] text-white px-4 py-3 rounded-t-[4px] flex justify-between items-center shrink-0">
@@ -240,76 +255,61 @@ export default function PheDuyetToTrinhModal({ onClose, role, danhSachDonBanDau,
             </span>
           </div>
 
-          <table className="w-full text-[13px] border-collapse border border-[#ddd]">
+          <table className="w-full text-[12px] border-collapse border border-[#ddd] text-[#222]">
             <thead>
               <tr className="bg-[#f5f5f5]">
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[180px]">Mã đơn</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left">Thông tin đơn</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[180px]">BA/QĐ</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[190px]">Thẩm phán</th>
-                <th className="border border-[#ddd] px-3 py-2 text-left w-[250px]">Ghi chú / Ý kiến</th>
-                <th className="border border-[#ddd] px-3 py-2 text-center w-[180px]">Thao tác</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[36px]">TT</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[60px]">Số<br />Thụ lý</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Ngày thụ lý</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[160px]">Người đề nghị, kiến nghị, thông báo</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[160px]">Địa chỉ</th>
+                <th colSpan={3} className="border border-[#ddd] px-2 py-2 text-center">QĐ/BA đề nghị xem xét theo thủ tục GĐT/TT</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[50px]">Số đơn</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[120px]">Thẩm phán giải quyết</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[180px]">Ghi chú</th>
+                <th rowSpan={2} className="border border-[#ddd] px-2 py-2 text-center w-[130px]">Thao tác</th>
+              </tr>
+              <tr className="bg-[#f5f5f5]">
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Số BA/QĐ</th>
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[90px]">Ngày BA/QĐ</th>
+                <th className="border border-[#ddd] px-2 py-2 text-center w-[130px]">Tòa án Xét xử</th>
               </tr>
             </thead>
             <tbody>
               {danhSachDon.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-[#888] italic">Tờ trình hiện không còn đơn nào.</td>
+                  <td colSpan={12} className="p-8 text-center text-[#888] italic">Tờ trình hiện không còn đơn nào.</td>
                 </tr>
               )}
-              {danhSachDon.map(don => {
+              {danhSachDon.map((don, idx) => {
                 const biTraLai = don.trangThaiXuly === "tra_lai";
                 return (
                   <tr key={don.id} className={biTraLai ? "bg-[#fde8e8] opacity-70" : "hover:bg-[#f9f9f9]"}>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
-                      <div className="space-y-1.5">
-                        <Button 
-                          onClick={() => {
-                            window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
-                            onClose();
-                          }}
-                          className="text-[#1a73e8] hover:text-[#1152a3] hover:underline font-medium text-[13px] transition-colors"
-                        >
-                          {don.id}
-                        </Button>
-                        <div className="text-[12px] text-[#333] leading-5">
-                          <div><span className="text-[#666]">Tòa án: </span><span className="font-medium text-[#222]">{don.toaAn || don.nguoiGui}</span></div>
-                          <div><span className="text-[#666]">Số BA/QĐ: </span><span>{don.soBA}</span></div>
-                          <div><span className="text-[#666]">Ngày BA/QĐ: </span><span>{don.ngayBA || "—"}</span></div>
-                        </div>
-                      </div>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{idx + 1}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">
+                      <button type="button" title={`Mở chi tiết ${don.id}`}
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent("MO_CHI_TIET_DON", { detail: don.id }));
+                          onClose();
+                        }}
+                        className="text-[#1a73e8] hover:text-[#1152a3] hover:underline font-medium">
+                        {layThuLy(don)}
+                      </button>
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top font-medium text-[#1a5a96]">
-                      <div className="space-y-1.5 text-[12px] text-[#333] leading-5">
-                        <div>{don.nguoiGui}</div>
-                        {don.diaChi && (
-                          <div className="text-[#666]">{don.diaChi}</div>
-                        )}
-                        <div><span className="text-[#666]">Hình thức: </span>{don.hinhThuc}</div>
-                        {don.thuTuc && (
-                          <div><span className="text-[#666]">Thủ tục: </span>{don.thuTuc}</div>
-                        )}
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.ngayThuLy || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.nguoiGui}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.diaChi || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.soBA}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.ngayBA || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top">{don.toaAn || "—"}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">{don.soDon ?? 1}</td>
+                    <td className="border border-[#ddd] px-2 py-2 align-top text-center">
+                      <div className={`font-medium ${don.thamPhan ? "text-[#1a5a96]" : "text-[#999]"}`}>
+                        {don.thamPhan || "Chưa phân công"}
                       </div>
+                      {don.ghiChuPhanCong && <div className="text-[11px] text-[#8b1a1a] mt-1">{don.ghiChuPhanCong}</div>}
                     </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top text-[12px] text-[#333]">
-                      <div className="space-y-1.5 leading-5">
-                        <div><span className="text-[#666]">Số BA/QĐ:</span> {don.soBA}</div>
-                        <div><span className="text-[#666]">Ngày BA/QĐ:</span> {don.ngayBA || "—"}</div>
-                        <div><span className="text-[#666]">Tòa xét xử:</span> {don.toaAn || "—"}</div>
-                      </div>
-                    </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
-                      <div className="flex items-start gap-1.5 text-[12px]">
-                        <UserRound size={13} className="text-[#666] mt-0.5 shrink-0" />
-                        <div>
-                          <div className={`font-medium ${don.thamPhan ? "text-[#1a5a96]" : "text-[#999]"}`}>
-                            {don.thamPhan || "Chưa phân công"}
-                          </div>
-                          {don.ghiChuPhanCong && <div className="text-[11px] text-[#8b1a1a] mt-1">{don.ghiChuPhanCong}</div>}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="border border-[#ddd] px-3 py-2 align-top">
+                    <td className="border border-[#ddd] px-2 py-2 align-top">
                       {don.ghiChu && (
                         <div className="text-[#8b1a1a] font-medium text-[12px] bg-[#fde8e8] px-2 py-1 rounded border border-[#f5b7b7] inline-block w-full whitespace-pre-wrap">
                           {don.ghiChu}

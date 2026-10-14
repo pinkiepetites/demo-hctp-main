@@ -2,6 +2,7 @@ import { KhoiTaiKhoanChung } from "../components/KhoiTaiKhoanChung";
 import { CapSwitcherPill } from "../components/CapSwitcherPill";
 import QuanLyAnGDTTT from "../gdt/App";
 import type { View as GdtView } from "../gdt/views";
+import SoThuLy from "../components/SoThuLyPage";
 import { useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import { Input, Select, DatePicker, ConfigProvider, Radio, Checkbox, Space } from "antd";
 import dayjs from "dayjs";
@@ -13007,7 +13008,7 @@ export default function AppToiCao({
   const [isLienThongMode, setIsLienThongMode] = useState(false);
   const [activeDonLienThong, setActiveDonLienThong] = useState<DonTiepNhan | null>(null);
   const [donChiTietTabMoi] = useState<DonLienQuan | null>(docDonTuHash);
-  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong" | "gdt" | "to_tham_phan">(donChiTietTabMoi ? "form" : "list");
+  const [view, setView] = useState<"home" | "list" | "lienthong" | "form" | "prototype" | "bieumau" | "wordeditor" | "phancong" | "phe_duyet" | "nhandon_tl" | "cauhinh_pctp" | "van_ban_trinh_ky" | "hieu_suat_chi_tiet" | "so_sanh_loai_an" | "tiepnhan_don_lienthong" | "gdt" | "to_tham_phan" | "so_thu_ly">(donChiTietTabMoi ? "form" : "list");
   const [gdtView, setGdtView] = useState<GdtView>("don-cho-phe-duyet");
   const [gdtNavSeq, setGdtNavSeq] = useState(0);
   const [soSanhLoaiAnKy, setSoSanhLoaiAnKy] = useState<KyBaoCao>("year");
@@ -13728,6 +13729,9 @@ export default function AppToiCao({
                                   </>
             }
           </div>
+
+          {/* Sổ thụ lý view */}
+          {view === "so_thu_ly" && <SoThuLy />}
 
           {/* Home view */}
           {view === "home" && (

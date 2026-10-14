@@ -104,6 +104,7 @@ export interface VanBanTrinh {
   donDinhKem: {
     ma: string; nguoiGui: string; soBA: string; hinhThuc: string; ghiChu?: string;
     thamPhan?: string; ghiChuPhanCong?: string; toaAn?: string; ngayBA?: string; thuTuc?: string; diaChi?: string;
+    soThuLy?: string; ngayThuLy?: string; soDon?: number;
   }[];
   yKienDangSoan?: string;
 }
@@ -1611,7 +1612,7 @@ export const PanelChiTiet = ({ vb, nguoiDung, chucVu, danhSach, setDanhSach, onC
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
             thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
-            thuTuc: d.thuTuc, diaChi: d.diaChi
+            thuTuc: d.thuTuc, diaChi: d.diaChi, soThuLy: d.soThuLy, ngayThuLy: d.ngayThuLy, soDon: d.soDon
           }))}
         />
       )}
@@ -2960,7 +2961,7 @@ Kính đề nghị xem xét, cho ý kiến đối với đơn nêu trên.`}
           danhSachDonBanDau={vb.donDinhKem.map(d => ({
             id: d.ma, nguoiGui: d.nguoiGui, soBA: d.soBA || "Chưa có", hinhThuc: d.hinhThuc, ghiChu: d.ghiChu,
             thamPhan: d.thamPhan, ghiChuPhanCong: d.ghiChuPhanCong, toaAn: d.toaAn, ngayBA: d.ngayBA,
-            thuTuc: d.thuTuc, diaChi: d.diaChi
+            thuTuc: d.thuTuc, diaChi: d.diaChi, soThuLy: d.soThuLy, ngayThuLy: d.ngayThuLy, soDon: d.soDon
           }))}
         />
       )}
