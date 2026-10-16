@@ -1,12 +1,32 @@
 import React, { useState, useMemo } from "react";
-import { Search, RefreshCw, Eye, CornerUpLeft, Send, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, RefreshCw, Eye, CornerUpLeft, Send, ChevronUp, ChevronDown, RotateCw, FilePlus } from "lucide-react";
 import { Table, Tabs, Modal, Drawer, Select, Input, Button, Tag, Radio, Space, Tooltip, Row, Col, ConfigProvider, DatePicker } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
-type DonNguon = "VBDH" | "DVTT" | "DVC" | "BuuDien" | "TrucTiep" | "ToaKhac";
-type DonTrangThai = "cho-phan-cong" | "da-phan-cong" | "cho-xu-ly" | "tra-lai";
+export type DonNguon = "VBDH" | "DVTT" | "DVC" | "BuuDien" | "TrucTiep" | "ToaKhac";
+export type DonTrangThai = "cho-phan-cong" | "da-phan-cong" | "cho-xu-ly" | "tra-lai";
+export type TrangThaiOcr = "chua-ocr" | "dang-ocr" | "da-ocr" | "mot-phan" | "that-bai";
 
-interface DonTiepNhan {
+export interface TaiLieuLienThong {
+  id: string;
+  tenTep: string;
+  dinhDang: "pdf" | "docx" | "doc" | "image" | "khac";
+  loaiTaiLieu: string;
+  tenTaiLieu: string;
+  soVB?: string;
+  ngayVB?: string;
+  soTrang?: number;
+  trangThaiOcr: "cho" | "dang-xu-ly" | "hoan-thanh" | "that-bai";
+  lyDoLoi?: string;
+}
+
+export interface OcrFieldMeta {
+  tepNguon: string;
+  canKiemTra: boolean;
+  canChonTay?: boolean;
+}
+
+export interface DonTiepNhan {
   maDon: string;
   soDen?: string;
   ngayTiepNhan: string;
@@ -32,6 +52,15 @@ interface DonTiepNhan {
   tenToaChuyenDen?: string;
   diaChi?: string;
   cccd?: string;
+  // OCR metadata v6
+  trangThaiOcr?: TrangThaiOcr;
+  tienDoOcr?: { xong: number; tong: number };
+  ocrFields?: Record<string, OcrFieldMeta>;
+  danhSachTaiLieu?: TaiLieuLienThong[];
+  anTuHinh?: boolean;
+  xinAnGiam?: boolean;
+  keuOan?: boolean;
+  xinThiHanhAnSom?: boolean;
 }
 
 const DON_SAMPLE: DonTiepNhan[] = [
@@ -44,18 +73,114 @@ const DON_SAMPLE: DonTiepNhan[] = [
       { maDon: "001025", quanHe: "Trùng số/ngày BA, QĐ" },
       { maDon: "000876", quanHe: "Trùng người đứng đơn" },
     ],
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 2, tong: 2 },
+    ocrFields: {
+      soBaqd: { tepNguon: "Don_khieu_nai_001256.pdf", canKiemTra: true },
+      ngayBaqd: { tepNguon: "Don_khieu_nai_001256.pdf", canKiemTra: true },
+      toaXetXu: { tepNguon: "Don_khieu_nai_001256.pdf", canKiemTra: true },
+      noiDungQuanHePhapLuat: { tepNguon: "Don_khieu_nai_001256.pdf", canKiemTra: true },
+    },
+    danhSachTaiLieu: [
+      {
+        id: "tl-01",
+        tenTep: "Don_khieu_nai_001256.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn khiếu nại tố cáo trong tố tụng",
+        tenTaiLieu: "Đơn khiếu nại quyết định thu hồi đất",
+        soVB: "01/ĐKN-2026",
+        ngayVB: "18/08/2026",
+        soTrang: 4,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-02",
+        tenTep: "Quyet_dinh_15_2026_QD_UBND.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Quyết định bị khiếu nại",
+        tenTaiLieu: "Quyết định thu hồi đất số 15/2026/QĐ-UBND",
+        soVB: "15/2026/QĐ-UBND",
+        ngayVB: "10/01/2026",
+        soTrang: 12,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ],
   },
   {
     maDon: "DVTT-2026-00125", ngayTiepNhan: "18/08/2026 14:30", nguoiLamDon: "Trần Thị Lan",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Dân sự", canBoTiepNhan: "Chưa phân công",
     trangThai: "cho-phan-cong", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu BA/QĐ có hiệu lực" },
     soBaqd: "112/2025/DS-PT", ngayBaqd: "05/11/2025", toaXetXu: "TAND Cấp cao tại Hà Nội", noiDungQuanHePhapLuat: "Tranh chấp đất đai",
+    trangThaiOcr: "dang-ocr",
+    tienDoOcr: { xong: 1, tong: 3 },
+    ocrFields: {
+      soBaqd: { tepNguon: "Don_de_nghi_GDT_00125.pdf", canKiemTra: true },
+      ngayBaqd: { tepNguon: "Don_de_nghi_GDT_00125.pdf", canKiemTra: true },
+      toaXetXu: { tepNguon: "Don_de_nghi_GDT_00125.pdf", canKiemTra: true },
+    },
+    danhSachTaiLieu: [
+      {
+        id: "tl-11",
+        tenTep: "Don_de_nghi_GDT_00125.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn đề nghị GĐT/TT",
+        tenTaiLieu: "Đơn đề nghị Giám đốc thẩm",
+        soVB: "ĐĐT-00125",
+        ngayVB: "15/08/2026",
+        soTrang: 5,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-12",
+        tenTep: "Ban_an_phuc_tham_112_2025_DSPT.docx",
+        dinhDang: "docx",
+        loaiTaiLieu: "Bản án phúc thẩm",
+        tenTaiLieu: "Bản án phúc thẩm số 112/2025/DS-PT",
+        soVB: "112/2025/DS-PT",
+        ngayVB: "05/11/2025",
+        soTrang: 18,
+        trangThaiOcr: "dang-xu-ly",
+      },
+      {
+        id: "tl-13",
+        tenTep: "Tai_lieu_chung_cu_bo_sung.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Tài liệu, chứng cứ",
+        tenTaiLieu: "Tài liệu, chứng cứ kèm theo",
+        soTrang: 8,
+        trangThaiOcr: "cho",
+      }
+    ],
   },
   {
     maDon: "001254", ngayTiepNhan: "18/08/2026 09:00", nguoiLamDon: "Lê Minh Tuấn",
     hinhThucDon: "Thông báo phát hiện vi phạm pháp luật", loaiAn: "Hình sự", canBoTiepNhan: "Phạm Quốc Hưng",
     trangThai: "da-phan-cong", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
     soBaqd: "88/2026/HS-ST", ngayBaqd: "15/03/2026", toaXetXu: "TAND tỉnh Bắc Ninh", noiDungQuanHePhapLuat: "Tội lừa đảo chiếm đoạt tài sản",
+    trangThaiOcr: "that-bai",
+    tienDoOcr: { xong: 0, tong: 2 },
+    danhSachTaiLieu: [
+      {
+        id: "tl-21",
+        tenTep: "Thong_bao_vi_pham_001254.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Thông báo phát hiện vi phạm pháp luật",
+        tenTaiLieu: "Thông báo phát hiện vi phạm pháp luật",
+        soTrang: 4,
+        trangThaiOcr: "that-bai",
+        lyDoLoi: "Dịch vụ OCR báo lỗi: Quá thời gian chờ kết quả OCR (timeout)",
+      },
+      {
+        id: "tl-22",
+        tenTep: "Tai_lieu_dinh_kem.docx",
+        dinhDang: "docx",
+        loaiTaiLieu: "Tài liệu, chứng cứ",
+        tenTaiLieu: "Tài liệu kèm theo",
+        soTrang: 6,
+        trangThaiOcr: "that-bai",
+        lyDoLoi: "Không chuyển được tệp Word sang PDF để OCR",
+      }
+    ],
   },
   {
     maDon: "DVC-2026-00312", ngayTiepNhan: "17/08/2026 15:45", nguoiLamDon: "Vũ Thu Hà",
@@ -63,38 +188,209 @@ const DON_SAMPLE: DonTiepNhan[] = [
     trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: true, dieuKienGoiY: { hopLe: true },
     soBaqd: "45/2025/LĐ-PT", ngayBaqd: "20/12/2025", toaXetXu: "TAND Cấp cao tại Đà Nẵng", noiDungQuanHePhapLuat: "Tranh chấp sa thải trái pháp luật",
     donLienQuan: [{ maDon: "000921", quanHe: "Có yêu cầu bổ sung trước đó" }],
+    trangThaiOcr: "mot-phan",
+    tienDoOcr: { xong: 2, tong: 3 },
+    ocrFields: {
+      noiDungQuanHePhapLuat: { tepNguon: "Don_GDT_00312.pdf", canKiemTra: true },
+    },
+    danhSachTaiLieu: [
+      {
+        id: "tl-31",
+        tenTep: "Don_GDT_00312.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn đề nghị GĐT/TT",
+        tenTaiLieu: "Đơn đề nghị GĐT/TT lao động",
+        soVB: "ĐĐT-312",
+        ngayVB: "17/08/2026",
+        soTrang: 4,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-32",
+        tenTep: "Hop_dong_lao_dong.docx",
+        dinhDang: "docx",
+        loaiTaiLieu: "Tài liệu, chứng cứ",
+        tenTaiLieu: "Hợp đồng lao động",
+        soTrang: 5,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-33",
+        tenTep: "Ho_so_kham_suc_khoe_scan.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Tài liệu, chứng cứ",
+        tenTaiLieu: "Tài liệu, chứng cứ",
+        soTrang: 80,
+        trangThaiOcr: "that-bai",
+        lyDoLoi: "Tệp vượt quá dung lượng cho phép gửi OCR (tối đa 50MB)",
+      }
+    ],
   },
   {
     maDon: "001250", ngayTiepNhan: "16/08/2026 10:20", nguoiLamDon: "Công ty TNHH ABC",
     hinhThucDon: "CV kiến nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Phạm Quốc Hưng",
     trangThai: "tra-lai", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 1, tong: 1 },
+    danhSachTaiLieu: [
+      {
+        id: "tl-50",
+        tenTep: "CV_kien_nghi_ABC.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "CV kiến nghị GĐT-TT",
+        tenTaiLieu: "Công văn kiến nghị của Công ty ABC",
+        soVB: "50/CV-ABC",
+        ngayVB: "15/08/2026",
+        soTrang: 3,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ]
   },
   {
     maDon: "001248", ngayTiepNhan: "15/08/2026 09:30", nguoiLamDon: "Hoàng Văn Nam",
     hinhThucDon: "CV chuyển đơn", loaiAn: "Hành chính", canBoTiepNhan: "Nguyễn Hải Trâm",
     trangThai: "cho-xu-ly", nguon: "DVTT", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThaiOcr: "chua-ocr",
   },
   {
     maDon: "001258", ngayTiepNhan: "19/08/2026 10:05", nguoiLamDon: "Đặng Bích Ngọc",
     hinhThucDon: "Đơn khác", loaiAn: "Dân sự", canBoTiepNhan: "Chưa phân công",
     trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: false, dieuKienGoiY: { hopLe: false, lyDo: "Thiếu thông tin CCCD" },
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 1, tong: 1 },
+    danhSachTaiLieu: [
+      {
+        id: "tl-58",
+        tenTep: "Don_001258.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn khác",
+        tenTaiLieu: "Đơn đề nghị khác",
+        soTrang: 2,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ]
   },
   {
     maDon: "DVC-2026-00315", ngayTiepNhan: "19/08/2026 11:20", nguoiLamDon: "Võ Quang Huy",
     hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Kinh doanh thương mại", canBoTiepNhan: "Trần Văn Minh",
     trangThai: "cho-xu-ly", nguon: "DVC", coDonLienQuan: false, dieuKienGoiY: { hopLe: true },
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 2, tong: 2 },
+    ocrFields: {
+      soBaqd: { tepNguon: "Ban_an_KDTM_ST_15.pdf", canKiemTra: true },
+      ngayBaqd: { tepNguon: "Ban_an_KDTM_ST_15.pdf", canKiemTra: true },
+      toaXetXu: { tepNguon: "Ban_an_KDTM_ST_15.pdf", canKiemTra: true },
+      noiDungQuanHePhapLuat: { tepNguon: "Don_de_nghi_GDT_00315.pdf", canKiemTra: true },
+    },
+    danhSachTaiLieu: [
+      {
+        id: "tl-41",
+        tenTep: "Don_de_nghi_GDT_00315.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn đề nghị GĐT/TT",
+        tenTaiLieu: "Đơn đề nghị Giám đốc thẩm",
+        soVB: "ĐGĐT-315",
+        ngayVB: "18/08/2026",
+        soTrang: 5,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-42",
+        tenTep: "Ban_an_KDTM_ST_15.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Bản án sơ thẩm",
+        tenTaiLieu: "Bản án sơ thẩm số 15/2025/KDTM-ST",
+        soVB: "15/2025/KDTM-ST",
+        ngayVB: "12/05/2025",
+        soTrang: 14,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ],
   },
   {
     maDon: "001260", ngayTiepNhan: "20/08/2026 08:30", nguoiLamDon: "Nguyễn Thị Phương",
     hinhThucDon: "CV chuyển kiến nghị GĐT-TT", loaiAn: "Lao động", canBoTiepNhan: "Chưa phân công",
     trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: true,
-    donLienQuan: [{ maDon: "001250", quanHe: "Liên quan đến đơn của công ty TNHH ABC" }]
+    donLienQuan: [{ maDon: "001250", quanHe: "Liên quan đến đơn của công ty TNHH ABC" }],
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 1, tong: 1 },
+    danhSachTaiLieu: [
+      {
+        id: "tl-60",
+        tenTep: "CV_chuyen_kien_nghi_001260.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "CV chuyển kiến nghị GĐT-TT",
+        tenTaiLieu: "Công văn chuyển kiến nghị lao động",
+        soVB: "126/CV-LĐ",
+        ngayVB: "19/08/2026",
+        soTrang: 2,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ]
   },
   {
     maDon: "001262", ngayTiepNhan: "20/08/2026 14:15", nguoiLamDon: "Lý Đức Trọng",
     hinhThucDon: "Tài liệu chứng cứ", loaiAn: "Hình sự", canBoTiepNhan: "Lê Thị Hoa",
     trangThai: "da-phan-cong", nguon: "DVTT", coDonLienQuan: true,
-    donLienQuan: [{ maDon: "001254", quanHe: "Tài liệu bổ sung cho vụ Lê Minh Tuấn" }]
+    donLienQuan: [{ maDon: "001254", quanHe: "Tài liệu bổ sung cho vụ Lê Minh Tuấn" }],
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 1, tong: 1 },
+    danhSachTaiLieu: [
+      {
+        id: "tl-62",
+        tenTep: "Tai_lieu_chung_cu_001262.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Tài liệu, chứng cứ",
+        tenTaiLieu: "Tài liệu chứng cứ bổ sung",
+        soTrang: 3,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ]
+  },
+  // Mẫu kiểm thử v6 án tử hình theo AC-03 (T01)
+  {
+    maDon: "001290", ngayTiepNhan: "24/08/2026 08:30", nguoiLamDon: "Đỗ Văn Cường",
+    cccd: "034092000555",
+    hinhThucDon: "Đơn đề nghị GĐT-TT", loaiAn: "Hình sự", canBoTiepNhan: "Chưa phân công",
+    donViTiepNhanGoiY: "Tòa Hình sự",
+    trangThai: "cho-phan-cong", nguon: "VBDH", coDonLienQuan: false,
+    dieuKienGoiY: { hopLe: true },
+    soBaqd: "1154681/2026/HS-PT", ngayBaqd: "04/09/2026", toaXetXu: "TAND Cấp cao tại Hà Nội",
+    noiDungQuanHePhapLuat: "Đơn xin ân giảm án tử hình và kêu oan",
+    anTuHinh: true, xinAnGiam: true, keuOan: true, xinThiHanhAnSom: false,
+    trangThaiOcr: "da-ocr",
+    tienDoOcr: { xong: 2, tong: 2 },
+    ocrFields: {
+      soBaqd: { tepNguon: "Ban_an_phuc_tham_tu_hinh.pdf", canKiemTra: true },
+      ngayBaqd: { tepNguon: "Ban_an_phuc_tham_tu_hinh.pdf", canKiemTra: true },
+      toaXetXu: { tepNguon: "Ban_an_phuc_tham_tu_hinh.pdf", canKiemTra: true },
+      anTuHinh: { tepNguon: "Don_xin_an_giam_tu_hinh.pdf", canKiemTra: true },
+      xinAnGiam: { tepNguon: "Don_xin_an_giam_tu_hinh.pdf", canKiemTra: true },
+    },
+    danhSachTaiLieu: [
+      {
+        id: "tl-51",
+        tenTep: "Don_xin_an_giam_tu_hinh.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Đơn đề nghị GĐT/TT",
+        tenTaiLieu: "Đơn xin ân giảm án tử hình",
+        soVB: "ĐAG-01",
+        ngayVB: "22/08/2026",
+        soTrang: 4,
+        trangThaiOcr: "hoan-thanh",
+      },
+      {
+        id: "tl-52",
+        tenTep: "Ban_an_phuc_tham_tu_hinh.pdf",
+        dinhDang: "pdf",
+        loaiTaiLieu: "Bản án phúc thẩm",
+        tenTaiLieu: "Bản án phúc thẩm số 1154681/2026/HS-PT",
+        soVB: "1154681/2026/HS-PT",
+        ngayVB: "04/09/2026",
+        soTrang: 22,
+        trangThaiOcr: "hoan-thanh",
+      }
+    ]
   }
 ];
 
@@ -128,6 +424,62 @@ const DON_VI_OPTIONS = [
   "Văn phòng", "Tòa Hình sự", "Tòa Dân sự", "Tòa Hành chính", "Tòa Kinh tế", "Tòa Lao động", "Tòa Gia đình & Người chưa thành niên"
 ];
 
+// Danh mục chuẩn 22 loại tài liệu theo OCR Schema QLA v6.0
+const DANH_MUC_LOAI_TAI_LIEU_OPTIONS = [
+  {
+    label: "Nhóm 1: Các loại Đơn",
+    options: [
+      { value: "Đơn đề nghị GĐT/TT", label: "Đơn đề nghị GĐT/TT" },
+      { value: "Đơn Giám đốc thẩm / Tái thẩm", label: "Đơn Giám đốc thẩm / Tái thẩm" },
+      { value: "Đơn khiếu nại tư pháp - tố tụng", label: "Đơn khiếu nại tư pháp - tố tụng" },
+      { value: "Đơn khiếu nại tố cáo trong tố tụng", label: "Đơn khiếu nại tố cáo trong tố tụng" },
+      { value: "Đơn khởi kiện", label: "Đơn khởi kiện" },
+      { value: "Đơn yêu cầu", label: "Đơn yêu cầu" },
+      { value: "Đơn kháng cáo", label: "Đơn kháng cáo" },
+      { value: "Đơn khác", label: "Đơn khác" },
+    ],
+  },
+  {
+    label: "Nhóm 2: Bản án & Quyết định",
+    options: [
+      { value: "Bản án sơ thẩm", label: "Bản án sơ thẩm" },
+      { value: "Bản án phúc thẩm", label: "Bản án phúc thẩm" },
+      { value: "Quyết định giám đốc thẩm - tái thẩm", label: "Quyết định giám đốc thẩm - tái thẩm" },
+      { value: "Quyết định kháng nghị", label: "Quyết định kháng nghị" },
+      { value: "Quyết định bị khiếu nại", label: "Quyết định bị khiếu nại" },
+      { value: "Quyết định khác", label: "Quyết định khác" },
+    ],
+  },
+  {
+    label: "Nhóm 3: Công văn & Thông báo",
+    options: [
+      { value: "Công văn kiến nghị", label: "Công văn kiến nghị" },
+      { value: "CV kiến nghị GĐT-TT", label: "CV kiến nghị GĐT-TT" },
+      { value: "Công văn chuyển kiến nghị", label: "Công văn chuyển kiến nghị" },
+      { value: "CV chuyển kiến nghị GĐT-TT", label: "CV chuyển kiến nghị GĐT-TT" },
+      { value: "Công văn chuyển đơn", label: "Công văn chuyển đơn" },
+      { value: "Thông báo vi phạm pháp luật", label: "Thông báo vi phạm pháp luật" },
+      { value: "Thông báo phát hiện vi phạm pháp luật", label: "Thông báo phát hiện vi phạm pháp luật" },
+    ],
+  },
+  {
+    label: "Nhóm 4: Hồ sơ tố tụng hình sự & Tài liệu khác",
+    options: [
+      { value: "Cáo trạng", label: "Cáo trạng" },
+      { value: "Biên bản giao nhận cáo trạng", label: "Biên bản giao nhận cáo trạng" },
+      { value: "Biên bản giao nhận vật chứng", label: "Biên bản giao nhận vật chứng" },
+      { value: "Lý lịch tư pháp", label: "Lý lịch tư pháp" },
+      { value: "Danh bản, chỉ bản", label: "Danh bản, chỉ bản" },
+      { value: "Trích lục tiền án, tiền sự", label: "Trích lục tiền án, tiền sự" },
+      { value: "Tài liệu, chứng cứ", label: "Tài liệu, chứng cứ" },
+      { value: "Tài liệu, chứng cứ khác", label: "Tài liệu, chứng cứ khác" },
+      { value: "Văn bản khác", label: "Văn bản khác" },
+    ],
+  },
+];
+
+const DANH_MUC_LOAI_TAI_LIEU = DANH_MUC_LOAI_TAI_LIEU_OPTIONS.flatMap(g => g.options.map(o => o.value));
+
 const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { onChiTiet?: (don: DonTiepNhan) => void, onPhanLoaiGDT?: (d: any) => void, currentRole?: string }) => {
   const isChanhVP = currentRole === "pho-vp";
   const isTruongPhong = currentRole === "truong-phong";
@@ -154,10 +506,41 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
   const [fCanBo, setFCanBo] = useState("");
   const [fTrangThai, setFTrangThai] = useState("");
   const [fDieuKien, setFDieuKien] = useState("tat-ca");
+  const [fTrangThaiOcr, setFTrangThaiOcr] = useState("");
 
   // Popup state
   const [chiTietPopup, setChiTietPopup] = useState<DonTiepNhan | null>(null);
   const [selectedDoc, setSelectedDoc] = useState(0);
+  const [modalDoiLoaiTL, setModalDoiLoaiTL] = useState<{ index: number; doc: TaiLieuLienThong } | null>(null);
+  const [loaiTLMoi, setLoaiTLMoi] = useState<string>("");
+  const [tenTLMoi, setTenTLMoi] = useState<string>("");
+
+  const handleOpenDoiLoaiTL = (idx: number, doc: TaiLieuLienThong) => {
+    setModalDoiLoaiTL({ index: idx, doc });
+    setLoaiTLMoi(doc.loaiTaiLieu || "Tài liệu, chứng cứ");
+    setTenTLMoi(doc.tenTaiLieu || doc.tenTep || "");
+  };
+
+  const handleSaveDoiLoaiTL = () => {
+    if (!modalDoiLoaiTL || !chiTietPopup) return;
+    const defaultDocs: TaiLieuLienThong[] = [
+      { id: "t1", tenTep: "Don_de_nghi_GDT.pdf", dinhDang: "pdf", loaiTaiLieu: "Đơn đề nghị GĐT/TT", tenTaiLieu: "Đơn đề nghị GĐT/TT", soVB: "01/ĐGĐT", ngayVB: "15/08/2026", soTrang: 5, trangThaiOcr: "hoan-thanh" },
+      { id: "t2", tenTep: "Ban_an_so_tham.pdf", dinhDang: "pdf", loaiTaiLieu: "Bản án sơ thẩm", tenTaiLieu: "Bản án sơ thẩm", soVB: "45/2025/DS-ST", ngayVB: "10/10/2025", soTrang: 12, trangThaiOcr: "hoan-thanh" },
+      { id: "t3", tenTep: "Tai_lieu_chung_cu.pdf", dinhDang: "pdf", loaiTaiLieu: "Tài liệu, chứng cứ", tenTaiLieu: "Tài liệu chứng cứ kèm theo", soTrang: 4, trangThaiOcr: "hoan-thanh" }
+    ];
+    const sourceDocs = (chiTietPopup.danhSachTaiLieu && chiTietPopup.danhSachTaiLieu.length > 0)
+      ? chiTietPopup.danhSachTaiLieu
+      : defaultDocs;
+    const updatedDocs = [...sourceDocs];
+    const targetDoc = updatedDocs[modalDoiLoaiTL.index] || modalDoiLoaiTL.doc;
+    updatedDocs[modalDoiLoaiTL.index] = {
+      ...targetDoc,
+      loaiTaiLieu: loaiTLMoi,
+      tenTaiLieu: tenTLMoi.trim() || `${loaiTLMoi} ${targetDoc.soVB ? `số ${targetDoc.soVB}` : ''}`.trim()
+    };
+    handleUpdateRow(chiTietPopup.maDon, 'danhSachTaiLieu' as any, updatedDocs);
+    setModalDoiLoaiTL(null);
+  };
   const [donLienQuanPopup, setDonLienQuanPopup] = useState<DonTiepNhan | null>(null);
   const [traLaiPopup, setTraLaiPopup] = useState<DonTiepNhan | null>(null);
   const [traLaiLyDo, setTraLaiLyDo] = useState("");
@@ -186,24 +569,222 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
       if (fLoaiAn && d.loaiAn !== fLoaiAn) return false;
       if (fCanBo && d.canBoTiepNhan !== fCanBo) return false;
       if (fTrangThai && d.trangThai !== fTrangThai) return false;
+      if (fTrangThaiOcr && d.trangThaiOcr !== fTrangThaiOcr) return false;
       if (fNguoiDon && !d.nguoiLamDon.toLowerCase().includes(fNguoiDon.toLowerCase())) return false;
       if (fDieuKien === "du" && (!d.dieuKienGoiY || !d.dieuKienGoiY.hopLe)) return false;
       if (fDieuKien === "chua-du" && d.dieuKienGoiY?.hopLe !== false) return false;
       if (q && ![d.maDon, d.nguoiLamDon, d.canBoTiepNhan].some(s => s.toLowerCase().includes(q))) return false;
       return true;
     });
-  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fNguoiDon, fDieuKien]);
+  }, [rows, activeTab, search, fNguon, fHinhThuc, fLoaiAn, fCanBo, fTrangThai, fTrangThaiOcr, fNguoiDon, fDieuKien]);
 
   const resetAdvanced = () => {
     setFNguon(""); setFNgayTu(""); setFNgayDen(""); setFNguoiDon("");
     setFHinhThuc(""); setFLoaiAn(""); setFCanBo(""); setFTrangThai("");
+    setFDieuKien("tat-ca"); setFTrangThaiOcr("");
   };
 
-  const handleUpdateRow = (maDon: string, field: keyof DonTiepNhan, val: string) => {
-    setRows(prev => prev.map(r => r.maDon === maDon ? { ...r, [field]: val } : r));
+  const handleUpdateRow = (maDon: string, field: keyof DonTiepNhan, val: any) => {
+    setRows(prev => prev.map(r => {
+      if (r.maDon === maDon) {
+        const nextOcrFields = { ...(r.ocrFields || {}) };
+        if (nextOcrFields[field as string]) {
+          // BR-OCR-33: Cán bộ sửa một trường do OCR điền thì nhãn "OCR – cần kiểm tra" của trường đó mất
+          nextOcrFields[field as string] = {
+            ...nextOcrFields[field as string],
+            canKiemTra: false
+          };
+        }
+        return { ...r, [field]: val, ocrFields: nextOcrFields };
+      }
+      return r;
+    }));
     if (chiTietPopup?.maDon === maDon) {
-      setChiTietPopup(prev => prev ? { ...prev, [field]: val } : null);
+      setChiTietPopup(prev => {
+        if (!prev) return null;
+        const nextOcrFields = { ...(prev.ocrFields || {}) };
+        if (nextOcrFields[field as string]) {
+          nextOcrFields[field as string] = {
+            ...nextOcrFields[field as string],
+            canKiemTra: false
+          };
+        }
+        return { ...prev, [field]: val, ocrFields: nextOcrFields };
+      });
     }
+  };
+
+  // UC-03: Xử lý OCR lại
+  const handleReOcr = (maDon: string) => {
+    const target = rows.find(r => r.maDon === maDon);
+    if (!target) return;
+    if (target.trangThaiOcr === "dang-ocr") {
+      alert("Đơn đang được OCR, vui lòng đợi xong rồi thử lại.");
+      return;
+    }
+    const tongSoTep = target.danhSachTaiLieu?.length || 2;
+    setRows(prev => prev.map(r => r.maDon === maDon ? {
+      ...r,
+      trangThaiOcr: "dang-ocr",
+      tienDoOcr: { xong: 0, tong: tongSoTep }
+    } : r));
+    if (chiTietPopup?.maDon === maDon) {
+      setChiTietPopup(prev => prev ? {
+        ...prev,
+        trangThaiOcr: "dang-ocr",
+        tienDoOcr: { xong: 0, tong: tongSoTep }
+      } : null);
+    }
+    alert("Đã đưa đơn vào hàng chờ OCR lại.");
+
+    // Mô phỏng tiến trình hoàn thành sau 2.5s
+    setTimeout(() => {
+      setRows(prev => prev.map(r => {
+        if (r.maDon === maDon) {
+          const updatedDocs = (r.danhSachTaiLieu || []).map(d => ({
+            ...d,
+            trangThaiOcr: "hoan-thanh" as const,
+            lyDoLoi: undefined
+          }));
+          return {
+            ...r,
+            trangThaiOcr: "da-ocr",
+            tienDoOcr: { xong: tongSoTep, tong: tongSoTep },
+            danhSachTaiLieu: updatedDocs
+          };
+        }
+        return r;
+      }));
+      if (chiTietPopup?.maDon === maDon) {
+        setChiTietPopup(prev => {
+          if (!prev) return null;
+          const updatedDocs = (prev.danhSachTaiLieu || []).map(d => ({
+            ...d,
+            trangThaiOcr: "hoan-thanh" as const,
+            lyDoLoi: undefined
+          }));
+          return {
+            ...prev,
+            trangThaiOcr: "da-ocr",
+            tienDoOcr: { xong: tongSoTep, tong: tongSoTep },
+            danhSachTaiLieu: updatedDocs
+          };
+        });
+      }
+    }, 2500);
+  };
+
+  // UC-07 / FE-LT-3: Tạo đơn từ dữ liệu đã ghép OCR
+  const handleTaoDon = (record: DonTiepNhan) => {
+    if (record.trangThaiOcr === "dang-ocr") {
+      alert("Đơn đang được OCR, không thể tạo đơn lúc này!");
+      return;
+    }
+    onPhanLoaiGDT?.({
+      nguoiGui: record.nguoiLamDon,
+      diaChi: record.diaChi || "Chưa rõ",
+      trichYeu: record.hinhThucDon,
+      loaiVanBan: record.loaiAn,
+      ngayTiepNhan: record.ngayTiepNhan,
+      canBoTiepNhan: record.canBoTiepNhan || "Chờ xử lý",
+      hinhThucTiepNhan: record.nguon,
+      soBaqd: record.soBaqd,
+      ngayBaqd: record.ngayBaqd,
+      toaXetXu: record.toaXetXu,
+      danhSachTaiLieu: record.danhSachTaiLieu
+    });
+    handleUpdateRow(record.maDon, 'trangThai', 'da-phan-cong' as any);
+    alert(`Đã tạo đơn thành công từ đơn liên thông ${record.maDon} với dữ liệu đã ghép từ OCR!`);
+    if (chiTietPopup?.maDon === record.maDon) {
+      setChiTietPopup(null);
+    }
+  };
+
+  // Helper render trạng thái OCR trên bảng danh sách (FE-LT-1 & BR-OCR-11)
+  const renderOcrStatusTag = (record: DonTiepNhan) => {
+    if (!record.trangThaiOcr || record.trangThaiOcr === "chua-ocr") {
+      return null;
+    }
+    if (record.trangThaiOcr === "dang-ocr") {
+      const title = `${record.tienDoOcr?.xong || 0}/${record.tienDoOcr?.tong || 0} tệp đã OCR xong`;
+      return (
+        <Tooltip title={title}>
+          <Tag color="processing" className="m-0 cursor-default">
+            Đang OCR ({record.tienDoOcr?.xong || 0}/{record.tienDoOcr?.tong || 0})
+          </Tag>
+        </Tooltip>
+      );
+    }
+    if (record.trangThaiOcr === "da-ocr") {
+      const xong = record.tienDoOcr?.xong || record.tienDoOcr?.tong || 2;
+      const tong = record.tienDoOcr?.tong || 2;
+      const title = `${xong}/${tong} tệp đã OCR xong`;
+      return (
+        <Tooltip title={title}>
+          <Tag color="success" className="m-0 cursor-default">
+            Đã OCR ({xong}/{tong})
+          </Tag>
+        </Tooltip>
+      );
+    }
+    if (record.trangThaiOcr === "mot-phan") {
+      const xong = record.tienDoOcr?.xong || 0;
+      const tong = record.tienDoOcr?.tong || 0;
+      const title = `${xong}/${tong} tệp đã OCR xong. Có tệp không đọc được`;
+      return (
+        <Space size={4}>
+          <Tooltip title={title}>
+            <Tag color="warning" className="m-0 cursor-default">
+              OCR một phần ({xong}/{tong})
+            </Tag>
+          </Tooltip>
+          <Tooltip title="OCR lại">
+            <Button
+              type="text"
+              size="small"
+              className="p-0 h-5 text-amber-600 hover:text-amber-800"
+              icon={<RotateCw size={12} />}
+              onClick={(e) => { e.stopPropagation(); handleReOcr(record.maDon); }}
+            />
+          </Tooltip>
+        </Space>
+      );
+    }
+    if (record.trangThaiOcr === "that-bai") {
+      const errReason = record.danhSachTaiLieu?.find(t => t.lyDoLoi)?.lyDoLoi || "Dịch vụ OCR báo lỗi";
+      return (
+        <Space size={4}>
+          <Tooltip title={`OCR lỗi: ${errReason}. Bấm để thử lại`}>
+            <Tag color="error" className="m-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleReOcr(record.maDon); }}>
+              OCR lỗi
+            </Tag>
+          </Tooltip>
+          <Tooltip title="OCR lại">
+            <Button
+              type="text"
+              size="small"
+              className="p-0 h-5 text-red-600 hover:text-red-800"
+              icon={<RotateCw size={12} />}
+              onClick={(e) => { e.stopPropagation(); handleReOcr(record.maDon); }}
+            />
+          </Tooltip>
+        </Space>
+      );
+    }
+    return null;
+  };
+
+  // Helper render nhãn "OCR – cần kiểm tra" (BR-OCR-30, BR-OCR-33)
+  const renderOcrFieldBadge = (fieldKey: string, don: DonTiepNhan) => {
+    const meta = don.ocrFields?.[fieldKey];
+    if (!meta || !meta.canKiemTra) return null;
+    return (
+      <Tooltip title={`Tệp nguồn: ${meta.tepNguon}. Sửa trường này để xác nhận.`}>
+        <Tag color="orange" className="ml-1 text-[11px] font-normal cursor-help border-orange-300">
+          OCR – cần kiểm tra
+        </Tag>
+      </Tooltip>
+    );
   };
 
   const columns: ColumnsType<DonTiepNhan> = [
@@ -349,6 +930,15 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
         return (
           <div className="space-y-2">
             <div>{tag}</div>
+
+            {/* FE-LT-1 & BR-OCR-11: Trạng thái OCR của đơn */}
+            {record.trangThaiOcr && record.trangThaiOcr !== "chua-ocr" && (
+              <div className="pt-0.5">
+                <div className="text-[10px] text-gray-500 font-semibold mb-0.5">Trạng thái OCR</div>
+                {renderOcrStatusTag(record)}
+              </div>
+            )}
+
             {record.trangThai !== 'tra-lai' && (
               <div>
                 <div className="text-[10px] text-gray-500 font-semibold mb-0.5">Phân công cán bộ xử lý</div>
@@ -368,6 +958,7 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
           <Tooltip title="Chi tiết">
             <Button type="text" icon={<Eye size={16} />} onClick={(e) => { e.stopPropagation(); setChiTietPopup(record); }} />
           </Tooltip>
+
           {isTruongPhong && (
             <Tooltip title="Xác nhận & Chuyển">
               <Button type="text" className="text-blue-600" icon={<Send size={14} />} onClick={(e) => {
@@ -501,6 +1092,22 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                       <Select className="w-full h-[38px]" value={fDieuKien} onChange={setFDieuKien} options={[{ value: 'tat-ca', label: 'Tất cả' }, { value: 'du', label: 'Đủ điều kiện' }, { value: 'chua-du', label: 'Chưa đủ điều kiện' }]} />
                     </div>
                     <div className="col-span-1">
+                      <div className="text-[13px] font-medium text-gray-700 mb-1.5">Trạng thái OCR</div>
+                      <Select
+                        className="w-full h-[38px]"
+                        value={fTrangThaiOcr}
+                        onChange={setFTrangThaiOcr}
+                        options={[
+                          { value: '', label: 'Tất cả' },
+                          { value: 'dang-ocr', label: 'Đang OCR' },
+                          { value: 'da-ocr', label: 'Đã OCR' },
+                          { value: 'mot-phan', label: 'OCR một phần' },
+                          { value: 'that-bai', label: 'OCR lỗi' },
+                          { value: 'chua-ocr', label: 'Chưa OCR' },
+                        ]}
+                      />
+                    </div>
+                    <div className="col-span-1">
                       <div className="text-[13px] font-medium text-gray-700 mb-1.5">Cán bộ xử lý</div>
                       <Select className="w-full h-[38px]" value={fCanBo} onChange={setFCanBo} options={[{ value: '', label: 'Tất cả' }, ...CAN_BO_LIST_LT.map(o => ({ value: o, label: o }))]} />
                     </div>
@@ -583,13 +1190,30 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
 
         {/* Drawer Chi Tiết */}
         <Drawer
-          title={<div className="font-bold text-lg">Chi tiết đơn: {chiTietPopup?.maDon}</div>}
+          title={
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-lg">Chi tiết đơn: {chiTietPopup?.maDon}</span>
+              {chiTietPopup && renderOcrStatusTag(chiTietPopup)}
+            </div>
+          }
           placement="right"
           width={1100}
           onClose={() => setChiTietPopup(null)}
           open={!!chiTietPopup}
           extra={
             <Space>
+              {/* FE-LT-2: Nút OCR lại */}
+              {chiTietPopup && (
+                <Tooltip title="Gửi yêu cầu OCR lại toàn bộ tệp của đơn">
+                  <Button
+                    icon={<RotateCw size={14} />}
+                    disabled={chiTietPopup.trangThaiOcr === "dang-ocr"}
+                    onClick={() => handleReOcr(chiTietPopup.maDon)}
+                  >
+                    OCR lại
+                  </Button>
+                </Tooltip>
+              )}
               {chiTietPopup?.nguon === "VBDH" && chiTietPopup?.trangThai !== "tra-lai" && (
                 <Button danger icon={<CornerUpLeft size={14} />} onClick={() => { setTraLaiPopup(chiTietPopup); setChiTietPopup(null); }}>Trả lại</Button>
               )}
@@ -599,20 +1223,20 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                   setChiTietPopup(null);
                 }}>Lưu</Button>
               )}
-              {isTruongPhong && (
-                <Button type="primary" icon={<Send size={14} />} onClick={() => {
-                  if (chiTietPopup?.donViTiepNhanGoiY === "Văn phòng") {
-                    onPhanLoaiGDT?.({
-                      nguoiGui: chiTietPopup.nguoiLamDon, diaChi: "Chưa rõ", trichYeu: chiTietPopup.hinhThucDon,
-                      loaiVanBan: chiTietPopup.loaiAn, ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
-                      canBoTiepNhan: "Chờ xử lý", hinhThucTiepNhan: chiTietPopup.nguon
-                    });
-                  }
-                  setRows(prev => prev.filter(r => r.maDon !== chiTietPopup?.maDon));
-                  alert(`Đã chuyển đơn ${chiTietPopup?.maDon} tới ${chiTietPopup?.donViTiepNhanGoiY || "đơn vị khác"}.`);
-                  setChiTietPopup(null);
-                }}>Lưu & Chuyển</Button>
-              )}
+              <Button type="primary" icon={<Send size={14} />} onClick={() => {
+                if (chiTietPopup?.donViTiepNhanGoiY === "Văn phòng") {
+                  onPhanLoaiGDT?.({
+                    nguoiGui: chiTietPopup.nguoiLamDon, diaChi: "Chưa rõ", trichYeu: chiTietPopup.hinhThucDon,
+                    loaiVanBan: chiTietPopup.loaiAn, ngayTiepNhan: new Date().toLocaleDateString("vi-VN"),
+                    canBoTiepNhan: chiTietPopup.canBoTiepNhan || "Chờ xử lý", hinhThucTiepNhan: chiTietPopup.nguon,
+                    soBaqd: chiTietPopup.soBaqd, ngayBaqd: chiTietPopup.ngayBaqd, toaXetXu: chiTietPopup.toaXetXu,
+                    danhSachTaiLieu: chiTietPopup.danhSachTaiLieu
+                  });
+                }
+                setRows(prev => prev.filter(r => r.maDon !== chiTietPopup?.maDon));
+                alert(`Đã phân công đơn ${chiTietPopup?.maDon} cho ${chiTietPopup?.canBoTiepNhan || "cán bộ xử lý"}.`);
+                setChiTietPopup(null);
+              }}>Lưu & phân công</Button>
             </Space>
           }
         >
@@ -620,16 +1244,26 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
             <div className="flex flex-col h-full bg-gray-50 -m-6">
               <div className="p-4 bg-white border-b border-gray-200">
                 <Row gutter={[24, 16]}>
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Người làm đơn</div>
-                    <div className="font-semibold">{chiTietPopup.nguoiLamDon}</div>
+                  <Col span={5}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1 flex items-center">
+                      Người làm đơn
+                      {renderOcrFieldBadge("nguoiLamDon", chiTietPopup)}
+                    </div>
+                    <div className="font-semibold text-gray-900">{chiTietPopup.nguoiLamDon}</div>
+                    {chiTietPopup.cccd && <div className="text-[11px] text-gray-500 mt-0.5">CCCD: {chiTietPopup.cccd}</div>}
                   </Col>
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Hình thức đơn</div>
+                  <Col span={8}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1 flex items-center">
+                      Hình thức đơn
+                      {renderOcrFieldBadge("hinhThucDon", chiTietPopup)}
+                    </div>
                     <Select value={chiTietPopup.hinhThucDon} onChange={val => handleUpdateRow(chiTietPopup.maDon, 'hinhThucDon', val)} options={HINH_THUC_OPTIONS.map(o => ({ value: o, label: o }))} className="w-full" size="small" />
                   </Col>
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Loại án</div>
+                  <Col span={5}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1 flex items-center">
+                      Loại án
+                      {renderOcrFieldBadge("loaiAn", chiTietPopup)}
+                    </div>
                     <Select value={chiTietPopup.loaiAn} onChange={val => handleUpdateRow(chiTietPopup.maDon, 'loaiAn', val)} options={LOAI_AN_OPTIONS.map(o => ({ value: o, label: o }))} className="w-full" size="small" />
                   </Col>
                   <Col span={6}>
@@ -637,49 +1271,189 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
                     <Select value={chiTietPopup.canBoTiepNhan === "Chưa phân công" ? undefined : chiTietPopup.canBoTiepNhan} onChange={val => handleUpdateRow(chiTietPopup.maDon, 'canBoTiepNhan', val || "Chưa phân công")} options={CAN_BO_LIST_LT.map(o => ({ value: o, label: o }))} placeholder="-- Chọn cán bộ --" className="w-full" size="small" allowClear />
                   </Col>
 
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Ngày tiếp nhận</div>
-                    <div className="font-semibold">{chiTietPopup.ngayTiepNhan}</div>
-                  </Col>
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Thông tin Bản án</div>
-                    <div className="font-semibold text-blue-600">
-                      {chiTietPopup.soBaqd ? ` ${chiTietPopup.soBaqd}${chiTietPopup.ngayBaqd ? ` - ${chiTietPopup.ngayBaqd}` : ''} ${chiTietPopup.toaXetXu ? `- ${chiTietPopup.toaXetXu}` : ''}` : chiTietPopup.maVuAn ? `Vụ án ${chiTietPopup.maVuAn}` : '---'}
+                  <Col span={5}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1">Nguồn & Thời gian</div>
+                    <div className="text-xs text-gray-700">
+                      <Tag color={NGUON_META_LT[chiTietPopup.nguon].color} className="mr-1">{NGUON_META_LT[chiTietPopup.nguon].label}</Tag>
+                      <span className="text-[11px] text-gray-500">{chiTietPopup.ngayTiepNhan}</span>
                     </div>
                   </Col>
-                  <Col span={6}>
-                    <div className="text-xs text-gray-500 font-semibold mb-1">Nội dung quan hệ pháp luật</div>
-                    <div className="font-medium">{chiTietPopup.noiDungQuanHePhapLuat || chiTietPopup.tenVuAn || '---'}</div>
+                  <Col span={8}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1 flex items-center">
+                      Thông tin Bản án / Vụ án
+                      {renderOcrFieldBadge("soBaqd", chiTietPopup)}
+                    </div>
+                    <div className="font-semibold text-blue-600">
+                      {chiTietPopup.soBaqd ? `Bản án số ${chiTietPopup.soBaqd}${chiTietPopup.ngayBaqd ? ` - ${chiTietPopup.ngayBaqd}` : ''} ${chiTietPopup.toaXetXu ? `- ${chiTietPopup.toaXetXu}` : ''}` : chiTietPopup.maVuAn ? `Vụ án ${chiTietPopup.maVuAn}` : '---'}
+                    </div>
+                  </Col>
+                  <Col span={11}>
+                    <div className="text-xs text-gray-500 font-semibold mb-1 flex items-center">
+                      Nội dung quan hệ pháp luật
+                      {renderOcrFieldBadge("noiDungQuanHePhapLuat", chiTietPopup)}
+                    </div>
+                    <div className="font-medium text-xs text-gray-800 leading-relaxed">{chiTietPopup.noiDungQuanHePhapLuat || chiTietPopup.tenVuAn || '---'}</div>
                   </Col>
                 </Row>
+
+                {/* Cờ thông tin án tử hình (v6 - AC-03 / NV-1) */}
+                {(chiTietPopup.anTuHinh || chiTietPopup.xinAnGiam || chiTietPopup.keuOan || chiTietPopup.xinThiHanhAnSom) && (
+                  <div className="mt-3 p-2.5 bg-red-50/70 border border-red-200 rounded flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-red-800 uppercase mr-1">Thông tin đặc biệt (v6):</span>
+                      {chiTietPopup.anTuHinh && <Tag color="error">Án tử hình</Tag>}
+                      {chiTietPopup.xinAnGiam && <Tag color="warning">Xin ân giảm</Tag>}
+                      {chiTietPopup.keuOan && <Tag color="blue">Kêu oan</Tag>}
+                      {chiTietPopup.xinThiHanhAnSom && <Tag color="purple">Xin thi hành án sớm</Tag>}
+                    </div>
+                    {renderOcrFieldBadge("anTuHinh", chiTietPopup)}
+                  </div>
+                )}
               </div>
 
+              {/* Main content: Document list & Document viewer */}
               <div className="flex-1 flex overflow-hidden">
-                <div className="w-64 border-r border-gray-200 bg-white flex flex-col">
-                  <div className="p-3 font-semibold border-b border-gray-200 bg-gray-50">Danh sách tài liệu</div>
-                  <div className="flex-1 overflow-auto">
-                    {["Đơn đề nghị GĐT.pdf", "Bản án/Quyết định sơ thẩm.pdf", "Tài liệu chứng cứ kèm theo.pdf"].map((doc, idx) => (
-                      <div key={idx} onClick={() => setSelectedDoc(idx)} className={`p-3 border-b cursor-pointer transition-colors ${selectedDoc === idx ? 'bg-blue-50 border-l-4 border-l-blue-600' : 'hover:bg-gray-50 border-l-4 border-l-transparent'}`}>
-                        <Tag color="error">PDF</Tag>
-                        <div className="text-sm font-medium text-blue-800 mt-1 truncate">{doc}</div>
-                      </div>
-                    ))}
+                {/* Left panel: Hồ sơ đơn (danh sách tệp thực nhận) - UC-06 & BR-OCR-32 */}
+                <div className="w-80 border-r border-gray-200 bg-white flex flex-col shrink-0">
+                  <div className="p-3 font-semibold border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <span className="text-sm">Hồ sơ đơn ({chiTietPopup.danhSachTaiLieu?.length || 0} tệp)</span>
+                    <span className="text-[11px] font-normal text-gray-500">Tệp thực nhận</span>
+                  </div>
+                  <div className="flex-1 overflow-auto divide-y divide-gray-100">
+                    {(() => {
+                      const defaultDocs: TaiLieuLienThong[] = [
+                        { id: "t1", tenTep: "Don_de_nghi_GDT.pdf", dinhDang: "pdf", loaiTaiLieu: "Đơn đề nghị GĐT/TT", tenTaiLieu: "Đơn đề nghị GĐT/TT", soVB: "01/ĐGĐT", ngayVB: "15/08/2026", soTrang: 5, trangThaiOcr: "hoan-thanh" },
+                        { id: "t2", tenTep: "Ban_an_so_tham.pdf", dinhDang: "pdf", loaiTaiLieu: "Bản án sơ thẩm", tenTaiLieu: "Bản án sơ thẩm", soVB: "45/2025/DS-ST", ngayVB: "10/10/2025", soTrang: 12, trangThaiOcr: "hoan-thanh" },
+                        { id: "t3", tenTep: "Tai_lieu_chung_cu.pdf", dinhDang: "pdf", loaiTaiLieu: "Tài liệu, chứng cứ", tenTaiLieu: "Tài liệu chứng cứ kèm theo", soTrang: 4, trangThaiOcr: "hoan-thanh" }
+                      ];
+                      const docsList: TaiLieuLienThong[] = (chiTietPopup.danhSachTaiLieu && chiTietPopup.danhSachTaiLieu.length > 0)
+                        ? chiTietPopup.danhSachTaiLieu
+                        : defaultDocs;
+
+                      return docsList.map((doc, idx) => {
+                        const isSelected = selectedDoc === idx;
+                        return (
+                          <div
+                            key={doc.id || idx}
+                            onClick={() => setSelectedDoc(idx)}
+                            className={`p-3 cursor-pointer transition-colors ${
+                              isSelected ? 'bg-blue-50/80 border-l-4 border-l-blue-600' : 'hover:bg-gray-50 border-l-4 border-l-transparent'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <Tag color={doc.dinhDang === "pdf" ? "red" : doc.dinhDang === "docx" ? "blue" : "default"} className="text-[10px] px-1 py-0 m-0 uppercase font-semibold">
+                                {doc.dinhDang}
+                              </Tag>
+                              {doc.trangThaiOcr === "hoan-thanh" && <Tag color="success" className="text-[10px] m-0">Đã OCR</Tag>}
+                              {doc.trangThaiOcr === "dang-xu-ly" && <Tag color="processing" className="text-[10px] m-0">Đang OCR</Tag>}
+                              {doc.trangThaiOcr === "cho" && <Tag color="default" className="text-[10px] m-0">Đang chờ</Tag>}
+                              {doc.trangThaiOcr === "that-bai" && <Tag color="error" className="text-[10px] m-0">Lỗi OCR</Tag>}
+                            </div>
+
+                            <div className="text-[13px] font-semibold text-gray-800 line-clamp-2 leading-snug">
+                              {doc.tenTaiLieu || doc.tenTep}
+                            </div>
+                            <div className="text-[11px] text-gray-400 truncate mt-0.5" title={doc.tenTep}>
+                              {doc.tenTep}
+                            </div>
+
+                            <div className="mt-1.5 flex flex-wrap gap-x-2 text-[11px] text-gray-600">
+                              {doc.soVB && <span>Số: <strong className="text-gray-700">{doc.soVB}</strong></span>}
+                              {doc.ngayVB && <span>Ngày: {doc.ngayVB}</span>}
+                              {doc.soTrang && <span>({doc.soTrang} trang)</span>}
+                            </div>
+
+                            {doc.lyDoLoi && (
+                              <div className="text-[11px] text-red-500 mt-1 italic leading-tight">
+                                {doc.lyDoLoi}
+                              </div>
+                            )}
+
+                            <div className="mt-1.5 flex justify-end">
+                              <Button
+                                type="link"
+                                size="small"
+                                className="p-0 text-[11px] text-blue-600 hover:text-blue-800 font-medium h-auto"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenDoiLoaiTL(idx, doc);
+                                }}
+                              >
+                                Đổi loại tài liệu
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
-                <div className="flex-1 p-6 overflow-auto flex justify-center bg-gray-200">
-                  <div className="bg-white w-full max-w-3xl min-h-[800px] shadow p-12 border border-gray-200">
-                    <div className="text-center mb-8">
-                      <div className="font-bold text-lg">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-                      <div className="font-bold text-base underline mb-8">Độc lập - Tự do - Hạnh phúc</div>
-                      <div className="font-bold text-xl uppercase mb-8">{chiTietPopup.hinhThucDon}</div>
-                    </div>
-                    <div className="space-y-3">
-                      <div><span className="font-bold">Kính gửi:</span> Tòa án nhân dân {chiTietPopup.toaXetXu || "Cấp cao..."}</div>
-                      <div><span className="font-bold">Người làm đơn:</span> {chiTietPopup.nguoiLamDon}</div>
-                      <div><span className="font-bold">Nguồn nhận:</span> {NGUON_META_LT[chiTietPopup.nguon].label}</div>
-                      <div className="mt-4"><span className="font-bold">Nội dung đơn:</span> Đơn yêu cầu xem xét lại Bản án {chiTietPopup.soBaqd ? `số ${chiTietPopup.soBaqd}` : ''} {chiTietPopup.ngayBaqd ? `ngày ${chiTietPopup.ngayBaqd}` : ''} của {chiTietPopup.toaXetXu || 'Tòa án'} về vụ việc {chiTietPopup.noiDungQuanHePhapLuat || chiTietPopup.loaiAn.toLowerCase()}. Người làm đơn cho rằng quyết định của tòa án không khách quan, có nhiều tình tiết chưa được làm rõ, ảnh hưởng nghiêm trọng đến quyền và lợi ích hợp pháp của người làm đơn.</div>
-                    </div>
-                  </div>
+
+                {/* Right panel: Preview văn bản */}
+                <div className="flex-1 p-6 overflow-auto flex flex-col items-center bg-gray-200">
+                  {(() => {
+                    const defaultDocs: TaiLieuLienThong[] = [
+                      { id: "t1", tenTep: "Don_de_nghi_GDT.pdf", dinhDang: "pdf", loaiTaiLieu: "Đơn đề nghị GĐT/TT", tenTaiLieu: "Đơn đề nghị GĐT/TT", soVB: "01/ĐGĐT", ngayVB: "15/08/2026", soTrang: 5, trangThaiOcr: "hoan-thanh" }
+                    ];
+                    const docs: TaiLieuLienThong[] = (chiTietPopup.danhSachTaiLieu && chiTietPopup.danhSachTaiLieu.length > 0)
+                      ? chiTietPopup.danhSachTaiLieu
+                      : defaultDocs;
+                    const activeDoc = docs[selectedDoc] || docs[0];
+
+                    return (
+                      <div className="w-full max-w-3xl space-y-4">
+                        {/* Header bar of document */}
+                        <div className="bg-white p-3 rounded border border-gray-300 shadow-sm flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <Tag color="blue" className="m-0 uppercase font-semibold">{activeDoc.dinhDang}</Tag>
+                            <span className="font-bold text-gray-800">{activeDoc.tenTep}</span>
+                            <span className="text-gray-400">|</span>
+                            <span className="text-gray-600">{activeDoc.loaiTaiLieu}</span>
+                            {activeDoc.soTrang && <span className="text-gray-500">({activeDoc.soTrang} trang)</span>}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {activeDoc.trangThaiOcr === "hoan-thanh" && <Tag color="success">OCR thành công</Tag>}
+                            {activeDoc.trangThaiOcr === "dang-xu-ly" && <Tag color="processing">Đang phân tích OCR</Tag>}
+                            {activeDoc.trangThaiOcr === "that-bai" && <Tag color="error">OCR thất bại</Tag>}
+                          </div>
+                        </div>
+
+                        {/* Document Sheet */}
+                        <div className="bg-white min-h-[750px] shadow-md p-12 border border-gray-300 rounded-sm">
+                          <div className="text-center mb-8">
+                            <div className="font-bold text-base">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                            <div className="font-bold text-sm underline mb-6">Độc lập - Tự do - Hạnh phúc</div>
+                            <div className="font-bold text-lg uppercase text-gray-800">{activeDoc.tenTaiLieu || chiTietPopup.hinhThucDon}</div>
+                            {activeDoc.soVB && <div className="text-xs text-gray-600 mt-1">Số: {activeDoc.soVB}</div>}
+                            {activeDoc.ngayVB && <div className="text-xs text-gray-500 italic mt-0.5">Ngày văn bản: {activeDoc.ngayVB}</div>}
+                          </div>
+
+                          <div className="space-y-3.5 text-sm leading-relaxed text-gray-800">
+                            <div><span className="font-bold">Kính gửi:</span> Tòa án nhân dân {chiTietPopup.toaXetXu || "Cấp cao..."}</div>
+                            <div><span className="font-bold">Người làm đơn:</span> {chiTietPopup.nguoiLamDon}</div>
+                            {chiTietPopup.diaChi && <div><span className="font-bold">Địa chỉ:</span> {chiTietPopup.diaChi}</div>}
+                            <div><span className="font-bold">Nguồn tiếp nhận:</span> {NGUON_META_LT[chiTietPopup.nguon].label}</div>
+                            {chiTietPopup.soBaqd && (
+                              <div><span className="font-bold">Về việc đề nghị xem xét:</span> Bản án số {chiTietPopup.soBaqd} ngày {chiTietPopup.ngayBaqd || '...'} của {chiTietPopup.toaXetXu || 'Tòa án'}</div>
+                            )}
+
+                            <div className="pt-2">
+                              <span className="font-bold block mb-1">Nội dung tóm tắt:</span>
+                              <p className="text-justify text-gray-700 bg-gray-50 p-3 rounded border border-gray-100">
+                                {chiTietPopup.noiDungQuanHePhapLuat || "Đơn yêu cầu giải quyết vụ việc theo đúng quy định pháp luật. Người làm đơn trình bày các chứng cứ, tài liệu liên quan đến vụ án để Hội đồng Giám đốc thẩm xem xét."}
+                              </p>
+                            </div>
+
+                            {activeDoc.trangThaiOcr === "that-bai" && (
+                              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                                <strong>Lỗi OCR:</strong> {activeDoc.lyDoLoi || "Không thể bóc tách nội dung từ tệp này."} Cán bộ có thể kiểm tra trực tiếp văn bản đính kèm hoặc bấm nút "OCR lại".
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -731,6 +1505,65 @@ const PanelLienThong = ({ onChiTiet, onPhanLoaiGDT, currentRole = "can-bo" }: { 
               <Input.TextArea rows={3} value={traLaiGhiChu} onChange={e => setTraLaiGhiChu(e.target.value)} placeholder="Nhập nội dung..." />
             </div>
           </div>
+        </Modal>
+
+        {/* Modal Đổi loại tài liệu */}
+        <Modal
+          title={<div className="font-bold text-base text-gray-800">Đổi loại tài liệu</div>}
+          open={!!modalDoiLoaiTL}
+          onCancel={() => setModalDoiLoaiTL(null)}
+          onOk={handleSaveDoiLoaiTL}
+          okText="Xác nhận lưu"
+          cancelText="Hủy"
+          width={520}
+          centered
+        >
+          {modalDoiLoaiTL && (
+            <div className="py-2 space-y-4">
+              <div className="p-2.5 bg-gray-50 border border-gray-200 rounded text-xs space-y-1">
+                <div><span className="font-semibold text-gray-700">Tệp gốc:</span> <span className="text-gray-900 font-mono">{modalDoiLoaiTL.doc.tenTep}</span></div>
+                {modalDoiLoaiTL.doc.soVB && <div><span className="font-semibold text-gray-700">Số văn bản:</span> {modalDoiLoaiTL.doc.soVB}</div>}
+                {modalDoiLoaiTL.doc.ngayVB && <div><span className="font-semibold text-gray-700">Ngày văn bản:</span> {modalDoiLoaiTL.doc.ngayVB}</div>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Loại tài liệu mới <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  showSearch
+                  optionFilterProp="label"
+                  filterOption={(input, option: any) => {
+                    const label = String(option?.label ?? '');
+                    const val = String(option?.value ?? '');
+                    const q = input.toLowerCase();
+                    return label.toLowerCase().includes(q) || val.toLowerCase().includes(q);
+                  }}
+                  value={loaiTLMoi}
+                  onChange={(val) => {
+                    setLoaiTLMoi(val);
+                    if (!tenTLMoi || tenTLMoi === modalDoiLoaiTL.doc.tenTaiLieu) {
+                      setTenTLMoi(`${val} ${modalDoiLoaiTL.doc.soVB ? `số ${modalDoiLoaiTL.doc.soVB}` : ''}`.trim());
+                    }
+                  }}
+                  className="w-full"
+                  options={DANH_MUC_LOAI_TAI_LIEU_OPTIONS}
+                  placeholder="— Chọn loại tài liệu mới —"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  Tên hiển thị tài liệu
+                </label>
+                <Input
+                  value={tenTLMoi}
+                  onChange={(e) => setTenTLMoi(e.target.value)}
+                  placeholder="Nhập tên tài liệu..."
+                />
+              </div>
+            </div>
+          )}
         </Modal>
       </div>
     </ConfigProvider>

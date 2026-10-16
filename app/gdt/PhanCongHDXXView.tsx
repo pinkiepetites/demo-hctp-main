@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { RotateCcw, MoreVertical, ChevronDown, ChevronUp, X, Eye, Users, FileText, ChevronLeft, ChevronRight, Search, Calendar, Check, Printer, Download, Edit2 } from "lucide-react";
 import { F, RED, BORDER, TEXT, MUTED, BG, TH_STYLE, TD_STYLE, Badge, type UserRoleType } from "./shared";
-import { formatSoBA } from "./AppHelpers";import { Button, Input } from "antd";
+import { formatSoBA } from "./AppHelpers";
+import { Button, Input } from "antd";
 
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -752,7 +753,14 @@ const QD_ROWS = [
 
 // ── Lịch xét xử modal ────────────────────────────────────────────────────────
 
-type CalEvent = { label: string; color: string; bg: string; loai: "GĐT/TT" | "ST" | "PT" };
+type CalEvent = { label: string; color: string; bg: string; loai: "GĐT/TT" | "ST" | "PT"; thuKy?: string };
+const DANH_SACH_THU_KY = [
+  "Hoàng Văn Toàn",
+  "Lý Văn An",
+  "Nguyễn Thu Hằng",
+  "Đỗ Thị Kim Oanh",
+  "Phan Thanh Nhã",
+];
 const LOAI_STYLE: Record<"GĐT/TT" | "ST" | "PT", { color: string; bg: string }> = {
   "GĐT/TT": { color: "#991b1b", bg: "#fee2e2" },
   "ST": { color: "#1e40af", bg: "#dbeafe" },
@@ -795,7 +803,7 @@ const FULL_CAL_ROWS = (() => {
   return rows;
 })();
 
-export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void; onSelectDate?: (dateStr: string) => void }) {
+export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void; onSelectDate?: (dateStr: string, thuKy?: string) => void }) {
   const [calView, setCalView] = useState<"thang" | "tuan" | "ngay">("thang");
   const [events, setEvents] = useState<Record<string, CalEvent[]>>(INIT_EVENTS);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -808,7 +816,8 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
   const [fCalNgay, setFCalNgay] = useState(false);
   const [fSoDS, setFSoDS] = useState("");
   const [fNgayTao, setFNgayTao] = useState("18/03/2026");
-  const [fHinhThuc, setFHinhThuc] = useState("");
+  const [fHinhThuc, setFHinhThuc] = useState("Trực tiếp");
+  const [fThuKy, setFThuKy] = useState("Hoàng Văn Toàn");
   const [fNguoiNhan, setFNguoiNhan] = useState("");
 
   const today = 17;
@@ -819,7 +828,7 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
     const loai: CalEvent["loai"] =
       fHinhThuc === "Sơ thẩm" ? "ST" : fHinhThuc === "Phúc thẩm" ? "PT" : "GĐT/TT";
     const st = LOAI_STYLE[loai];
-    return { label: fTitle || `Lịch ${loai}`, color: st.color, bg: st.bg, loai };
+    return { label: fTitle || `Lịch ${loai}`, color: st.color, bg: st.bg, loai, thuKy: fThuKy };
   };
 
   const handleTaoMoi = () => {
@@ -828,7 +837,7 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
     const key = dateKey(selectedDay);
     setEvents(prev => ({ ...prev, [key]: [...(prev[key] || []), ev] }));
     // reset form nhưng giữ popup mở
-    setFTitle(""); setFSoDS(""); setFHinhThuc(""); setFNguoiNhan(""); setFGioFrom("00:00"); setFGioTo("01:00");
+    setFTitle(""); setFSoDS(""); setFHinhThuc("Trực tiếp"); setFNguoiNhan(""); setFGioFrom("00:00"); setFGioTo("01:00"); setFThuKy("Hoàng Văn Toàn");
   };
 
   const handleLuu = () => {
@@ -838,10 +847,10 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
     setEvents(prev => ({ ...prev, [key]: [...(prev[key] || []), ev] }));
     setSuccessDay(selectedDay);
     if (onSelectDate) {
-      onSelectDate(`${String(selectedDay).padStart(2, "0")}/04/2026`);
+      onSelectDate(`${String(selectedDay).padStart(2, "0")}/04/2026`, fThuKy);
     }
     setSelectedDay(null);
-    setFTitle(""); setFSoDS(""); setFHinhThuc(""); setFNguoiNhan("");
+    setFTitle(""); setFSoDS(""); setFHinhThuc("Trực tiếp"); setFNguoiNhan(""); setFThuKy("Hoàng Văn Toàn");
   };
 
   // render a single calendar cell
@@ -876,7 +885,7 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
               <div style={{ fontSize: 9, color: "#16a34a", fontWeight: 700, marginBottom: 1 }}>✓ Đã thêm lịch</div>
             )}
             {dayEvs.map((ev, ei) => (
-              <div key={ei} style={{
+              <div key={ei} title={ev.thuKy ? `${ev.label} - Thư ký: ${ev.thuKy}` : ev.label} style={{
                 marginTop: 2, padding: "2px 5px", borderRadius: 3,
                 background: ev.bg, color: ev.color,
                 fontSize: 10, fontWeight: 600,
@@ -1068,7 +1077,7 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
                 </label>
               </div>
 
-              {/* Hình thức + Người nhận thông báo */}
+              {/* Hình thức xét xử + Thư ký phiên tòa */}
               <div style={{ display: "flex", gap: 12 }}>
                 <div style={{ flex: 1 }}>
                   <label style={lbl}>Hình thức xét xử{req}</label>
@@ -1080,21 +1089,33 @@ export function LichXetXuModal({ onClose, onSelectDate }: { onClose: () => void;
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={lbl}>Người nhận thông báo</label>
-                  <select value={fNguoiNhan} onChange={e => setFNguoiNhan(e.target.value)}
+                  <label style={lbl}>Thư ký phiên tòa{req}</label>
+                  <select value={fThuKy} onChange={e => setFThuKy(e.target.value)}
                     style={{ ...inp, appearance: "none", cursor: "pointer" }}>
-                    <option value="">Chọn người nhận</option>
-                    <option value="Toàn bộ HĐXX">👥 Toàn bộ Hội đồng xét xử</option>
-                    <option value="Lê Thị Thu Hiển">Lê Thị Thu Hiển (Chánh án - Chủ tọa)</option>
-                    <option value="Nguyễn Trí Tuệ">Nguyễn Trí Tuệ (Phó Chánh án - Chủ tọa)</option>
-                    <option value="Phạm Quốc Hưng">Phạm Quốc Hưng (Phó Chánh án - Chủ tọa)</option>
-                    <option value="Trịnh Thị Minh Trang">Trịnh Thị Minh Trang (Thẩm phán thành viên)</option>
-                    <option value="Nguyễn Như Thắng">Nguyễn Như Thắng (Thẩm phán thành viên)</option>
-                    <option value="Phạm Thị Bích Ngọc">Phạm Thị Bích Ngọc (Thẩm phán thành viên)</option>
-                    <option value="Võ Thị Thùy Giang">Võ Thị Thùy Giang (Thẩm phán thành viên)</option>
-                    <option value="Hoàng Văn Toàn">Hoàng Văn Toàn (Thư ký phiên tòa)</option>
+                    <option value="">-- Chọn thư ký phiên tòa --</option>
+                    {DANH_SACH_THU_KY.map(tk => (
+                      <option key={tk} value={tk}>{tk} (Thư ký phiên tòa)</option>
+                    ))}
                   </select>
                 </div>
+              </div>
+
+              {/* Người nhận thông báo */}
+              <div>
+                <label style={lbl}>Người nhận thông báo</label>
+                <select value={fNguoiNhan} onChange={e => setFNguoiNhan(e.target.value)}
+                  style={{ ...inp, appearance: "none", cursor: "pointer" }}>
+                  <option value="">Chọn người nhận</option>
+                  <option value="Toàn bộ HĐXX">Toàn bộ Hội đồng xét xử</option>
+                  <option value="Lê Thị Thu Hiển">Lê Thị Thu Hiển (Chánh án - Chủ tọa)</option>
+                  <option value="Nguyễn Trí Tuệ">Nguyễn Trí Tuệ (Phó Chánh án - Chủ tọa)</option>
+                  <option value="Phạm Quốc Hưng">Phạm Quốc Hưng (Phó Chánh án - Chủ tọa)</option>
+                  <option value="Trịnh Thị Minh Trang">Trịnh Thị Minh Trang (Thẩm phán thành viên)</option>
+                  <option value="Nguyễn Như Thắng">Nguyễn Như Thắng (Thẩm phán thành viên)</option>
+                  <option value="Phạm Thị Bích Ngọc">Phạm Thị Bích Ngọc (Thẩm phán thành viên)</option>
+                  <option value="Võ Thị Thùy Giang">Võ Thị Thùy Giang (Thẩm phán thành viên)</option>
+                  <option value="Hoàng Văn Toàn">Hoàng Văn Toàn (Thư ký phiên tòa)</option>
+                </select>
               </div>
             </div>
 
@@ -3869,10 +3890,38 @@ function HDXXDetailView({
                           fontSize: 14,
                           color: isSigned ? TEXT : MUTED,
                           fontFamily: F,
+                          borderBottom: `1px solid ${BORDER}`,
                           fontWeight: isSigned ? 500 : 400,
                         }}
                       >
                         {isSigned ? "Trực tiếp tại trụ sở TANDTC" : "—"}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style={{
+                          padding: "10px 14px",
+                          fontSize: 14,
+                          color: MUTED,
+                          fontFamily: F,
+                          background: BG,
+                          borderRight: `1px solid ${BORDER}`,
+                          width: "35%",
+                          fontWeight: 500,
+                        }}
+                      >
+                        Thư ký phiên tòa
+                      </td>
+                      <td
+                        style={{
+                          padding: "10px 14px",
+                          fontSize: 14,
+                          color: isSigned ? TEXT : MUTED,
+                          fontFamily: F,
+                          fontWeight: isSigned ? 600 : 400,
+                        }}
+                      >
+                        {isSigned ? "Hoàng Văn Toàn (Thư ký tòa án)" : "—"}
                       </td>
                     </tr>
 

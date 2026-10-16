@@ -6,7 +6,8 @@ import { TaoDuThaoModal } from "./TaoDuThaoModal";
 import { TrinhKyModal, HoSoToTrinhModal } from "./TrinhKyModal";
 import { LichXetXuModal } from "./PhanCongHDXXView";
 import { TaiLieuHoSoView } from "./TaiLieuHoSoView";
-import { LOAI_AN_OPTIONS } from "./data";import { Button, Input } from "antd";
+import { LOAI_AN_OPTIONS } from "./data";
+import { Button, Input } from "antd";
 
 import {
   DANH_SACH_TOA_AN_FILTER,
@@ -6100,7 +6101,7 @@ export function XemBieuMauChuongTrinhWordModal({
 }: {
   userRole?: string;
   rows?: any[];
-  lichXXInfo?: { ngayXX: string; thu: string; gioXX: string; phongXX: string };
+  lichXXInfo?: { ngayXX: string; thu: string; gioXX: string; phongXX: string; thuKy?: string };
   soVanBan?: string;
   onClose: () => void;
 }) {
@@ -6296,6 +6297,9 @@ export function XemBieuMauChuongTrinhWordModal({
               <div style={{ fontSize: 14, fontStyle: "italic", marginBottom: 4 }}>
                 Hội đồng xét xử gồm các Thẩm phán: <b>{danhSachThanhVienHDXX}</b>
               </div>
+              <div style={{ fontSize: 14, fontStyle: "italic", marginBottom: 4 }}>
+                Thư ký phiên tòa: <b>{lichXXInfo?.thuKy || "Hoàng Văn Toàn"}</b>
+              </div>
               <div style={{ fontSize: 14, fontStyle: "italic" }}>
                 Thời gian làm việc: <b>{workingTimeText}</b>
               </div>
@@ -6384,14 +6388,15 @@ function ChonLichXetXuDialog({
   onSave,
   onClose,
 }: {
-  initialLich: { ngayXX: string; thu: string; gioXX: string; phongXX: string };
-  onSave: (lich: { ngayXX: string; thu: string; gioXX: string; phongXX: string }) => void;
+  initialLich: { ngayXX: string; thu: string; gioXX: string; phongXX: string; thuKy?: string };
+  onSave: (lich: { ngayXX: string; thu: string; gioXX: string; phongXX: string; thuKy?: string }) => void;
   onClose: () => void;
 }) {
   const [ngay, setNgay] = useState(initialLich.ngayXX || "05/06/2026");
   const [thu, setThu] = useState(initialLich.thu || "Thứ Sáu");
   const [gio, setGio] = useState(initialLich.gioXX || "Buổi sáng từ 08h00 đến 12h00, buổi chiều từ 14h00 đến 17h30");
   const [phong, setPhong] = useState(initialLich.phongXX || "Phòng xét xử số 1");
+  const [thuKy, setThuKy] = useState(initialLich.thuKy || "Hoàng Văn Toàn");
 
   return (
     <div
@@ -6451,11 +6456,23 @@ function ChonLichXetXuDialog({
               <option value="Buổi chiều từ 14h00 đến 17h30">Ca Chiều (14h00 – 17h30)</option>
             </select>
           </div>
+
+          {/* Thư ký phiên tòa */}
+          <div>
+            <label style={{ fontSize: 14, fontWeight: 600, color: TEXT, fontFamily: F, display: "block", marginBottom: 4 }}>Thư ký phiên tòa:</label>
+            <select value={thuKy} onChange={e => setThuKy(e.target.value)} style={{ width: "100%", padding: "7px 10px", fontSize: 14, border: `1px solid ${BORDER}`, borderRadius: 4, fontFamily: F }}>
+              <option value="Hoàng Văn Toàn">Hoàng Văn Toàn (Thư ký phiên tòa)</option>
+              <option value="Lý Văn An">Lý Văn An (Thư ký phiên tòa)</option>
+              <option value="Nguyễn Thu Hằng">Nguyễn Thu Hằng (Thư ký phiên tòa)</option>
+              <option value="Đỗ Thị Kim Oanh">Đỗ Thị Kim Oanh (Thư ký phiên tòa)</option>
+              <option value="Phan Thanh Nhã">Phan Thanh Nhã (Thư ký phiên tòa)</option>
+            </select>
+          </div>
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, paddingTop: 10, borderTop: `1px solid ${BORDER}` }}>
           <Button onClick={onClose} style={{ padding: "7px 16px", background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 4, cursor: "pointer", fontSize: 14, fontFamily: F }}>Hủy bỏ</Button>
-          <Button onClick={() => { onSave({ ngayXX: ngay, thu, gioXX: gio, phongXX: phong }); onClose(); }} style={{ padding: "7px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}>Lưu lịch xét xử</Button>
+          <Button onClick={() => { onSave({ ngayXX: ngay, thu, gioXX: gio, phongXX: phong, thuKy }); onClose(); }} style={{ padding: "7px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: F }}>Lưu lịch xét xử</Button>
         </div>
       </div>
     </div>
@@ -6839,6 +6856,7 @@ function ThemVuXetXuModal({ userRole = "hinh-su", onClose }: { userRole?: string
     thu: "Thứ Sáu",
     gioXX: "Buổi sáng: 08h00 - 12h00; Buổi chiều: 14h00 - 17h30",
     phongXX: "Phòng xét xử số 1",
+    thuKy: "Hoàng Văn Toàn",
   });
 
   const getRowKey = (r: ModalVuAnRow) => r.maVuAn || r.soBA || String(r.stt);
@@ -6983,6 +7001,12 @@ function ThemVuXetXuModal({ userRole = "hinh-su", onClose }: { userRole?: string
               {hasSelectedLich && <span><b>Phòng:</b> {lichXXInfo.phongXX}</span>}
               {hasSelectedLich && <span style={{ color: MUTED }}>•</span>}
               {hasSelectedLich && <span style={{ color: "#475569" }}><b>Thời gian:</b> {lichXXInfo.gioXX}</span>}
+              {hasSelectedLich && (
+                <>
+                  <span style={{ color: MUTED }}>•</span>
+                  <span><b>Thư ký:</b> {lichXXInfo.thuKy || "Hoàng Văn Toàn"}</span>
+                </>
+              )}
               {isCapSo && (
                 <>
                   {hasSelectedLich && <span style={{ color: MUTED }}>•</span>}
@@ -7274,12 +7298,13 @@ function ThemVuXetXuModal({ userRole = "hinh-su", onClose }: { userRole?: string
       {showLichXXModal && (
         <LichXetXuModal
           onClose={() => setShowLichXXModal(false)}
-          onSelectDate={(dateStr) => {
+          onSelectDate={(dateStr, thuKy) => {
             setHasSelectedLich(true);
             setLichXXInfo(prev => ({
               ...prev,
               ngayXX: dateStr,
               thu: "Thứ Sáu",
+              thuKy: thuKy || prev.thuKy || "Hoàng Văn Toàn",
             }));
             setShowLichXXModal(false);
           }}
